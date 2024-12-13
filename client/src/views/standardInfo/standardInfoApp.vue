@@ -1,3 +1,15 @@
 <template>
-    <h1>기준정보</h1>
+    <div>
+        <layout />
+    </div>
 </template>
+
+<script>
+import layout from '@/layout/AppLayout.vue';
+
+export default {
+    components: {
+        layout
+    }
+}
+</script>

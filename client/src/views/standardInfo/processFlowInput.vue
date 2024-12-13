@@ -37,10 +37,9 @@ export default {
     }, 
     methods : {
         async sample_fun() {
-            let result = await axios.get(`${ajaxUrl}/equip/not_sample`)
+            let result = await axios.get(`${ajaxUrl}/not_sample`)
                                     .catch(err => console.log(err));
             this.sample_data = result.data;
-            console.log(result.data);
         }
     }
 }
