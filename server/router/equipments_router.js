@@ -11,4 +11,4 @@ router.get('/equip/not_sample', async (req, res)=>{
   });
 
 
-module.exports = router;
+module.exports = router;  

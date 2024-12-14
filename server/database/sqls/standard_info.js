@@ -11,7 +11,7 @@ const bom =
        ,prdlst_code
        ,prdist_name
        ,prdctn_qy
-       ,sumry
+       ,sumry 
 FROM bom`;
 
 
@@ -25,19 +25,19 @@ const bomInfo =
        ,bc.stndrd_y
        ,bc.unit
        ,bc.cnsum_count
-FROM bom b JOIN bom_cmpds bc
+FROM bom b JOIN bom_cmpds bc 
 on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
-const bomInsert = 
-`INSERT INTO bom_cmpds
-SET ? `;
+// const bomInsert = 
+// `INSERT INTO bom_cmpds
+// SET ? `;
 
 
 module.exports = {
   cmmn,
   bom,
   bomInfo,
-  bomInsert
+  //bomInsert
 };
