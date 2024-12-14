@@ -1,12 +1,14 @@
+import bomSelect from "@/views/standardInfo/bomSelect.vue";
+
 const standardInfoRoute = [
     {
         path: '',
-        redirect: { name : 'bom' }
+        redirect: { name : 'bomSelect' }
     },
     {
-        path: 'bom',
-        name: 'bom',
-        component: bomselect
+        path: 'bomSelect',
+        name: 'bomSelect',
+        component: bomSelect
     }
 ];
 

@@ -1,4 +1,18 @@
 <template>
+  <form action=""></form>
+  <div class="row g-3 align-items-center">
+      <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">Password</label>
+      </div>
+      <div class="col-auto">
+          <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+      </div>
+      <div class="col-auto">
+          <span id="passwordHelpInline" class="form-text">
+          Must be 8-20 characters long.
+          </span>
+      </div>
+  </div>
   <div>
       <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 500px">
       </ag-grid-vue>
@@ -23,13 +37,12 @@ export default {
       };
   },
   created() {
-      this.getBomList();
+      this.getbomList();
       this.colDefs = ref([
-          { field: "bom_code" },
+          { field: "bom_code", headerName:"BOM코드" },
           { field: "prdlst_code" },
           { field: "prdist_name" },
-          { field: "prdctn_qy" },
-          { field: "" }
+          { field: "prdctn_qy" }
       ]);
   },
   name: "App",
@@ -37,12 +50,13 @@ export default {
       AgGridVue, // Add Vue Data Grid component
   },
   methods: {
-      async getBoardList() {
+      async getbomList() {
           let result = await axios.get(`${ajaxUrl}/bom`)
               .catch(err => console.log(err));
+              console.log(result.data);
           this.bomList = result.data;
           this.rowData = ref(this.bomList);
-          console.log(this.boardList)
+          console.log(this.result);
       }
   }
 };
