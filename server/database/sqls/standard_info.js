@@ -30,14 +30,14 @@ on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
-// const bomInsert = 
-// `INSERT INTO bom_cmpds
-// SET ? `;
+const bomInsert = 
+`INSERT INTO bom_cmpds
+SET ? `;
 
 
 module.exports = {
   cmmn,
   bom,
   bomInfo,
-  //bomInsert
+  bomInsert
 };

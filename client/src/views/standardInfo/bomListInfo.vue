@@ -1,18 +1,4 @@
 <template>
-  <form action=""></form>
-  <div class="row g-3 align-items-center">
-      <div class="col-auto">
-          <label for="inputPassword6" class="col-form-label">Password</label>
-      </div>
-      <div class="col-auto">
-          <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-      </div>
-      <div class="col-auto">
-          <span id="passwordHelpInline" class="form-text">
-          Must be 8-20 characters long.
-          </span>
-      </div>
-  </div>
   <div>
       <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 500px">
       </ag-grid-vue>
@@ -31,7 +17,7 @@ import { ajaxUrl } from '@/utils/commons.js';
 export default {
   data() {
       return {
-          bomList: [],
+          bomListInfo: [],
           rowData: '',
           colDefs: '',
       };
@@ -39,23 +25,27 @@ export default {
   created() {
       this.getbomList();
       this.colDefs = ref([
-          { field: "bom_code", headerName:"BOM코드" },
-          { field: "prdlst_code" },
-          { field: "prdist_name" },
-          { field: "prdctn_qy" }
+          { field: "b.prdlst_code", headerName:"제품코드" },
+          { field: "b.prdist_name" },
+          { field: "b.prdctn_qy" },
+          { field: "bc.cmpds_no" },
+          { field: "bc.cmpds_prdlst_name" },
+          { field: "bc.stndrd_y" },
+          { field: "bc.unit" },
+          { field: "bc.cnsum_count" }
       ]);
-  },
+  }, 
   name: "App",
   components: {
       AgGridVue, // Add Vue Data Grid component
   },
   methods: {
       async getbomList() {
-          let result = await axios.get(`${ajaxUrl}/bom`)
+          let result = await axios.get(`${ajaxUrl}/bom/:bomCode`)
               .catch(err => console.log(err));
               console.log(result.data);
-          this.bomList = result.data;
-          this.rowData = ref(this.bomList);
+          this.bomListInfo = result.data;
+          this.rowData = ref(this.bomListInfo);
           console.log(this.result);
       }
   }

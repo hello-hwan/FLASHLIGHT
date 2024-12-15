@@ -20,14 +20,14 @@ const bomInfo = async(bomCode) => {
 }
 
 // BOM 등록 
-// const bominsert = async (bomInfo) => {
-//   let result = await mariaDB.query('bominsert',bomInfo);
-//   if(result.insertId > 0){
-//     return { bom_no : result.insertId }
-//   }else{
-//     return {};
-//   }
-// }
+const bominsert = async (bomInfo) => {
+  let result = await mariaDB.query('bominsert',bomInfo);
+  if(result.insertId > 0){
+    return { bom_no : result.insertId }
+  }else{
+    return {};
+  }
+}
  
  
 module.exports = {

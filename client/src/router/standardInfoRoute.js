@@ -1,14 +1,20 @@
-import bomSelect from "@/views/standardInfo/bomSelect.vue";
+import bomList from "@/views/standardInfo/bomList.vue";
+import bomListInfo from "@/views/standardInfo/bomListInfo.vue";
 
 const standardInfoRoute = [
     {
         path: '',
-        redirect: { name : 'bomSelect' }
+        redirect: { name : 'bomList' }
     },
     {
-        path: 'bomSelect',
-        name: 'bomSelect',
-        component: bomSelect
+        path: 'bomList',
+        name: 'bomList',
+        component: bomList
+    },
+    {
+        path: 'bomListInfo',
+        name: 'bomListInfo',
+        component: bomListInfo
     }
 ];
 
