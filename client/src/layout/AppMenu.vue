@@ -13,11 +13,11 @@ const model = ref([
                 items: [
                     {
                         label: '주문 요청 등록',
-                        to: '/'
+                        to: '/business/orderForm'
                     },
                     {
                         label: '주문 요청 조회',
-                        to: '/'
+                        to: '/business/orderList'
                     },
                     {
                         label: '반품 리스트 등록',
@@ -95,11 +95,11 @@ const model = ref([
                 items: [
                     {
                         label: '생산 계획 안내',
-                        to: '/'
+                        to: '/production'
                     },
                     {
                         label: '공장 실적 조회',
-                        to: '/'
+                        to: '/production/productionResult'
                     }
                 ]
             },
