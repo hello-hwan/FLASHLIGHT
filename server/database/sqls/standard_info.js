@@ -17,7 +17,7 @@ FROM bom`;
 
 // BOM 상세보기 쿼리
 const bomInfo =
-`SELECT b.bom_code
+`SELECT bc.cmpds_no
 	,bc.cmpds_prdlst_name
 	,bc.stndrd_y
        ,bc.unit
@@ -27,7 +27,7 @@ on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
-const bomInsert = 
+const bomInsert =  
 `INSERT INTO bom_cmpds
 SET ? `;
 
