@@ -17,6 +17,7 @@
     "primeicons": "^7.0.0",
     "primevue": "^4.2.4",
     "vue": "^3.4.34",
+    "vue-class-component": "^8.0.0-rc.1",
     "vue-router": "^4.4.0",
     "vuex": "^4.0.0",
     "vuex-persistedstate": "^4.1.0"
