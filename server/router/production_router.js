@@ -27,4 +27,39 @@ router.get('/prod/flowchart/:code', async (req, res) => {
   })
 });
 
+router.get('/prod/order', async (req, res) => {
+  prodService
+  .searchorder()
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+router.get('/prod/usetime/:code', async (req, res) => {
+  let code = req.params.code;
+  prodService
+  .searchtime(code)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+router.get('/prod/useqy/:code', async (req, res) => {
+  let code = req.params.code;
+  prodService
+  .searchuseqy(code)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+})
+
 module.exports = router;

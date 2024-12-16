@@ -1,5 +1,57 @@
 //생산 sql
 
+// 순서 
+// 주문리스트에서 처리중, 생산인 품목이랑 수량, 주문번호, 납품기한 가져와서 
+// 공정흐름도에서 총 예상소요시간, 총 필요 자재 수량 조회해서
+// 자재에서 자재 총 수량 확인해서
+// 생산계획에 인서트 한다.
+
+// 생산해야하는 주문의 품목별소모재료
+const pr_selmtlused = 
+`
+SELECT mtril_code, usgqty * oli.order_qy
+FROM procs_matrl pm JOIN procs_flowchart pfc ON (pm.procs_code = pfc.procs_code)
+						  JOIN order_lists oli ON (oli.prd_code = pfc.prd_code)
+WHERE	prdctn_at = 'OP01'
+AND process_status = 'OD01'
+GROUP BY mtril_code
+`;
+
+// 생산해야하는 주문의 품목별 소요시간
+const pr_seltime = 
+`
+SELECT pfc.prd_code, sum(expect_reqre_time) * oli.order_qy
+FROM procs_flowchart pfc JOIN order_lists oli ON (pfc.prd_code = oli.prd_code)
+WHERE	prdctn_at = 'OP01'
+AND process_status = 'OD01'
+GROUP BY pfc.prd_code
+`;
+
+// 생산해야하는 주문의 자재 수량
+const pr_selmtl = 
+`
+SELECT mwh.mtril_code, sum(mtril_qy)
+FROM mtril_wrhousing mwh JOIN procs_matrl pm ON (mwh.mtril_code = pm.mtril_code)
+JOIN procs_flowchart pfc ON (pm.procs_code = pfc.procs_code)
+JOIN order_lists oli ON (oli.prd_code = pfc.prd_code)
+WHERE	prdctn_at = 'OP01'
+AND process_status = 'OD01'
+GROUP BY mtril_code
+`;
+
+// 생산해야하는 주문의 반제품 수량
+const pr_selprodn = 
+`
+SELECT pnw.prdlst_code, sum(prduct_n_wrhousng_qy)
+FROM prduct_n_wrhousng pnw JOIN procs_matrl pm ON (pnw.prdlst_code = pm.mtril_code)
+JOIN procs_flowchart pfc ON (pm.procs_code = pfc.procs_code)
+JOIN order_lists oli ON (oli.prd_code = pfc.prd_code)
+WHERE	prdctn_at = 'OP01'
+AND process_status = 'OD01'
+GROUP BY prdlst_code
+`
+
+
 // 조회문
 
 const pr_selcmmn = // 공통코드 목록 조회
@@ -16,10 +68,6 @@ WHERE prdctn_at = 'OP01'
 AND process_status = 'OD01'
 ORDER BY 6
 `;
-
-
-
-
 
 
 
@@ -56,8 +104,13 @@ ORDER BY 1;
 `;
 
 
-// 삽입문
 
+// 삽입문
+const pr_insplan = // 생산 계획에 삽입
+`
+INSERT INTO prdctn_plan
+SET ?
+`;
 
 
 
