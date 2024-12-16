@@ -116,12 +116,13 @@ export default {
   },
   created() {
     this.getbomList();
-    this.colDefs = ref([
-          { field: "bom_code", headerName:"BOM코드" },
-          { field: "prdlst_code", headerName:"제품코드" },
-          { field: "prdist_name", headerName:"제품명" },
-          { field: "prdctn_qy", headerName:"기본생산수량" },
-      ]);
+    this.colDefs = ([
+          { field: "bom_code", headerName:"소모품코드" },
+          { field: "cmpds_prdlst_name", headerName:"소모품명" },
+          { field: "stndrd_y", headerName:"규격" },
+          { field: "unit", headerName:"단위" },
+          { field: "cnsum_count", headerName:"소모량" },
+      ])
   },
   methods: {
       async getbomList() {
