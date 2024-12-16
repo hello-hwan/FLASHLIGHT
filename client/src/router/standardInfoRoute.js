@@ -1,3 +1,4 @@
+
 import bomList from "@/views/standardInfo/bomList.vue";
 import bomInsert from "@/views/standardInfo/bomInsert.vue";
 

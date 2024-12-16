@@ -64,16 +64,6 @@
 </script>
   
   <style lang="scss">
-  
-  /*
-    그리드 사용시 아래 스타일 입포트 붙여넣기하면 됩니다 
-    현재 vue파일 위치랑 실제 작업하는 vue파일이랑 차이가 있어 수정돼 있습니다 경로 확인해주세요
-    @import "../../../node_modules/ag-grid-community/styles/ag-grid.css";
-    @import "../../../node_modules/ag-grid-community/styles/ag-theme-alpine.css";
-  */
-
-  @import "../../node_modules/ag-grid-community/styles/ag-grid.css";
-  @import "../../node_modules/ag-grid-community/styles/ag-theme-alpine.css";
 
   //vuetify
   #app {
