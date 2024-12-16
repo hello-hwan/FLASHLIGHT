@@ -15,10 +15,10 @@ router.get('/prod/search', async (req, res) => {
     })  
 });
 
-router.get('/prod/flowchart/:code', async (req, res) => {
-  let code = req.params.code;
+router.get('/prod/flowchart', async (req, res) => {
+  // let code = req.params.code;
   prodService
-  .searchflowchart(code)
+  .searchflowchart()
   .then(list => {
     res.send(list);
   })
@@ -62,4 +62,11 @@ router.get('/prod/useqy/:code', async (req, res) => {
   })
 })
 
+router.get('/prod/total', async (req, res) => {
+  prodService.total().then(list => {
+    res.send(list);
+  }).catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
 module.exports = router;
