@@ -29,9 +29,7 @@ export default {
           { field: "prdlst_code", headerName:"제품코드" },
           { field: "prdist_name", headerName:"제품명" },
           { field: "prdctn_qy", headerName:"기본생산수량" },
-          { field: "상세보기", headerNaem:"상세보기", cellRenderer: () => {
-          return `<button>상세보기</button>`;
-        } }
+          { field: "상세보기", headerNaem:"상세보기", }
       ]);
   }, 
   name: "App",
