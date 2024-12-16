@@ -147,6 +147,18 @@ const mt_wrhousngListWithKey =
 //자재 출고 관리 - mt009 요청가져오기
 const mt_requestList =
 `
+SELECT req_name,
+        req_code,
+        req_de
+FROM    thng_req
+WHERE   procs_at = '미처리'
+AND     prdctn_code IS NOT NULL
+GROUP BY req_code
+`;
+
+//자재 출고 관리 - mt009 자재별 상세 수량 출력
+const mt_requestDetails =
+`
 SELECT  m.req_name AS req_name,
 	m.req_code AS req_code,
 	m.prd_nm AS mt_name,
@@ -156,17 +168,22 @@ SELECT  m.req_name AS req_name,
 	s.unit AS unit
 FROM    thng_req m JOIN mtril s
 		     ON (m.prd_code = s.mtril_code)
-WHERE procs_at = '미처리';
-`;
-
-//자재 출고 관리 - mt009 자재별 상세 수량 출력
-const mt_requestDetails =
-`
+WHERE   procs_at = '미처리'
+AND     req_code = ?
 `;
 
 //자재 출고 관리 - mt009 자재 출고 등록
 const mt_requestCheckOut =
 `
+CALL mt_dlivy_process(
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?
+)
 `;
 
 //자재 출고 관리 요청명 검색 모달 - mt010
@@ -273,5 +290,7 @@ module.exports = {
         mt_fromProduction,
         mt_fromOrder,
         mt_wrhousingInsert,
-        mt_requestList
+        mt_requestList,
+        mt_requestDetails,
+        mt_requestCheckOut
 };
