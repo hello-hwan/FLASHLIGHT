@@ -129,12 +129,12 @@ export default {
     },
     methods: {
         async getReturnList() {
-            let result = await axios.get(`${ajaxUrl}/returnMt`)
+            let result = await axios.get(`${ajaxUrl}/mtril/returnMt`)
                 .catch(err => console.log(err));
             this.returnRowData = result.data;
         },
         async getOrderList() {
-            let result = await axios.get(`${ajaxUrl}/orderMt`)
+            let result = await axios.get(`${ajaxUrl}/mtril/orderMt`)
                 .catch(err => console.log(err));
             this.orderRowData = result.data;
         },
