@@ -272,7 +272,7 @@ const model = ref([
                     },
                     {
                         label: 'BOM 조회',
-                        to: '/bom'
+                        to: '/standardInfo/bomList'
                     },
                     {
                         label: '공정 흐름도 관리',
