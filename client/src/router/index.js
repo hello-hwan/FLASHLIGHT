@@ -11,6 +11,7 @@ import productionApp from '@/views/production/productionApp.vue';
 import qualityApp from '@/views/quality/qualityApp.vue';
 import standardInfoApp from '@/views/standardInfo/standardInfoApp.vue';
 import statisticsApp from '@/views/statistics/statisticsApp.vue';
+import kioskApp from '@/views/kiosk/kiyoskApp.vue';
 
 //router
 import businessRoutes from '@/router/businessRoute';
@@ -21,6 +22,7 @@ import productionRoutes from '@/router/productionRoute.js';
 import qualityRoutes from '@/router/qualityRoute.js';
 import standardInfoRoutes from '@/router/standardInfoRoute.js';
 import statisticsRoutes from '@/router/statisticsRoute.js';
+import kioskRoutes from './kioskRoute';
 
 /*
   영업부서 사원 - 주문 조회 ( SA-101 ) orderList.vue
@@ -92,6 +94,12 @@ const router = createRouter({
             name: 'statisticsApp',
             component: statisticsApp,
             children : statisticsRoutes
+          },
+          {
+            path: '/kiosk',
+            name: 'kioskApp',
+            component: kioskApp,
+            children : kioskRoutes
           },
     ]
 });

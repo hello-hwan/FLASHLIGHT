@@ -3,6 +3,7 @@ import { ref } from 'vue';
 
 import AppMenuItem from './AppMenuItem.vue';
 
+
 const model = ref([
     {
         label: ' ',
@@ -271,7 +272,7 @@ const model = ref([
                     },
                     {
                         label: 'BOM 조회',
-                        to: '/'
+                        to: '/bomSelect'
                     },
                     {
                         label: '공정 흐름도 관리',
