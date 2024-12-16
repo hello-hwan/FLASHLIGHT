@@ -34,5 +34,5 @@ module.exports = {
   cmmntest,
   bomtest,
   bomInfo,
-  // bominsert
+  bominsert
 };

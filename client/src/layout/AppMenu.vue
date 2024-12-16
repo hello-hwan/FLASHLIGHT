@@ -268,7 +268,7 @@ const model = ref([
                     },
                     {
                         label: 'BOM 관리',
-                        to: '/'
+                        to: '/standardInfo/bomInsert'
                     },
                     {
                         label: 'BOM 조회',
