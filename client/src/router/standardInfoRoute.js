@@ -2,6 +2,7 @@
 import processFlowInput from '@/views/standardInfo/processFlowInput.vue';
 // import processFlowView from '@/views/standardInfo/processFlowView.vue';
 
+
 const standardInfoRoutes = [
     {
         path: '',
