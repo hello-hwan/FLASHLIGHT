@@ -19,6 +19,6 @@ const businessRoutes = [
         name: 'orderForm',
         component: orderForm
     }
-];
+]; 
 
 export default businessRoutes;

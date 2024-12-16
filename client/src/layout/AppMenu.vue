@@ -268,11 +268,11 @@ const model = ref([
                     },
                     {
                         label: 'BOM 관리',
-                        to: '/'
+                        to: '/standardInfo/bomInsert'
                     },
                     {
                         label: 'BOM 조회',
-                        to: '/bomSelect'
+                        to: '/standardInfo/bomList'
                     },
                     {
                         label: '공정 흐름도 관리',

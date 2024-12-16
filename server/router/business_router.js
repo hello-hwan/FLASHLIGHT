@@ -22,14 +22,14 @@ router.post('/business/orderForm', async (req, res) => {
     let orderRequestInfo = req.body;
     let result = await businessService.createNewOrderRequest(orderRequestInfo);
     res.send(result);
-});
+}); 
 
 //주문 요청 리스트 등록
-router.post('/business/:no', async (req, res) => {
-    let orderRequestListInfo = req.body;
-    let result = await businessService.createNewOrderListRequest(orderRequestListInfo);
-    res.send(result);
-});
+// router.post('/business/:no', async (req, res) => {
+//     let orderRequestListInfo = req.body;
+//     let result = await businessService.createNewOrderListRequest(orderRequestListInfo);
+//     res.send(result);
+// });
 
 module.exports = router;
 

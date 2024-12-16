@@ -1,17 +1,24 @@
-//기준정보 라우트
-import processFlowInput from '@/views/standardInfo/processFlowInput.vue';
 
-const standardInfoRoutes = [
+import bomList from "@/views/standardInfo/bomList.vue";
+import bomInsert from "@/views/standardInfo/bomInsert.vue";
+
+
+const standardInfoRoute = [
     {
         path: '',
-        redirect: { name : '' } // 기준정보 메인 페이지 입력
+        redirect: { name : 'bomList' }
     },
     {
-        path: 'processFlowInput',
-        name: 'processFlowInput',
-        component: processFlowInput
+        path: 'bomList',
+        name: 'bomList',
+        component: bomList
+    },
+    {
+        path: 'bomInsert',
+        name: 'bomInsert',
+        component: bomInsert
     }
 
 ];
 
-export default standardInfoRoutes;
+export default standardInfoRoute;

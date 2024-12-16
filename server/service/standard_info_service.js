@@ -12,27 +12,27 @@ const bomtest = async() => {
   let list = await mariaDB.query('bom');
   return list;
 }
-
+ 
 // BOM 상세보기 
-const bominfo = async(bomCode) => {
-  let list = await mariaDB.query('bominfo',bomCode);
+const bomInfo = async(bomCode) => {
+  let list = await mariaDB.query('bomInfo',bomCode);
   return list;
 }
 
-// BOM 등록
-// const bominsert = async (bomInfo) => {
-//   let result = await mariaDB.query('bominsert',bomInfo);
-//   if(result.insertId > 0){
-//     return { bom_no : result.insertId }
-//   }else{
-//     return {};
-//   }
-// }
-
-
+// BOM 등록 
+const bominsert = async (bomInfo) => {
+  let result = await mariaDB.query('bominsert',bomInfo);
+  if(result.insertId > 0){
+    return { bom_no : result.insertId }
+  }else{
+    return {};
+  }
+}
+ 
+ 
 module.exports = {
   cmmntest,
   bomtest,
-  bominfo,
-  // bominsert
+  bomInfo,
+  bominsert
 };
