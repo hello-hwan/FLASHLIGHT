@@ -46,7 +46,7 @@ const model = ref([
                 items: [
                     {
                         label: '재고 조회',
-                        to: '/'
+                        to: 'mtrilQy'
                     },
                     {
                         label: '발주 관리',
@@ -58,7 +58,7 @@ const model = ref([
                     },
                     {
                         label: '입고 관리',
-                        to: '/'
+                        to: 'wrhousing'
                     },
                     {
                         label: '입고 조회',

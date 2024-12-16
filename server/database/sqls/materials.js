@@ -88,23 +88,50 @@ const mt_orderForm =
 `;
 
 //자재 입고처리 - mt007 생산 반환 리스트
-//번호, 자재명, 수량, 단위, 입고날짜
 const mt_fromProduction =
 `
-SELECT  m.mtril_name,
-        m.nusgqty,
-        s.unit,
-        입고날짜
-FROM    mt_delivy m JOIN mtril_wrhousing s
-                      ON (m.mtril_lot = s.)
-        
-
-
+SELECT  m.mtril_lot AS lot,
+        m.mtril_name AS name,
+        m.mtril_code AS code,
+        m.nusgqty AS qy,
+        t.unit AS unit,
+        s.wrhousng_date AS wrdate
+FROM    mtril_dlivy m JOIN mtril_wrhousing s
+                         ON (m.mtril_lot = s.mtril_lot)
+                       JOIN mtril t
+                         ON (m.mtril_code = t.mtril_code)
+WHERE   m.usgstt = '미사용'
 `;
 
 //자재 입고처리 - mt007 풀질검사 끝난 자재 리스트
+//입고날짜는 js에서 당일 날짜를 보여주도록 한다.
 const mt_fromOrder =
 `
+SELECT m.mtril_name AS name,         
+       m.mtril_code AS code, 
+       m.pass_amount AS qy, 
+       m.mtril_check_code AS checkCode, 
+       s.unit AS unit, 
+       CURDATE() AS wrdate          
+FROM material_inspection_check m JOIN mtril s 
+                                   ON (m.mtril_code = s.mtril_code)
+WHERE  m.mtril_check_code NOT IN (SELECT t.mtril_check_code
+				  FROM   mtril_wrhousing t);
+`;
+
+//자재 입고 테이블에 insert, 생산 반환 리스트 상태 업데이트
+const mt_wrhousingInsert = 
+`
+CALL mt_wrhousing_process(
+    ?,
+    ?,
+    ?,              
+    ?,           
+    ?,           
+    ?,       
+    ?,      
+    ?
+);
 `;
 
 //자재 입고 조회 - mt008 
@@ -120,6 +147,16 @@ const mt_wrhousngListWithKey =
 //자재 출고 관리 - mt009 요청가져오기
 const mt_requestList =
 `
+SELECT  m.req_name AS req_name,
+	m.req_code AS req_code,
+	m.prd_nm AS mt_name,
+	m.prd_code AS mt_code,
+	CONCAT(curdate(), '-', nextval(mt_lot_seq)) AS lot,
+	m.req_qy AS qy,
+	s.unit AS unit
+FROM    thng_req m JOIN mtril s
+		     ON (m.prd_code = s.mtril_code)
+WHERE procs_at = '미처리';
 `;
 
 //자재 출고 관리 - mt009 자재별 상세 수량 출력
@@ -232,4 +269,9 @@ const mt_returnListWithKey =
 `
 `;
 
-module.exports = {};
+module.exports = {
+        mt_fromProduction,
+        mt_fromOrder,
+        mt_wrhousingInsert,
+        mt_requestList
+};
