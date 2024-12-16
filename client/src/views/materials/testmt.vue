@@ -50,7 +50,7 @@ export default {
         console.log('리턴 컴포넌트');
         this.getReturnList();
         this.returnColDefs = [
-        { field: "lot", hide: true, suppressToolPanel: true}, //hide: true, suppressToolPanel: true
+        { field: "lot", hide: true, suppressToolPanel: true}, //hide: true, suppressToolPanel: true --> 행 숨김
         { field: "name", headerName:"자재명" },
         { field: "code", headerName:"자재코드" },
         { field: "qy", headerName:"반환량" },
@@ -58,7 +58,7 @@ export default {
         { field: "wrdate", headerName:"입고일",
             valueFormatter: this.customDateFormat, //valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.  
         },
-        { field: "actions", headerName: "선택", cellRenderer: CustomButtonComponent },
+        { field: "actions", headerName: "선택", cellRenderer: CustomButtonComponent },  //버튼 컴포넌트 설정
         ];
         this.gridOptionsReturn = {
                 columnDefs: this.returnColDefs,

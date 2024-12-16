@@ -1,3 +1,9 @@
 <template>
     <router-view />
 </template>
+
+
+<style>
+  @import "../node_modules/ag-grid-community/styles/ag-grid.css";
+  @import "../node_modules/ag-grid-community/styles/ag-theme-alpine.css";
+</style>

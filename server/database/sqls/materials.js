@@ -119,30 +119,20 @@ WHERE  m.mtril_check_code NOT IN (SELECT t.mtril_check_code
 				  FROM   mtril_wrhousing t);
 `;
 
-//자재 입고 테이블에 insert
+//자재 입고 테이블에 insert, 생산 반환 리스트 상태 업데이트
 const mt_wrhousingInsert = 
 `
-INSERT INTO mtril_wrhousing(
-    mtril_lot,
-    mtril_check_code,
-    mtril_name,
-    mtril_code,
-    mtril_qy,
-    wrhousng_se,
-    empl_no,
-    wrhousng_date
-)
-VALUES (
-    CONCAT(CURDATE(), '-', NEXTVAL(mt_lot_seq)), 
-    ?, ?, ?, ?, ?, ?, ?
+CALL mt_wrhousing_process(
+    ?,
+    ?,
+    ?,              
+    ?,           
+    ?,           
+    ?,       
+    ?,      
+    ?
 );
 `;
-
-/*
-UPDATE INTO mtril_dlivy
-SET usgstt = '사용'
-WHERE mtril_lot = ?
-*/
 
 //자재 입고 조회 - mt008 
 const mt_wrhousngList =
@@ -157,6 +147,16 @@ const mt_wrhousngListWithKey =
 //자재 출고 관리 - mt009 요청가져오기
 const mt_requestList =
 `
+SELECT  m.req_name AS req_name,
+	m.req_code AS req_code,
+	m.prd_nm AS mt_name,
+	m.prd_code AS mt_code,
+	CONCAT(curdate(), '-', nextval(mt_lot_seq)) AS lot,
+	m.req_qy AS qy,
+	s.unit AS unit
+FROM    thng_req m JOIN mtril s
+		     ON (m.prd_code = s.mtril_code)
+WHERE procs_at = '미처리';
 `;
 
 //자재 출고 관리 - mt009 자재별 상세 수량 출력
@@ -272,5 +272,6 @@ const mt_returnListWithKey =
 module.exports = {
         mt_fromProduction,
         mt_fromOrder,
-        mt_wrhousingInsert
+        mt_wrhousingInsert,
+        mt_requestList
 };

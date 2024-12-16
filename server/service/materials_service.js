@@ -22,7 +22,8 @@ const insertMtWrhous = async(wrhousingInfo) => {
         wrhousingInfo.mtril_qy,
         wrhousingInfo.wrhousng_se,
         wrhousingInfo.empl_no,
-        wrhousingInfo.wrhousng_date
+        wrhousingInfo.wrhousng_date,
+        wrhousingInfo.mtril_lot
     ]);
     if( result.insertId != null){
         return 'success'; 

@@ -24,4 +24,8 @@ router.post('/mtWrhous', async(req, res) => {
     res.send(result);
 });
 
+//출고 요청 자재리스트
+router.get('/mtReq', async(req, res) => {
+    
+});
 module.exports = router;
