@@ -1,6 +1,6 @@
 <template>
     <div class="businessOrderListTitle">
-        주문 조회
+        주문 요청
     </div>
     <div class="container">
         <div class="row g-3 align-items-center">
@@ -57,13 +57,14 @@
         </div>
         <div>
             <button type="button"class="btn btn-secondary">저장</button>
-            <button type="button" class="btn btn-secondary">취소</button>
+            <button type="button" class="btn btn-secondary">초기화</button>
         </div>
     </div>
     <div>
         <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 500px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder">
         </ag-grid-vue>
     </div>
+    <button type="button" class="btn btn-secondary">추가</button>
 </template>
 
 <script>
@@ -87,19 +88,17 @@ export default {
     created() {
         this.getorderList();
         this.colDefs = ref([
-            { field: "order_no", headerName:"주문번호" },
-            { field: "mtlty_name", headerName:"거래처"},
+            { field: "order_no", headerName:"주문번호"},
+            { field: "mtlty_name", headerName:"거래처", editable: true },
             { field: "order_date", headerName:"주문일자",
-                valueFormatter:this.customDateFormat1
-             },
+                valueFormatter:this.customDateFormat1, editable: true },
             { field: "dete", headerName:"납품일자",
-                valueFormatter:this.customDateFormat2 },
-            { field: "prd_code", headerName:"품목코드" },
-            { field: "prd_name", headerName:"품목명" },
-            { field: "order_qy", headerName:"수량" },
+                valueFormatter:this.customDateFormat2, editable: true },
+            { field: "prd_code", headerName:"품목코드", editable: true },
+            { field: "prd_name", headerName:"품목명", editable: true },
+            { field: "order_qy", headerName:"수량", editable: true },
             { field: "wrter", headerName:"작성자" },
-            { field: "process_status", headerName:"처리상태" },
-            { field: "prdctn_at", headerName:"생산여부" }
+            { field: "prdctn_at", headerName:"생산여부"}
         ]);
         this.gridOptionsOrder = {
                 columnDefs: this.returnColDefs,
@@ -108,7 +107,6 @@ export default {
                 paginationPageSizeSelector: [10, 20, 50, 100],
                 paginateChildRows: true,
                 animateRows: false,
-                filter: 'agTextColumnFilter',
                 defaultColDef: {
                     filter: true,
                     flex: 1,
