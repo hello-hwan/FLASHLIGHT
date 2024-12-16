@@ -95,11 +95,11 @@ const model = ref([
                 items: [
                     {
                         label: '생산 계획 안내',
-                        to: '/'
+                        to: '/production'
                     },
                     {
                         label: '공장 실적 조회',
-                        to: '/'
+                        to: '/production/productionResult'
                     }
                 ]
             },
