@@ -24,7 +24,7 @@ const props = defineProps({
         type: String,
         default: null
     }
-});
+}); 
 
 const isActiveMenu = ref(false);
 const itemKey = ref(null);
