@@ -1,6 +1,5 @@
 //기준정보 라우트
 import processFlowInput from '@/views/standardInfo/processFlowInput.vue';
-// import processFlowView from '@/views/standardInfo/processFlowView.vue';
 
 
 const standardInfoRoutes = [
@@ -12,12 +11,7 @@ const standardInfoRoutes = [
         path: 'processFlowInput',
         name: 'processFlowInput',
         component: processFlowInput
-    }, 
-    /*{
-        path: 'processFlowView',
-        name: 'processFlowView',
-        component: processFlowView
-    }*/
+    }
 ];
 
 export default standardInfoRoutes;
