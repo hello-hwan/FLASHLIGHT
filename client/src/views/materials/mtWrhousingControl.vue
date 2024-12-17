@@ -4,14 +4,17 @@
         <!--반환 자재 리스트-->
         <v-card
         class="mx-auto"
-        style="border-radius: 13px; margin-bottom: 30px;"
+        style="border-top: 1px solid #9bb0be;
+                border-bottom-right-radius: 13px;
+                border-bottom-left-radius: 13px;
+                margin-bottom: 30px;"
         >
         <template v-slot:title>
           <span class="font-weight-black">반환 자재 리스트</span>
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" height: 500px; margin: 0 auto;"
+            <AgGridVue style=" height: 519px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 :defaultColDef="defaultColDef"
                 :rowData="returnRowData"
@@ -24,15 +27,17 @@
     
       <!--주문 자재 리스트-->
       <v-card
-        class="mx-auto"
-        style="border-radius: 13px;"
-      >
+        class="mx-auto card-custom"
+        style="border-top: 1px solid #9bb0be;
+                border-bottom-right-radius: 13px;
+                border-bottom-left-radius: 13px;"
+        >
         <template v-slot:title>
           <span class="font-weight-black">주문 자재 리스트</span>
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" height: 500px; margin: 0 auto;"
+            <AgGridVue style=" height: 519px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 :defaultColDef="defaultColDef"
                 :rowData="orderRowData"
@@ -148,3 +153,11 @@ export default {
 };
 </script>
 
+<style>
+.card-custom {
+    border-top: 1px solid #9bb0be;
+    border-bottom-right-radius: 13px;
+    border-bottom-left-radius: 13px;
+    margin-bottom: 30px;
+}
+</style>
