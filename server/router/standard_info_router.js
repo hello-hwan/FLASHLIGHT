@@ -30,15 +30,26 @@ router.post('/bom', async (req, res) => {
   let bominfo = req.body;
   let result = await standard_info_service.bominsert(bominfo);
   res.send(result);
-})
+});
 
 // 품질검사항목관리
 router.get('/qi', async (req, res) => {
-  let qiNo = req.query
+  let qiNo = req.query;
   let result = await standard_info_service.qiList(qiNo);
-  res.send(result)
+  res.send(result);
+});
 
-})
+// 공정 흐름도 조회
+router.get('/procsFlowchartList', async (req, res) => {
+    let list = await standard_info_service.procsFlowchartList();
+    res.send(list);
+});
 
+// 공정 흐름도 상세 조회
+router.get('/procsFlowchartDetail/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.procsFlowchartDetail(prd_code);
+  res.send(list);
+});
  
 module.exports = router;   
