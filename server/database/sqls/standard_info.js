@@ -11,26 +11,23 @@ const bom =
        ,prdlst_code
        ,prdist_name
        ,prdctn_qy
-       ,sumry
+       ,sumry 
 FROM bom`;
 
 
 // BOM 상세보기 쿼리
 const bomInfo =
-`SELECT b.prdlst_code
-       ,b.prdist_name
-       ,b.prdctn_qy
-       ,bc.cmpds_no
-       ,bc.cmpds_prdlst_name
-       ,bc.stndrd_y
+`SELECT bc.cmpds_no
+	,bc.cmpds_prdlst_name
+	,bc.stndrd_y
        ,bc.unit
        ,bc.cnsum_count
-FROM bom b JOIN bom_cmpds bc
+FROM bom b JOIN bom_cmpds bc 
 on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
-const bomInsert = 
+const bomInsert =  
 `INSERT INTO bom_cmpds
 SET ? `;
 

@@ -46,7 +46,7 @@ const model = ref([
                 items: [
                     {
                         label: '재고 조회',
-                        to: '/'
+                        to: '/materials/mtrilQy'
                     },
                     {
                         label: '발주 관리',
@@ -58,7 +58,7 @@ const model = ref([
                     },
                     {
                         label: '입고 관리',
-                        to: '/'
+                        to: '/materials/wrhousing'
                     },
                     {
                         label: '입고 조회',
@@ -268,11 +268,11 @@ const model = ref([
                     },
                     {
                         label: 'BOM 관리',
-                        to: '/'
+                        to: '/standardInfo/bomInsert'
                     },
                     {
                         label: 'BOM 조회',
-                        to: '/bomSelect'
+                        to: '/standardInfo/bomList'
                     },
                     {
                         label: '공정 흐름도 관리',

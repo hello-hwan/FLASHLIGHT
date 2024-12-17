@@ -17,19 +17,19 @@ router.get('/bom', async (req, res) => {
   let bomlist = await standard_info_service.bomtest(searchs);
   res.send(bomlist);
 });
-
-// BOM 상세조회
+ 
+// BOM 상세조회 
 router.get('/bom/:bomCode', async (req, res) => {
   let bomCode = req.params.bomCode;
-  let info = await standard_info_service.bomInfo(bomCode);
+  let info = await standard_info_service.bomInfo(bomCode); 
   res.send(info);
 });
-
-// BOM 등록
-// router.post('/bom', async (req, res) => {
-//   let bominfo = req.body;
-//   let result = await standard_info_service.bomInsert(bominfo);
-//   res.send(result);
-// })
-
+ 
+// BOM소모품 등록
+router.post('/bom', async (req, res) => {
+  let bominfo = req.body;
+  let result = await standard_info_service.bominsert(bominfo);
+  res.send(result);
+})
+ 
 module.exports = router;   
