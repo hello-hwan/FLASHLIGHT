@@ -32,6 +32,13 @@ router.post('/bom', async (req, res) => {
   res.send(result);
 });
 
+// 품질검사항목관리
+router.get('/qi', async (req, res) => {
+  let qiNo = req.query;
+  let result = await standard_info_service.qiList(qiNo);
+  res.send(result);
+});
+
 // 공정 흐름도 조회
 router.get('/procsFlowchartList', async (req, res) => {
     let list = await standard_info_service.procsFlowchartList();

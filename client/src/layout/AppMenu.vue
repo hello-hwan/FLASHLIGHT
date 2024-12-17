@@ -284,7 +284,7 @@ const model = ref([
                     },
                     {
                         label: '품질 검사 항목 관리',
-                        to: '/'
+                        to: '/standardInfo/qiList'
                     },
                 ]
             },  

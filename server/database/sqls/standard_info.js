@@ -14,7 +14,6 @@ const bom =
        ,sumry 
 FROM bom`;
 
-
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
@@ -30,6 +29,13 @@ WHERE b.bom_code = ?`;
 const bomInsert =  
 `INSERT INTO bom_cmpds
 SET ? `;
+
+// 품질검사항목관리
+const qiList =
+`SELECT inspec_item  
+        ,inspec_standard
+FROM inspection_detail
+WHERE prd_code=?`;
 
 // 공정 흐름도 조회
 const procsFlowchartList = 
@@ -59,7 +65,10 @@ module.exports = {
   cmmn,
   bom,
   bomInfo,
+  bomInsert,
+  qiList,
   bomInsert, 
   procsFlowchartList, 
   procsFlowchartDetail
+
 };
