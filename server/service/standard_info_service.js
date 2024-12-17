@@ -7,7 +7,7 @@ const cmmntest = async ()=>{
   return list;
 }
 
-// BOM 데이터 select 테스트
+// BOM 조회
 const bomtest = async() => {
   let list = await mariaDB.query('bom');
   return list;
@@ -19,14 +19,15 @@ const bomInfo = async(bomCode) => {
   return list;
 }
 
-// BOM 등록 
-const bominsert = async (bomInfo) => {
-  let result = await mariaDB.query('bominsert',bomInfo);
+// BOM 등록  
+const bominsert = async (bomInfo) => { 
+  console.log('service',bomInfo);
+  let result = await mariaDB.query('bominsert',bomInfo); 
   if (result.affectedRows > 0) {
     return { message: '데이터 삽입 성공' };
   } else {
-    return { message: '데이터 삽입 실패' }; 
-  }
+    return { message: '데이터 삽입 실패' };  
+  } 
 } 
  
   

@@ -22,15 +22,23 @@ const bomInfo =
 	,bc.stndrd_y
        ,bc.unit
        ,bc.cnsum_count
-FROM bom b JOIN bom_cmpds bc 
+FROM bom b JOIN bom_cmpds bc  
 on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
-const bomInsert =  
-`INSERT INTO bom_cmpds
-SET ? `;
+const bomInsert =   
+`INSERT INTO bom_cmpds( cmpds_no
+			  ,cmpds_prdlst_code 
+                       ,cmpds_prdlst_name
+                       ,stndrd_x
+                       ,stndrd_y
+                       ,stndrd_z
+                       ,unit
+                       ,cnsum_count)
+values(?,?,?,?,?,?,?,?) `; 
 
+ 
 
 module.exports = {
   cmmn,
