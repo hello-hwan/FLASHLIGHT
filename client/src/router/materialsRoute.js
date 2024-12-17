@@ -4,6 +4,8 @@ import mttest from '@/views/materials/testmt.vue';
 import mtrilQy from '@/views/materials/materialQy.vue';
 //자재 입고
 import mtWrhousingCnt from '@/views/materials/mtWrhousingCnt.vue';
+//자재 출고
+import mtdlivyCnt from '@/views/materials/delivyCnt.vue';
 
 const materialsRoute = [
     {
@@ -25,6 +27,11 @@ const materialsRoute = [
         path: 'wrhousing',
         name: 'wrhousing',
         component: mtWrhousingCnt
+    },
+    {
+        path: 'dlivy',
+        name: 'dlivy',
+        component: mtdlivyCnt
     },
     
 ];

@@ -28,7 +28,7 @@ const insertMtWrhous = async(wrhousingInfo) => {
     if( result.insertId != null){
         return 'success'; 
     }else{
-    return 'fail';
+        return 'fail';
     };
 };
 
@@ -46,7 +46,7 @@ const requestMt = async(reqCode) => {
 
 //출고 등록 후 처리 여부 업데이트
 const dlivyMt = async(dlivyInfo) => {
-    let result = await mariaDB.query('mt_requestCheckOut', []);
+    let result = await mariaDB.query('mt_requestCheckOut', [...dlivyInfo]);
     
     if( result.insertId != null){
         return 'success'; 

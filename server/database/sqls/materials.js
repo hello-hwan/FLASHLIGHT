@@ -147,9 +147,9 @@ const mt_wrhousngListWithKey =
 //자재 출고 관리 - mt009 요청가져오기
 const mt_requestList =
 `
-SELECT req_name,
-        req_code,
-        req_de
+SELECT req_name name,
+        req_code code,
+        req_de req_date
 FROM    thng_req
 WHERE   procs_at = '미처리'
 AND     prdctn_code IS NOT NULL

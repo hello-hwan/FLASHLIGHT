@@ -56,7 +56,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import userDateUtils from '@/utils/useDates.js';
 //import CustomButtonComponent from "@/components/materials/wrhousingButtonComponent.vue";
-import wrhousingBtn from "@/components/materials/successBanner.vue";
+import wrhousingBtn from "@/components/materials/mtWrhousingBtn.vue";
 
 export default {
     data() {
