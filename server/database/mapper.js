@@ -17,6 +17,7 @@ const connectionPool = mariadb.createPool({
   bigIntAsNumber : true,              //bigInt 타입을 자동으로 Number타입으로 변환.
 });
 
+
 const query = (alias, values)=>{
   return new Promise((resolve, reject)=>{
     let executeSql = sqlList[alias];

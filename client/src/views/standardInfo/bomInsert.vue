@@ -83,7 +83,7 @@ export default {
       colDefsSelect: '',
       // rowData 빈공간 생성
       rowData: [
-        { 소모품번호:"" ,bom코드:"", 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" },
+        { 소모품번호:"", bom코드:"", 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" },
       ],
       colDefs: [
         { field: "소모품번호", headerName: "소모품번호", editable: true },
@@ -149,38 +149,38 @@ export default {
     },
     // 행 추가
     addRow() {
-      const newRow = { 소모품번호:"", bom코드:"", 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" };
+      const newRow = { 소모품번호:"",bom코드:"" , 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" };
       this.rowData = [...this.rowData, newRow];
     },
 
     // 선택된 행 삭제
-    removeRows() {
+    removeRows() {  
       const selectedRows = this.gridApi.getSelectedRows();
       this.rowData = this.rowData.filter((row) => !selectedRows.includes(row));
     },
     async cmpdsInsert() {
-      let obj = this.rowData.map(row => ({ 
+      let obj = this.rowData.map(row => ({  
         cmpds_no: row.소모품번호,
-        bom_code: row.bom코드,
-        cmpds_prdlst_code: row.소모품코드,
-        cmpds_prdlst_name: row.소모품명,
+        bom_code: row.bom코드, 
+        cmpds_prdlst_code: row.소모품코드,   
+        cmpds_prdlst_name: row.소모품명, 
         stndrd_x: row.규격x,
         stndrd_y: row.규격y,
-        stndrd_z: row.규격z, 
-        unit: row.단위,
-        cnsum_count: row.소모량,
+        stndrd_z: row.규격z,  
+        unit: row.단위,  
+        cnsum_count: row.소모량, 
       })); 
 
       console.log('obj',obj);
-      let result = await axios.post(`${ajaxUrl}/bom`, obj[0]).catch(err => {
+      let result = await axios.post(`${ajaxUrl}/bom`, obj).catch(err => {
         console.error('요청 중 오류:', err);
         return { data: null }; // 기본값 설정 
       });
-
+ 
       if (result?.data) {
         console.log('등록 성공:', result.data);
       } else {
-        console.error('등록 실패: 응답 데이터가 없습니다.'); 
+        console.error('등록 실패: 응답 데이터가 없습니다.');  
       } 
       
     },
