@@ -28,11 +28,25 @@ const bominsert = async (bomInfo) => {
     return { message: '데이터 삽입 실패' }; 
   }
 } 
- 
-  
+
+// 공정 흐름도 조회
+const procsFlowchartList = async () => {
+    let list = await mariaDB.query('procsFlowchartList');
+    return list;
+}
+
+// 공정 흐름도 상세 조회
+const procsFlowchartDetail = async (prd_code) => {
+  let list = await mariaDB.query('procsFlowchartDetail', prd_code);
+  return list;
+}
+
+
 module.exports = {
   cmmntest,
   bomtest,
   bomInfo,
-  bominsert
+  bominsert, 
+  procsFlowchartList, 
+  procsFlowchartDetail
 };
