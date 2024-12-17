@@ -1,4 +1,5 @@
 //설비 sql
+//설비 상태 조회
 const eqp_list = 
 `SELECT eqp.eqp_code, 
         eqp.model_nm, 
@@ -9,7 +10,7 @@ const eqp_list =
  ON eqp.eqp_code = eqp_sttus.eqp_code
  ORDER BY eqp.eqp_code ASC`;
 
- 
+ // 설비 상태 조회 2
 const eqp_list_prod =
 `SELECT begin_time, 
 		end_time, 
@@ -19,15 +20,7 @@ const eqp_list_prod =
  ORDER BY begin_time DESC
  LIMIT 1`;
 
-
-const time_sample = 
-`SELECT created_date
- FROM t_board_board
- where no = 100;
-`;
-
 module.exports = {
     eqp_list, 
-    eqp_list_prod, 
-    time_sample
+    eqp_list_prod
 };

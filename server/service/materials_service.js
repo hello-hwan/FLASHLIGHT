@@ -27,14 +27,38 @@ const insertMtWrhous = async(wrhousingInfo) => {
     ]);
     if( result.insertId != null){
         return 'success'; 
-      }else{
-        return 'fail';
-      }
+    }else{
+    return 'fail';
+    };
 };
 
+//출고 요청명 별 리스트 조회
+const requestList = async() => {
+    let list = await mariaDB.query('mt_requestList');
+    return list;
+}
+
+//출고 요청명별 자재 리스트 조회
+const requestMt = async(reqCode) => {
+    let list = await mariaDB.query('mt_requestDetails', reqCode);
+    return list;
+}
+
+//출고 등록 후 처리 여부 업데이트
+const dlivyMt = async(dlivyInfo) => {
+    let result = await mariaDB.query('mt_requestCheckOut', []);
+    
+    if( result.insertId != null){
+        return 'success'; 
+    }else{
+    return 'fail';
+    };
+}
 module.exports = {
     returnMt,
     orderMt,
     insertMtWrhous,
-
+    requestList,
+    requestMt,
+    dlivyMt
 };

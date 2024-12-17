@@ -58,7 +58,7 @@ const pr_selcmmn = // 공통코드 목록 조회
 `
 select *
 from cmmn
-`;
+`; 
 
 const pr_selorder = // 주문리스트에서 생산하라는 목록 조회
 `

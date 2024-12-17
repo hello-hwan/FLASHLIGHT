@@ -38,7 +38,7 @@ export default {
             console.log(obj);
             //입고테이블에 인서트
             
-            let result = await axios.post(`${ajaxUrl}/mtWrhous`, obj)
+            let result = await axios.post(`${ajaxUrl}/mtril/mtWrhous`, obj)
                                .catch(err => console.log(err));
             let addRes = result;
             console.log(addRes);
