@@ -116,12 +116,13 @@ export default {
     },
     name: "App",
     components: {
-        AgGridVue, // Add Vue Data Grid component
+        AgGridVue // Add Vue Data Grid component
     },
     methods: {
         async getorderList() {
             let result = await axios.get(`${ajaxUrl}/business/orderList`)
                 .catch(err => console.log(err));
+            console.log(result.data);
             this.orderList = result.data;
             this.rowData = ref(this.orderList);
         },
