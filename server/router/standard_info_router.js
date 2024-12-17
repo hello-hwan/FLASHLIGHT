@@ -31,5 +31,14 @@ router.post('/bom', async (req, res) => {
   let result = await standard_info_service.bominsert(bominfo);
   res.send(result);
 })
+
+// 품질검사항목관리
+router.get('/qi', async (req, res) => {
+  let qiNo = req.query
+  let result = await standard_info_service.qiList(qiNo);
+  res.send(result)
+
+})
+
  
 module.exports = router;   

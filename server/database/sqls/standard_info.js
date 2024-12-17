@@ -31,10 +31,18 @@ const bomInsert =
 `INSERT INTO bom_cmpds
 SET ? `;
 
+// 품질검사항목관리
+const qiList =
+`SELECT inspec_item  
+        ,inspec_standard
+FROM inspection_detail
+WHERE prd_code=?`;
+
 
 module.exports = {
   cmmn,
   bom,
   bomInfo,
-  bomInsert
+  bomInsert,
+  qiList
 };

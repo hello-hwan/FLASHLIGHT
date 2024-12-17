@@ -29,10 +29,17 @@ const bominsert = async (bomInfo) => {
   }
 } 
  
+//품질검사항목관리
+const qiList = async (prd_code) => {
+  let list = await mariaDB.query('qiListInfo',prd_code);
+  let info = list[0];   
+  return info;
+}
   
 module.exports = {
   cmmntest,
   bomtest,
   bomInfo,
-  bominsert
+  bominsert,
+  qiList
 };
