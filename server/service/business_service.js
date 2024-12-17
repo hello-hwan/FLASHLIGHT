@@ -11,7 +11,13 @@ const findAllOrderRequest = async (keywords)=>{
 // 등록
 // 주문요청
 const createNewOrderRequest = async (orderRequestInfo)=>{
-    let result = await mariaDB.query('orderRequestInsert', orderRequestInfo);
+    let result = await mariaDB.query('orderRequestInsert', [
+        orderRequestInfo.order_no,
+        orderRequestInfo.order_date,
+        orderRequestInfo.dete,
+        orderRequestInfo.p_code,
+        orderRequestInfo.wrter
+    ]);
     if ( result.insertId != null){
         return { order_no : result.insertId };
     } else {
@@ -20,8 +26,18 @@ const createNewOrderRequest = async (orderRequestInfo)=>{
 }
 
 // 주문요청 리스트
-const createNewOrderRequestList = async (orderRequestListInfo)=>{
-    let result = await mariaDB.query('orderRequestListInsert',orderRequestListInfo);
+const createNewOrderList = async (orderListInfo)=>{
+    let result = await mariaDB.query('orderListInsert',[
+        orderListInfo.prd_code,
+        orderListInfo.order_no,
+        orderListInfo.prd_name,
+        orderListInfo.untpc,
+        orderListInfo.order_qy,
+        orderListInfo.splpc,
+        orderListInfo.taxamt,
+        orderListInfo.process_status,
+        orderListInfo.prdctn_at
+    ]);
     if ( result.insertId != null){
         return { order_no : result.insertId };
     } else {
@@ -29,11 +45,9 @@ const createNewOrderRequestList = async (orderRequestListInfo)=>{
     }
 };
 
-
-
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
-    createNewOrderRequestList
+    createNewOrderList
 };
 
