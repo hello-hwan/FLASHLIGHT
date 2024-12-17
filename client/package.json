@@ -17,12 +17,12 @@
     "core-js": "^3.39.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.4",
-    "vue": "^3.4.34",
+    "vue": "^3.4.34", 
     "vue-class-component": "^8.0.0-rc.1",
     "vue-router": "^4.4.0",
     "vuex": "^4.0.0",
     "vuex-persistedstate": "^4.1.0"
-  },
+  }, 
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.2.4",
     "@rushstack/eslint-patch": "^1.8.0",

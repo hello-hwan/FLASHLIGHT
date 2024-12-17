@@ -25,7 +25,7 @@ router.get('/bom/:bomCode', async (req, res) => {
   res.send(info);
 });
  
-// BOM 등록
+// BOM소모품 등록
 router.post('/bom', async (req, res) => {
   let bominfo = req.body;
   let result = await standard_info_service.bominsert(bominfo);
