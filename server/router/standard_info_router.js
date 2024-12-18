@@ -36,8 +36,9 @@ router.post('/bom', async (req, res) => {
 
 
 // 품질검사항목관리
-router.get('/qi', async (req, res) => {
-  let qiNo = req.query;
+router.get('/standardInfo/qiList', async (req, res) => {
+  let qiNo = req.query.qi_info; // key=value => req.query.key;
+  console.log(req.query, qiNo);
   let result = await standard_info_service.qiList(qiNo);
   res.send(result);
 });
