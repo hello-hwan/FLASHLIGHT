@@ -8,7 +8,7 @@
                 <label for="inputPassword6" class="col-form-label" >업체코드</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="rowData.p_code">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.p_code" placeholder="BCNC-01">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -21,7 +21,7 @@
                 <label for="inputPassword6" class="col-form-label">주문일자</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="rowData.order_date">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.order_date" placeholder="2024-12-28">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -34,7 +34,7 @@
                 <label for="inputPassword6" class="col-form-label">납품일자</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="rowData.dete">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.dete" placeholder="2025-08-17">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -47,7 +47,7 @@
                 <label for="inputPassword6" class="col-form-label">주문번호</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="rowData.order_no">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.order_no" placeholder="ORDER-01">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -83,18 +83,15 @@ import { ajaxUrl } from '@/utils/commons.js';
 export default {
     data() {
         return {
-            orderList: [],
-            rowData: '',
-            colDefs: '',
-            sample:{}
+            orderList: [], 
+            rowData: ref([]), 
+            colDefs: '', 
+            requst:{}, 
+            orderRegister: {}
         };
     },
     created() {
-        this.orderInsert();
-        this.onInsertInit();
-        this.rowData = [
-            this.prd_code = ""
-        ]
+        this.onAddRow();
         this.colDefs = ref([
             { field: "prd_code", headerName:"품목코드", editable: true },
             { field: "untpc", headerName:"단가", editable: true },
@@ -128,14 +125,18 @@ export default {
             this.columnApi = params.columnApi;
         },
         async orderInsert() {
-            for(let i; 0 <= i < this.rowData.length; i++){
-                let result = await axios.post(`${ajaxUrl}/business/orderForm`,this.rowData[i].data)
+            for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){
+                this.orderRegister = {...this.gridApi.getRenderedNodes()[i].data, ...this.requst}
+                console.log("합친결과는");
+                console.log(this.orderRegister);
+                let result = await axios.post(`${ajaxUrl}/business/orderForm`,this.orderRegister)
                                              .catch(err=>console.log(err));
+                console.log("결과는");
                 console.log(result);
-                let addRes = result.data;
+                let addRes = result;
                 if(addRes.order_no != null){
                     alert(`등록되었습니다.`);
-                    this.rowData.order_no = addRes.order_no;
+                    this.orderRegister.order_no = addRes.order_no;
                 }
             }
         },
@@ -146,29 +147,42 @@ export default {
             return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd');
         },
         getAllRows() {
-            console.log(this.gridApi.getRenderedNodes()[0].data.splpc)
+            console.log("DOM 객체");
+            console.log(this.gridApi.getRenderedNodes()); // 배열, [0].data.prd_code로 가져옴
+            console.log("0번 데이터");
+            console.log(this.gridApi.getRenderedNodes()[0].data);
+            console.log("0번데이터 공급가액"+this.gridApi.getRenderedNodes()[0].data.splpc);
+            console.log("DOM 객체 길이"+this.gridApi.getRenderedNodes().length);
+            for ( let i = 0; i < this.gridApi.getRenderedNodes().length; i++){
+                this.rowData[i] = this.gridApi.getRenderedNodes()[i].data;
+                console.log(this.rowData[i]);
+            }
         },
         onAddRow(){
             let newData = {
-                prd_code:"기타", 
-                untpc: "", 
-                order_qy: "", 
-                splpc: "", 
-                taxamt: "", 
-                smprice: ""
+                prd_code:"PRD-01", 
+                untpc: 300, 
+                order_qy: 100, 
+                splpc: 30000, 
+                taxamt: 3000, 
+                smprice: 33000
             };
-            this.rowData = [...this.rowData, newData]
+            this.rowData = [...this.rowData, newData];
+            // this.rowData.push(newData);
             console.log(this.rowData);
         },
         onRemoveSelected(){
-            let selectedData = gridOptionsOrder.api.getSelectedRows();
-            let res = gridOptionsOrder.api.updateRowData({remove:selectedData});
-            printResult(res);
+            this.rowData.pop();
+            this.rowData = [...this.rowData];
         },
         onInsertInit(){
-            this.rowData = [
-            this.prd_code = ""
-        ]
+
+            this.requst = {
+                p_code : "BCNC-01", 
+                order_date :"2024-12-28", 
+                dete : "2025-08-17", 
+                order_no : "ORDER-00"
+            }
         }
     }
 };

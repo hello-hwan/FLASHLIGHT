@@ -9,6 +9,26 @@ const findAllOrderRequest = async (keywords)=>{
 };
 
 // 등록
+// 주문요청과 리스트 처리하는 프로시저로 연결
+const createNewOrderRequest = async (orderRequestInfo)=>{
+    let result = await mariaDB.query('',[
+        orderRequestInfo.order_no, 
+        orderRequestInfo.order_date, 
+        orderRequestInfo.dete, 
+        orderRequestInfo.p_code, 
+        orderRequestInfo.wrter,
+        orderRequestInfo.prd_code, 
+        orderRequestInfo.untpc, 
+        orderRequestInfo.order_qy
+    ]);
+    if( result.insertId != null){
+        return {order_no : result.insertId};
+    }else{
+        return{};
+    }
+}
+
+/*
 // 주문요청
 const createNewOrderRequest = async (orderRequestInfo)=>{
     let result = await mariaDB.query('orderRequestInsert', [
@@ -44,10 +64,9 @@ const createNewOrderList = async (orderListInfo)=>{
         return {};
     }
 };
-
+*/
 module.exports = {
     findAllOrderRequest,
-    createNewOrderRequest,
-    createNewOrderList
+    createNewOrderRequest
 };
 

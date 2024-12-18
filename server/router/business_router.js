@@ -17,11 +17,21 @@ router.get('/business/orderList', async (req, res) => {
     res.send(businessList);
 });
 
+// 주문 요청과 리스트 등록
+router.post('/business/orderForm', async (req,res)=>{
+    let orderRequestInfo = req.body;
+    console.log(orderRequestInfo);
+    let result = await businessService.createNewOrderRequest(orderRequestInfo);
+    res.send(result);
+})
+/*
 //주문 요청 등록
 router.post('/business/orderForm', async (req, res) => {
     let orderRequestInfo = req.body;
+    console.log(orderRequestInfo);
     let result = await businessService.createNewOrderRequest(orderRequestInfo);
     res.send(result);
+
 });
 
 // 주문 요청 리스트 등록
@@ -30,6 +40,6 @@ router.post('/business/orderForm', async (req, res) => {
     let result = await businessService.createNewOrderList(orderRequestListInfo);
     res.send(result);
 });
-
+*/
 module.exports = router;
 
