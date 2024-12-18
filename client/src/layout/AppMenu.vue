@@ -66,7 +66,7 @@ const model = ref([
                     },
                     {
                         label: '출고 관리',
-                        to: '/'
+                        to: '/materials/dlivy'
                     },
                     {
                         label: '출고 조회',
