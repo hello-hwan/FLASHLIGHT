@@ -50,7 +50,6 @@
 
         <div style="margin-top: 20px; text-align: right;">
           <button class="btn btn-primary" @click="addRow">행 추가</button>
-          <button class="btn btn-danger" @click="removeRows">선택된 행 삭제</button>
         </div>
       </v-card-text>
     </v-card>
@@ -82,6 +81,7 @@ export default {
       rowDataSelect: '',
       colDefsSelect: '',
       // rowData 빈공간 생성
+      cmpdsInsert: [],
       rowData: [
         { 소모품번호:"", bom코드:"", 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" },
       ],
@@ -95,6 +95,27 @@ export default {
         { field: "규격z", headerName: "규격z", editable: true },
         { field: "단위", headerName: "단위", editable: true },
         { field: "소모량", headerName: "소모량", editable: true },
+        { field: "update", headerName: "수정", cellRenderer:(params) => {
+          const button = document.createElement('button');
+          button.innerText = '수정';
+          button.className = 'btn btn-success';
+          return button;
+        }},
+        { field: "delete", headerName: "삭제", cellRenderer:(params) => {
+          const button = document.createElement('button');
+          button.innerText = '삭제';
+          button.className = 'btn btn-danger';
+          button.addEventListener('click', () => {
+            this.rowData = this.rowData.filter(row => row !== params.data);
+            console.log(params.data.소모품번호);
+            let bom_no = params.data.소모품번호;
+            // testdelete(){
+            //   let result = await axios.delete(`${ajaxUrl}/testdel`,bom_no);
+              
+            // }
+          });
+          return button;
+        }}
       ],
       defaultColDef: {
         resizable: true,
@@ -152,14 +173,8 @@ export default {
       const newRow = { 소모품번호:"",bom코드:"" , 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" };
       this.rowData = [...this.rowData, newRow];
     },
-
-    // 선택된 행 삭제
-    removeRows() {  
-      const selectedRows = this.gridApi.getSelectedRows();
-      this.rowData = this.rowData.filter((row) => !selectedRows.includes(row));
-    },
     async cmpdsInsert() {
-      let obj = this.rowData.map(row => ({  
+      let obj = this.rowData.map( row => ({  
         cmpds_no: row.소모품번호,
         bom_code: row.bom코드, 
         cmpds_prdlst_code: row.소모품코드,   

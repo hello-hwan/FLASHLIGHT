@@ -19,10 +19,12 @@ const bomInfo = async(bomCode) => {
   return list;
 }
 
+
+
 // BOM 등록  
 const bomInsert = async (bomInfo) => {
   try {
-    console.log('service', bomInfo[0]);
+    console.log('service', bomInfo);
     let result = await mariaDB.query('bominsert', bomInfo[0]); // 쿼리 실행
 
     // 쿼리 결과 확인

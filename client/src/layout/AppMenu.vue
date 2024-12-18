@@ -190,7 +190,7 @@ const model = ref([
                     },
                     {
                         label: '반제품 입고 관리',
-                        to: '/'
+                        to: '/logistics/prductNList'
                     },
                     {
                         label: '반제품 입고 조회',
@@ -264,8 +264,8 @@ const model = ref([
                     },
                     {
                         label: '자재 조회',
-                        to: '/'
-                    },
+                        to: '/standardInfo/prductNList'
+                    }, 
                     {
                         label: 'BOM 관리',
                         to: '/standardInfo/bomInsert'

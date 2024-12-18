@@ -33,6 +33,8 @@ router.post('/bom', async (req, res) => {
   res.send(result);
 });
 
+
+
 // 품질검사항목관리
 router.get('/qi', async (req, res) => {
   let qiNo = req.query;

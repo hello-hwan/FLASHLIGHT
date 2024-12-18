@@ -27,7 +27,7 @@ WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
 const bomInsert =  
-`INSERT INTO bom_cmpds( cmpds_no
+`INSERT INTO bom_cmpds (cmpds_no
                        ,bom_code
                        ,cmpds_prdlst_code
                        ,cmpds_prdlst_name 
@@ -35,10 +35,10 @@ const bomInsert =
                        ,stndrd_y
                        ,stndrd_z
                        ,unit
-                       ,cnsum_count
-)
-VALUES(?,?,?,?,?,?,?,?,?) 
-`; 
+                       ,cnsum_count)
+VALUES(?,?,?,?,?,?,?,?,?)`; 
+
+
 
 // 품질검사항목관리
 const qiList =
@@ -77,8 +77,6 @@ module.exports = {
   bomInfo,
   bomInsert,
   qiList,
-  bomInsert, 
   procsFlowchartList, 
   procsFlowchartDetail
-
 };
