@@ -108,12 +108,8 @@ const model = ref([
                 items: [
                     {
                         label: '품질 검사 요청',
-                        to: '/'
-                    },
-                    {
-                        label: '품질 검사 관리',
-                        to: '/'
-                    },
+                        to: '/quality/qualityRequest'
+                    },                   
                     {
                         label: '품질 검사 결과',
                         to: '/'
