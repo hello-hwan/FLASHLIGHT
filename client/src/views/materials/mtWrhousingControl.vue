@@ -1,7 +1,29 @@
 <template>
     <div>
 
-        <!--반환 자재 리스트-->
+    <!--주문 자재 리스트-->
+      <v-card
+        class="mx-auto card-custom"
+        style=" border-bottom-right-radius: 13px;
+                border-bottom-left-radius: 13px;"
+        >
+        <template v-slot:title>
+          <span class="font-weight-black">검사 통과 자재 리스트</span>
+        </template>
+    
+        <v-card-text class="bg-surface-light pt-4">
+            <AgGridVue style=" height: 519px; margin: 0 auto;"
+                @grid-ready="onGridReady"
+                :defaultColDef="defaultColDef"
+                :rowData="orderRowData"
+                :gridOptions="gridOptionsOrder"
+                class="ag-theme-alpine"
+                id="grid-two">
+            </AgGridVue>
+        </v-card-text>
+      </v-card>
+
+    <!--반환 자재 리스트-->
         <v-card
         class="mx-auto"
         style=" border-bottom-right-radius: 13px;
@@ -24,27 +46,7 @@
         </v-card-text>
       </v-card>
     
-      <!--주문 자재 리스트-->
-      <v-card
-        class="mx-auto card-custom"
-        style=" border-bottom-right-radius: 13px;
-                border-bottom-left-radius: 13px;"
-        >
-        <template v-slot:title>
-          <span class="font-weight-black">주문 자재 리스트</span>
-        </template>
-    
-        <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" height: 519px; margin: 0 auto;"
-                @grid-ready="onGridReady"
-                :defaultColDef="defaultColDef"
-                :rowData="orderRowData"
-                :gridOptions="gridOptionsOrder"
-                class="ag-theme-alpine"
-                id="grid-two">
-            </AgGridVue>
-        </v-card-text>
-      </v-card>
+
 
       <btn />
     </div>
