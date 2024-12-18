@@ -28,10 +28,12 @@ router.get('/bom/:bomCode', async (req, res) => {
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
   let bominfo = req.body;
-  console.log('router',bominfo);
-  let result = await standard_info_service.bominsert(bominfo);
+  console.log('router',bominfo); 
+  let result = await standard_info_service.bomInsert(bominfo);
   res.send(result);
 });
+
+
 
 // 품질검사항목관리
 router.get('/qi', async (req, res) => {
@@ -39,7 +41,7 @@ router.get('/qi', async (req, res) => {
   let result = await standard_info_service.qiList(qiNo);
   res.send(result);
 });
-
+ 
 // 공정 흐름도 조회
 router.get('/procsFlowchartList', async (req, res) => {
     let list = await standard_info_service.procsFlowchartList();
