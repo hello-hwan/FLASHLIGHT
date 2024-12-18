@@ -35,8 +35,21 @@ const bomInsert =
                        ,stndrd_y
                        ,stndrd_z
                        ,unit
-                       ,cnsum_count)
+                       ,cnsum_count) 
 VALUES(?,?,?,?,?,?,?,?,?)`; 
+
+
+
+const bomManage = 
+`SELECT b.prdlst_code
+       ,b.prdctn_qy
+	,c.cmpds_prdlst_code
+	,c.cmpds_prdlst_name
+	,c.stndrd_y
+	,c.cnsum_count
+FROM bom b JOIN bom_cmpds c 
+ON b.bom_code = c.bom_code
+WHERE b.prdlst_code = ?`;
 
 
 
@@ -76,6 +89,7 @@ module.exports = {
   bom,
   bomInfo,
   bomInsert,
+  bomManage,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail

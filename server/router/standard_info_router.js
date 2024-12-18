@@ -33,6 +33,12 @@ router.post('/bom', async (req, res) => {
   res.send(result);
 });
 
+// BOM 관리 select
+router.get('/bomManage/:bomCode', async (req, res) => {
+  let bomCode = req.params.bomCode;
+  let info = await standard_info_service.bomManage(bomCode);
+  res.send(info);
+})
 
 
 // 품질검사항목관리

@@ -256,7 +256,7 @@ const model = ref([
                     },
                     {
                         label: '자재 관리',
-                        to: '/'
+                        to: '/standardInfo/bomManage'
                     },
                     {
                         label: '자재 조회',

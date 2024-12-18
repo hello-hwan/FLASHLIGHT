@@ -40,6 +40,14 @@ const bomInsert = async (bomInfo) => {
   }
 };
 
+// BOM 관리 select
+const bomManage = async (bomCode) => {
+  let list = await mariaDB.query('bomManage', bomCode);
+  return list;
+}
+
+
+
 //품질검사항목관리
 const qiList = async (prd_code) => {
   let list = await mariaDB.query('qiList',prd_code);  
@@ -63,6 +71,7 @@ module.exports = {
   bomtest,
   bomInfo,
   bomInsert,
+  bomManage,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail
