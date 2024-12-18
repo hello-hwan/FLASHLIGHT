@@ -4,8 +4,7 @@
         <!--반환 자재 리스트-->
         <v-card
         class="mx-auto"
-        style="border-top: 1px solid #9bb0be;
-                border-bottom-right-radius: 13px;
+        style=" border-bottom-right-radius: 13px;
                 border-bottom-left-radius: 13px;
                 margin-bottom: 30px;"
         >
@@ -28,8 +27,7 @@
       <!--주문 자재 리스트-->
       <v-card
         class="mx-auto card-custom"
-        style="border-top: 1px solid #9bb0be;
-                border-bottom-right-radius: 13px;
+        style=" border-bottom-right-radius: 13px;
                 border-bottom-left-radius: 13px;"
         >
         <template v-slot:title>
@@ -77,7 +75,7 @@ export default {
         this.getReturnList();
         this.returnColDefs = [
         { field: "lot", hide: true, suppressToolPanel: true}, //hide: true, suppressToolPanel: true --> 행 숨김
-        { field: "name", headerName:"자재명" },
+        { field: "name", headerName:"자재명"},
         { field: "code", headerName:"자재코드" },
         { field: "qy", headerName:"반환량" },
         { field: "unit", headerName:"단위" },
@@ -104,7 +102,7 @@ export default {
         this.getOrderList();
 
         this.orderColDefs = [
-        { field: "checkCode", headerName: "검사코드", },
+        { field: "checkCode", headerName: "검사코드"},
         { field: "name", headerName:"자재명" },
         { field: "code", headerName:"자재코드" },
         { field: "qy", headerName:"반환량" },

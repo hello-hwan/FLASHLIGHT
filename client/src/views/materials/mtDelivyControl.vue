@@ -4,7 +4,6 @@
     <v-card
         class="mx-auto"
         style=" width: 40%; 
-                border-top: 1px solid #9bb0be;
                 border-bottom-right-radius: 13px;
                 border-bottom-left-radius: 13px;
                 display: inline-block;
@@ -26,30 +25,8 @@
             </AgGridVue>
         </v-card-text>
       </v-card>
-      
-      <!--요청 자재 상세목록-->
-      <v-card
-        class="mx-auto"
-        style=" width: 55%;
-                border-top: 1px solid #9bb0be;
-                border-bottom-right-radius: 13px;
-                border-bottom-left-radius: 13px;
-                display: inline-block;"
-      >
-        <template v-slot:title>
-          <span class="font-weight-black">요청 자재 상세목록</span>
-        </template>
-    
-        <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" height: 600px; margin: 0 auto;"
-                :defaultColDef="defaultColDef"
-                :rowData="mtRowData"
-                :gridOptions="gridOptionsMt"
-                class="ag-theme-alpine"
-                id="grid-two">
-            </AgGridVue>
-        </v-card-text>
-      </v-card>
+      <!--자재 상세보기-->
+      <detailTable />
   </div>
 </template>
 
@@ -62,7 +39,8 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
-import goDetails from '@/components/materials/mtReqGotoDetails.vue';
+import goDetails from '@/components/materials/mtReqGotoDetails.vue'; //상세보기 버튼
+import detailTable from '@/components/materials/mtDetailTable.vue'; //요청 자재 상세보기 테이블
 
 //요청명리스트 담을 변수
 const reqRowData = ref([]);
