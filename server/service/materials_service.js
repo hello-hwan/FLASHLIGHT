@@ -42,7 +42,6 @@ const requestList = async() => {
 const requestMt = async(reqCode) => {
     //요청 리스트 가져오기
     let reqMtList = await mariaDB.query('mt_requestDetails', reqCode);
-    console.log(reqMtList); //확인
     
     //새로운 데이터를 담을 배열 선언(객체들의 배열이 됨)
     let dataList = [];
@@ -51,9 +50,11 @@ const requestMt = async(reqCode) => {
     for(let i=0; i<reqMtList.length; i++) {
         //자재코드로 검색한 로트, 재고수
         let lotListEachMt = await mariaDB.query('mt_lotInvenList', reqMtList[i].mt_code); 
-        console.log('로트',lotListEachMt);
-        for(let j=0; j<lotListEachMt.length; j++) {
+        
+        //요청수량
+        let reqQy = reqMtList[i].qy;
 
+        for(let j=0; j<lotListEachMt.length; j++) {
             //로트 수량
             let lotQy = lotListEachMt[j].mtril_qy;
 
@@ -65,22 +66,32 @@ const requestMt = async(reqCode) => {
                 mt_name : reqMtList[i].mt_name,     //자재명
                 req_qy : reqMtList[i].qy,           //요청수량
                 lot : lotListEachMt[j].mtril_lot,   //로트
-                lot_qy : (reqMtList[i].qy - lotQy) < 0 ? (lotQy - Math.abs(reqMtList[i].qy- lotQy)) : lotQy, //로트 수량
+                lot_qy : (reqQy - lotQy) < 0 ? (lotQy - Math.abs(reqQy - lotQy)) : lotQy, //로트 수량
                 unit : reqMtList[i].unit            //단위
             };
-            console.log('새로운 객체 출력');
-            console.log(newObj);-
+            //요청 수량에서 재고 수량 빼기
+            reqQy -= lotQy;
+            
             //배열에 데이터 담기
             dataList.push(newObj);
 
             //자재 수량에서 로트수량을 뺐을때 0보다 작으면 해당 자재에는 출고수량을 채웠다는 의미
-            if((reqMtList[i].qy - lotListEachMt[j].mtril_qy) < 0) {
+            if(reqQy < 0) {
                 break;
-            }
+            };
         }
-
     }
-    console.log(dataList);
+    //요청수량과 재고수량을 비교해서 값이 같이 않으면 state: 'fail'전송
+    /*
+    for(let i=0; i<dataList.length; i++) {
+        console.log(dataList[i]);
+        if((Number(dataList[i].req_qy) != Number(dataList[i].lot_qy))) {
+            dataList = [{state : 'fail'}];
+            break;
+        };
+    };
+    */
+
     return dataList;
 }
 

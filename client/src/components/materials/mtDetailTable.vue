@@ -42,7 +42,7 @@ const rowData = ref([]);
 
 //요청명 리스트 컬럼 정의
 const ColDefs = [
-  { field: "req_name", headerName:"요청명", flex: 1.2},
+  { field: "req_name", headerName:"요청명", flex: 1.5},
   { field: "req_code", headerName:"요청 코드", hide: true, suppressToolPanel: true},
   { field: "mt_code", headerName:"자재코드"},
   { field: "mt_name", headerName:"자재명"},
@@ -60,7 +60,7 @@ const getReqDetails = async (reqCode) => {
                             .catch(err => console.log(err));
     //행 정보를 변수에 담음
     rowData.value = result.data;
-    
+    console.log(result);
     //console.log('getReqDetails: 작동확인');
 };
 
