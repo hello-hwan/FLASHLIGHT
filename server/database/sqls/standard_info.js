@@ -35,9 +35,28 @@ const bomInsert =
                        ,stndrd_y
                        ,stndrd_z
                        ,unit
-                       ,cnsum_count)
+                       ,cnsum_count) 
 VALUES(?,?,?,?,?,?,?,?,?)`; 
 
+ 
+
+const bomManage = 
+`SELECT b.prdlst_code
+       ,b.prdist_name
+       ,b.prdctn_qy
+	,c.cmpds_prdlst_code
+	,c.cmpds_prdlst_name
+       ,c.stndrd_y
+	,c.unit
+	,c.cnsum_count
+FROM bom b JOIN bom_cmpds c 
+ON b.bom_code = c.bom_code
+WHERE b.prdlst_code = ?`;
+
+
+const bom_cmpdsUpdate = 
+`UPDATE bom_cmpds
+ SET ?`;
 
 
 // 품질검사항목관리
@@ -154,6 +173,8 @@ module.exports = {
   bom,
   bomInfo,
   bomInsert,
+  bomManage,
+  bom_cmpdsUpdate,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

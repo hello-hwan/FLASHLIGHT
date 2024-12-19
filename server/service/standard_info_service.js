@@ -38,6 +38,29 @@ const bomInsert = async (bomInfo) => {
   }
 };
 
+// BOM 관리 select
+const bomManage = async (bomCode) => {
+  let list = await mariaDB.query('bomManage', bomCode);
+  return list;
+}
+
+
+// BOM소모품 업데이트
+const bom_cmpdsUpdate = async (bomCount) => {
+  let datas = [bomCount];
+  console.log(datas);
+  let result = await mariaDB.query('bom_cmpdsUpdate', datas);
+  let sendData = {};
+  if(result.changedRows == 1){
+    sendData.result = true; 
+  }else{
+    sendData.result = false;
+  }
+  return sendData;
+}
+
+
+
 //품질검사항목관리
 const qiList = async (prd_code) => {
   let list = await mariaDB.query('qiList',prd_code);  
@@ -116,6 +139,8 @@ module.exports = {
   bomtest,
   bomInfo,
   bomInsert,
+  bomManage,
+  bom_cmpdsUpdate,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 
