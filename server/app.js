@@ -4,6 +4,10 @@ require('dotenv').config({ path : './database/mariadb.env'});
 const express = require('express');
 const app = express();
 
+// 미들웨어
+app.use(express.json());    //json파서
+app.use(express.urlencoded({ extended : false })); //query string 파서
+
 //라우터 모듈 불러오기
 const businessRouter = require('./router/business_router.js');
 const equipmentsRouter = require('./router/equipments_router.js');
@@ -14,9 +18,6 @@ const qualityRouter = require('./router/quality_router.js');
 const standardInfoRouter = require('./router/standard_info_router.js');
 const statisticsRouter = require('./router/statistics_router.js');
 
-// 미들웨어
-app.use(express.json());    //json파서
-app.use(express.urlencoded({ extended : false })); //query string 파서
 
 app.listen(3000, ()=>{
     console.log('Server Start');
