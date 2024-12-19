@@ -272,7 +272,7 @@ const model = ref([
                     },
                     {
                         label: '공정 흐름도 관리',
-                        to: '/'
+                        to: '/standardInfo/procsFlowchartinsert'
                     },
                     {
                         label: '공정 흐름도 조회',
