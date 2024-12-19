@@ -12,7 +12,7 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                PRD-00
                 </span>
             </div>
         </div>
@@ -25,7 +25,7 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                2024-00-00
                 </span>
             </div>
         </div>
@@ -38,7 +38,7 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                2024-00-00
                 </span>
             </div>
         </div>
@@ -51,14 +51,16 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                ORDER-00
                 </span>
             </div>
         </div>
         <div>
-            <button type="button" class="btn btn-secondary" @click="getAllRows()">저장</button>
-            <button type="button" class="btn btn-secondary" @click="orderInsert()">등록</button>
+            <!-- <button type="button" class="btn btn-secondary" @click="getAllRows()">저장</button> -->
+            <button type="button" class="btn btn-secondary" @click="orderInsert()">주문등록</button>
             <button type="button" class="btn btn-secondary" @click="onInsertInit()">초기화</button>
+            <button type="button" class="btn btn-secondary orderRowInsert" @click="onRemoveSelected()">행삭제</button>
+            <button type="button" class="btn btn-secondary orderRowInsert" @click="onAddRow()">행추가</button>
         </div>
     </div>
     <div>
@@ -66,8 +68,6 @@
         @grid-ready="onGridReady">
         </ag-grid-vue>
     </div>
-    <button type="button" class="btn btn-secondary" @click="onAddRow()">추가</button>
-    <button type="button" class="btn btn-secondary" @click="onRemoveSelected()">삭제</button>
 </template>
 
 <script>
@@ -86,19 +86,17 @@ export default {
             orderList: [], 
             rowData: ref([]), 
             colDefs: '', 
-            requst:{}, 
-            orderRegister: {}
+            requst:{}
         };
     },
     created() {
         this.onAddRow();
         this.colDefs = ref([
+            { field: "order_list_no", headerName:"주문목록번호", editable: true },
             { field: "prd_code", headerName:"품목코드", editable: true },
-            { field: "untpc", headerName:"단가", editable: true },
+            { field: "untpc", headerName:"주문단가", editable: true },
             { field: "order_qy", headerName:"주문수량", editable: true },
-            { field: "splpc", headerName:"공급가액", editable: true },
-            { field: "taxamt", headerName:"세액", editable: true },
-            { field: "smprice", headerName:"총합계금액", editable: true }
+            { field: "wrter", headerName:"작성자", editable: true }
         ]);
         this.gridOptionsOrder = {
                 columnDefs: this.returnColDefs,
@@ -126,17 +124,16 @@ export default {
         },
         async orderInsert() {
             for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){
-                this.orderRegister = {...this.gridApi.getRenderedNodes()[i].data, ...this.requst}
+                let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
                 console.log("합친결과는");
-                console.log(this.orderRegister);
-                let result = await axios.post(`${ajaxUrl}/business/orderForm`,this.orderRegister)
+                console.log(orderRegister);
+                let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
                                              .catch(err=>console.log(err));
                 console.log("결과는");
                 console.log(result);
-                let addRes = result;
-                if(addRes.order_no != null){
+                let addRes = result.data;
+                if(addRes.result){
                     alert(`등록되었습니다.`);
-                    this.orderRegister.order_no = addRes.order_no;
                 }
             }
         },
@@ -145,27 +142,26 @@ export default {
         },
         customDateFormat2(params){
             return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd');
-        },
+        },/*
         getAllRows() {
             console.log("DOM 객체");
             console.log(this.gridApi.getRenderedNodes()); // 배열, [0].data.prd_code로 가져옴
             console.log("0번 데이터");
             console.log(this.gridApi.getRenderedNodes()[0].data);
-            console.log("0번데이터 공급가액"+this.gridApi.getRenderedNodes()[0].data.splpc);
+            //console.log("0번데이터 공급가액"+this.gridApi.getRenderedNodes()[0].data.splpc);
             console.log("DOM 객체 길이"+this.gridApi.getRenderedNodes().length);
             for ( let i = 0; i < this.gridApi.getRenderedNodes().length; i++){
                 this.rowData[i] = this.gridApi.getRenderedNodes()[i].data;
                 console.log(this.rowData[i]);
             }
-        },
+        },*/
         onAddRow(){
             let newData = {
+                order_list_no: "ORDER-00-0",
                 prd_code:"PRD-01", 
                 untpc: 300, 
-                order_qy: 100, 
-                splpc: 30000, 
-                taxamt: 3000, 
-                smprice: 33000
+                order_qy: 100,
+                wrter:"김기환"
             };
             this.rowData = [...this.rowData, newData];
             // this.rowData.push(newData);
@@ -176,13 +172,19 @@ export default {
             this.rowData = [...this.rowData];
         },
         onInsertInit(){
-
             this.requst = {
                 p_code : "BCNC-01", 
                 order_date :"2024-12-28", 
                 dete : "2025-08-17", 
                 order_no : "ORDER-00"
-            }
+            },
+            this.rowData = [{
+                order_list_no: "ORDER-00-0",
+                prd_code:"PRD-01", 
+                untpc: 300, 
+                order_qy: 100,
+                wrter:"김기환"
+            }];
         }
     }
 };
@@ -195,8 +197,11 @@ export default {
         font-size:20px;
         text-align : center;
         width : 20%;
-        height : 100px;
-        line-height:100px;
+        height : 60px;
+        line-height:60px;
         margin:5px;
+    }
+    .orderRowInsert{
+        float: right;
     }
 </style>

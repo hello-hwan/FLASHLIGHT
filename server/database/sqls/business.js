@@ -18,7 +18,7 @@ SELECT r.order_no,
 FROM order_requst r LEFT OUTER JOIN order_lists l ON r.order_no = l.order_no LEFT OUTER JOIN bcnc b ON r.p_code=b.bcnc_code`;
 
 const orderRequestInsert = `
-CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?)`;
+CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 /*
 const orderRequestInsert = 
 `INSERT INTO order_requst ( order_no, order_date, dete, p_code, wrter)
