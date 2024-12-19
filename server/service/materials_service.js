@@ -107,7 +107,7 @@ const requestMt = async(reqCode) => {
         };
     }
     //확인  
-    //console.log(dataList);
+    console.log(dataList);
 
     if(tableGetReady) {
         //재고가 충분한 경우
