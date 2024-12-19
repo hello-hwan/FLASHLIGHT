@@ -12,7 +12,7 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                ex 예담
                 </span>
             </div>
         </div>
@@ -25,7 +25,7 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                ex 2024-12-15
                 </span>
             </div>
         </div>
@@ -38,7 +38,7 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                ex 2025-08-23
                 </span>
             </div>
         </div>
@@ -51,7 +51,7 @@
             </div>
             <div class="col-auto">
                 <span class="form-text">
-                Must be 8-20 characters long.
+                ex ORDER-01
                 </span>
             </div>
         </div>
@@ -144,8 +144,8 @@ export default {
         font-size:20px;
         text-align : center;
         width : 20%;
-        height : 100px;
-        line-height:100px;
+        height : 60px;
+        line-height:60px;
         margin:5px;
     }
 </style>

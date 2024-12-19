@@ -17,19 +17,29 @@ router.get('/business/orderList', async (req, res) => {
     res.send(businessList);
 });
 
+// 주문 요청과 주문리스트 등록
+router.post('/business/orderForm', async (req,res)=>{
+    let orderRequestInfo = req.body;
+    console.log(orderRequestInfo);
+    let result = await businessService.createNewOrderRequest(orderRequestInfo);
+    res.send(result);
+})
+/*
 //주문 요청 등록
 router.post('/business/orderForm', async (req, res) => {
     let orderRequestInfo = req.body;
+    console.log(orderRequestInfo);
     let result = await businessService.createNewOrderRequest(orderRequestInfo);
     res.send(result);
-}); 
 
-//주문 요청 리스트 등록
-// router.post('/business/:no', async (req, res) => {
-//     let orderRequestListInfo = req.body;
-//     let result = await businessService.createNewOrderListRequest(orderRequestListInfo);
-//     res.send(result);
-// });
+});
 
+// 주문 요청 리스트 등록
+router.post('/business/orderForm', async (req, res) => {
+    let orderRequestListInfo = req.body;
+    let result = await businessService.createNewOrderList(orderRequestListInfo);
+    res.send(result);
+});
+*/
 module.exports = router;
 
