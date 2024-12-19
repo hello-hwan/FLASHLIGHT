@@ -3,6 +3,13 @@ import bomList from "@/views/standardInfo/bomList.vue";
 import bomInsert from "@/views/standardInfo/bomInsert.vue";
 import procsFlowchartList from "@/views/standardInfo/procsFlowchartList.vue";
 import procsFlowchartDetail from "@/views/standardInfo/procsFlowchartDetail.vue";
+<<<<<<< HEAD
+=======
+import procsFlowchartinsert from "@/views/standardInfo/procsFlowchartinsert.vue";
+
+import qiList from "@/views/standardInfo/qiList.vue"
+
+>>>>>>> main
 import prductNList from "@/views/standardInfo/prductNListwrhousng.vue";
 import bomManage from "@/views/standardInfo/bomManage.vue";
 
@@ -30,8 +37,14 @@ const standardInfoRoute = [
         path: 'procsFlowchartDetail/:prd_code',
         name: 'procsFlowchartDetail',
         component: procsFlowchartDetail
-    },
+    }, 
     {
+        path: 'procsFlowchartinsert',
+        name: 'procsFlowchartinsert',
+        component: procsFlowchartinsert
+    }, 
+    {
+<<<<<<< HEAD
         path: 'prductNList',
         name: 'prductNList',
         component: prductNList
@@ -40,6 +53,15 @@ const standardInfoRoute = [
         path: 'bomManage',
         name: 'bomManage',
         component: bomManage
+=======
+        path: 'qiList',
+        name: 'qiList',
+        component: qiList
+
+        path: 'prductNList',
+        name: 'prductNList',
+        component: prductNList
+>>>>>>> main
     }
 ];
 
