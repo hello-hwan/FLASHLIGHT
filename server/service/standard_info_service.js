@@ -7,7 +7,7 @@ const cmmntest = async ()=>{
   return list;
 }
 
-// BOM 데이터 select 테스트
+// BOM 조회
 const bomtest = async() => {
   let list = await mariaDB.query('bom');
   return list;
@@ -19,20 +19,51 @@ const bomInfo = async(bomCode) => {
   return list;
 }
 
-// BOM 등록 
-const bominsert = async (bomInfo) => {
-  let result = await mariaDB.query('bominsert',bomInfo);
-  if (result.affectedRows > 0) {
-    return { message: '데이터 삽입 성공' };
-  } else {
-    return { message: '데이터 삽입 실패' }; 
+
+
+// BOM 등록  
+const bomInsert = async (bomInfo) => {
+  try {
+    console.log('service', bomInfo);
+    let result = await mariaDB.query('bominsert', bomInfo[0]); // 쿼리 실행
+
+    // 쿼리 결과 확인
+    if (result.insertId != null) {
+      return { message: '데이터 삽입 성공' };
+    } else {
+      return { message: '데이터 삽입 실패' };
+    }
+  } catch (error) {
+    // 예외 처리
+    console.error("쿼리 실행 중 오류 발생:", error);
+    return { message: '데이터 삽입 중 오류 발생' };
   }
-} 
- 
-  
+};
+
+//품질검사항목관리
+const qiList = async (prd_code) => {
+  let list = await mariaDB.query('qiList',prd_code);  
+  return list;
+}
+
+// 공정 흐름도 조회
+const procsFlowchartList = async () => {
+    let list = await mariaDB.query('procsFlowchartList');
+    return list;
+}
+
+// 공정 흐름도 상세 조회
+const procsFlowchartDetail = async (prd_code) => {
+  let list = await mariaDB.query('procsFlowchartDetail', prd_code);
+  return list;
+}
+
 module.exports = {
   cmmntest,
   bomtest,
   bomInfo,
-  bominsert
+  bomInsert,
+  qiList,
+  procsFlowchartList, 
+  procsFlowchartDetail
 };
