@@ -3,6 +3,7 @@ import bomList from "@/views/standardInfo/bomList.vue";
 import bomInsert from "@/views/standardInfo/bomInsert.vue";
 import procsFlowchartList from "@/views/standardInfo/procsFlowchartList.vue";
 import procsFlowchartDetail from "@/views/standardInfo/procsFlowchartDetail.vue";
+import procsFlowchartinsert from "@/views/standardInfo/procsFlowchartinsert.vue";
 
 const standardInfoRoute = [
     {
@@ -28,7 +29,12 @@ const standardInfoRoute = [
         path: 'procsFlowchartDetail/:prd_code',
         name: 'procsFlowchartDetail',
         component: procsFlowchartDetail
-    }
+    }, 
+    {
+        path: 'procsFlowchartinsert',
+        name: 'procsFlowchartinsert',
+        component: procsFlowchartinsert
+    }, 
 ];
 
 export default standardInfoRoute;
