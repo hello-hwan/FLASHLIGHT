@@ -11,13 +11,7 @@
                     <label for="itemCode" class="col-form-label">품목코드</label>
                   </div>
                   <div class="col-auto">
-                    <input
-                      type="text"
-                      id="itemCode"
-                      class="form-control"
-                      v-model="searchCode"
-                      placeholder="품목코드를 입력하세요"
-                    />
+                    <input type="text" id="itemCode" class="form-control" v-model="searchCode" placeholder="품목코드를 입력하세요" />
                   </div>
                   <div class="col-auto">
                     <button class="btn btn-primary" @click="filterByCode">검색</button>

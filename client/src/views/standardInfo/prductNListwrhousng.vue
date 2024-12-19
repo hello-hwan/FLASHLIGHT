@@ -4,7 +4,6 @@
     <template v-slot:title>
         <span class="font-weight-black">반제품반환리스트</span>
     </template>
-
     <v-card-text class="bg-surface-light pt-4">
         <AgGridVue style=" height: 500px; margin: 0 auto;"
             @grid-ready="onGridReady"
@@ -40,6 +39,50 @@
     </v-card-text>
   </v-card>
 </div>
+
+<v-row>
+    <v-col cols="6">
+        <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+            <template v-slot:title>
+                <span class="font-weight-black">반환반제품리스트</span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4">
+                <AgGridVue
+                    style="height: 500px; margin: 0 auto;"
+                    @grid-ready="onGridReady"
+                    :rowData="filteredRowData"
+                    :columnDefs="colDefs"
+                    :rowSelection="rowSelection"
+                    @cellClicked="onCellClicked"
+                    :gridOptions="gridOptionsReturn"
+                    class="ag-theme-alpine"
+                    id="grid-one">
+                </AgGridVue>
+            </v-card-text>
+        </v-card>
+    </v-col>
+  
+          <!-- BOM 상세조회 -->
+          <v-col cols="6">
+            <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+              <template v-slot:title>
+                <span class="font-weight-black">일반반제품</span>
+              </template>
+              <v-card-text class="bg-surface-light pt-4">
+                <AgGridVue style="height: 500px; margin: 0 auto;"
+                  @grid-ready="onGridReady"
+                  :rowData="rowDataSelect"
+                  :columnDefs="colDefsSelect"
+                  :rowSelection="rowSelection"
+                  :gridOptions="gridOptionsReturn"
+                  class="ag-theme-alpine"
+                  id="grid-info"
+                >
+                </AgGridVue>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
 </template>
 
 <script>

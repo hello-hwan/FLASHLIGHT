@@ -5,37 +5,19 @@
         <label for="prdlstCode" class="col-form-label">품목코드</label>
       </div>
       <div class="col-auto">
-        <input
-          type="text"
-          id="prdlstCode"
-          class="form-control"
-          v-model="search.prdlstCode"
-          @change="fetchItemData"
-          placeholder="품목코드를 입력하세요"
-        />
+        <input type="text" id="prdlstCode" class="form-control" v-model="search.prdlstCode" @change="fetchItemData" placeholder="품목코드를 입력하세요" />
       </div>
       <div class="col-auto">
         <label for="prdlstName" class="col-form-label">품목명</label>
       </div>
       <div class="col-auto">
-        <input
-          type="text"
-          id="prdlstName"
-          class="form-control"
-          v-model="prdlstName"
-          readonly
-        />
+        <input type="text" id="prdlstName" class="form-control" v-model="prdlstName" readonly />
       </div>
       <div class="col-auto">
         <label for="productionQty" class="col-form-label">기본생산수량</label>
       </div>
       <div class="col-auto">
-        <input
-          type="text"
-          id="productionQty"
-          class="form-control"
-          v-model="productionQty"
-        />
+        <input type="text" id="productionQty" class="form-control" v-model="productionQty" />
       </div>
     </div>
 
@@ -54,8 +36,8 @@
                 :gridOptions="gridOptions"
                 @cellClicked="onCellClicked"
                 @grid-ready="onGridReady"
-                class="ag-theme-alpine"
-              ></AgGridVue>
+                class="ag-theme-alpine">
+              </AgGridVue>
               <div class="mt-3">
                 <button class="btn btn-primary me-2" @click="addRow">행 추가</button>
                 <button class="btn btn-danger" @click="deleteRow">행 삭제</button>
@@ -79,6 +61,7 @@
       </div>
       <div class="col-12 mt-3">
         <button class="btn btn-success" @click="saveData">저장</button>
+        <button class="btn btn-success" @click="update">수정</button>
       </div>
     </div>
   </div>
@@ -104,11 +87,18 @@ export default {
       colDefs: [],
       gridOptions: {}, 
       remarks: "", 
+      obj: {
+        prdlst_code: '',
+        prdist_name: '',
+        prdctn_qy: '',
+        cmpds_prdlst_code: '',
+        cmpds_prdlst_name: ''
+      }
     };
   },
   created() {
     this.colDefs = [
-      { field: "cmpds_no", headerName: "소모코드", editable: true },
+      { field: "cmpds_prdlst_code", headerName: "소모코드", editable: true },
       { field: "cmpds_prdlst_name", headerName: "소모품명", editable: true },
       { field: "stndrd_y", headerName: "규격", editable: true },
       { field: "unit", headerName: "단위", editable: true },
@@ -133,17 +123,13 @@ export default {
       let result = await axios.get(`${ajaxUrl}/bomManage/${this.search.prdlstCode}`)
                               .catch((err) => console.log(err));
       if (result) {
-        const itemData = result.data;
-        this.prdlstName = itemData.prdlstName;
-        this.productionQty = itemData.productionQty;
-      }
+        this.prdlstName = result.data[0].prdist_name;
+        this.productionQty = result.data[0].prdctn_qy;
+        this.rowData = result.data;
+        
+        console.log(result.data.length);
 
-      // bom과 bom_cmpds 테이블의 데이터를 가져오는 메서드
-      let gridResponse = await axios.get(`${ajaxUrl}/bomManage/${this.search.prdlstCode}`)
-                              .catch((err) => console.log(err));
-      if (gridResponse) {
-        this.rowData = gridResponse.data;
-        this.gridOptions.api.setRowData(this.rowData); 
+        // this.result.api.setRowData(this.rowData);
       }
     },
     // 그리드에 새로운 행을 추가하는 메서드
@@ -168,7 +154,7 @@ export default {
       }
     },
     // 데이터를 저장하는 메서드
-    async saveData() {
+    async saveData() { 
       let result = await axios.post(`${ajaxUrl}/save`, {
           prdlstCode: this.search.prdlstCode,
           productionQty: this.productionQty,
@@ -176,11 +162,47 @@ export default {
           components: this.rowData,
         })
         .catch((err) => console.log(err));
+        console.log(result.data);
       if (result) {
         alert("저장되었습니다.");
       }
     },
-    // 셀 클릭 시의 이벤트 핸들러
+    
+    async update(){
+
+      // let test = {...this.rowData};
+      // console.log(test[0].prdlst_code);
+      // console.log(this.rowData);
+      // const componentsObj = this.rowData.map((row) => ({
+      //   prdlst_code: test.prdlst_code,
+      //   cmpds_prdlst_code: test.cmpds_prdlst_code,
+      //   cmpds_prdlst_name: test.cmpds_prdlst_name,
+      //   stndrd_y: test[0].stndrd_y,
+      //   unit: test.unit,
+      //   cnsum_count: test.cnsum_count,
+      // }));
+      // console.log('test',componentsObj);
+
+      // for(let i = 0; i <= this.rowData.length; i++){
+      //   this.obj = {
+      //     prdlst_code: this.rowData[i].prdlst_code,
+      //     prdist_name: this.rowData[i].prdist_name,
+      //     prdctn_qy: this.rowData[i].prdctn_qy,
+      //     cmpds_prdlst_code: this.rowData[i].cmpds_prdlst_code,
+      //     cmpds_prdlst_name: this.rowData[i].cmpds_prdlst_name
+      //   }
+      //   console.log(i);
+      //   console.log(this.obj);
+      // }
+      // console.log('obj',this.obj);
+      // let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${this.rowData}`)
+      //                         .catch(err => console.log(err));
+      // let updateRes = result.data;
+      // if(updateRes.result){
+      //         lert('수정되었습니다.');
+      // }
+    }, 
+    // 셀 클릭 시의 이벤트 핸들러 
     onCellClicked(event) {
       console.log("선택된 셀:", event);
     },

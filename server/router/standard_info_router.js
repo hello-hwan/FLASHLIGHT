@@ -29,17 +29,25 @@ router.get('/bom/:bomCode', async (req, res) => {
 router.post('/bom', async (req, res) => {
   let bominfo = req.body;
   console.log('router',bominfo); 
-  let result = await standard_info_service.bomInsert(bominfo);
+  let result = await standard_info_service.bomInsert(bominfo); 
   res.send(result);
 });
 
-// BOM 관리 select
+// BOM 관리 select 
 router.get('/bomManage/:bomCode', async (req, res) => {
   let bomCode = req.params.bomCode;
   let info = await standard_info_service.bomManage(bomCode);
   res.send(info);
 })
 
+// BOM 소모품 update
+router.put('/bom_cmpsdUpdate/:no', async(req, res) => {
+  let info = req.body;
+  console.log('info',info);
+  let result = await standard_info_service.bom_cmpdsUpdate(info);
+  res.send(result); 
+})
+ 
 
 // 품질검사항목관리
 router.get('/standardInfo/qiList', async (req, res) => {
