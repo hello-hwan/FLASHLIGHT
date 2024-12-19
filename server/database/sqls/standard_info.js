@@ -41,7 +41,8 @@ VALUES(?,?,?,?,?,?,?,?,?)`;
  
 
 const bomManage = 
-`SELECT b.prdlst_code
+`SELECT c.cmpds_no
+       ,b.prdlst_code
        ,b.prdist_name
        ,b.prdctn_qy
 	,c.cmpds_prdlst_code

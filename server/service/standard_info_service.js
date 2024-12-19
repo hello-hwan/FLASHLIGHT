@@ -43,23 +43,37 @@ const bomManage = async (bomCode) => {
   let list = await mariaDB.query('bomManage', bomCode);
   return list;
 }
-
+ 
 
 // BOM소모품 업데이트
-const bom_cmpdsUpdate = async (bomCount) => {
-  let datas = [bomCount];
+// BOM 소모품 업데이트 서비스
+const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
+
+  let datas = [updateInfo, cmpdsNo]; 
   console.log(datas);
-  let result = await mariaDB.query('bom_cmpdsUpdate', datas);
-  let sendData = {};
-  if(result.changedRows == 1){
-    sendData.result = true; 
-  }else{
-    sendData.result = false;
+  try {
+
+    let result = await mariaDB.query('bom_cmpdsUpdate', datas); 
+
+
+    let sendData = {};
+    if (result.changedRows == 1) {
+      sendData.target = { 'cmpds_no': updateInfo.cmpds_prdlst_code };
+      sendData.result = true;
+    } else {
+      sendData.result = false;
+    }
+
+    return sendData;
+  } catch (error) {
+
+    console.error("쿼리 실행 중 오류 발생:", error);
+    return { result: false, message: '데이터 업데이트 중 오류 발생' };
   }
-  return sendData;
-}
+};
 
-
+ 
+ 
 
 //품질검사항목관리
 const qiList = async (prd_code) => {
@@ -69,7 +83,7 @@ const qiList = async (prd_code) => {
 
 // 공정 흐름도 조회
 const procsFlowchartList = async () => {
-    let list = await mariaDB.query('procsFlowchartList');
+    let list = await mariaDB.query('procsFlowchartList'); 
     return list;
 }
 

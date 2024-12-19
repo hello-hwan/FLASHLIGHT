@@ -41,12 +41,21 @@ router.get('/bomManage/:bomCode', async (req, res) => {
 })
 
 // BOM 소모품 update
-router.put('/bom_cmpsdUpdate/:no', async(req, res) => {
-  let info = req.body;
-  console.log('info',info);
-  let result = await standard_info_service.bom_cmpdsUpdate(info);
-  res.send(result); 
-})
+router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
+  let cmpdsNo = req.params.no;  
+  let info = req.body;  
+
+  console.log('조건', cmpdsNo);
+  console.log('업데이트할 정보:', info); // 확인용 로그
+  
+  // 서비스에서 BOM 소모품 업데이트 처리
+  let result = await standard_info_service.bom_cmpdsUpdate(cmpdsNo, info);
+  if (result.success) {
+    res.send(result); 
+  } else {
+    res.status(500).send({ message: '업데이트 실패', error: result.message });
+  }
+});
  
 
 // 품질검사항목관리

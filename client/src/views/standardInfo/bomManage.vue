@@ -168,40 +168,37 @@ export default {
       }
     },
     
-    async update(){
+    async update() {
+  // rowData 배열을 순회하면서 각 항목을 업데이트하기 위한 API 호출 준비
+  for (let i = 0; i < this.rowData.length; i++) {
+    let row = this.rowData[i];
+    let obj = {
+      cnsum_count: row.cnsum_count
+    };
 
-      // let test = {...this.rowData};
-      // console.log(test[0].prdlst_code);
-      // console.log(this.rowData);
-      // const componentsObj = this.rowData.map((row) => ({
-      //   prdlst_code: test.prdlst_code,
-      //   cmpds_prdlst_code: test.cmpds_prdlst_code,
-      //   cmpds_prdlst_name: test.cmpds_prdlst_name,
-      //   stndrd_y: test[0].stndrd_y,
-      //   unit: test.unit,
-      //   cnsum_count: test.cnsum_count,
-      // }));
-      // console.log('test',componentsObj);
+    try {
+      // 각 객체를 서버에 보내는 비동기 요청
+      let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${row.cmpds_no}`, obj);
+      
+      // 응답 상태 확인
+      if (result.data.result) {
+        console.log(`업데이트 성공: ${row.cmpds_no}`);
+      } else {
+        console.error(`업데이트 실패: ${row.cmpds_no}`);
+        alert(`소모품 코드 ${row.cmpds_no}에 대한 수정에 실패했습니다.`);
+        return;  // 실패하면 나머지 요청을 하지 않고 종료
+      }
+    } catch (err) {
+      // 오류 처리
+      console.error('업데이트 오류 발생:', err);
+      alert(`소모품 코드 ${row.cmpds_no}에 대한 수정 중 오류가 발생했습니다.`);
+      return;  // 실패하면 나머지 요청을 하지 않고 종료
+    }
+  }
 
-      // for(let i = 0; i <= this.rowData.length; i++){
-      //   this.obj = {
-      //     prdlst_code: this.rowData[i].prdlst_code,
-      //     prdist_name: this.rowData[i].prdist_name,
-      //     prdctn_qy: this.rowData[i].prdctn_qy,
-      //     cmpds_prdlst_code: this.rowData[i].cmpds_prdlst_code,
-      //     cmpds_prdlst_name: this.rowData[i].cmpds_prdlst_name
-      //   }
-      //   console.log(i);
-      //   console.log(this.obj);
-      // }
-      // console.log('obj',this.obj);
-      // let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${this.rowData}`)
-      //                         .catch(err => console.log(err));
-      // let updateRes = result.data;
-      // if(updateRes.result){
-      //         lert('수정되었습니다.');
-      // }
-    }, 
+  // 모든 업데이트가 완료되면 성공 메시지
+  alert('모든 소모품 데이터가 성공적으로 수정되었습니다.');
+} , 
     // 셀 클릭 시의 이벤트 핸들러 
     onCellClicked(event) {
       console.log("선택된 셀:", event);
