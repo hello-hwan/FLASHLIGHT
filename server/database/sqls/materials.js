@@ -100,7 +100,7 @@ FROM    mtril_dlivy m JOIN mtril_wrhousing s
                          ON (m.mtril_lot = s.mtril_lot)
                        JOIN mtril t
                          ON (m.mtril_code = t.mtril_code)
-WHERE   m.usgstt = '미사용'
+WHERE   m.usgstt = 'MU02'
 `;
 
 //자재 입고처리 - mt007 풀질검사 끝난 자재 리스트
@@ -151,9 +151,9 @@ SELECT req_name name,
         prdctn_code code,
         req_de req_date
 FROM    thng_req
-WHERE   procs_at = '미처리'
+WHERE   procs_at = 'RD02'
 AND     prdctn_code IS NOT NULL
-AND     prd_se = '자재'
+AND     prd_se = 'PI01'
 GROUP BY prdctn_code
 `;
 
@@ -169,7 +169,7 @@ SELECT  m.req_name AS req_name,
         m.prdctn_code AS prdctn_code
 FROM    thng_req m JOIN mtril s
 		     ON (m.prd_code = s.mtril_code)
-WHERE   procs_at = '미처리'
+WHERE   procs_at = 'RD02'
 AND     prdctn_code = ?
 `;
 

@@ -6,7 +6,7 @@
       <InputText type="text" v-model="emp_name" class="emp_info" readonly> <p>{{ emp_name }}</p></InputText>
       <InputText type="text" v-model="emp_id" class="emp_info" readonly> <p>{{ emp_id }}</p></InputText>
       
-      <button type="button" class="btn btn-primary" 
+      <button type="button" class="btn btn-primary"
        v-bind:disabled="isdlivyBtn"
        @click="registData"
        style="line-height: 1px; color: #fff;">
@@ -51,8 +51,8 @@ import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
 
-//사원번호, 이름
-const emp_name = '최태백';
+//사원번호, 이름 나중에 로그인 세션이 생기면 받아와야 합니다.
+const emp_name = '최태백';  
 const emp_id = 100;
 
 //출고버튼 보여주는걸 결정하는 boolean타입변수
@@ -61,6 +61,10 @@ console.log(isdlivyBtn);
 
 //부모로부터 가져옴
 const props = defineProps(['code']);
+
+//부모 행 삭제를 위해서 사용하는 emit
+const emit = defineEmits(["removeRowDataInfo"])
+
 
 //행 정보
 const rowData = ref([]);
@@ -75,7 +79,7 @@ const ColDefs = [
   { field: "lot", headerName:"lot", flex: 2.5},
   { field: "lot_qy", headerName: "출고수량"},
   { field: "unit", headerName:"단위", flex: 0.8},
-  { field: 'prdcnt_code', hide: true, suppressToolPanel: true}
+  { field: 'prdctn_code',hide: true, suppressToolPanel: true}
 ];
 
 //요청명 리스트
@@ -83,21 +87,19 @@ const getReqDetails = async (reqCode) => {
     //상세 자재 수량 가져오기
     let result = await axios.get(`${ajaxUrl}/mtril/mtRequestDetails/${reqCode}`)
                             .catch(err => console.log(err));
-    
-    console.log('result', result.data.length);
-    console.log(result.data[(result.data.length-1)].state);
 
+    console.log('result: ', result);
     if(result.data[(result.data.length-1)].state == 'fail') {
       //자재가 부족한 경우 처리
       //rowData.value = [{req_name : ''}]; //임의의 데이터를 한행 추가 보이진 않음. 이 작업이 없을경우 재고가 있는 행을 선택한 후 없는 행을 선택했을때 행이 비워지지 않음
       result.data.pop();  //배열 마지막 요소 제거
       rowData.value = result.data;
-
+      
       //자재가 충분하지 않은경우 안내메시지
       toast.add({ severity: 'warn', summary: '자재부족', detail: '자재가 부족합니다\n재고를 확인해주세요.', life: 3000 });
 
       isdlivyBtn.value = true;
-      console.log('비활성화: ', isdlivyBtn.value);
+      //console.log('비활성화: ', isdlivyBtn.value);
 
     } else {
       result.data.pop();  //배열 마지막 요소 제거
@@ -106,7 +108,9 @@ const getReqDetails = async (reqCode) => {
       rowData.value = result.data;
 
       isdlivyBtn.value = false;
-      console.log('활성화: ', isdlivyBtn.value);
+      //console.log('활성화: ', isdlivyBtn.value);
+
+      
     }
     //console.log('getReqDetails: 작동확인');
 };
@@ -137,10 +141,10 @@ const gridOptions = {
 
 //출고테이블 등록, 재고 수량 업데이트
 const registData = async() => {
-  console.log(rowData.value[0]);
 
   //서버로 보낼 새로운배열 선언(empl_no가 추가됨)
   let sendMtList = [];
+
   for(let i=0; i<rowData.value.length; i++) {
     //emp_id가 추가된 객체 생성
     let newObj = {...rowData.value[i], empl_no : emp_id};
@@ -148,6 +152,8 @@ const registData = async() => {
     //배열에 추가
     sendMtList.push(newObj);
   };
+  //console.log(rowData.value[0].prdctn_code);
+
   console.log(sendMtList);
   let result = await axios.post(`${ajaxUrl}/mtril/mtDlivy`,sendMtList )
                           .catch(err=> console.log(err));
@@ -155,12 +161,19 @@ const registData = async() => {
   if(result.data == 'success') {
     //출고 성공 메시지
     toast.add({ severity: 'success', summary: '출고 성공', detail: '처리가 완료되었습니다.', life: 3000 });
+    
+    //자재가 출고처리가 되면, prdctn_code값을 부모 컴포넌트의 행 데이터에서 찾아서 해당 행을 삭제해야 함.
+    emit("removeRowDataInfo", rowData.value[0].prdctn_code);
+
     //행 초기화
     rowData.value = [];
+
+ 
   } else {
     //출고 실패 메시지
     toast.add({ severity: 'error', summary: '출고 실패', detail: '문제가 생겼습니다.\n관리자에게 문의해주세요.', life: 3000 });
   }
+
 }
 </script>
 
