@@ -52,6 +52,7 @@ const requestMt = async(reqCode) => {
     //자재코드를 가져오기 위한 for문
     for(let i=0; i<reqMtList.length; i++) {
         //자재코드로 검색한 로트, 재고수
+
         let lotListEachMt = await mariaDB.query('mt_lotInvenList', reqMtList[i].mt_code) 
                                          .catch(err=>console.log(err));
 
@@ -70,6 +71,7 @@ const requestMt = async(reqCode) => {
         let sumLotQy = 0;
         
         for(let j=0; j<roopCnt; j++) {
+
             //로트 수량
             let lotQy = lotListEachMt.length <= 0 ? 0 : lotListEachMt[j].mtril_qy;
             
