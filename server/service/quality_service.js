@@ -7,6 +7,7 @@ const qualityRequest = async (prd_code) => {
     return list;
 }
 
+
 module.exports = {
     qualityRequest
 };

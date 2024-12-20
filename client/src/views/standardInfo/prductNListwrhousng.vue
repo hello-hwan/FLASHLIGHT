@@ -1,45 +1,49 @@
 <template>
-  <div>
-  <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
-    <template v-slot:title>
-        <span class="font-weight-black">반제품반환리스트</span>
-    </template>
-
-    <v-card-text class="bg-surface-light pt-4">
-        <AgGridVue style=" height: 500px; margin: 0 auto;"
-            @grid-ready="onGridReady"
-            :rowData="rowData"
-            :columnDefs="colDefs"
-            :rowSelection="rowSelection"
-            @cellClicked="onCellClicked"
-            :gridOptions="gridOptionsReturn"
-            class="ag-theme-alpine"
-            id="grid-one">
-        </AgGridVue>
-    </v-card-text>
-  </v-card>
-</div>
-
-<div>
-  <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
-    <template v-slot:title>
-        <span class="font-weight-black">일반반제품리스트</span>
-    </template>
-
-    <v-card-text class="bg-surface-light pt-4">
-        <AgGridVue style=" height: 500px; margin: 0 auto;"
-            @grid-ready="onGridReady"
-            :rowData="rowDataSelect"
-            :columnDefs="colDefsSelect"
-            :rowSelection="rowSelection"
-            @cellClicked="onCellClicked"
-            :gridOptions="gridOptionsReturn"
-            class="ag-theme-alpine"
-            id="grid-one">
-        </AgGridVue>
-    </v-card-text>
-  </v-card>
-</div>
+ 
+<v-row>
+    <v-col cols="6">
+        <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+            <template v-slot:title>
+                <span class="font-weight-black">반환반제품리스트</span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4">
+                <AgGridVue
+                    style="height: 500px; margin: 0 auto;"
+                    @grid-ready="onGridReady"
+                    :rowData="filteredRowData"
+                    :columnDefs="colDefs"
+                    :rowSelection="rowSelection"
+                    @cellClicked="onCellClicked"
+                    :gridOptions="gridOptionsReturn"
+                    class="ag-theme-alpine"
+                    id="grid-one">
+                </AgGridVue>
+            </v-card-text>
+        </v-card>
+    </v-col>
+  
+          <!-- BOM 상세조회 -->
+          <v-col cols="6">
+            <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+              <template v-slot:title>
+                <span class="font-weight-black">일반반제품</span>
+              </template>
+              <v-card-text class="bg-surface-light pt-4">
+                <AgGridVue style="height: 500px; margin: 0 auto;"
+                  @grid-ready="onGridReady"
+                  :rowData="rowDataSelect"
+                  :columnDefs="colDefsSelect"
+                  @cellClicked="onCellClicked"
+                  :rowSelection="rowSelection"
+                  :gridOptions="gridOptionsReturn"
+                  class="ag-theme-alpine"
+                  id="grid-info"
+                >
+                </AgGridVue>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
 </template>
 
 <script>
@@ -113,7 +117,7 @@ components: {
     AgGridVue, // Add Vue Data Grid component
 },
 methods: {
-  onCellClicked(event) {
+  async onCellClicked(event) {
       // '상세보기' 열이 아닌 경우 클릭 무시
       if (event.colDef.field !== "입고") {
           return;
@@ -123,13 +127,19 @@ methods: {
       this.selectedPrd_code = event.data.prd_code;
       this.getprductNList(this.selectedPrd_code); 
 
-      let obj = {
-            p_name: event.data.p_name,
-            prd_code: event.data.prd_code,
-            pass_amount: event.data.pass_amount
-      }
+      let obj = [
+            event.data.p_name,
+            event.data.prd_code,
+            event.data.mtril_check_code,
+            event.data.pass_amount,
+            event.data.pass_amount
+    ]
       console.log('obj',obj);
 
+    //   let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousng`, obj)
+    //                     .catch(err => console.log(err));
+
+    //   let prduct_n_wrhousngListDel = await axios.delete(`${ajaxUrl}/`)
 
   },
     // 반제품 반환제품 리스트로 select 변경해야됨
