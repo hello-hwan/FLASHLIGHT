@@ -136,8 +136,8 @@ methods: {
     ]
       console.log('obj',obj);
 
-      let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousng`, obj)
-                        .catch(err => console.log(err));
+    //   let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousng`, obj)
+    //                     .catch(err => console.log(err));
 
     //   let prduct_n_wrhousngListDel = await axios.delete(`${ajaxUrl}/`)
 
