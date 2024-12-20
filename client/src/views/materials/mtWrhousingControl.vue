@@ -141,6 +141,7 @@ export default {
         async getOrderList() {
             let result = await axios.get(`${ajaxUrl}/mtril/orderMt`)
                 .catch(err => console.log(err));
+            console.log(result);
             this.orderRowData = result.data;
         },
         //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
