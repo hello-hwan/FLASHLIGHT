@@ -68,3 +68,13 @@ function isOutsideClicked(event) {
     </div>
     <Toast />
 </template>
+
+<style>
+@media screen and (min-width: 1960px) {
+    .layout-main, .landing-wrapper {
+        width: 1504px;
+        /* margin-left: auto !important; */
+        /* margin-right: auto !important; */
+    }
+}
+</style>
