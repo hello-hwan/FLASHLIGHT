@@ -57,12 +57,12 @@ const requestMt = async(reqCode) => {
 
         //반복 획수, 검색 결과가 0일때를 위한 임시변수 선언
         let roopCnt = lotListEachMt.length == 0 ? 1 : lotListEachMt.length;
-        if(lotListEachMt.length == 0) {
-            console.log('0이 넘어옴', 
-                'lotListEachMt: ', lotListEachMt, 
-                'length: ', lotListEachMt.length,
-                );
-        }                      
+        // if(lotListEachMt.length == 0) {
+        //     console.log('0이 넘어옴', 
+        //         'lotListEachMt: ', lotListEachMt, 
+        //         'length: ', lotListEachMt.length,
+        //         );
+        // }                      
         //요청수량
         let reqQy = reqMtList[i].qy;
 
