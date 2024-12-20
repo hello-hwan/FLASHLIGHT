@@ -11,5 +11,12 @@ router.get('/prdctn_n_list', async (req, res) => {
   res.send(prdctn_n_list);
 })
 
+// 반제품 등록
+router.post('/prduct_n_wrhousng', async (req, res) => {
+  let Insert = req.body;
+  let result = await logistics_service.prduct_n_wrhousng(Insert);
+  res.send(result);
+});
+
 
 module.exports = router; 

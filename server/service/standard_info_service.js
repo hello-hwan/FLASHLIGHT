@@ -19,24 +19,23 @@ const bomInfo = async(bomCode) => {
   return list;
 }
 
+// const bomInsert = async (Insert)=>{
+//   console.log('service', Insert);
+//   await mariaDB.query('bomInsert', Insert);
+// }
+
 // BOM 등록  
 const bomInsert = async (bomInfo) => {
-  try {
-    console.log('service', bomInfo);
-    let result = await mariaDB.query('bominsert', bomInfo[0]); // 쿼리 실행
+  let result = await mariaDB.query('bomInsert', bomInfo); 
 
-    // 쿼리 결과 확인
-    if (result.insertId != null) {
-      return { message: '데이터 삽입 성공' };
-    } else {
-      return { message: '데이터 삽입 실패' };
-    }
-  } catch (error) {
-    // 예외 처리
-    console.error("쿼리 실행 중 오류 발생:", error);
-    return { message: '데이터 삽입 중 오류 발생' };
-  }
-};
+  if (result.insertId != null) {
+    return { message: '데이터 삽입 성공' };
+  } else {
+    return { message: '데이터 삽입 실패' };
+  } 
+}
+   
+
 
 // BOM 관리 select
 const bomManage = async (bomCode) => {
@@ -46,41 +45,31 @@ const bomManage = async (bomCode) => {
  
 
 // BOM소모품 업데이트
-// BOM 소모품 업데이트 서비스
 const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
+    let datas = [updateInfo, cmpdsNo];
+    let result = await mariaDB.query('bom_cmpdsUpdate', datas)
+                          .catch(err => console.log(err));
+    console.log(result);
+    
+}
+// BOM소모품 삭제
+const bom_cmpdsDel = async (cmpdsNo) => {
+    let result = await mariaDB.query('bom_cmpdsDel',cmpdsNo);
+    return result;
+}
 
-  let datas = [updateInfo, cmpdsNo]; 
-  console.log(datas);
-  try {
-
-    let result = await mariaDB.query('bom_cmpdsUpdate', datas); 
-
-
-    let sendData = {};
-    if (result.changedRows == 1) {
-      sendData.target = { 'cmpds_no': updateInfo.cmpds_prdlst_code };
-      sendData.result = true;
-    } else {
-      sendData.result = false;
-    }
-
-    return sendData;
-  } catch (error) {
-
-    console.error("쿼리 실행 중 오류 발생:", error);
-    return { result: false, message: '데이터 업데이트 중 오류 발생' };
-  }
-};
-
- 
- 
+// 반제품입고리스트
+const prduct_n_wrhousngList = async () => {
+  let list = await mariaDB.query('prduct_n_wrhousngList');
+  return list;
+}
 
 //품질검사항목관리
 const qiList = async (prd_code) => {
   let list = await mariaDB.query('qiList',prd_code);  
   return list;
 }
-
+ 
 // 공정 흐름도 조회
 const procsFlowchartList = async () => {
     let list = await mariaDB.query('procsFlowchartList'); 
@@ -155,6 +144,8 @@ module.exports = {
   bomInsert,
   bomManage,
   bom_cmpdsUpdate,
+  bom_cmpdsDel,
+  prduct_n_wrhousngList,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

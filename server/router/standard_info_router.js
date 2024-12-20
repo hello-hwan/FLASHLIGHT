@@ -27,9 +27,9 @@ router.get('/bom/:bomCode', async (req, res) => {
  
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
-  let bominfo = req.body;
-  console.log('router',bominfo); 
-  let result = await standard_info_service.bomInsert(bominfo); 
+  let Insert = req.body;
+  console.log('router',Insert); 
+  let result = await standard_info_service.bomInsert(Insert); 
   res.send(result);
 });
 
@@ -37,7 +37,7 @@ router.post('/bom', async (req, res) => {
 router.get('/bomManage/:bomCode', async (req, res) => {
   let bomCode = req.params.bomCode;
   let info = await standard_info_service.bomManage(bomCode);
-  res.send(info);
+  res.send(info); 
 })
 
 // BOM 소모품 update
@@ -45,18 +45,17 @@ router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
   let cmpdsNo = req.params.no;  
   let info = req.body;  
 
-  console.log('조건', cmpdsNo);
-  console.log('업데이트할 정보:', info); // 확인용 로그
-  
-  // 서비스에서 BOM 소모품 업데이트 처리
   let result = await standard_info_service.bom_cmpdsUpdate(cmpdsNo, info);
-  if (result.success) {
-    res.send(result); 
-  } else {
-    res.status(500).send({ message: '업데이트 실패', error: result.message });
-  }
+  res.send(result);
 });
- 
+
+// BOM 소모품 삭제
+router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {
+  let cmpdsNo = req.params.cmpdsNo;
+  let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
+  res.send(result);
+});
+
 
 // 품질검사항목관리
 router.get('/standardInfo/qiList', async (req, res) => {

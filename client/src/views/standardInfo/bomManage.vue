@@ -68,12 +68,14 @@
 </template>
 
 <script>
-import { AgGridVue } from "ag-grid-vue3";
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-import axios from "axios";
-import { ajaxUrl } from "@/utils/commons.js";
+import axios from 'axios';
+import { ajaxUrl } from '@/utils/commons.js';
+
+
 
 export default {
   data() {
@@ -87,17 +89,12 @@ export default {
       colDefs: [],
       gridOptions: {}, 
       remarks: "", 
-      obj: {
-        prdlst_code: '',
-        prdist_name: '',
-        prdctn_qy: '',
-        cmpds_prdlst_code: '',
-        cmpds_prdlst_name: ''
-      }
+      test: ''
     };
   },
   created() {
     this.colDefs = [
+      { field: "cmpds_no", headerName: "소모품번호", editable: true },
       { field: "cmpds_prdlst_code", headerName: "소모코드", editable: true },
       { field: "cmpds_prdlst_name", headerName: "소모품명", editable: true },
       { field: "stndrd_y", headerName: "규격", editable: true },
@@ -127,7 +124,6 @@ export default {
         this.productionQty = result.data[0].prdctn_qy;
         this.rowData = result.data;
         
-        console.log(result.data.length);
 
         // this.result.api.setRowData(this.rowData);
       }
@@ -136,12 +132,14 @@ export default {
     addRow() {
       const newRow = {
         cmpds_no: "",
+        cmpds_prdlst_code: "",
         cmpds_prdlst_name: "",
         stndrd_y: "",
         unit: "",
         cnsum_count: "",
       };
-      this.gridOptions.api.applyTransaction({ add: [newRow] });
+      //this.gridOptions.api.applyTransaction({ add: [newRow] });
+      this.rowData = [...this.rowData, newRow];
     },
     // 선택한 행을 삭제하는 메서드
     deleteRow() {
@@ -149,56 +147,83 @@ export default {
       if (selectedNodes.length) {
         const selectedData = selectedNodes.map((node) => node.data);
         this.gridOptions.api.applyTransaction({ remove: selectedData });
+        
+        let result = axios.delete(`${ajaxUrl}/bom_cmpdsDel/${selectedData[0].cmpds_no}`)
+                              .catch(err => console.log(err));
+
       } else {
         alert("삭제할 행을 선택하세요.");
       }
     },
     // 데이터를 저장하는 메서드
     async saveData() { 
-      let result = await axios.post(`${ajaxUrl}/save`, {
-          prdlstCode: this.search.prdlstCode,
-          productionQty: this.productionQty,
-          remarks: this.remarks,
-          components: this.rowData,
-        })
-        .catch((err) => console.log(err));
-        console.log(result.data);
-      if (result) {
-        alert("저장되었습니다.");
+      for(let i = 0; i < this.rowData.length; i ++) {
+        let row = this.rowData[i + 3];
+        let obj = {
+          cmpds_no: row.cmpds_no,
+          bom_code: this.rowData[0].bom_code,
+          cmpds_prdlst_code: row.cmpds_prdlst_code,
+          cmpds_prdlst_name: row.cmpds_prdlst_name, 
+          stndrd_y: row.stndrd_y,
+          unit: row.unit,
+          cnsum_count: row.cnsum_count
+        }
+
+        let result = await axios.post(`${ajaxUrl}/bom`, obj)
+                                .catch(err => console.log(err));
+        if (result) {
+          alert("저장되었습니다.");
+          return;
+        }             
+      }
+      
+    },
+    async update(){
+      for(let i = 0; i < this.rowData.length; i ++) {
+        let row = this.rowData[i];
+        let obj = {
+          cnsum_count: row.cnsum_count
+        }
+        console.log('obj',obj);
+        console.log('row',row);
+        let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${this.rowData[i].cmpds_no}`,obj)
+                                      .catch(err => console.log(err));
       }
     },
     
-    async update() {
-  // rowData 배열을 순회하면서 각 항목을 업데이트하기 위한 API 호출 준비
-  for (let i = 0; i < this.rowData.length; i++) {
-    let row = this.rowData[i];
-    let obj = {
-      cnsum_count: row.cnsum_count
-    };
+//    async update() {
+//   // 각 행의 데이터를 개별적으로 업데이트
+//   const promises = this.rowData.map(async (row) => {
+//     let obj = {
+//       cnsum_count: row.cnsum_count, // 수정하려는 필드 값
+//     };
 
-    try {
-      // 각 객체를 서버에 보내는 비동기 요청
-      let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${row.cmpds_no}`, obj);
-      
-      // 응답 상태 확인
-      if (result.data.result) {
-        console.log(`업데이트 성공: ${row.cmpds_no}`);
-      } else {
-        console.error(`업데이트 실패: ${row.cmpds_no}`);
-        alert(`소모품 코드 ${row.cmpds_no}에 대한 수정에 실패했습니다.`);
-        return;  // 실패하면 나머지 요청을 하지 않고 종료
-      }
-    } catch (err) {
-      // 오류 처리
-      console.error('업데이트 오류 발생:', err);
-      alert(`소모품 코드 ${row.cmpds_no}에 대한 수정 중 오류가 발생했습니다.`);
-      return;  // 실패하면 나머지 요청을 하지 않고 종료
-    }
-  }
+//     try {
+//       // API 호출 (row의 고유 ID 사용)
+//       let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${row.cmpds_no}`, obj);
 
-  // 모든 업데이트가 완료되면 성공 메시지
-  alert('모든 소모품 데이터가 성공적으로 수정되었습니다.');
-} , 
+//       if (result.data.result) {
+//         console.log(`업데이트 성공: ${row.cmpds_no}`);
+//       } else {
+//         console.error(`업데이트 실패: ${row.cmpds_no}`);
+//         throw new Error(`업데이트 실패: ${row.cmpds_no}`);
+//       }
+//     } catch (err) {
+//       // 오류 처리
+//       console.error(`업데이트 오류 (${row.cmpds_no}):`, err.message);
+//       alert(`소모품 코드 ${row.cmpds_no}에 대한 수정에 실패했습니다.`);
+//       throw err; // 전체 작업 중단
+//     }
+//   });
+
+//   try {
+//     // 모든 업데이트 완료 여부 확인
+//     await Promise.all(promises);
+//     alert("모든 소모품 데이터가 성공적으로 수정되었습니다.");
+//   } catch (err) {
+//     console.error("일부 행 업데이트에 실패했습니다.", err.message);
+//   }
+// }, 
     // 셀 클릭 시의 이벤트 핸들러 
     onCellClicked(event) {
       console.log("선택된 셀:", event);
