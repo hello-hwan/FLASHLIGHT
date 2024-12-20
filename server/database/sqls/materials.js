@@ -108,15 +108,15 @@ WHERE   m.usgstt = 'MU02'
 const mt_fromOrder =
 `
 SELECT m.mtril_name AS name,         
-       m.mtril_code AS code, 
+       m.prd_code AS code, 
        m.pass_amount AS qy, 
        m.mtril_check_code AS checkCode, 
        s.unit AS unit, 
        CURDATE() AS wrdate          
-FROM material_inspection_check m JOIN mtril s 
-                                   ON (m.mtril_code = s.mtril_code)
+FROM inspection_check m JOIN mtril s 
+                                   ON (m.prd_code = s.mtril_code)
 WHERE  m.mtril_check_code NOT IN (SELECT t.mtril_check_code
-				  FROM   mtril_wrhousing t);
+				  FROM   mtril_wrhousing t)
 `;
 
 //자재 입고 테이블에 insert, 생산 반환 리스트 상태 업데이트

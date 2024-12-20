@@ -3,13 +3,15 @@ const mariaDB = require('../database/mapper.js');
 
 //자재 반환 조회
 const returnMt = async ()=> {
-    let list = await mariaDB.query('mt_fromProduction');
+    let list = await mariaDB.query('mt_fromProduction')
+                            .catch(err=> console.log(err));
     return list;
 };
 
 //자재 품질검사 완료 조회
 const orderMt = async () => {
-    let list = await mariaDB.query('mt_fromOrder');
+    let list = await mariaDB.query('mt_fromOrder')
+                            .catch(err=>console.log(err));
     return list;
 };
 
@@ -24,8 +26,11 @@ const insertMtWrhous = async(wrhousingInfo) => {
         wrhousingInfo.empl_no,
         wrhousingInfo.wrhousng_date,
         wrhousingInfo.mtril_lot
-    ]);
-    if( result.insertId != null){
+    ]).catch(err=>console.log(err));
+    //결과 확인 1이면 성공
+    console.log(result);
+
+    if( result == 1){
         return 'success'; 
     }else{
         return 'fail';
