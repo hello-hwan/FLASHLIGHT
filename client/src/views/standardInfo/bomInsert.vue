@@ -174,17 +174,20 @@ export default {
       this.rowData = [...this.rowData, newRow];
     },
     async cmpdsInsert() {
-      let obj = this.rowData.map( row => ({  
-        cmpds_no: row.소모품번호,
-        bom_code: row.bom코드, 
-        cmpds_prdlst_code: row.소모품코드,   
-        cmpds_prdlst_name: row.소모품명, 
-        stndrd_x: row.규격x,
-        stndrd_y: row.규격y,
-        stndrd_z: row.규격z,  
-        unit: row.단위,  
-        cnsum_count: row.소모량, 
-      })); 
+
+      console.log(params.data);
+
+      // let obj = {  
+      //   cmpds_no: row.소모품번호,
+      //   bom_code: row.bom코드, 
+      //   cmpds_prdlst_code: row.소모품코드,   
+      //   cmpds_prdlst_name: row.소모품명, 
+      //   stndrd_x: row.규격x,
+      //   stndrd_y: row.규격y,
+      //   stndrd_z: row.규격z,  
+      //   unit: row.단위,  
+      //   cnsum_count: row.소모량, 
+      // }; 
 
       console.log('obj',obj);
       let result = await axios.post(`${ajaxUrl}/bom`, obj).catch(err => {

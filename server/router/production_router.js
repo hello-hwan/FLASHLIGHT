@@ -4,9 +4,11 @@ const express = require('express');
 const router = express.Router();
 const prodService = require('../service/production_service.js');
 
-router.get('/prod/search', async (req, res) => {
+// 공통 코드 조회
+router.get('/prod/search/:code', async (req, res) => {
+  let code = req.params.code;
     prodService
-    .findcmmn()
+    .findcmmn(code)
     .then(list => {
       res.send(list);
     })
@@ -15,10 +17,9 @@ router.get('/prod/search', async (req, res) => {
     })  
 });
 
-router.get('/prod/flowchart', async (req, res) => {
-  // let code = req.params.code;
+router.get('/prod/drctlist', async (req, res) => {
   prodService
-  .searchflowchart()
+  .drctlist()
   .then(list => {
     res.send(list);
   })
@@ -27,40 +28,8 @@ router.get('/prod/flowchart', async (req, res) => {
   })
 });
 
-router.get('/prod/order', async (req, res) => {
-  prodService
-  .searchorder()
-  .then(list => {
-    res.send(list);
-  })
-  .catch(err => {
-    res.status(500).send('Fail Process');
-  })
-});
 
-router.get('/prod/usetime/:code', async (req, res) => {
-  let code = req.params.code;
-  prodService
-  .searchtime(code)
-  .then(list => {
-    res.send(list);
-  })
-  .catch(err => {
-    res.status(500).send('Fail Process');
-  })
-});
-
-router.get('/prod/useqy/:code', async (req, res) => {
-  let code = req.params.code;
-  prodService
-  .searchuseqy(code)
-  .then(list => {
-    res.send(list);
-  })
-  .catch(err => {
-    res.status(500).send('Fail Process');
-  })
-})
+// ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
 
 router.get('/prod/total', async (req, res) => {
   prodService.total().then(list => {

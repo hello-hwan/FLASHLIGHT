@@ -224,8 +224,6 @@ export default {
                     console.log(check_code);
                 }
 
-
-
                 let mtril_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchmtnm/${this.rowData[i].mtril_nm}`)
                     .catch(err => console.log(err))
                 let procs_matrl_insert = [
