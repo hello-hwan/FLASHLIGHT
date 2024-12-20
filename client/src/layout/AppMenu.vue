@@ -46,7 +46,7 @@ const model = ref([
                 items: [
                     {
                         label: '재고 조회',
-                        to: 'mtrilQy'
+                        to: '/materials/mtrilQy'
                     },
                     {
                         label: '발주 관리',
@@ -58,7 +58,7 @@ const model = ref([
                     },
                     {
                         label: '입고 관리',
-                        to: 'wrhousing'
+                        to: '/materials/wrhousing'
                     },
                     {
                         label: '입고 조회',
@@ -66,7 +66,7 @@ const model = ref([
                     },
                     {
                         label: '출고 관리',
-                        to: '/'
+                        to: '/materials/dlivy'
                     },
                     {
                         label: '출고 조회',
@@ -108,12 +108,8 @@ const model = ref([
                 items: [
                     {
                         label: '품질 검사 요청',
-                        to: '/'
-                    },
-                    {
-                        label: '품질 검사 관리',
-                        to: '/'
-                    },
+                        to: '/quality/qualityRequest'
+                    },                   
                     {
                         label: '품질 검사 결과',
                         to: '/'
@@ -125,11 +121,11 @@ const model = ref([
                 items: [
                     {
                         label: '설비 상태 조회',
-                        to: '/'
+                        to: '/equipments/eqpList'
                     },
                     {
                         label: '점검 일정',
-                        to: '/'
+                        to: '/equipments/checkSchdul'
                     },
                     {
                         label: '점검 일정 현황',
@@ -190,7 +186,7 @@ const model = ref([
                     },
                     {
                         label: '반제품 입고 관리',
-                        to: '/'
+                        to: '/logistics/prductNList'
                     },
                     {
                         label: '반제품 입고 조회',
@@ -260,12 +256,12 @@ const model = ref([
                     },
                     {
                         label: '자재 관리',
-                        to: '/'
+                        to: '/standardInfo/bomManage'
                     },
                     {
                         label: '자재 조회',
-                        to: '/'
-                    },
+                        to: '/standardInfo/prductNList'
+                    }, 
                     {
                         label: 'BOM 관리',
                         to: '/standardInfo/bomInsert'
@@ -276,15 +272,15 @@ const model = ref([
                     },
                     {
                         label: '공정 흐름도 관리',
-                        to: '/'
+                        to: '/standardInfo/procsFlowchartinsert'
                     },
                     {
                         label: '공정 흐름도 조회',
-                        to: '/'
+                        to: '/standardInfo/procsFlowchartList'
                     },
                     {
                         label: '품질 검사 항목 관리',
-                        to: '/'
+                        to: '/standardInfo/qiList'
                     },
                 ]
             },  

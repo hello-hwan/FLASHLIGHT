@@ -1,17 +1,41 @@
 <template>
     <div>
 
-        <!--반환 자재 리스트-->
+    <!--주문 자재 리스트-->
+      <v-card
+        class="mx-auto card-custom"
+        style=" border-bottom-right-radius: 13px;
+                border-bottom-left-radius: 13px;"
+        >
+        <template v-slot:title>
+          <span class="font-weight-black">검사 통과 자재 리스트</span>
+        </template>
+    
+        <v-card-text class="bg-surface-light pt-4">
+            <AgGridVue style=" height: 519px; margin: 0 auto;"
+                @grid-ready="onGridReady"
+                :defaultColDef="defaultColDef"
+                :rowData="orderRowData"
+                :gridOptions="gridOptionsOrder"
+                class="ag-theme-alpine"
+                id="grid-two">
+            </AgGridVue>
+        </v-card-text>
+      </v-card>
+
+    <!--반환 자재 리스트-->
         <v-card
         class="mx-auto"
-        style="border-radius: 13px; margin-bottom: 30px;"
+        style=" border-bottom-right-radius: 13px;
+                border-bottom-left-radius: 13px;
+                margin-bottom: 30px;"
         >
         <template v-slot:title>
           <span class="font-weight-black">반환 자재 리스트</span>
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" height: 500px; margin: 0 auto;"
+            <AgGridVue style=" height: 519px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 :defaultColDef="defaultColDef"
                 :rowData="returnRowData"
@@ -22,26 +46,7 @@
         </v-card-text>
       </v-card>
     
-      <!--주문 자재 리스트-->
-      <v-card
-        class="mx-auto"
-        style="border-radius: 13px;"
-      >
-        <template v-slot:title>
-          <span class="font-weight-black">주문 자재 리스트</span>
-        </template>
-    
-        <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" height: 500px; margin: 0 auto;"
-                @grid-ready="onGridReady"
-                :defaultColDef="defaultColDef"
-                :rowData="orderRowData"
-                :gridOptions="gridOptionsOrder"
-                class="ag-theme-alpine"
-                id="grid-two">
-            </AgGridVue>
-        </v-card-text>
-      </v-card>
+
 
       <btn />
     </div>
@@ -56,7 +61,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import userDateUtils from '@/utils/useDates.js';
 //import CustomButtonComponent from "@/components/materials/wrhousingButtonComponent.vue";
-import wrhousingBtn from "@/components/materials/successBanner.vue";
+import wrhousingBtn from "@/components/materials/mtWrhousingBtn.vue";
 
 export default {
     data() {
@@ -72,7 +77,7 @@ export default {
         this.getReturnList();
         this.returnColDefs = [
         { field: "lot", hide: true, suppressToolPanel: true}, //hide: true, suppressToolPanel: true --> 행 숨김
-        { field: "name", headerName:"자재명" },
+        { field: "name", headerName:"자재명"},
         { field: "code", headerName:"자재코드" },
         { field: "qy", headerName:"반환량" },
         { field: "unit", headerName:"단위" },
@@ -99,7 +104,7 @@ export default {
         this.getOrderList();
 
         this.orderColDefs = [
-        { field: "checkCode", headerName: "검사코드", },
+        { field: "checkCode", headerName: "검사코드"},
         { field: "name", headerName:"자재명" },
         { field: "code", headerName:"자재코드" },
         { field: "qy", headerName:"반환량" },
@@ -129,13 +134,14 @@ export default {
     },
     methods: {
         async getReturnList() {
-            let result = await axios.get(`${ajaxUrl}/returnMt`)
+            let result = await axios.get(`${ajaxUrl}/mtril/returnMt`)
                 .catch(err => console.log(err));
             this.returnRowData = result.data;
         },
         async getOrderList() {
-            let result = await axios.get(`${ajaxUrl}/orderMt`)
+            let result = await axios.get(`${ajaxUrl}/mtril/orderMt`)
                 .catch(err => console.log(err));
+            console.log(result);
             this.orderRowData = result.data;
         },
         //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
@@ -148,3 +154,11 @@ export default {
 };
 </script>
 
+<style>
+.card-custom {
+    border-top: 1px solid #9bb0be;
+    border-bottom-right-radius: 13px;
+    border-bottom-left-radius: 13px;
+    margin-bottom: 30px;
+}
+</style>

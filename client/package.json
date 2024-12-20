@@ -10,18 +10,19 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@primevue/themes": "^4.2.4",
-    "ag-grid-vue3": "^33.0.2",
+    "ag-grid-community": "^33.0.2",
+    "ag-grid-vue3": "^32.1.0",
     "axios": "^1.7.9",
     "chart.js": "3.3.2",
     "core-js": "^3.39.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.4",
-    "vue": "^3.4.34",
+    "vue": "^3.4.34", 
     "vue-class-component": "^8.0.0-rc.1",
     "vue-router": "^4.4.0",
     "vuex": "^4.0.0",
     "vuex-persistedstate": "^4.1.0"
-  },
+  }, 
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.2.4",
     "@rushstack/eslint-patch": "^1.8.0",

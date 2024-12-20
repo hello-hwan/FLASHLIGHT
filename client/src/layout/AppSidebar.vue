@@ -3,7 +3,7 @@ import AppMenu from './AppMenu.vue';
 </script>
 
 <template>
-    <div class="layout-sidebar" style="left: 0rem">
+    <div class="layout-sidebar" style="left: 0rem; border-radius: 0;">
         <app-menu></app-menu>
     </div>
 </template>
@@ -18,7 +18,7 @@ import AppMenu from './AppMenu.vue';
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
-    top: 3.7rem;
+    top: 3rem;
     transition: transform var(--layout-section-transition-duration), left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
     border-radius: var(--content-border-radius);

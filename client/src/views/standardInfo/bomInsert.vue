@@ -1,145 +1,214 @@
 <template>
   <div>
-    
-    <table>
-      <h3>BOM등록,수정</h3>
-      <tr>
-        <th>
-          <div class="row g-3 align-items-center">
-            <div class="col-auto">
-              <label for="inputPassword6" class="col-form-label">품목코드</label>
-            </div>
-            <div class="col-auto">
-              <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-            </div>
-          </div>
-        </th>
-        <th>
-          <div class="row g-3 align-items-center">
-            <div class="col-auto">
-              <label for="inputPassword6" class="col-form-label">품목명</label>
-            </div>
-            <div class="col-auto">
-              <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-            </div>
-          </div>
-        </th>
-        <th>
-          <div class="row g-1 align-items-center">
-            <div class="col-auto">
-              <label for="inputPassword6" class="col-form-label">기본생산수량</label>
-            </div>
-            <div class="col-auto">
-              <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-            </div>
-          </div>
-        </th>
-      </tr>
-    </table>
+    <div class="row g-3 align-items-center">
+  <div class="col-auto">
+    <label for="inputPassword6" class="col-form-label">BOM코드</label>
+  </div>
+  <div class="col-auto">
+    <input type="text" id="bomcode" class="form-control" aria-describedby="passwordHelpInline">
+  </div>
+  <div class="col-auto">
+    <button type="button" class="btn btn-primary" @click="">검색</button>
+  </div>
+</div>
+    <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+    <template v-slot:title>
+        <span class="font-weight-black">BOM조회</span>
+    </template>
 
-    <table>
-      <h3>소요재료</h3>
-      <thead>
-        <tr>
-          <th>소모품목코드</th>
-          <th>소모품목명</th>
-          <th>규격</th>
-          <th>단위</th>
-          <th>소모량</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>
-            <div class="row g-1 align-items-center">
-              <div class="col-auto">
-                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-              </div>
-            </div>
-          </th>
-          <th>
-            <div class="row g-1 align-items-center">
-              <div class="col-auto">
-                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-              </div>
-            </div>
-          </th>
-          <th>
-            <div class="row g-1 align-items-center">
-              <div class="col-auto">
-                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-              </div>
-            </div>
-          </th>
-          <th>
-            <div class="row g-1 align-items-center">
-              <div class="col-auto">
-                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-              </div>
-            </div>
-          </th>
-          <th>
-            <div class="row g-1 align-items-center">
-              <div class="col-auto">
-                <input type="password" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
-              </div>
-            </div>
-          </th>
-          <th>
-            <button type="button" class="btn btn-danger">-</button>
-          </th>
-          <th>
-            <button type="button" class="btn btn-primary">+</button>
-          </th>
-        </tr>
-      </tbody>
-    </table>
-    
+    <v-card-text class="bg-surface-light pt-4">
+        <AgGridVue style=" height: 500px; margin: 0 auto;"
+            @grid-ready="onGridReady"
+            :rowData="rowDataSelect"
+            :columnDefs="colDefsSelect"
+            :rowSelection="rowSelection"
+            @cellClicked="onCellClicked"
+            :gridOptions="gridOptionsReturn"
+            class="ag-theme-alpine"
+            id="grid-one">
+        </AgGridVue>
+    </v-card-text>
+    </v-card>
+  </div>
 
+  <div>
+    <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+      <template v-slot:title>
+        <span class="font-weight-black">소요재료</span>
+      </template>
+
+      <v-card-text class="bg-surface-light pt-4">
+        <AgGridVue
+          style="height: 300px; margin: 0 auto;"
+          @grid-ready="onGridReady"
+          :rowData="rowData"
+          :columnDefs="colDefs"
+          :defaultColDef="defaultColDef"
+          :gridOptions="gridOptions"
+          class="ag-theme-alpine">
+        </AgGridVue>
+
+        <div style="margin-top: 20px; text-align: right;">
+          <button class="btn btn-primary" @click="addRow">행 추가</button>
+        </div>
+      </v-card-text>
+    </v-card>
+        <div> 
+          <button class="btn btn-primary" @click="cmpdsInsert">등록</button>
+        </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import { AgGridVue } from "ag-grid-vue3";
+import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
+
+
 export default {
-  data() {
-      return {
-          bomList: [],
-          rowData: '',
-          colDefs: '',
-      };
+  components: {
+    AgGridVue,
   },
-  created() {
-    this.getbomList();
-    this.colDefs = ref([
-          { field: "bom_code", headerName:"BOM코드" },
-          { field: "prdlst_code", headerName:"제품코드" },
-          { field: "prdist_name", headerName:"제품명" },
-          { field: "prdctn_qy", headerName:"기본생산수량" },
-      ]);
+  data() {
+    return {
+      bomcode: {
+        bomcode: ''
+      },
+      bomList: [],
+      rowDataSelect: '',
+      colDefsSelect: '',
+      // rowData 빈공간 생성
+      cmpdsInsert: [],
+      rowData: [
+        { 소모품번호:"", bom코드:"", 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" },
+      ],
+      colDefs: [
+        { field: "소모품번호", headerName: "소모품번호", editable: true },
+        { field: "bom코드", headerName: "bom코드", editable: true },
+        { field: "소모품코드", headerName: "소모품코드", editable: true },
+        { field: "소모품명", headerName: "소모품명", editable: true },
+        { field: "규격x", headerName: "규격x", editable: true },
+        { field: "규격y", headerName: "규격y", editable: true },
+        { field: "규격z", headerName: "규격z", editable: true },
+        { field: "단위", headerName: "단위", editable: true },
+        { field: "소모량", headerName: "소모량", editable: true },
+        { field: "update", headerName: "수정", cellRenderer:(params) => {
+          const button = document.createElement('button');
+          button.innerText = '수정';
+          button.className = 'btn btn-success';
+          return button;
+        }},
+        { field: "delete", headerName: "삭제", cellRenderer:(params) => {
+          const button = document.createElement('button');
+          button.innerText = '삭제';
+          button.className = 'btn btn-danger';
+          button.addEventListener('click', () => {
+            this.rowData = this.rowData.filter(row => row !== params.data);
+            console.log(params.data.소모품번호);
+            let bom_no = params.data.소모품번호;
+            // testdelete(){
+            //   let result = await axios.delete(`${ajaxUrl}/testdel`,bom_no);
+              
+            // }
+          });
+          return button;
+        }}
+      ],
+      defaultColDef: {
+        resizable: true,
+        sortable: true,
+        flex: 1,
+        minWidth: 100,
+      },
+      gridOptions: {
+        rowSelection: "single", // 단일 행 선택
+      },
+    };
+  },
+  created(){
+    // this.getbomList();
+    // this.colDefs = ([
+    //       { field: "cmpds_no", headerName:"소모품코드" },
+    //       { field: "cmpds_prdlst_name", headerName:"소모품명" },
+    //       { field: "stndrd_x", headerName:"규격x" },
+    //       { field: "stndrd_y", headerName:"규격y" },
+    //       { field: "stndrd_z", headerName:"규격z" },
+    //       { field: "unit", headerName:"단위" },
+    //       { field: "cnsum_count", headerName:"소모량" }
+    // ])
+    // this.gridOptionsReturn = {
+    //             columnDefs: this.returnColDefs,
+    //             pagination: true,
+    //             paginationPageSize: 10,
+    //             paginationPageSizeSelector: [10, 20, 50, 100],
+    //             paginateChildRows: true,
+    //             animateRows: false,
+    //             defaultColDef: {
+    //                 filter: true,
+    //                 flex: 1,
+    //                 minWidth: 10
+    //             }
+    //         };
   },
   methods: {
-      async getbomList() {
-          let result = await axios.get(`${ajaxUrl}/bom`)
-              .catch(err => console.log(err));
-              //console.log(result.data);
-          this.bomList = result.data;
-          this.rowData = ref(this.bomList);
-          console.log(result.data);
-          console.log(this.bomList);
-      },
-    }
+    // getbomList() {
+    //       let bomcode = this.bomcode;
+    //       console.log(this.bomcode);
+    //       console.log('bomcode',bomcode);
+    //       let result = axios.get(`${ajaxUrl}/bom/${bomcode}`)
+    //           .catch(err => console.log(err));
+    //       this.bomList = result.data; 
+    //       this.rowDataSelect = this.bomList;
+    //   },
+    // 그리드 초기화
+    onGridReady(params) {
+      this.gridApi = params.api;
+      this.gridColumnApi = params.columnApi;
+    },
+    // 행 추가
+    addRow() {
+      const newRow = { 소모품번호:"",bom코드:"" , 소모품코드: "", 소모품명: "", 규격x: "", 규격y: "", 규격z: "", 단위: "", 소모량: "" };
+      this.rowData = [...this.rowData, newRow];
+    },
+    async cmpdsInsert() {
 
-};
+      console.log(params.data);
+
+      // let obj = {  
+      //   cmpds_no: row.소모품번호,
+      //   bom_code: row.bom코드, 
+      //   cmpds_prdlst_code: row.소모품코드,   
+      //   cmpds_prdlst_name: row.소모품명, 
+      //   stndrd_x: row.규격x,
+      //   stndrd_y: row.규격y,
+      //   stndrd_z: row.규격z,  
+      //   unit: row.단위,  
+      //   cnsum_count: row.소모량, 
+      // }; 
+
+      console.log('obj',obj);
+      let result = await axios.post(`${ajaxUrl}/bom`, obj).catch(err => {
+        console.error('요청 중 오류:', err);
+        return { data: null }; // 기본값 설정 
+      });
+ 
+      if (result?.data) {
+        console.log('등록 성공:', result.data);
+      } else {
+        console.error('등록 실패: 응답 데이터가 없습니다.');  
+      } 
+      
+    },
+  },
+}
 </script>
 
 <style>
-table{
-  font-size: 12px;
+/* 스타일 조정 */
+.ag-theme-alpine {
+  font-size: 14px;
 }
 </style>
