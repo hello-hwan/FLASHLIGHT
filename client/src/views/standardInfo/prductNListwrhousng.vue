@@ -117,7 +117,7 @@ components: {
     AgGridVue, // Add Vue Data Grid component
 },
 methods: {
-  onCellClicked(event) {
+  async onCellClicked(event) {
       // '상세보기' 열이 아닌 경우 클릭 무시
       if (event.colDef.field !== "입고") {
           return;
@@ -136,8 +136,10 @@ methods: {
     ]
       console.log('obj',obj);
 
-      let result = axios.post(`${ajaxUrl}/prduct_n_wrhousng`, obj)
-                        .catch(err => console.log(err)); 
+      let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousng`, obj)
+                        .catch(err => console.log(err));
+
+    //   let prduct_n_wrhousngListDel = await axios.delete(`${ajaxUrl}/`)
 
   },
     // 반제품 반환제품 리스트로 select 변경해야됨
