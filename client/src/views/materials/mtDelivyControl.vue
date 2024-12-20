@@ -3,24 +3,24 @@
     <!--자재 요청 리스트-->
     <v-card
         class="mx-auto"
-        style=" width: 36%; 
+        style=" width: 100%; 
                 border-bottom-right-radius: 13px;
                 border-bottom-left-radius: 13px;
                 display: inline-block;
-                margin-right: 30px;
-                margin-right: 2% !important;"
+                margin-bottom: 27px;"
       >
         <template v-slot:title>
           <span class="font-weight-black">자재 요청 리스트</span>
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" height: 600px; margin: 0 auto; "
+            <AgGridVue style=" margin: 0 auto; "
                 :defaultColDef="defaultColDef"
                 :rowData="reqRowData"
                 :gridOptions="gridOptionsReq"
                 :frameworkComponents="frameworkComponents"
                 class="ag-theme-alpine"
+                domLayout="autoHeight"
                 >
             </AgGridVue>
         </v-card-text>
@@ -30,6 +30,7 @@
       .value를 사용하지 않아도 template에서는 그대로 사용가능하다.
       스크립트 내부에서 값을 사용할 때는 .value를 사용해야 됨.-->
       <detailTable v-bind:code="reqCodeForCondition"/>
+
   </div>
 </template>
 
@@ -44,10 +45,6 @@ import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import goDetails from '@/components/materials/mtReqGotoDetails.vue'; //상세보기 버튼
 import detailTable from '@/components/materials/mtDetailTable.vue'; //요청 자재 상세보기 테이블
-import { useRouter } from 'vue-router'; //라우터
-
-//라우터 선언
-const router = useRouter();
 
 //요청명리스트 담을 변수
 const reqRowData = ref([]);
@@ -72,7 +69,7 @@ const customDateFormat = (params) => {
 
 //요청명 리스트 컬럼 정의
 const reqColDefs = [
-  { field: "name", headerName:"요청명"},
+  { field: "name", headerName:"요청명", flex: 2.6},
   { field: "code", headerName:"요청 코드" },
   { field: "req_date", headerName:"요청 날짜" , valueFormatter: customDateFormat},
   { field: "action", headerName:"상세보기", cellRenderer: goDetails, flex:0.8}
@@ -85,7 +82,6 @@ const reqCodeForCondition = ref('');
 const getReqCode = (reqCode) => {
   reqCodeForCondition.value = reqCode;
   console.log('부모 컴포넌트: ', reqCodeForCondition.value); //확인
- // router.push({components : detailTable, params : { code : reqCodeForCondition._value}}); //데이터 보내기
 }
 
 //ag grid 옵션 설정
@@ -100,8 +96,8 @@ const gridOptionsReq = {
       },
       columnDefs: reqColDefs,
       pagination: true,
-      paginationPageSize: 10,
-      paginationPageSizeSelector: [10, 20],
+      paginationPageSize: 5,
+      paginationPageSizeSelector: [5, 10],
       paginateChildRows: true,
       animateRows: false,
       defaultColDef: {
