@@ -1,9 +1,23 @@
 <template>
     <div>
-        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
-            @grid-ready="onGridReady" class="ag-theme-alpine">
-        </ag-grid-vue>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 70%; font-size: 30px;">
+                        설비 상태 조회
+                    </th>
+                    <th style="width: 30%;">
+                    </th>
+                </tr>
+            </thead>
+        </table>
+        <div>
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
+                @grid-ready="onGridReady" class="ag-theme-alpine">
+            </ag-grid-vue>
+        </div>
     </div>
+
 </template>
 
 <script>
@@ -21,7 +35,7 @@ export default {
         return {
             eqpList: [],
             rowData: [],
-            colDefs: [], 
+            colDefs: [],
         };
     },
     created() {
