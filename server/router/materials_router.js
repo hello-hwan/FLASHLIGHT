@@ -24,10 +24,10 @@ router.post('/mtril/mtWrhous', async(req, res) => {
     res.send(result);
 });
 
-//출고 요청 자재리스트
+//출고 요청 요청명
 router.get('/mtril/mtRequest', async(req, res) => {
     let requestList = await mtrilService.requestList();
-    console.log(requestList);
+    //console.log(requestList);
     res.send(requestList);
 });
 
@@ -44,4 +44,5 @@ router.post('/mtril/mtDlivy', async (req,res)=>{
     let result = await mtrilService.dlivyMt(dlivyInfo);        
     res.send(result);
 });
+
 module.exports = router;

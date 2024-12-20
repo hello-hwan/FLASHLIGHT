@@ -28,10 +28,12 @@ router.get('/bom/:bomCode', async (req, res) => {
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
   let bominfo = req.body;
-  console.log('router',bominfo);
-  let result = await standard_info_service.bominsert(bominfo);
+  console.log('router',bominfo); 
+  let result = await standard_info_service.bomInsert(bominfo);
   res.send(result);
 });
+
+
 
 // 품질검사항목관리
 router.get('/standardInfo/qiList', async (req, res) => {
@@ -40,7 +42,7 @@ router.get('/standardInfo/qiList', async (req, res) => {
   let result = await standard_info_service.qiList(qiNo);
   res.send(result);
 });
-
+ 
 // 공정 흐름도 조회
 router.get('/procsFlowchartList', async (req, res) => {
     let list = await standard_info_service.procsFlowchartList();
@@ -54,4 +56,73 @@ router.get('/procsFlowchartDetail/:prd_code', async (req, res) => {
   res.send(list);
 });
  
+// 공정 흐름도 상세 조회 상단
+router.get('/procsFlowchartDetailTop/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.procsFlowchartDetailTop(prd_code);
+  res.send(list);
+});
+
+// 공정 흐름도에 사용하는 BOM 코드 조회
+router.get('/procsFlowchartSearchBom/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.procsFlowchartSearchBom(prd_code);
+  res.send(list);
+});
+
+// 공정 흐름도에 사용하는 자재명 조회
+router.get('/procsFlowchartSearchmtnm/:mtril_name', async (req, res) => {
+  let mtril_name = req.params.mtril_name;
+  let list = await standard_info_service.procsFlowchartSearchmtnm(mtril_name);
+  res.send(list);
+});
+
+// 공정 흐름도 생성
+router.post('/procsFlowchartInsert', async(req, res)=>{
+  let Insert = req.body;
+  let result = await standard_info_service.procsFlowchartInsert(Insert);
+  res.send(result);
+});
+
+// 공정별 재료 소모 생성
+router.post('/procsMatrlInsert', async(req, res)=>{
+  let Insert = req.body;
+  let result = await standard_info_service.procsMatrlInsert(Insert);
+  res.send(result);
+});
+
+// 공정별 작업기기 생성
+router.post('/procsMchnInsert', async(req, res)=>{
+  let Insert = req.body;
+  let result = await standard_info_service.procsMchnInsert(Insert);
+  res.send(result);
+});
+
+// 품목 코드로 공정 코드 조회
+router.get('/prdCodeToProcsCode/:prd_code', async(req, res)=>{
+  let prd_code = req.params.prd_code;
+  let result = await standard_info_service.prdCodeToProcsCode(prd_code);
+  res.send(result);
+});
+
+// 공정 코드로 공정 흐름도 삭제 (테이블 3개)
+router.delete('/ProcsCodeToDeleteMchn/:procs_code', async(req, res)=>{
+  let procs_code = req.params.procs_code;
+  let result = await standard_info_service.ProcsCodeToDeleteMchn(procs_code);
+  res.send(result);
+});
+
+router.delete('/ProcsCodeToDeleteMatrl/:procs_code', async(req, res)=>{
+  let procs_code = req.params.procs_code;
+  let result = await standard_info_service.ProcsCodeToDeleteMatrl(procs_code);
+  res.send(result);
+});
+
+router.delete('/ProcsCodeToDeleteFlowchart/:procs_code', async(req, res)=>{
+  let procs_code = req.params.procs_code;
+  let result = await standard_info_service.ProcsCodeToDeleteFlowchart(procs_code);
+  res.send(result);
+});
+
+
 module.exports = router;     

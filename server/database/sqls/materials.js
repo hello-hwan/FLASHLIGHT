@@ -131,7 +131,7 @@ CALL mt_wrhousing_process(
     ?,       
     ?,      
     ?
-);
+)
 `;
 
 //자재 입고 조회 - mt008 
@@ -147,13 +147,14 @@ const mt_wrhousngListWithKey =
 //자재 출고 관리 - mt009 요청가져오기
 const mt_requestList =
 `
-SELECT req_name,
-        req_code,
-        req_de
+SELECT req_name name,
+        prdctn_code code,
+        req_de req_date
 FROM    thng_req
 WHERE   procs_at = '미처리'
 AND     prdctn_code IS NOT NULL
-GROUP BY req_code
+AND     prd_se = '자재'
+GROUP BY prdctn_code
 `;
 
 //자재 출고 관리 - mt009 자재별 상세 수량 출력
@@ -163,19 +164,31 @@ SELECT  m.req_name AS req_name,
 	m.req_code AS req_code,
 	m.prd_nm AS mt_name,
 	m.prd_code AS mt_code,
-	CONCAT(curdate(), '-', nextval(mt_lot_seq)) AS lot,
 	m.req_qy AS qy,
-	s.unit AS unit
+	s.unit AS unit,
+        m.prdctn_code AS prdctn_code
 FROM    thng_req m JOIN mtril s
 		     ON (m.prd_code = s.mtril_code)
 WHERE   procs_at = '미처리'
-AND     req_code = ?
+AND     prdctn_code = ?
+`;
+
+//자재 출고 관리 = mt009 자재 로트 수량 가져오기
+const mt_lotInvenList =
+`
+SELECT  mtril_lot,
+        mtril_qy
+FROM    MTRIL_WRHOUSING
+WHERE   mtril_code = ?
+AND     mtril_qy > 0
 `;
 
 //자재 출고 관리 - mt009 자재 출고 등록
 const mt_requestCheckOut =
 `
 CALL mt_dlivy_process(
+    ?,
+    ?,
     ?,
     ?,
     ?,
@@ -292,5 +305,6 @@ module.exports = {
         mt_wrhousingInsert,
         mt_requestList,
         mt_requestDetails,
+        mt_lotInvenList,
         mt_requestCheckOut
 };
