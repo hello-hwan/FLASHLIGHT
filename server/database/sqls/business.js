@@ -28,9 +28,29 @@ const orderListInsert =
 `INSERT INTO order_requst (prd_code, order_no, prd_name, untpc, order_qy, splpc, taxamt, smprice, process_status, prdctn_at)
 values (?, ?, ?, ?, ?, ?, ?, ?, 'OD01', 'OP01')`;
 */
+
+const orderRequestDetail = `
+SELECT r.order_no, 
+       r.p_code, 
+       r.order_date, 
+       r.dete, 
+       r.wrter, 
+       l.order_list_no, 
+       l.prd_code, 
+       l.order_qy, 
+       l.splpc 
+FROM order_requst r LEFT OUTER JOIN order_lists l
+                       ON r.order_no = l.order_no
+WHERE r.order_no = '?'`;
+
+const orderRequestDelete = `
+CALL p_delete_order_info(?)`;
+
 module.exports = {
     orderRequest,
-    orderRequestInsert
+    orderRequestInsert,
+    orderRequestDetail,
+    orderRequestDelete
 };
 
 

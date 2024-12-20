@@ -1,6 +1,7 @@
 //영업 라우터
 import orderList from '@/views/business/orderList.vue';
 import orderForm from '@/views/business/orderForm.vue';
+import orderInfo from '@/views/business/orderInfo.vue';
 
 const businessRoutes = [
     {
@@ -18,6 +19,12 @@ const businessRoutes = [
         path: 'orderForm',
         name: 'orderForm',
         component: orderForm
+    },
+    {
+        // 주문상세
+        path: 'orderList/:order_no',
+        name: 'orderInfo',
+        component: orderInfo
     }
 ]; 
 
