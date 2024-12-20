@@ -166,7 +166,7 @@ SELECT  m.req_name AS req_name,
 	m.prd_code AS mt_code,
 	m.req_qy AS qy,
 	s.unit AS unit,
-        m.prdctn_code prdctn_code
+        m.prdctn_code AS prdctn_code
 FROM    thng_req m JOIN mtril s
 		     ON (m.prd_code = s.mtril_code)
 WHERE   procs_at = '미처리'
@@ -187,6 +187,8 @@ AND     mtril_qy > 0
 const mt_requestCheckOut =
 `
 CALL mt_dlivy_process(
+    ?,
+    ?,
     ?,
     ?,
     ?,

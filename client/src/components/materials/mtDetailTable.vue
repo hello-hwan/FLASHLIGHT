@@ -3,6 +3,9 @@
     <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;">
+      <InputText type="text" v-model="emp_name" class="emp_info" readonly> <p>{{ emp_name }}</p></InputText>
+      <InputText type="text" v-model="emp_id" class="emp_info" readonly> <p>{{ emp_id }}</p></InputText>
+      
       <button type="button" class="btn btn-primary" 
        v-bind:disabled="isdlivyBtn"
        @click="registData"
@@ -41,12 +44,16 @@
 import { AgGridVue } from "ag-grid-vue3";
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
-import { ref, watch, defineProps } from "vue";
+import { ref, watch } from "vue";
 import axios from "axios";
 import { ajaxUrl } from '@/utils/commons.js';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
+
+//사원번호, 이름
+const emp_name = '최태백';
+const emp_id = 100;
 
 //출고버튼 보여주는걸 결정하는 boolean타입변수
 let isdlivyBtn = ref(true);
@@ -68,8 +75,7 @@ const ColDefs = [
   { field: "lot", headerName:"lot", flex: 2.5},
   { field: "lot_qy", headerName: "출고수량"},
   { field: "unit", headerName:"단위", flex: 0.8},
-  { field: 'prdcnt_code', hide: true, suppressToolPanel: true},
-  { field: 'empl_no', headerName:"출고 담당자", hide: true, suppressToolPanel: true}
+  { field: 'prdcnt_code', hide: true, suppressToolPanel: true}
 ];
 
 //요청명 리스트
@@ -132,12 +138,35 @@ const gridOptions = {
 //출고테이블 등록, 재고 수량 업데이트
 const registData = async() => {
   console.log(rowData.value[0]);
-  let result = await axios.post(`${ajaxUrl}/mtril/mtDlivy`,rowData.value );
-  console.log(result);
-//   if(result.state == 'success') {
-//     toast.add({ severity: 'success', summary: '출고 성공', detail: '처리가 완료되었습니다.', life: 3000 });
-//   } else {
-//     toast.add({ severity: 'error', summary: '출고 실패', detail: '문제가 생겼습니다.\n관리자에게 문의해주세요.', life: 3000 });
-//   }
+
+  //서버로 보낼 새로운배열 선언(empl_no가 추가됨)
+  let sendMtList = [];
+  for(let i=0; i<rowData.value.length; i++) {
+    //emp_id가 추가된 객체 생성
+    let newObj = {...rowData.value[i], empl_no : emp_id};
+
+    //배열에 추가
+    sendMtList.push(newObj);
+  };
+  console.log(sendMtList);
+  let result = await axios.post(`${ajaxUrl}/mtril/mtDlivy`,sendMtList )
+                          .catch(err=> console.log(err));
+  console.log(result.data);
+  if(result.data == 'success') {
+    //출고 성공 메시지
+    toast.add({ severity: 'success', summary: '출고 성공', detail: '처리가 완료되었습니다.', life: 3000 });
+    //행 초기화
+    rowData.value = [];
+  } else {
+    //출고 실패 메시지
+    toast.add({ severity: 'error', summary: '출고 실패', detail: '문제가 생겼습니다.\n관리자에게 문의해주세요.', life: 3000 });
+  }
 }
 </script>
+
+<style>
+.emp_info {
+  width: 100px;
+  margin-right: 20px;
+}
+</style>
