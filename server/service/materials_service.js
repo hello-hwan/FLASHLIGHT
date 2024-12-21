@@ -27,7 +27,8 @@ const insertMtWrhous = async(wrhousingInfo) => {
         wrhousingInfo.wrhousng_date,
         wrhousingInfo.mtril_lot
     ]).catch(err=>console.log(err));
-    console.log([
+    /*
+    console.log('배열 값 확인: ', [
         wrhousingInfo.mtril_check_code,
         wrhousingInfo.mtril_name,
         wrhousingInfo.mtril_code,
@@ -36,14 +37,12 @@ const insertMtWrhous = async(wrhousingInfo) => {
         wrhousingInfo.empl_no,
         wrhousingInfo.wrhousng_date,
         wrhousingInfo.mtril_lot
-    ]);
-    //결과 확인 1이면 성공
-    console.log("*************************", result);
+    ]); */
 
     if( result == 1){
-        return 'success'; 
+        return result; 
     }else{
-        return 'fail';
+        return result;
     };
 };
 

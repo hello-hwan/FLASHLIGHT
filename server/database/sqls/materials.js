@@ -107,7 +107,7 @@ WHERE   m.usgstt = 'MU02'
 //입고날짜는 js에서 당일 날짜를 보여주도록 한다.
 const mt_fromOrder =
 `
-SELECT m.prd_code AS name,         
+SELECT m.mtril_name AS name,         
        m.prd_code AS code, 
        m.pass_amount AS qy, 
        m.mtril_check_code AS checkCode, 
