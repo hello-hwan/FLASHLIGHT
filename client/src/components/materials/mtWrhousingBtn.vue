@@ -22,7 +22,7 @@ async function onButtonClicked() {
         mtril_name : data.name,
         mtril_code : data.code,
         mtril_qy : data.qy,
-        wrhousng_se : data.checkCode == null ? '반환' : '발주',
+        wrhousng_se : data.checkCode == null ? 'MW02' : 'MW01',
         empl_no: 100,   //로그인 정보 바탕으로 사원번호 가져오기 아직 구현되지 않음
         wrhousng_date: userDateUtils.dateFormat(data.wrdate, 'yyyy-MM-dd'),
         mtril_lot: data.lot == null ? '0' : data.lot
@@ -32,14 +32,13 @@ async function onButtonClicked() {
     let result = await axios.post(`${ajaxUrl}/mtril/mtWrhous`, obj)
                                .catch(err => console.log(err));
     let addRes = result;
-    console.log(addRes.data);
 
     //삭제
     props.params.api.applyTransaction({
         remove: [props.params.node.data]
     });
-
-    if(addRes.data = 'success') {
+    console.log('등록성공여부: ', addRes);
+    if(addRes = 'success') {
         //처리 완료 안내
         toast.add({ severity: 'success', summary: '성공', detail: '처리가 완료되었습니다.', life: 3000 });
 
