@@ -4,10 +4,12 @@
 
 const pr_seldrct = // 생산 지시 조회
 `
-SELECT procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time
+SELECT prdctn_code, procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time
 FROM prdctn_drct
 WHERE pre_begin_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
 OR pre_end_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
+GROUP BY model_nm
+ORDER BY pre_begin_time
 `;
 
 const pr_nem = // 재고 부족한 생산 계획 조회
@@ -15,6 +17,11 @@ const pr_nem = // 재고 부족한 생산 계획 조회
 
 `;
 
+const pr_eqp = // 설비 조회
+`
+SELECT eqp_code, model_nm
+FROM eqp
+`;
 
 
 
@@ -26,6 +33,13 @@ const pr_selcmmn = // 공통코드 목록 조회
 SELECT cmmn_name
 FROM cmmn
 WHERE cmmn_code = ?
+`;
+
+const pr_srcprd = // 제품명으로 조회시 코드랑 완전한 이름 뜨기
+`
+SELECT prdlst_code, prdlst_name
+FROM repduct
+WHERE prdlst_name LIKE CONCAT('%', ?, '%') 
 `;
 
 
@@ -87,11 +101,23 @@ ORDER BY 1;
 `;
 
 
+const pr_drctnodate = // 조건없이 더미데이터 나오는지 보기위함
+`
+SELECT prdctn_code, procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time, TIMESTAMPDIFF(hour, pre_begin_time, pre_end_time) AS drct_time
+FROM prdctn_drct
+WHERE pre_begin_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
+OR pre_end_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
+GROUP BY model_nm
+ORDER BY pre_begin_time
+`;
+
 
 module.exports = {
   pr_selcmmn,
   pr_seldrct,
   pr_nem,
+  pr_eqp,
+  pr_srcprd,
 
 
 
@@ -106,10 +132,11 @@ module.exports = {
 
 
 
-
-
+  
   pr_selorder,
   pr_selflowchart,
   pr_selsumtime,
-  pr_selsumqy
+  pr_selsumqy,
+  pr_drctnodate,
+  
 };

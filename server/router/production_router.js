@@ -28,6 +28,28 @@ router.get('/prod/drctlist', async (req, res) => {
   })
 });
 
+router.get('/prod/eqplist', async (req, res) => {
+  prodService
+  .eqplist()
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+router.get('/prod/prdlist/:name', async (req, res) => {
+  let name = req.params.name;
+  prodService
+  .prdlist(name)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
 
 // ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
 
@@ -39,3 +61,8 @@ router.get('/prod/total', async (req, res) => {
   })
 });
 module.exports = router;
+
+router.get('/prod/seldrct', async (req, res) => {
+  prodService.seldrct().then(list => {res.send(list)})
+                       .catch(err => {res.status(500).send('Fail Process')})
+});
