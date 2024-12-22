@@ -1,7 +1,6 @@
 //자재 
 
 //자재 발주 관리 - mt001 / 생산으로부터 발주 요청 리스트 select
-//자재명, 자재코드, 요청수량, 단위, 요청날짜.
 const mt_prRequestList = 
 `
 SELECT  m.prd_nm mt_name,
@@ -12,12 +11,11 @@ SELECT  m.prd_nm mt_name,
 FROM    thng_req m JOIN mtril s
                      ON (m.prd_code = s.mtril_code)
 WHERE   m.prdctn_code IS NULL
-AND     m.prd_se = '자재'
-AND     m.dlivy_at = '미처리'
+AND     m.prd_se = 'PI01'
+AND     m.procs_at = 'RD02'
 `;
 
 //자재 발주 관리 - mt001 / 발주서 등록(MTRIL_ORDER테이블에 insert)
-//발주명, 자재명, 자재코드, 거래처명, 거래처 코드, 입고단가, 수량, 단위, 발주일, 납기일, 담당자
 const mt_orderInsert =
 `
 INSERT INTO mtril_order(mtril_order_code, 
@@ -40,6 +38,16 @@ VALUES (CONCAT('order' , nextval(mt_order_code_seq)),
         ?,
         ?,
         ?);
+`;
+
+//자재 발주관리 - mt001 / 발주서 수정
+const mt_ordermodify =
+`
+
+`;
+
+//자재 발주관리 - mt001 / 발주서 삭제
+`
 `;
 
 //자재 검색 모달 - mt002 
@@ -301,6 +309,7 @@ const mt_returnListWithKey =
 `;
 
 module.exports = {
+        mt_prRequestList,
         mt_fromProduction,
         mt_fromOrder,
         mt_wrhousingInsert,

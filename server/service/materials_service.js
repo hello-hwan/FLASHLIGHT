@@ -181,12 +181,21 @@ const dlivyMt = async(dlivyInfo) => {
     } else {
         return 'fail';
     }
-}
+};
+
+//발주 관리 - 자재 발주 요청건 가져오기
+const reqMtOrderList = async() => {
+    let result = await mariaDB.query('mt_prRequestList')
+                              .catch(err => console.log(err));
+    return result;
+};
+
 module.exports = {
     returnMt,
     orderMt,
     insertMtWrhous,
     requestList,
     requestMt,
-    dlivyMt
+    dlivyMt,
+    reqMtOrderList
 };
