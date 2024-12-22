@@ -128,7 +128,7 @@ export default {
     customDateFormat(params) {
       console.log(params);
       return userDateUtils.dateFormat(params.data.req_de, 'yyyy-MM-dd');  //wrdate는 알레아스 이름
-    },
+    }, 
     formet(params){
       if(params.value == 'RD02'){
         return '처리중';
