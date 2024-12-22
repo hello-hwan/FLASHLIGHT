@@ -25,15 +25,6 @@ WHERE b.bom_code = ?`;
 `INSERT INTO bom_cmpds 
  SET ?`;
 
-// const bomInsert = 
-// `INSERT INTO bom_cmpds( cmpds_no
-//                        ,cmpds_prdlst_code
-//                        ,cmpds_prdlst_name
-//                        ,stndrd_y
-//                        ,unit
-//                        ,cnsum_count)
-// VALUES (?,?,?,?,?,?)`;
-
  
 // BOM 소모품 조회
 const bomManage = 
@@ -65,14 +56,6 @@ const bom_cmpdsDel =
 bom_cmpds
 WHERE cmpds_no = ?`;
 
-// 반제품 입고 리스트
-const prduct_n_wrhousngList = 
-`SELECT c.p_name
-       ,i.prd_code
-       ,i.pass_amount
-       ,i.test_date
-FROM inspection_check i JOIN check_result c
-ON i.mtril_check_code = c.mtril_check_code`;
 
 // 품질검사항목관리
 const qiList =
@@ -138,7 +121,7 @@ const procsFlowchartInsert =
                              bom_code) 
  VALUES(?, ?, ?, ?, ?, ?, ?)
 `;
-
+ 
 // 공정별 재료 소모 생성
 const procsMatrlInsert = 
 `INSERT INTO procs_matrl(procs_matrl_no, 
@@ -190,7 +173,6 @@ module.exports = {
   bomManage,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
-  prduct_n_wrhousngList,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

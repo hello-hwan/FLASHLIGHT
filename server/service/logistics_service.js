@@ -17,7 +17,21 @@ const prduct_n_wrhousng = async(data) => {
   }
 }
 
+// 반제품 입고 완료 리스트
+const prdctNList = async() => {
+  let list = await mariaDB.query('prduct_n_wrhousngList');
+  return list;
+}
+
+// 반제품 출고 리스트
+const prduct_n_dlivy = async() => {
+  let list = await mariaDB.query('prduct_n_dlivy');
+  return list;
+}
+
 module.exports = {
   prdctn_n_list,
-  prduct_n_wrhousng
+  prduct_n_wrhousng,
+  prdctNList,
+  prduct_n_dlivy
 };
