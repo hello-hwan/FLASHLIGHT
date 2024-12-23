@@ -4,8 +4,8 @@
       <p>생산 일정 안내 </p>
       <input type="date" v-model="day">
       <input type="text" placeholder="제품코드" v-model="prd">
-      <div v-show="prd != ''">
-        <p v-for="prd in prdlist" :key="prd.prdlist_code">{{ prd.prdlst_code + ', ' + prd.prdlst_name }}</p>
+      <div v-show="prd != null">
+        <p v-for="prdst in prdlist" :key="prdst.prdlist_code">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</p>
       </div>
       <button type="button">검색</button>
     </div>
@@ -45,9 +45,6 @@
           <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
             <th>{{ eqp.model_nm }}</th>
             <td v-for="drct in drctlist" :key="drct.prdctn_code" :colspan="drct.drct_time" > {{ drct.prd_nm + ' 제품\n'+ drct.procs_nm + ' 작업' }}</td>
-            <td v-for="drct in drctlist" :key="drct.prdctn_code" :colspan="drct.drct_time" > {{ drct.prd_nm + ' 제품\n'+ drct.procs_nm + ' 작업' }}</td>
-            
-            
           </tr>
 
         </tbody>
@@ -65,6 +62,7 @@
 
   // 제품 검색 할 코드
   const prd = ref('');
+  prd.value = '';
   
 
   // 날짜 표기할 변수
@@ -100,18 +98,16 @@
   // 검색
   const prdlist = ref([]);
 
-  const getprd = async () => {
-    let result = await axios.get(`${ajaxUrl}/prod/prdlist/${prd}`)
+  const getprd = async (prdnm) => {
+    let result = await axios.get(`${ajaxUrl}/prod/prdlist/${prdnm}`)
                             .catch(err => console.log(err));
     prdlist.value = result.data;
   };
 
-  onUpdated(()=>{
-    getprd();
-  });
-
   
-
+  onUpdated(()=>{
+    getprd(prd);
+  })
 
  
 </script>
