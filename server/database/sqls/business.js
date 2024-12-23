@@ -15,7 +15,8 @@ SELECT r.order_no,
        CASE WHEN l.prdctn_at = 'OP01' THEN '생산'
             ELSE '미생산'
        END AS 'prdctn_at'
-FROM order_requst r LEFT OUTER JOIN order_lists l ON r.order_no = l.order_no LEFT OUTER JOIN bcnc b ON r.p_code=b.bcnc_code`;
+FROM order_requst r LEFT OUTER JOIN order_lists l ON r.order_no = l.order_no LEFT OUTER JOIN bcnc b ON r.p_code=b.bcnc_code
+ORDER BY 1 DESC`;
 
 const orderRequestInsert = `
 CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -32,16 +33,16 @@ values (?, ?, ?, ?, ?, ?, ?, ?, 'OD01', 'OP01')`;
 const orderRequestDetail = `
 SELECT r.order_no, 
        r.p_code, 
-       r.order_date, 
-       r.dete, 
+       TO_CHAR(r.order_date,'yyyy-MM-dd') as order_date, 
+       TO_CHAR(r.dete,'yyyy-MM-dd') as dete, 
        r.wrter, 
        l.order_list_no, 
        l.prd_code, 
-       l.order_qy, 
-       l.splpc 
+       l.untpc, 
+       l.order_qy 
 FROM order_requst r LEFT OUTER JOIN order_lists l
                        ON r.order_no = l.order_no
-WHERE r.order_no = '?'`;
+WHERE UPPER( r.order_no ) =UPPER( ? )`;
 
 const orderRequestDelete = `
 CALL p_delete_order_info(?)`;

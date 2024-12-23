@@ -18,10 +18,11 @@ router.get('/business/orderList', async (req, res) => {
 });
 
 // 주문요청 상세조회
-router.get('/business/orderList:order_no', async (req, res) => {
-    let searchs = req.params.order_no;
-    let businessList = await businessService.findAllOrderRequest(searchs);
-    res.send(businessList);
+router.get('/business/orderList/:order_no', async (req, res) => {
+    let orderNo = req.params.order_no; 
+    //let searchs = req.query;
+    let orderInfo = await businessService.findOrderRequestByNo(orderNo);
+    res.send(orderInfo);
 });
 
 // 주문 요청과 주문리스트 등록
@@ -30,14 +31,14 @@ router.post('/business/orderForm', async (req,res)=>{
     console.log(orderRequestInfo);
     let result = await businessService.createNewOrderRequest(orderRequestInfo);
     res.send(result);
-})
+});
 
 // 주문 요청 삭제
 router.delete('business/orderInfo:order_no',async(req,res)=>{
     let order_no = req.params.order_no;
     let result = await businessService.deleteOrderRequestByOrderNo(order_no);
     res.send(result);
-})
+});
 
 module.exports = router;
 

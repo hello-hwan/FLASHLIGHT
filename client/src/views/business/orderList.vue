@@ -121,27 +121,30 @@ export default {
                 }
         }; 
 
-    },
-    name: "App",
-    components: {
+    }, 
+    name: "App", 
+    components: { 
         AgGridVue, // Add Vue Data Grid component
-    },
-    methods: {
-        async getorderList() {
-            let result = await axios.get(`${ajaxUrl}/business/orderList`)
+    }, 
+    methods: { 
+        async getorderList() { 
+            let result = await axios.get(`${ajaxUrl}/business/orderList`) 
                 .catch(err => console.log(err)); 
             this.orderList = result.data; 
+            console.log(result, result.data);
             this.rowData = ref(this.orderList); 
+            console.log(this.rowData);
+            console.log(...this.rowData);
         }, 
         customDateFormat1(params){ 
-            return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd');
+            return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd'); 
         }, 
         customDateFormat2(params){ 
             return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd'); 
-        },
-        goToDetail(order_no){
-            this.$router.push({name:'orderInfo', params : {order_no:order_no}});
-        }
+        }, 
+        goToDetail(order_no){ 
+            this.$router.push({name:'orderInfo', params : {order_no:order_no}}); 
+        } 
     } 
 }; 
 </script>

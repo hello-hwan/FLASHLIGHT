@@ -2,9 +2,8 @@
 const mariaDB = require('../database/mapper.js');
 
 //전체 조회
-const findAllOrderRequest = async (keywords)=>{
-    let sql = Object.keys(keywords).length == 0 ? 'orderRequest' : 'orderRequestDetail';
-    let list = await mariaDB.query(sql,keywords);
+const findAllOrderRequest = async ()=>{
+    let list = await mariaDB.query('orderRequest');
     return list;
 };
 
@@ -29,6 +28,11 @@ const createNewOrderRequest = async (orderRequestInfo)=>{
     }
 }
 
+// 상세조회
+const findOrderRequestByNo = async (keywords)=>{
+    let orderInfo = await mariaDB.query('orderRequestDetail',keywords);
+    return orderInfo;
+};
 
 // 삭제
 const deleteOrderRequestByOrderNo = async (keywords)=>{
@@ -38,6 +42,7 @@ const deleteOrderRequestByOrderNo = async (keywords)=>{
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
-    deleteOrderRequestByOrderNo
+    deleteOrderRequestByOrderNo,
+    findOrderRequestByNo
 };
 
