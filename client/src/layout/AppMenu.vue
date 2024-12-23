@@ -50,7 +50,7 @@ const model = ref([
                     },
                     {
                         label: '발주 관리',
-                        to: '/'
+                        to: '/materials/mtOrder'
                     },
                     {
                         label: '발주 조회',
@@ -248,15 +248,15 @@ const model = ref([
                     },
                     {
                         label: '반제품 관리',
-                        to: '/'
+                        to: '/standardInfo/prductNdlivyList'
                     },
                     {
                         label: '반제품 조회',
-                        to: '/'
+                        to: '/standardInfo/prductNDlivyModar'
                     },
                     {
                         label: '자재 관리',
-                        to: '/'
+                        to: '/standardInfo/prductNListwrhousng'
                     },
                     {
                         label: '자재 조회',
@@ -264,7 +264,7 @@ const model = ref([
                     }, 
                     {
                         label: 'BOM 관리',
-                        to: '/standardInfo/bomInsert'
+                        to: '/standardInfo/bomList'
                     },
                     {
                         label: 'BOM 조회',

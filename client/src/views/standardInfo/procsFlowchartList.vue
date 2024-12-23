@@ -3,16 +3,16 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th style="width: 70%; font-size: 30px;">
+                    <th style="width: 75%; font-size: 30px;">
                         공정 흐름도 조회
                     </th>
-                    <th style="width: 10%;">
-                        품목코드 검색 :
+                    <th style="width: 9%;">
+                        품목코드 검색
                     </th>
-                    <th style="width: 15%;">
-                        <input style="background-color: lightsteelblue;" type="text" v-model="search_prd_code">
+                    <th style="width: 9%;">
+                        <input style="background-color: lightsteelblue;" type="text" v-model="search_prd_code" size="9">
                     </th>
-                    <th style="width: 5%;">
+                    <th style="width: 7%;">
                         <button type="button" class="btn btn-outline-secondary" @click="search_btn()">검색</button>
                     </th>
                 </tr>

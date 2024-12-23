@@ -1,11 +1,6 @@
 //기준정보 sql
 
-const cmmn =
-`SELECT cmmn_code
-       ,upper_cmmn_code
-       ,cmmn_name
-FROM cmmn`;
-
+// BOM 조회
 const bom =
 `SELECT bom_code
        ,prdlst_code
@@ -26,18 +21,40 @@ on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
-const bomInsert =  
-`INSERT INTO bom_cmpds (cmpds_no
-                       ,bom_code
-                       ,cmpds_prdlst_code
-                       ,cmpds_prdlst_name 
-                       ,stndrd_x
-                       ,stndrd_y
-                       ,stndrd_z
-                       ,unit
-                       ,cnsum_count)
-VALUES(?,?,?,?,?,?,?,?,?)`; 
+ const bomInsert =  
+`INSERT INTO bom_cmpds 
+ SET ?`;
 
+ 
+// BOM 소모품 조회
+const bomManage = 
+`SELECT c.cmpds_no
+       ,b.bom_code
+       ,b.prdlst_code
+       ,b.prdist_name
+       ,b.prdctn_qy
+	,c.cmpds_prdlst_code
+	,c.cmpds_prdlst_name
+       ,c.stndrd_y
+	,c.unit
+	,c.cnsum_count
+FROM bom b JOIN bom_cmpds c 
+ON b.bom_code = c.bom_code
+WHERE b.prdlst_code = ?`;
+
+
+// BOM 소모품 업데이트
+const bom_cmpdsUpdate = 
+`UPDATE bom_cmpds
+ SET ?
+ WHERE cmpds_no = ?`;
+
+
+// BOM소모품 삭제
+const bom_cmpdsDel = 
+`DELETE from
+bom_cmpds
+WHERE cmpds_no = ?`;
 
 
 // 품질검사항목관리
@@ -104,7 +121,7 @@ const procsFlowchartInsert =
                              bom_code) 
  VALUES(?, ?, ?, ?, ?, ?, ?)
 `;
-
+ 
 // 공정별 재료 소모 생성
 const procsMatrlInsert = 
 `INSERT INTO procs_matrl(procs_matrl_no, 
@@ -150,10 +167,12 @@ const ProcsCodeToDeleteFlowchart =
 `;
 
 module.exports = {
-  cmmn,
   bom,
   bomInfo,
   bomInsert,
+  bomManage,
+  bom_cmpdsUpdate,
+  bom_cmpdsDel,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

@@ -1,31 +1,28 @@
 //생산 service
 const mariaDB = require('../database/mapper.js');
 
-const findcmmn = async () => {
-  let list = await mariaDB.query('pr_selcmmn');
+const findcmmn = async (code) => {
+  let list = await mariaDB.query('pr_selcmmn', code);
   return list;
 };
 
-const searchflowchart = async () => {
-  let list = await mariaDB.query('pr_selflowchart');
+const eqplist = async () => {
+  let list = await mariaDB.query('pr_eqp');
   return list;
 };
 
-const searchorder = async () => {
-  let list = await mariaDB.query('pr_selorder')
+const drctlist = async () => {
+  let list = await mariaDB.query('pr_seldrct');
   return list;
 };
 
-const searchtime = async (prod_code) => {
-  let list = await mariaDB.query('pr_selsumtime', prod_code);
+const prdlist = async (name) => {
+  let list = await mariaDB.query('pr_srcprd', name);
   return list;
-};
+}
 
-const searchuseqy = async (prod_code) => {
-  let list = await mariaDB.query('pr_selsumqy', prod_code);
-  return list;  
-};
-// 주문리스트 - 공정흐름도(소모량, 소요시간) - 자재, 반제품 총 재고 - 우선순위 
+
+// ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
 
 // 주문 목록 가져와서 총 소요시간 구하기
 const total = async () => {
@@ -72,15 +69,31 @@ const total = async () => {
   return result;
   
 //  return list;
-}
+};
+
+const seldrct = async () => {
+  let list = await mariaDB.query('pr_drctnodate');
+  return list;
+};
 
 
 module.exports = { 
   findcmmn,
-  searchflowchart,
-  searchorder,
-  searchtime,
-  searchuseqy,
-  total,
+  drctlist,
+  eqplist,
+  prdlist,
 
+
+
+
+
+
+
+
+
+
+
+  
+  total,
+  seldrct
 };

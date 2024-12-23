@@ -56,8 +56,9 @@
             </div>
         </div>
         <div>
-            <button type="button"class="btn btn-secondary">저장</button>
+            <button type="button" class="btn btn-secondary">조회</button>
             <button type="button" class="btn btn-secondary">취소</button>
+            <button type="button" class="btn btn-secondary">수정</button>
         </div>
     </div>
     <div>
@@ -76,69 +77,79 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
-export default {
-    data() {
-        return {
-            orderList: [],
-            rowData: '',
-            colDefs: '',
-        };
-    },
-    created() {
-        this.getorderList();
-        this.colDefs = ref([
-            { field: "order_no", headerName:"주문번호" },
-            { field: "mtlty_name", headerName:"거래처"},
-            { field: "order_date", headerName:"주문일자",
+export default { 
+    data() { 
+        return { 
+            orderList: [], 
+            rowData: '', 
+            colDefs: ''
+        }; 
+    }, 
+    created() { 
+        this.getorderList(); 
+        this.colDefs = ref([ 
+            { field: "order_no", headerName:"주문번호" }, 
+            { field: "mtlty_name", headerName:"거래처"}, 
+            { field: "order_date", headerName:"주문일자", 
                 valueFormatter:this.customDateFormat1
-             },
-            { field: "dete", headerName:"납품일자",
-                valueFormatter:this.customDateFormat2 },
-            { field: "prd_code", headerName:"품목코드" },
-            { field: "prd_name", headerName:"품목명" },
-            { field: "order_qy", headerName:"수량" },
-            { field: "wrter", headerName:"작성자" },
-            { field: "process_status", headerName:"처리상태" },
-            { field: "prdctn_at", headerName:"생산여부" }
-        ]);
-        this.gridOptionsOrder = {
-                columnDefs: this.returnColDefs,
-                pagination: true,
-                paginationPageSize: 10,
-                paginationPageSizeSelector: [10, 20, 50, 100],
-                paginateChildRows: true,
-                animateRows: false,
-                filter: 'agTextColumnFilter',
-                defaultColDef: {
-                    filter: true,
-                    flex: 1,
-                    minWidth: 10
+             }, 
+            { field: "dete", headerName:"납품일자", 
+                valueFormatter:this.customDateFormat2 }, 
+            { field: "prd_code", headerName:"품목코드" }, 
+            { field: "prd_name", headerName:"품목명" }, 
+            { field: "order_qy", headerName:"수량" }, 
+            { field: "wrter", headerName:"작성자" }, 
+            { field: "process_status", headerName:"처리상태" }, 
+            { field: "prdctn_at", headerName:"생산여부" } 
+        ]); 
+        this.gridOptionsOrder = { 
+                columnDefs: this.returnColDefs, 
+                pagination: true, 
+                paginationPageSize: 10, 
+                paginationPageSizeSelector: [10, 20, 50, 100], 
+                paginateChildRows: true, 
+                animateRows: false, 
+                filter: 'agTextColumnFilter', 
+                defaultColDef: { 
+                    filter: true, 
+                    flex: 1, 
+                    minWidth: 10 
+                }, 
+                onCellClicked:params => {
+                    this.goToDetail(params.node.data.order_no);
+                    console.log('cell was clicked', params.node.data.order_no);
                 }
-            };
-    },
-    name: "App",
-    components: {
+        }; 
+
+    }, 
+    name: "App", 
+    components: { 
         AgGridVue, // Add Vue Data Grid component
-    },
-    methods: {
-        async getorderList() {
-            let result = await axios.get(`${ajaxUrl}/business/orderList`)
-                .catch(err => console.log(err));
-            this.orderList = result.data;
-            this.rowData = ref(this.orderList);
-        },
-        customDateFormat1(params){
-            return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd');
-        },
-        customDateFormat2(params){
-            return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd');
-        }
-    }
-};
+    }, 
+    methods: { 
+        async getorderList() { 
+            let result = await axios.get(`${ajaxUrl}/business/orderList`) 
+                .catch(err => console.log(err)); 
+            this.orderList = result.data; 
+            console.log(result, result.data);
+            this.rowData = ref(this.orderList); 
+            console.log(this.rowData);
+            console.log(...this.rowData);
+        }, 
+        customDateFormat1(params){ 
+            return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd'); 
+        }, 
+        customDateFormat2(params){ 
+            return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd'); 
+        }, 
+        goToDetail(order_no){ 
+            this.$router.push({name:'orderInfo', params : {order_no:order_no}}); 
+        } 
+    } 
+}; 
 </script>
 
 <style lang="scss">
-
     .businessOrderListTitle{
         background-color: darkgrey;
         font-size:20px;
@@ -148,4 +159,5 @@ export default {
         line-height:60px;
         margin:5px;
     }
+
 </style>

@@ -3,13 +3,15 @@ const mariaDB = require('../database/mapper.js');
 
 //자재 반환 조회
 const returnMt = async ()=> {
-    let list = await mariaDB.query('mt_fromProduction');
+    let list = await mariaDB.query('mt_fromProduction')
+                            .catch(err=> console.log(err));
     return list;
 };
 
 //자재 품질검사 완료 조회
 const orderMt = async () => {
-    let list = await mariaDB.query('mt_fromOrder');
+    let list = await mariaDB.query('mt_fromOrder')
+                            .catch(err=>console.log(err));
     return list;
 };
 
@@ -24,11 +26,23 @@ const insertMtWrhous = async(wrhousingInfo) => {
         wrhousingInfo.empl_no,
         wrhousingInfo.wrhousng_date,
         wrhousingInfo.mtril_lot
-    ]);
-    if( result.insertId != null){
-        return 'success'; 
+    ]).catch(err=>console.log(err));
+    /*
+    console.log('배열 값 확인: ', [
+        wrhousingInfo.mtril_check_code,
+        wrhousingInfo.mtril_name,
+        wrhousingInfo.mtril_code,
+        wrhousingInfo.mtril_qy,
+        wrhousingInfo.wrhousng_se,
+        wrhousingInfo.empl_no,
+        wrhousingInfo.wrhousng_date,
+        wrhousingInfo.mtril_lot
+    ]); */
+
+    if( result == 1){
+        return result; 
     }else{
-        return 'fail';
+        return result;
     };
 };
 
@@ -52,17 +66,18 @@ const requestMt = async(reqCode) => {
     //자재코드를 가져오기 위한 for문
     for(let i=0; i<reqMtList.length; i++) {
         //자재코드로 검색한 로트, 재고수
+
         let lotListEachMt = await mariaDB.query('mt_lotInvenList', reqMtList[i].mt_code) 
                                          .catch(err=>console.log(err));
 
         //반복 획수, 검색 결과가 0일때를 위한 임시변수 선언
         let roopCnt = lotListEachMt.length == 0 ? 1 : lotListEachMt.length;
-        if(lotListEachMt.length == 0) {
-            console.log('0이 넘어옴', 
-                'lotListEachMt: ', lotListEachMt, 
-                'length: ', lotListEachMt.length,
-                );
-        }                      
+        // if(lotListEachMt.length == 0) {
+        //     console.log('0이 넘어옴', 
+        //         'lotListEachMt: ', lotListEachMt, 
+        //         'length: ', lotListEachMt.length,
+        //         );
+        // }                      
         //요청수량
         let reqQy = reqMtList[i].qy;
 
@@ -70,6 +85,7 @@ const requestMt = async(reqCode) => {
         let sumLotQy = 0;
         
         for(let j=0; j<roopCnt; j++) {
+
             //로트 수량
             let lotQy = lotListEachMt.length <= 0 ? 0 : lotListEachMt[j].mtril_qy;
             
@@ -165,12 +181,21 @@ const dlivyMt = async(dlivyInfo) => {
     } else {
         return 'fail';
     }
-}
+};
+
+//발주 관리 - 자재 발주 요청건 가져오기
+const reqMtOrderList = async() => {
+    let result = await mariaDB.query('mt_prRequestList')
+                              .catch(err => console.log(err));
+    return result;
+};
+
 module.exports = {
     returnMt,
     orderMt,
     insertMtWrhous,
     requestList,
     requestMt,
-    dlivyMt
+    dlivyMt,
+    reqMtOrderList
 };

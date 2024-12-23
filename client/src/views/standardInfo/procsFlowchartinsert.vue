@@ -3,10 +3,10 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th style="width: 70%; font-size: 30px;">
+                    <th style="width: 75%; font-size: 30px;">
                         공정 흐름도 관리
                     </th>
-                    <th style="width: 30%;" id="header">
+                    <th style="width: 25%;" id="header">
                         {{ this.header }}
                     </th>
                 </tr>
@@ -51,16 +51,10 @@
                     <th style="width: 15%; font-size: 20px;">
                         공정 순서
                     </th>
-                    <th style="width: 50%;">
+                    <th style="width: 65%;">
                     </th>
                     <th style="width: 10%;">
                         <button type="button" class="btn btn-outline-primary" @click="add_btn()">행 추가</button>
-                    </th>
-                    <th style="width: 10%;">
-                        인덱스 :
-                    </th>
-                    <th style="width: 5%;">
-                        <input style="background-color: lightsteelblue; width: 75px;" type="text" v-model="delete_num">
                     </th>
                     <th style="width: 10%;">
                         <button type="button" class="btn btn-outline-danger" @click="delete_btn()">행 삭제</button>
@@ -69,8 +63,8 @@
             </thead>
         </table>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
-                @grid-ready="onGridReady" class="ag-theme-alpine">
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" rowSelection="multiple"
+                style="height: 500px" @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
     </div>
@@ -85,6 +79,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
 import { useToast } from 'primevue/usetoast';
+
 
 export default {
     name: 'App',
@@ -116,15 +111,15 @@ export default {
     created() {
         this.prd_code = this.$route.query.prd_code;
         if (this.prd_code != null) {
-            this.header = '수정';
+            this.header = '수정 화면';
             this.getProcsDetail(this.prd_code);
             this.getProcsDetailTop(this.prd_code);
             this.del_edit = this.rowData.length;
         } else {
-            this.header = '등록';
+            this.header = '등록 화면';
         }
         this.colDefs = [
-            { field: "index", headerName: "인덱스" },
+            { field: "index", headerName: "인덱스", checkboxSelection: true },
             { field: "procs_ordr_no", headerName: "공정순서번호", editable: true },
             { field: "expect_reqre_time", headerName: "예상소요시간", editable: true },
             { field: "procs_nm", headerName: "시행작업", editable: true },
@@ -170,21 +165,17 @@ export default {
             this.rowData = [...this.rowData, new_sample];
         },
         delete_btn() {
-            let result_arr = [];
-            if (this.delete_num == '') {
-                this.toast.add({ severity: 'error', summary: '실패', detail: '인덱스 번호를 입력해주세요.', life: 3000 });
-            } else {
-                for (let i = 0; i < this.rowData.length; i++) {
-                    if (this.rowData[i].index == this.delete_num) {
+            const selectedNodes = this.gridApi.getSelectedNodes();
+            for (let i = 0 ; i < selectedNodes.length ; i++) {
+                let result_arr = [];
+                console.log(selectedNodes[i].data.index);
+                for (let j = 0; j < this.rowData.length; j++) {
+                    if (this.rowData[j].index == selectedNodes[i].data.index) {
                         continue;
                     }
-                    result_arr = [...result_arr, this.rowData[i]];
-                    if (result_arr.length == this.rowData.length) {
-                        this.toast.add({ severity: 'error', summary: '실패', detail: '맞는 인덱스 번호가 없습니다.', life: 3000 });
-                    }
+                    result_arr = [...result_arr, this.rowData[j]];
                 }
                 this.rowData = result_arr;
-                this.delete_num = '';
             }
         },
         async submit_btn() {
@@ -202,9 +193,9 @@ export default {
                         .catch(err => console.log(err));
                 }
                 this.$router.push({ name: 'procsFlowchartinsert', query: { prd_code: this.prd_code } });
-                
+
             }
-            
+
             let bom_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchBom/${this.prd_code}`)
                 .catch(err => console.log(err))
             let check_code = [];
@@ -232,8 +223,6 @@ export default {
                     check_code = [...check_code, this.rowData[i].procs_ordr_no];
                     console.log(check_code);
                 }
-
-
 
                 let mtril_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchmtnm/${this.rowData[i].mtril_nm}`)
                     .catch(err => console.log(err))

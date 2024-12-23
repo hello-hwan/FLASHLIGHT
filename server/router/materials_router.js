@@ -45,4 +45,10 @@ router.post('/mtril/mtDlivy', async (req,res)=>{
     res.send(result);
 });
 
+//자재 발주 요청건 리스트
+router.get('/mtril/reqOrderList', async (req, res) => {
+    let result = await mtrilService.reqMtOrderList();
+    res.send(result);
+})
+
 module.exports = router;
