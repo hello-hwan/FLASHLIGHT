@@ -50,7 +50,7 @@ const standardInfoRoute = [
         path: 'qiList',
         name: 'qiList',
         component: qiList
-    },
+    }, 
     {
         path: 'prductNList',
         name: 'prductNList',

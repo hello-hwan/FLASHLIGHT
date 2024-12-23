@@ -86,57 +86,57 @@ export default {
             orderList: [], 
             rowData: ref([]), 
             colDefs: '', 
-            requst:{}
-        };
-    },
-    created() {
-        this.onAddRow();
-        this.colDefs = ref([
-            { field: "order_list_no", headerName:"주문목록번호", editable: true },
-            { field: "prd_code", headerName:"품목코드", editable: true },
-            { field: "untpc", headerName:"주문단가", editable: true },
-            { field: "order_qy", headerName:"주문수량", editable: true },
-            { field: "wrter", headerName:"작성자", editable: true }
+            requst:{} 
+        }; 
+    }, 
+    created() { 
+        this.onAddRow(); 
+        this.colDefs = ref([ 
+            { field: "order_list_no", headerName:"주문목록번호", editable: true }, 
+            { field: "prd_code", headerName:"품목코드", editable: true }, 
+            { field: "untpc", headerName:"주문단가", editable: true }, 
+            { field: "order_qy", headerName:"주문수량", editable: true }, 
+            { field: "wrter", headerName:"작성자", editable: true } 
         ]);
-        this.gridOptionsOrder = {
-                columnDefs: this.returnColDefs,
-                pagination: true,
-                paginationPageSize: 10,
-                paginationPageSizeSelector: [10, 20, 50, 100],
-                paginateChildRows: true,
-                animateRows: false,
-                defaultColDef: {
-                    filter: true,
-                    flex: 1,
-                    minWidth: 10
-                },
-                //rowSelection:'multiple'
-            };
-    },
-    name: "App",
-    components: {
+        this.gridOptionsOrder = { 
+                columnDefs: this.returnColDefs, 
+                pagination: true, 
+                paginationPageSize: 10, 
+                paginationPageSizeSelector: [10, 20, 50, 100], 
+                paginateChildRows: true, 
+                animateRows: false, 
+                filter: 'agTextColumnFilter', 
+                defaultColDef: { 
+                    filter: true, 
+                    flex: 1, 
+                    minWidth: 10 
+                } 
+            }; 
+    }, 
+    name: "App", 
+    components: { 
         AgGridVue // Add Vue Data Grid component
-    },
-    methods: {
-        onGridReady(params) {
-            this.gridApi = params.api;
-            this.columnApi = params.columnApi;
-        },
-        async orderInsert() {
-            for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){
+    }, 
+    methods: { 
+        onGridReady(params) { 
+            this.gridApi = params.api; 
+            this.columnApi = params.columnApi; 
+        }, 
+        async orderInsert() { 
+            for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
                 let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
-                console.log("합친결과는");
-                console.log(orderRegister);
+                console.log("합친결과는"); 
+                console.log(orderRegister); 
                 let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
-                                             .catch(err=>console.log(err));
-                console.log("결과는");
-                console.log(result);
-                let addRes = result.data;
-                if(addRes.result){
-                    alert(`등록되었습니다.`);
-                }
-            }
-        },
+                                             .catch(err=>console.log(err)); 
+                console.log("결과는"); 
+                console.log(result); 
+                let addRes = result.data; 
+                if(addRes.result){ 
+                    alert(`등록되었습니다.`); 
+                } 
+            } 
+        }, 
         customDateFormat1(params){
             return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd');
         },
@@ -159,8 +159,8 @@ export default {
             let newData = {
                 order_list_no: "ORDER-00-0",
                 prd_code:"PRD-01", 
-                untpc: 300, 
-                order_qy: 100,
+                untpc: 0, 
+                order_qy: 0,
                 wrter:"김기환"
             };
             this.rowData = [...this.rowData, newData];
@@ -181,8 +181,8 @@ export default {
             this.rowData = [{
                 order_list_no: "ORDER-00-0",
                 prd_code:"PRD-01", 
-                untpc: 300, 
-                order_qy: 100,
+                untpc: 0, 
+                order_qy: 0,
                 wrter:"김기환"
             }];
         }

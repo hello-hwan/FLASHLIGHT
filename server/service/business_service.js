@@ -2,9 +2,8 @@
 const mariaDB = require('../database/mapper.js');
 
 //전체 조회
-const findAllOrderRequest = async (keywords)=>{
-    let sql = Object.keys(keywords).length == 0 ? 'orderRequest' : 'businessListWithKeyword';
-    let list = await mariaDB.query(sql,keywords);
+const findAllOrderRequest = async ()=>{
+    let list = await mariaDB.query('orderRequest');
     return list;
 };
 
@@ -29,45 +28,21 @@ const createNewOrderRequest = async (orderRequestInfo)=>{
     }
 }
 
-/*
-// 주문요청
-const createNewOrderRequest = async (orderRequestInfo)=>{
-    let result = await mariaDB.query('orderRequestInsert', [
-        orderRequestInfo.order_no,
-        orderRequestInfo.order_date,
-        orderRequestInfo.dete,
-        orderRequestInfo.p_code,
-        orderRequestInfo.wrter
-    ]);
-    if ( result.insertId != null){
-        return { order_no : result.insertId };
-    } else {
-        return {};
-    }
-}
-
-// 주문요청 리스트
-const createNewOrderList = async (orderListInfo)=>{
-    let result = await mariaDB.query('orderListInsert',[
-        orderListInfo.prd_code,
-        orderListInfo.order_no,
-        orderListInfo.prd_name,
-        orderListInfo.untpc,
-        orderListInfo.order_qy,
-        orderListInfo.splpc,
-        orderListInfo.taxamt,
-        orderListInfo.process_status,
-        orderListInfo.prdctn_at
-    ]);
-    if ( result.insertId != null){
-        return { order_no : result.insertId };
-    } else {
-        return {};
-    }
+// 상세조회
+const findOrderRequestByNo = async (keywords)=>{
+    let orderInfo = await mariaDB.query('orderRequestDetail',keywords);
+    return orderInfo;
 };
-*/
+
+// 삭제
+const deleteOrderRequestByOrderNo = async (keywords)=>{
+    await mariaDB.query('orderRequestDelete',keywords);
+};
+
 module.exports = {
     findAllOrderRequest,
-    createNewOrderRequest
+    createNewOrderRequest,
+    deleteOrderRequestByOrderNo,
+    findOrderRequestByNo
 };
 
