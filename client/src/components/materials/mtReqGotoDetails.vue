@@ -20,6 +20,7 @@
     console.log('버튼 컴포넌트', reqCode);
     props.params.context.componentParent.getReqCode(reqCode); // 부모로 전달
   };
+  //주석
   </script>
 
 <style scoped>
