@@ -11,6 +11,7 @@ import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
 import store from './store';
 import vuetify from './plugins/vuetify.js';
+import 'vuetify/styles';    //뷰티파이 스타일
 
 const app = createApp(App).use(store);
 

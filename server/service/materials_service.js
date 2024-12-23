@@ -3,13 +3,15 @@ const mariaDB = require('../database/mapper.js');
 
 //자재 반환 조회
 const returnMt = async ()=> {
-    let list = await mariaDB.query('mt_fromProduction');
+    let list = await mariaDB.query('mt_fromProduction')
+                            .catch(err=> console.log(err));
     return list;
 };
 
 //자재 품질검사 완료 조회
 const orderMt = async () => {
-    let list = await mariaDB.query('mt_fromOrder');
+    let list = await mariaDB.query('mt_fromOrder')
+                            .catch(err=>console.log(err));
     return list;
 };
 
@@ -24,11 +26,23 @@ const insertMtWrhous = async(wrhousingInfo) => {
         wrhousingInfo.empl_no,
         wrhousingInfo.wrhousng_date,
         wrhousingInfo.mtril_lot
-    ]);
-    if( result.insertId != null){
-        return 'success'; 
+    ]).catch(err=>console.log(err));
+    /*
+    console.log('배열 값 확인: ', [
+        wrhousingInfo.mtril_check_code,
+        wrhousingInfo.mtril_name,
+        wrhousingInfo.mtril_code,
+        wrhousingInfo.mtril_qy,
+        wrhousingInfo.wrhousng_se,
+        wrhousingInfo.empl_no,
+        wrhousingInfo.wrhousng_date,
+        wrhousingInfo.mtril_lot
+    ]); */
+
+    if( result == 1){
+        return result; 
     }else{
-        return 'fail';
+        return result;
     };
 };
 
@@ -167,12 +181,21 @@ const dlivyMt = async(dlivyInfo) => {
     } else {
         return 'fail';
     }
-}
+};
+
+//발주 관리 - 자재 발주 요청건 가져오기
+const reqMtOrderList = async() => {
+    let result = await mariaDB.query('mt_prRequestList')
+                              .catch(err => console.log(err));
+    return result;
+};
+
 module.exports = {
     returnMt,
     orderMt,
     insertMtWrhous,
     requestList,
     requestMt,
-    dlivyMt
+    dlivyMt,
+    reqMtOrderList
 };

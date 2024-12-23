@@ -39,7 +39,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
@@ -56,7 +56,7 @@ const getReqList = async () => {
   //console.log(result);  //데이터 확인
   //데이터 담기
   reqRowData.value = result.data;
-}
+};
 
 //요청명 리스트 데이터 담기 함수 실행
 getReqList();
@@ -99,10 +99,6 @@ const removeRow = (delRowInfo) => {
     };
   };
 };
-
-// watch(() => info.value, (newValue) => {
-//   removeRow(newValue);
-// });
 
 //ag grid 옵션 설정
 const gridOptionsReq = {
