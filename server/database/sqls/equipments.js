@@ -22,15 +22,19 @@ const eqp_list_prod =
 
 // 점검할 기기 조회
 const chck_fx_list = 
-`SELECT fx_code, 
-        eqp_code, 
-        chck_nm, 
-        chck_knd, 
-        chck_de, 
-        chck_time
+`SELECT chck_fx.fx_code, 
+        chck_fx.eqp_code, 
+        chck_fx.chck_nm, 
+        chck_fx.chck_knd, 
+        chck_fx.chck_time, 
+        chck_fx.last_bgnde, 
+        eqp.chck_cycle, 
+        ADDDATE(chck_fx.last_bgnde, eqp.chck_cycle)
  FROM chck_fx
- WHERE chck_de > NOW()
- ORDER BY 5`;
+ JOIN eqp
+ ON chck_fx.eqp_code = eqp.eqp_code
+ WHERE chck_fx.chck_de is NULL
+ ORDER BY 8`;
 
 // 전체 점검 기기 조회
 const chck_fx_all_list = 
@@ -38,21 +42,23 @@ const chck_fx_all_list =
         eqp_code, 
         chck_nm, 
         chck_knd, 
+        chck_time, 
         chck_de, 
-        chck_time
+        last_bgnde
  FROM chck_fx
- ORDER BY 5 desc`;
+ ORDER BY 7 desc`;
 
 // 일정코드로 점검일정 조회
 const fx_code_list = 
 `SELECT chck_fx.chck_nm, 
-       eqp.model_nm, 
-       eqp.eqp_code, 
-       chck_fx.chck_knd, 
-       chck_fx.charger, 
-       chck_fx.chck_time, 
-       chck_fx.last_bgnde, 
-       eqp.chck_cycle
+        eqp.model_nm, 
+        eqp.eqp_code, 
+        chck_fx.chck_knd, 
+        chck_fx.charger, 
+        chck_fx.chck_time, 
+        chck_fx.last_bgnde, 
+        eqp.chck_cycle,
+        chck_fx.not_chck_resn
  FROM chck_fx
  JOIN eqp
  ON chck_fx.eqp_code = eqp.eqp_code
@@ -65,12 +71,10 @@ const chck_fc_insert =
                      eqp_code, 
                      chck_nm, 
                      chck_knd, 
-                     chck_sttus, 
                      charger, 
                      chck_time, 
-                     chck_de, 
                      last_bgnde)
-VALUE (nextval(chck_fx_seq), ?, ?, ?, ?, ?, ?, ?, ?)`;
+VALUE (nextval(chck_fx_seq), ?, ?, ?, ?, ?, ?)`;
 
 // 점검 결과 등록
 const chck_result_insert = 
@@ -86,7 +90,23 @@ const find_last_fx_code =
 `SELECT fx_code
  FROM chck_fx
  ORDER BY 1 desc
- LIMIT 1;`; 
+ LIMIT 1`; 
+
+// 미점검 업데이트
+const not_check_update = 
+`UPDATE chck_fx
+ SET not_chck_resn = ?, 
+     chck_de = NOW(), 
+     charger = ?, 
+     chck_time = ?, 
+     chck_sttus = ?
+ WHERE fx_code = ?`;
+
+// 점검 항목 조회
+const chck_iem_list = 
+`SELECT iem_nm
+ FROM chck_iem
+ WHERE eqp_code = ?`;
 
 module.exports = {
     eqp_list, 
@@ -96,5 +116,7 @@ module.exports = {
     fx_code_list, 
     chck_fc_insert, 
     chck_result_insert, 
-    find_last_fx_code
+    find_last_fx_code, 
+    not_check_update, 
+    chck_iem_list
 };

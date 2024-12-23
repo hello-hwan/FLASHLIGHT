@@ -56,5 +56,19 @@ router.get('/equip/find_last_fx_code', async (req, res) => {
     res.send(list);
 });
 
+// 미점검 업데이트
+router.put('/equip/not_check_update', async (req, res) => {
+    let list = req.body;
+    let result = await equipmentsService.not_check_update(list);
+    res.send(result);
+});
+
+// 점검 항목 조회
+router.get('/equip/chck_iem_list/:eqp_code', async (req, res) => {
+    let eqp_code = req.params.eqp_code;
+    let list = await equipmentsService.chck_iem_list(eqp_code);
+    res.send(list);
+});
+
 module.exports = router;  
 

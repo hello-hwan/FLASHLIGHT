@@ -3,14 +3,14 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th style="width: 70%; font-size: 30px;">
+                    <th style="width: 80%; font-size: 30px;">
                         점검 일자 조회
                     </th>
-                    <th style="width: 15%;">
+                    <th style="width: 10%;">
                         <button type="button" class="btn btn-primary" @click="now_btn()">현재
                         </button>
                     </th>
-                    <th style="width: 15%;">
+                    <th style="width: 10%;">
                         <button type="button" class="btn btn-primary" @click="all_btn()">전체
                         </button>
                     </th>
@@ -18,7 +18,7 @@
             </thead>
         </table>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
@@ -50,7 +50,7 @@ export default {
             { field: "eqp_code", headerName: "설비코드" },
             { field: "chck_nm", headerName: "점검명" },
             { field: "chck_knd", headerName: "점검종류" },
-            { field: "chck_de", headerName: "점검일자" },
+            { field: "chck_exp", headerName: "점검예정일" },
             { field: "chck_time", headerName: "점검시간" }
         ];
         this.gridOptions = {
@@ -77,28 +77,48 @@ export default {
             this.columnApi = params.columnApi;
         },
         async getCheckList() {
+            this.colDefs = [
+                { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
+                { field: "eqp_code", headerName: "설비코드" },
+                { field: "chck_nm", headerName: "점검명" },
+                { field: "chck_knd", headerName: "점검종류" },
+                { field: "chck_exp", headerName: "점검예정일" },
+                { field: "chck_time", headerName: "점검시간" }
+            ]
             let result = await axios.get(`${ajaxUrl}/equip/chck_fx_list`)
                 .catch(err => console.log(err));
             this.checkList = result.data;
+            console.log(this.checkList)
             for (let i = 0; i < this.checkList.length; i++) {
-                this.checkList[i].chck_de = useDateUtils.dateFormat(this.checkList[i].chck_de, "yyyy-MM-dd")
+                let now = new Date(this.checkList[i].last_bgnde);
+                now.setDate(now.getDate() + this.checkList[i].chck_cycle);
+                this.checkList[i].chck_exp = now;
+                this.checkList[i].chck_exp = useDateUtils.dateFormat(this.checkList[i].chck_exp, "yyyy-MM-dd")
             }
             this.rowData = this.checkList;
-            console.log(result.data)
-        }, 
+            console.log(this.rowData)
+        },
         now_btn() {
             this.getCheckList();
-        }, 
+        },
         async all_btn() {
+            this.colDefs = [
+                { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
+                { field: "eqp_code", headerName: "설비코드" },
+                { field: "chck_nm", headerName: "점검명" },
+                { field: "chck_knd", headerName: "점검종류" },
+                { field: "last_bgnde", headerName: "마지막 점검일" },
+                { field: "chck_time", headerName: "점검시간" }
+            ]
             let result = await axios.get(`${ajaxUrl}/equip/chck_fx_all_list`)
                 .catch(err => console.log(err));
             this.checkList = result.data;
             for (let i = 0; i < this.checkList.length; i++) {
-                this.checkList[i].chck_de = useDateUtils.dateFormat(this.checkList[i].chck_de, "yyyy-MM-dd")
+                this.checkList[i].last_bgnde = useDateUtils.dateFormat(this.checkList[i].last_bgnde, "yyyy-MM-dd")
             }
             this.rowData = this.checkList;
             console.log(result.data)
-        }, 
+        },
         goToDetail(fx_code) {
             this.$router.push({ name: 'checkfxlist', params: { fx_code: fx_code } });
             console.log(fx_code);

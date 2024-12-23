@@ -6,8 +6,6 @@
                     <th style="width: 70%; font-size: 30px;">
                         설비 상태 조회
                     </th>
-                    <th style="width: 30%;">
-                    </th>
                 </tr>
             </thead>
         </table>

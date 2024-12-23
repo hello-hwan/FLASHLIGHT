@@ -3,10 +3,10 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th style="width: 70%; font-size: 30px;">
+                    <th style="width: 75%; font-size: 30px;">
                         공정 흐름도 관리
                     </th>
-                    <th style="width: 30%;" id="header">
+                    <th style="width: 25%;" id="header">
                         {{ this.header }}
                     </th>
                 </tr>
@@ -111,12 +111,12 @@ export default {
     created() {
         this.prd_code = this.$route.query.prd_code;
         if (this.prd_code != null) {
-            this.header = '수정';
+            this.header = '수정 화면';
             this.getProcsDetail(this.prd_code);
             this.getProcsDetailTop(this.prd_code);
             this.del_edit = this.rowData.length;
         } else {
-            this.header = '등록';
+            this.header = '등록 화면';
         }
         this.colDefs = [
             { field: "index", headerName: "인덱스", checkboxSelection: true },
