@@ -50,7 +50,7 @@ const model = ref([
                     },
                     {
                         label: '발주 관리',
-                        to: '/'
+                        to: '/materials/mtOrder'
                     },
                     {
                         label: '발주 조회',
