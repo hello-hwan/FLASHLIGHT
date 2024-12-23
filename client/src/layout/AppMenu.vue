@@ -252,7 +252,7 @@ const model = ref([
                     },
                     {
                         label: '반제품 조회',
-                        to: '/'
+                        to: '/standardInfo/prductNDlivyModar'
                     },
                     {
                         label: '자재 관리',

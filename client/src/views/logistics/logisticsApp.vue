@@ -1,3 +1,15 @@
 <template>
-    <h1>물류</h1>
+    <div>
+        <layout />
+    </div>
 </template>
+
+<script>
+import layout from '@/layout/AppLayout.vue';
+
+export default {
+  components : {
+    layout
+  }
+}
+</script>
