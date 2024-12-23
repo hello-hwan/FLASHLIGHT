@@ -14,7 +14,6 @@ const eqplist = async () => {
 const drctlist = async () => {
   let list = await mariaDB.query('pr_seldrct');
   return list;
-
 };
 
 const prdlist = async (name) => {
@@ -74,42 +73,7 @@ const total = async () => {
 
 const seldrct = async () => {
   let list = await mariaDB.query('pr_drctnodate');
-  
-  let result = [];
-  let model = '';
-  let end_time = new Date (list[0].pre_begin_time);
-  end_time.setHours(0);
-  end_time.setMinutes(0);
-  end_time.setSeconds(0);
-  let end = end_time.getTime();
-  console.log("end", end);
-  let start_time = new Date(list[0].pre_begin_time);
-  start_time.setHours(0, 0, 0, 0);
-  console.log(start_time);
-  let start = start_time.getTime();
-  let asd = new Date('2999-12-30');
-  console.log(asd);
-  asd.setHours(0,0,0,0)
-  console.log(asd);
-
-  for(let i = 0; i < list.length; i++){
-    if(model != list[i].model_nm){
-      let begin_time = list[i].pre_begin_time;
-      let begin = new Date(begin_time).getTime();
-      console.log(begin-start)
-      if(begin - start > 0){
-        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-start)/1000/60/60 });
-      }
-   
-       
-    } 
-    result.push(list[i]);
-    model = list[i].model_nm;
-    end_time = list[i].pre_end_time;
-    end = new Date(end_time).getTime();
-  
-  }
-return result;
+  return list;
 };
 
 
