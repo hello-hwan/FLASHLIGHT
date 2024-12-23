@@ -6,10 +6,20 @@ const findcmmn = async (code) => {
   return list;
 };
 
+const eqplist = async () => {
+  let list = await mariaDB.query('pr_eqp');
+  return list;
+};
+
 const drctlist = async () => {
   let list = await mariaDB.query('pr_seldrct');
   return list;
 };
+
+const prdlist = async (name) => {
+  let list = await mariaDB.query('pr_srcprd', name);
+  return list;
+}
 
 
 // ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
@@ -59,12 +69,19 @@ const total = async () => {
   return result;
   
 //  return list;
-}
+};
+
+const seldrct = async () => {
+  let list = await mariaDB.query('pr_drctnodate');
+  return list;
+};
 
 
 module.exports = { 
   findcmmn,
   drctlist,
+  eqplist,
+  prdlist,
 
 
 
@@ -77,5 +94,6 @@ module.exports = {
 
 
   
-  total
+  total,
+  seldrct
 };
