@@ -37,14 +37,12 @@
             <th colspan="12">오후</th>
             <th colspan="12">오전</th>
             <th colspan="12">오후</th>
-            <th colspan="12">{{ prd }}</th>
-            <th colspan="12">오후</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
             <th>{{ eqp.model_nm }}</th>
-            <td v-for="drct in drctlist" :key="drct.prdctn_code" :colspan="drct.drct_time" v-show="eqp.model_nm = drct.model_nm"> {{ drct.prd_nm + ' 제품\n'+ drct.procs_nm + ' 작업' }}</td>
+            <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
           </tr>
 
         </tbody>
@@ -89,7 +87,36 @@
    // let result = await axios.get(`${ajaxUrl}/prod/drctlist`)
    let result = await axios.get(`${ajaxUrl}/prod/seldrct`)
                            .catch(err => console.log(err));
-    drctlist.value = result.data;
+    
+    // 색상 배열
+    const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "purple"];
+
+    // 주문 번호 유니크하게 뽑아내고 주문번호를 매칭시키기 
+    let newArray = [];
+    let colorlist = result.data;
+    for(let i = 0; i < colorlist.length; i++){
+      newArray.push(colorlist[i].order_no);
+    }
+    // set에 넣어서 중복값 제거
+    const set = new Set(newArray);
+    newArray = [];
+    let i = 0;
+    // 배열에 key : value 값으로 집어넣기
+    for(let key of set){
+        if(key == "") {
+          newArray[key] = "white";
+        } else {
+          newArray[key] = colors[i++];
+        }
+    }
+    
+    // newArray = Array.from(set);
+    
+    // 결과에 color: value로 집어넣기
+    for(let i=0; i < colorlist.length; i++){
+      colorlist[i].color = newArray[colorlist[i].order_no];
+    }
+    drctlist.value = colorlist;
 
   };
   // 생산일정 불러올 함수 실행
@@ -114,11 +141,12 @@
   // 검색 클릭시 실행할 함수
   const getanotherlist = async (prd_code, day_str) => {
 
-    let result = await axios.get(`${ajaxUrl}/prod/srcdrct`, )
+    let result = await axios.get(`${ajaxUrl}/prod/srcdrct`, prd_code, day_str )
                             .catch(err => console.log(err));
     drctlist.value = result.data;
   };
 
+  
  
 </script>
 
@@ -126,4 +154,5 @@
   table , th, td {
     border: 2px, solid, black;
   }
+
 </style>

@@ -63,6 +63,9 @@ router.get('/prod/total', async (req, res) => {
 module.exports = router;
 
 router.get('/prod/seldrct', async (req, res) => {
-  prodService.seldrct().then(list => {res.send(list)})
+  let prd_code = req.body.prd_code;
+  let day_str = req.body.day_str;
+
+  prodService.seldrct(prd_code, day_str).then(list => {res.send(list)})
                        .catch(err => {res.status(500).send('Fail Process')})
 });

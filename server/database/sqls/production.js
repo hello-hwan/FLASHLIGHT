@@ -103,10 +103,10 @@ ORDER BY 1;
 
 const pr_drctnodate = // 조건없이 더미데이터 나오는지 보기위함
 `
-SELECT prdctn_code, procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time, TIMESTAMPDIFF(hour, pre_begin_time, pre_end_time) AS drct_time
-FROM prdctn_drct
-GROUP BY model_nm
-ORDER BY pre_begin_time
+SELECT pd.prdctn_code, pd.procs_nm, pd.model_nm, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time, pp.order_no
+FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time
 `;
 
 
