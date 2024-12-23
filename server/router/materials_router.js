@@ -59,5 +59,12 @@ router.post('/mtril/orderList', async (req, res) => {
     let searchInfo = req.body;
     let result = await mtrilService.mtOrderList(searchInfo);
     res.send(result);
-})
+});
+
+//발주건별 자재 리스트
+router.get('/mtril/mtListOnOrder/:orderCode', async(req, res) => {
+    let orderCode = req.params.orderCode;
+    let result = await mtrilService.mtListOnOrder(orderCode);
+    res.send(result);
+});
 module.exports = router;

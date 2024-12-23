@@ -39,8 +39,10 @@ VALUES (CONCAT('order' , nextval(mt_order_code_seq)),
         ?,
         ?,
         ?,
-        ?);
+        ?)
 `;
+
+//
 
 //자재 발주관리 - mt001 / 발주서 수정
 const mt_ordermodify =
@@ -102,6 +104,23 @@ AND     order_date BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
 AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
 AND     empl_no = IFNULL(?, empl_no)
 GROUP BY order_code
+`;
+
+//발주한 건 자재 목록
+const mt_listOnOrder =
+`
+SELECT  m.order_code AS req_code, 
+        m.order_name AS req_name, 
+        m.mtril_name AS mt_name,
+        m.mtril_code AS mt_code,
+        m.mtlty_name AS company_name,
+        m.bcnc_code AS company_code,
+        m.order_price AS price,
+        m.order_qy AS order_qy,
+        s.unit
+FROM    mtril_order m JOIN mtril s
+                        ON (m.mtril_code = s.mtril_code)
+WHERE   order_code = ?
 `;
 
 //자재 발주 조회 - mt005
@@ -341,5 +360,6 @@ module.exports = {
         mt_requestDetails,
         mt_lotInvenList,
         mt_requestCheckOut,
-        mt_searchOrderWithKey
+        mt_searchOrderWithKey,
+        mt_listOnOrder
 };

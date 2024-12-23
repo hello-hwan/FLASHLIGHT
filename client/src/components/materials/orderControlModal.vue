@@ -120,7 +120,7 @@ const selectOrder = () => {
     const selectedNodes = gridApi.value.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
     console.log('선택된 행 데이터:', selectedData);
-    emit("selectedData", selectedData.order_code);
+    emit("selectedData", selectedData);
 };
 //행 데이터를 담을 변수
 const orderRowData = ref([]);
@@ -155,11 +155,11 @@ const searchOrder = async() => {
                end_dedt: endDedt,
                emp_id: parseInt(empId) 
                 };
-    console.log("새로만든 객체: ",obj);
+    //console.log("새로만든 객체: ",obj);
     let result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
                             .catch(err=>console.log(err));
 
-    console.log("통신결과: ",result);
+    //console.log("통신결과: ",result);
     //행 데이터 담기
     orderRowData.value = result.data;   
 };

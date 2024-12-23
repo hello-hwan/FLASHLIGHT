@@ -29,7 +29,7 @@
                  선택항목 발주서 작성 </button>
                  
                  <!--검색 모달 열기-->
-                 <searchModal/> 
+                 <searchModal @selectedData="getOrderDetails"/> 
              </span>
         </div>
 
@@ -66,7 +66,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
@@ -82,21 +82,21 @@ const reqRowData = ref([]);
 const orderRowData = ref([]);
 
 //발주명
-const orderName = "";
+let orderName = "";
 //거래처 명
-const company = "";
+let company = "";
 //담당자
-const empId = 100;
+let empId = 100;
 
-//요청 자재 리스트 가져오기
-const mtReqList = async() => {
-    let result = await axios.get(`${ajaxUrl}/mtril/reqOrderList`)
-                            .catch(err => console.log(err));
-    console.log(result.data);
-    reqRowData.value = result.data;
+//자식 컴포넌트로부터 받은 데이터 담을 변수
+let orderCode = ref("");
 
+//자식 컴포넌트로부터 받은(선택한) 데이터
+const getOrderDetails = (info) => {
+    orderCode.value = info[0].order_code;
 };
-mtReqList();
+
+
 //날짜 포멧
 const customDateFormat = (params) => {
   //console.log(params);
@@ -121,14 +121,15 @@ const reqColDefs = [
 const mtListColDefs = [
     { field: "mt_name", headerName: "*자재명", editable: true},
     { field: "mt_code", headerName: "*자재코드", editable: true},
-    { field: "field2", headerName: "입고단가(원)", editable: true},
-    { field: "req_qy", headerName: "*수량", editable: true},
+    { field: "price", headerName: "입고단가(원)", editable: true},
+    { field: "order_qy", headerName: "*수량", editable: true},
     { field: "unit", headerName: "*단위", editable: true},
-    { field: "field3", headerName: "*발주일", valueFormatter: customDateToday},
+    { field: "order_date", headerName: "*발주일", valueFormatter: customDateToday},
     { field: "dedt", headerName: "*납기일", valueFormatter: (params) => {
           if (!params.value) {
             return "";
           }
+          params.value = new Date(params.value);
           const month = params.value.getMonth() + 1;
           const day = params.value.getDate();
           return `${params.value.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
@@ -209,6 +210,34 @@ const removeAllRow = () => {
         mtListGridApi.value.applyTransaction({ remove: [row] });
     };
 };
+
+//watch사용. 선택한 발주건 발주코드 값이 변할때마다 처리해야함.
+watch(() => orderCode.value, async(newVal) => {
+    //console.log("선택된값",orderCode.value);
+    let result = await axios.get(`${ajaxUrl}/mtril/mtListOnOrder/${orderCode.value}`)
+                      .catch(err=>console.log(err));
+
+    //console.log("통신결과: ", result.data);
+    //console.log(mtListGridApi.value);
+    //mtListGridApi.value.applyTransaction({update: result.data});
+    company = result.data[0].company_name;
+    orderName = result.data[0].req_name;
+    orderRowData.value = result.data;
+    //console.log(orderRowData.value);
+    //console.log(orderRowData.value);
+    
+});
+
+//요청 자재 리스트 가져오기
+const mtReqList = async() => {
+    let result = await axios.get(`${ajaxUrl}/mtril/reqOrderList`)
+                            .catch(err => console.log(err));
+    //console.log('시작 결과',result.data);
+
+    reqRowData.value = result.data;
+    
+};
+mtReqList();
 </script>
 
 <style>

@@ -200,11 +200,19 @@ const mtOrderList = async(searchInfo) => {
                     searchInfo.start_dedt,
                     searchInfo.end_dedt,
                     searchInfo.emp_id];
-    console.log(searchInfo);
+    //console.log(searchInfo);
 
     let result = await mariaDB.query('mt_searchOrderWithKey', infoArr)
                               .catch(err=>console.log(err));
 
+    return result;
+}
+
+//발주건 자재 리스트
+const mtListOnOrder = async(orderCode) => {
+    let result = await mariaDB.query('mt_listOnOrder', orderCode)
+                              .catch(err=>console.log(err));
+    console.log('결과',result);
     return result;
 }
 module.exports = {
@@ -215,5 +223,6 @@ module.exports = {
     requestMt,
     dlivyMt,
     reqMtOrderList,
-    mtOrderList
+    mtOrderList,
+    mtListOnOrder
 };
