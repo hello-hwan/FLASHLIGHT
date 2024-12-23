@@ -1,5 +1,6 @@
 //품질 라우트
 import qualityRequest from "@/views/quality/qualityRequest.vue";
+import qiResult from "@/views/quality/qiResult.vue";
 
 
 const qualityRoute = [
@@ -12,6 +13,11 @@ const qualityRoute = [
     name: 'qualityRequest',
     component: qualityRequest
   },
+  {
+    path: 'qiResult',
+    name: 'qiResult',
+    component: qiResult
+  }  
 
 ];
 

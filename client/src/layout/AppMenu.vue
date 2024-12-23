@@ -112,7 +112,7 @@ const model = ref([
                     },                   
                     {
                         label: '품질 검사 결과',
-                        to: '/'
+                        to: '/quality/qiResult'
                     }
                 ]
             },

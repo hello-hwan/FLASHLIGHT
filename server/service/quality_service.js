@@ -1,12 +1,18 @@
 //품질 service
 const mariaDB = require('../database/mapper.js');
     
-//품질검사요청
-const qualityRequest = async (prd_code) => {
-    let list = await mariaDB.query('qualityRequest',prd_code)
+//품질입고검사
+const inspec_prd = async (prd_code) => {
+    let list = await mariaDB.query('inspec_prd',prd_code)
     return list;
 }
 
+//품질입고검사등록
+const inspecInsert = async (Insert)=>{
+    await mariaDB.query('inspecInsert', Insert);
+}
+
 module.exports = {
-    qualityRequest
+    inspec_prd,
+    inspecInsert
 };

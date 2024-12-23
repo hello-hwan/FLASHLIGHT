@@ -4,10 +4,20 @@ const express = require('express');
 const router = express.Router();
 const qualityService = require('../service/quality_service.js')
 
-router.get('/quality/qualityRequest', async(req, res) =>{
+//품질입고검사
+router.get('/quality/inspec_prd', async(req, res) =>{
     let reNo = req.query.re_info;    
-    let result = await qualityService.qualityRequest(reNo);
+    let result = await qualityService.inspec_prd(reNo);
     res.send(result);
 });
 
+//품질입고검사등록
+router.post('/inspecInsert',async(req,res)=>{
+    let Insert = req.body;
+    let result = await qualityService.inspecInsert(Insert);
+    res.send(result);
+});
+
+
+//
 module.exports = router;
