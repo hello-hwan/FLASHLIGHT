@@ -7,16 +7,16 @@ const standard_info_service = require('../service/standard_info_service.js');
 // 기준정보 데이터 select 테스트
 router.get('/cmmn', async (req, res)=>{ 
   let searchs = req.query;
-  let cmmnList = await standard_info_service.cmmntest(searchs);
+  let cmmnList = await standard_info_service.cmmntest(searchs);  
   res.send(cmmnList);
-});
-
+}); 
+ 
 // BOM 조회
-router.get('/bom', async (req, res) => {
+router.get('/bom', async (req, res) => { 
   let searchs = req.query;
   let bomlist = await standard_info_service.bomtest(searchs);
   res.send(bomlist);
-});
+}); 
   
 // BOM 상세조회 
 router.get('/bom/:bomCode', async (req, res) => {
@@ -37,7 +37,7 @@ router.post('/bom', async (req, res) => {
 router.get('/bomManage/:bomCode', async (req, res) => {
   let bomCode = req.params.bomCode;
   let info = await standard_info_service.bomManage(bomCode);
-  res.send(info); 
+  res.send(info);  
 })
 
 // BOM 소모품 update
