@@ -10,6 +10,7 @@ import prductNListwrhousng from "@/views/standardInfo/prductNListwrhousng.vue";
 import bomManage from "@/views/standardInfo/bomManage.vue";
 import prductNList from "@/views/standardInfo/prductNList.vue"
 import prductNdlivyList from "@/views/standardInfo/prduct_n_dlivy.vue"
+import prductNDlivyModar from "@/views/standardInfo/prduct_n_dlivy_modar.vue"
 
 const standardInfoRoute = [
     {
@@ -60,6 +61,11 @@ const standardInfoRoute = [
         path: 'prductNdlivyList',
         name: 'prductNdlivyList',
         component: prductNdlivyList
+    },
+    {
+        path: 'prductNDlivyModar',
+        name: 'prductNDlivyModar',
+        component: prductNDlivyModar
     },
     {
         path: 'qiList',

@@ -29,9 +29,25 @@ const prduct_n_dlivy = async() => {
   return list;
 }
 
+// 반제품 출고가능 제품
+const prduct_n_possible = async(prdCode) => {
+  let list = await mariaDB.query('prduct_n_possible', prdCode);
+  return list;
+}
+
+// 반제품 출고완료처리
+const prduct_n_dlivyTest = async() => {
+  let result = await mariaDB.query('prduct_n_dlivyTest');
+  return result;
+}
+
+
+
 module.exports = {
   prdctn_n_list,
   prduct_n_wrhousng,
   prdctNList,
-  prduct_n_dlivy
+  prduct_n_dlivy,
+  prduct_n_possible,
+  prduct_n_dlivyTest
 };
