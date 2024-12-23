@@ -55,14 +55,14 @@
 </template>
 
 <script setup>
-  import { ref, onUpdated } from 'vue';
+  import { ref } from 'vue';
   import axios from 'axios';
   import { ajaxUrl } from '@/utils/commons.js';
   import useDates from '@/utils/useDates';
 
   // 제품 검색 할 코드
   const prd = ref('');
-  prd.value = '';
+  prd.value = '스';
   
 
   // 날짜 표기할 변수
@@ -95,19 +95,16 @@
   // 생산일정 불러올 함수 실행
   getdrct();
 
-  // 검색
+  // 제품 검색
   const prdlist = ref([]);
 
-  const getprd = async (prdnm) => {
-    let result = await axios.get(`${ajaxUrl}/prod/prdlist/${prdnm}`)
+  const getprd = async (prd) => {
+    let result = await axios.get(`${ajaxUrl}/prod/prdlist/${prd}`)
                             .catch(err => console.log(err));
     prdlist.value = result.data;
   };
-
+  getprd(prd);
   
-  onUpdated(()=>{
-    getprd(prd);
-  })
 
  
 </script>
