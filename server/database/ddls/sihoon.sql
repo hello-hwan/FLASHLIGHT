@@ -738,7 +738,3 @@ SELECT * FROM thng_req;
 SELECT * FROM cmmn;
 
 SELECT * FROM repduct;
-
-SELECT prdlst_code, prdlst_name
-FROM repduct
-WHERE prdlst_name LIKE '%' || '123'
