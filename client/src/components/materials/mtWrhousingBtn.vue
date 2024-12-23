@@ -13,9 +13,9 @@ const props = defineProps(['params']);
 
 async function onButtonClicked() {
     //부모 컴포넌트로부터 가져온 데이터
-    console.log(props.params.data);
+    //console.log(props.params.data);
     let data = props.params.data;
-    console.log('******확인: ', data)
+    //console.log('******확인: ', data)
     //전송할 데이터 객체 생성
     let obj = {
         mtril_check_code : data.checkCode == null ? 'none' : data.checkCode,

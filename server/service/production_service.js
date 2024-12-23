@@ -1,31 +1,29 @@
 //생산 service
 const mariaDB = require('../database/mapper.js');
 
-const findcmmn = async () => {
-  let list = await mariaDB.query('pr_selcmmn');
+const findcmmn = async (code) => {
+  let list = await mariaDB.query('pr_selcmmn', code);
   return list;
 };
 
-const searchflowchart = async () => {
-  let list = await mariaDB.query('pr_selflowchart');
+const eqplist = async () => {
+  let list = await mariaDB.query('pr_eqp');
   return list;
 };
 
-const searchorder = async () => {
-  let list = await mariaDB.query('pr_selorder')
+const drctlist = async () => {
+  let list = await mariaDB.query('pr_seldrct');
   return list;
+
 };
 
-const searchtime = async (prod_code) => {
-  let list = await mariaDB.query('pr_selsumtime', prod_code);
+const prdlist = async (name) => {
+  let list = await mariaDB.query('pr_srcprd', name);
   return list;
-};
+}
 
-const searchuseqy = async (prod_code) => {
-  let list = await mariaDB.query('pr_selsumqy', prod_code);
-  return list;  
-};
-// 주문리스트 - 공정흐름도(소모량, 소요시간) - 자재, 반제품 총 재고 - 우선순위 
+
+// ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
 
 // 주문 목록 가져와서 총 소요시간 구하기
 const total = async () => {
@@ -72,15 +70,66 @@ const total = async () => {
   return result;
   
 //  return list;
-}
+};
+
+const seldrct = async () => {
+  let list = await mariaDB.query('pr_drctnodate');
+  
+  let result = [];
+  let model = '';
+  let end_time = new Date (list[0].pre_begin_time);
+  end_time.setHours(0);
+  end_time.setMinutes(0);
+  end_time.setSeconds(0);
+  let end = end_time.getTime();
+  console.log("end", end);
+  let start_time = new Date(list[0].pre_begin_time);
+  start_time.setHours(0, 0, 0, 0);
+  console.log(start_time);
+  let start = start_time.getTime();
+  let asd = new Date('2999-12-30');
+  console.log(asd);
+  asd.setHours(0,0,0,0)
+  console.log(asd);
+
+  for(let i = 0; i < list.length; i++){
+    if(model != list[i].model_nm){
+      let begin_time = list[i].pre_begin_time;
+      let begin = new Date(begin_time).getTime();
+      console.log(begin-start)
+      if(begin - start > 0){
+        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-start)/1000/60/60 });
+      }
+   
+       
+    } 
+    result.push(list[i]);
+    model = list[i].model_nm;
+    end_time = list[i].pre_end_time;
+    end = new Date(end_time).getTime();
+  
+  }
+return result;
+};
 
 
 module.exports = { 
   findcmmn,
-  searchflowchart,
-  searchorder,
-  searchtime,
-  searchuseqy,
-  total,
+  drctlist,
+  eqplist,
+  prdlist,
 
+
+
+
+
+
+
+
+
+
+
+  
+  total,
+  seldrct
 };

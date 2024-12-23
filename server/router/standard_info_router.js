@@ -7,16 +7,16 @@ const standard_info_service = require('../service/standard_info_service.js');
 // 기준정보 데이터 select 테스트
 router.get('/cmmn', async (req, res)=>{ 
   let searchs = req.query;
-  let cmmnList = await standard_info_service.cmmntest(searchs);
+  let cmmnList = await standard_info_service.cmmntest(searchs);  
   res.send(cmmnList);
-});
-
+}); 
+ 
 // BOM 조회
-router.get('/bom', async (req, res) => {
+router.get('/bom', async (req, res) => { 
   let searchs = req.query;
   let bomlist = await standard_info_service.bomtest(searchs);
   res.send(bomlist);
-});
+}); 
   
 // BOM 상세조회 
 router.get('/bom/:bomCode', async (req, res) => {
@@ -27,12 +27,34 @@ router.get('/bom/:bomCode', async (req, res) => {
  
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
-  let bominfo = req.body;
-  console.log('router',bominfo); 
-  let result = await standard_info_service.bomInsert(bominfo);
+  let Insert = req.body;
+  console.log('router',Insert); 
+  let result = await standard_info_service.bomInsert(Insert); 
   res.send(result);
 });
 
+// BOM 관리 select 
+router.get('/bomManage/:bomCode', async (req, res) => {
+  let bomCode = req.params.bomCode;
+  let info = await standard_info_service.bomManage(bomCode);
+  res.send(info);  
+})
+
+// BOM 소모품 update
+router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
+  let cmpdsNo = req.params.no;  
+  let info = req.body;  
+
+  let result = await standard_info_service.bom_cmpdsUpdate(cmpdsNo, info);
+  res.send(result);
+});
+
+// BOM 소모품 삭제
+router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {
+  let cmpdsNo = req.params.cmpdsNo;
+  let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
+  res.send(result);
+});
 
 
 // 품질검사항목관리
