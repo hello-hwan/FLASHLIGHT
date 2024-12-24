@@ -1,8 +1,6 @@
 //기준정보 라우터
 import bomList from "@/views/standardInfo/bomList.vue";
 
-import bomInsert from "@/views/standardInfo/bomInsert.vue";
-
 import procsFlowchartList from "@/views/standardInfo/procsFlowchartList.vue";
 import procsFlowchartDetail from "@/views/standardInfo/procsFlowchartDetail.vue";
 import procsFlowchartinsert from "@/views/standardInfo/procsFlowchartinsert.vue";
@@ -22,12 +20,6 @@ const standardInfoRoute = [
         name: 'bomList',
         component: bomList
     },
-    {
-
-        path: 'bomInsert',
-        name: 'bomInsert',
-        component: bomInsert
-    }, 
     {
         path: 'procsFlowchartList',
         name: 'procsFlowchartList',
