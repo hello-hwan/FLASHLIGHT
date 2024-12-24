@@ -7,7 +7,7 @@ SELECT  m.req_code req_code,
         m.req_name req_name,
         m.prd_nm mt_name,
         m.prd_code mt_code,
-        m.req_qy req_qy,
+        m.req_qy order_qy,
         s.unit unit,
         m.req_de date
 FROM    thng_req m JOIN mtril s
@@ -17,20 +17,10 @@ AND     m.prd_se = 'PI01'
 AND     m.procs_at = 'RD02'
 `;
 
-//자재 발주 관리 - mt001 / 발주서 등록(MTRIL_ORDER테이블에 insert)
+//자재 발주 관리 - mt001 / 발주서 등록
 const mt_orderInsert =
 `
-INSERT INTO mtril_order(mtril_order_code, 
-                        order_name, 
-                        mtril_name,
-                        mtril_code,
-                        mtlty_name,
-                        bcnc_code,
-                        order_price,
-                        order_qy,
-                        dedt,
-                        empl_no)
-VALUES (CONCAT('order' , nextval(mt_order_code_seq)), 
+Call mt_order_process(
         ?,
         ?,
         ?,
@@ -39,10 +29,19 @@ VALUES (CONCAT('order' , nextval(mt_order_code_seq)),
         ?,
         ?,
         ?,
-        ?)
+        ?,
+        ?,
+        ?,
+        ?
+)
 `;
 
-//
+//자재 발주관리 - 요청 자재 발주 등록
+//where req_code, procs_at='RD01'
+const mt_orderInsertFromReq =
+`
+
+`;
 
 //자재 발주관리 - mt001 / 발주서 수정
 const mt_ordermodify =
@@ -74,19 +73,6 @@ const mt_searchCompanyWithKey =
 `
 `;
 
-//수정할 발주건 검색 - mt004
-const mt_searchOrder = 
-`
-select  order_code,
-	order_name,
-        mtlty_name,
-        bcnc_code,
-        order_date,
-        dedt,
-        empl_no
-from    mtril_order
-`;
-
 //수정할 발주건 검색 - mt004 조건
 const mt_searchOrderWithKey =
 `
@@ -98,12 +84,13 @@ SELECT  order_code,
         dedt,
         empl_no
 FROM    mtril_order
-WHERE   order_name LIKE CONCAT('%', IFNULL(?, order_name), '%')
-AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
-AND     order_date BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
-AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
-AND     empl_no = IFNULL(?, empl_no)
+WHERE   order_name LIKE CONCAT('%', order_name, '%')
+AND     mtlty_name LIKE CONCAT('%', mtlty_name, '%')
+AND     order_date BETWEEN order_date AND order_date
+AND     dedt BETWEEN dedt AND dedt
+AND     empl_no = empl_no
 GROUP BY order_code
+ORDER BY order_no desc
 `;
 
 //발주한 건 자재 목록
@@ -361,5 +348,7 @@ module.exports = {
         mt_lotInvenList,
         mt_requestCheckOut,
         mt_searchOrderWithKey,
-        mt_listOnOrder
+        mt_listOnOrder,
+        mt_orderInsert,
+        mt_orderInsertFromReq
 };

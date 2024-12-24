@@ -17,10 +17,10 @@
                 <span>발주명</span>
                 <InputText type="text" v-model="orderName" class="emp_info"> <p>{{ orderName }}</p></InputText>
                 <span>거래처 명</span>
-                <InputText type="text" v-model="company" class="emp_info" > <p>{{ company }}</p></InputText>
-                <span style="display:none">
+                <InputText type="text" v-model="companyName" class="emp_info" > <p>{{ companyName }}</p></InputText>
+                <span style="">
                     <span>거래처 코드</span>
-                    <InputText type="text" v-model="company" class="emp_info" > <p>{{ company }}</p></InputText>
+                    <InputText type="text" v-model="companyCode" class="emp_info" > <p>{{ companyCode }}</p></InputText>
                 </span>
                 <span>담당자</span>
                 <InputText type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
@@ -92,7 +92,9 @@ const orderRowData = ref([]);
 //발주명
 let orderName = "";
 //거래처 명
-let company = "";
+let companyName = "";
+//거래처 코드
+let companyCode = "";
 //담당자
 let empId = 100;
 
@@ -122,7 +124,7 @@ const reqColDefs = [
   { field: "req_name", headerName:"요청 명" },
   { field: "mt_code", headerName:"자재 코드" },
   { field: "mt_name", headerName:"자재 명",flex:3},
-  { field: "req_qy", headerName:"요청 수량" ,flex:3},
+  { field: "order_qy", headerName:"요청 수량" ,flex:3},
   { field: "unit", headerName:"단위", flex:1},
   { field: "date", headerName:"요청날짜", valueFormatter: customDateFormat,flex:3},
   { field: "check", headerName:"선택",  checkboxSelection: true, flex: 0.7}
@@ -162,10 +164,10 @@ const mtListGridOptions = {
     animateRows: false,
     paginationPageSize: 10
 };
-// params.api를 담을 변수
+//요청 리스트의 params.api를 담을 변수
 const gridApi = ref(null);
 
-//grid가 생성될때 발생한 ag grid의 api를 변수에 담음
+//요청리스트 ag grid가 생성될때 발생한 ag grid의 api를 변수에 담음
 const onGridReady = (params) => {
     gridApi.value = params.api;
 };
@@ -251,7 +253,7 @@ watch(() => orderCode.value, async(newVal) => {
     let result = await axios.get(`${ajaxUrl}/mtril/mtListOnOrder/${orderCode.value}`)
                       .catch(err=>console.log(err));
     //거래처명, 주문명 인풋박스에 넣기
-    company = result.data[0].company_name;
+    companyName = result.data[0].company_name;
     orderName = result.data[0].req_name;
     
     //행 데이터 넣기
@@ -272,13 +274,19 @@ const mtReqList = async() => {
 mtReqList();
 
 //자재 등록
-const insertMtOrderList = () => {
+const insertMtOrderList = async() => {
     let rowData = [];
     //각 행의 데이터를 가져와서 rowData배열에 푸쉬(객체의 배열 형식)
     mtListGridApi.value.forEachNode((node) => rowData.push(node.data));
 
+    //행 데이터가 없을 경우 아무 작업 없이 종료.
+    if(rowData.length <= 0) {
+        return;
+    };
     //유효성 검사
     for(let i=0; i<rowData.length; i++) {
+
+        //주문날짜 오늘날짜로 설정
         rowData[i].order_date = customDateToday();
 
         //dedt db에 넣을수 있는 포멧으로 바꾸기
@@ -287,34 +295,76 @@ const insertMtOrderList = () => {
         let day = rowData[i].dedt.getDate();
         rowData[i].dedt = `${rowData[i].dedt.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
 
+        //숫자로 입력했지만 string타입이라 숫자로 변환.
         rowData[i].order_qy = parseInt(rowData[i].order_qy);
 
-        //수량 입력이 잘못됐을 경우 오류 출력
-        if(!(parseInt(rowData[i].order_qy) > 0)) {
-            toast.add({ severity: 'warn', summary: '입력 오류', detail: '주문수량을 확인해주세요.', life: 3000 });
-            return;
-        };
 
-        if(orderName == "" || company == "") {
+        if(orderName == "" || companyName == "") {
             //발주명, 거래처명 이 비어있으면 오류
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명, 거래처 명을 확인해주세요.', life: 3000 });
-
-        } else if (rowData[i].dedt == "" || rowData[i].order_qy == "" ) {
-            //납기일, 주문수량이 비어 있거나, 주문수량이 숫자가 아니면 오류 메세지 출력
-
-            toast.add({ severity: 'warn', summary: '입력 오류', detail: '주문수량, 납기일을 확인해주세요.', life: 3000 });
-
+            return;
+        } else if (rowData[i].dedt.length == 11 || rowData[i].order_qy == "" ) {
+            //주문수량이 비어 있으면 오류 메세지 출력
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
+            return;
         } else if (orderName.length > 20) {
             //발주명이 20자 이상이면 오류
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명은 20자 이하로 작성해주세요.', life: 3000 });
-
-        } else {
-            
+            return;
         };
+            //수량 입력이 잘못됐을 경우 오류 출력
+            if(!(parseInt(rowData[i].order_qy) > 0)) {
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '주문수량을 확인해주세요.', life: 3000 });
+            return;
+        };
+        //납기일 날짜가 발주일보다 빠른 경우 오류 출력 밀리세컨 단위로 계산.
+        if((new Date(rowData[i].order_date) - new Date(rowData[i].dedt)) > 0) {
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '날짜 입력이 잘못되었습니다.', life: 3000 });
+            return;
+        };
+
+        //기타 내용들 배열에 추가(거래처명, 거래처코드, 사원번호, 발주명)
+        rowData[i] = ({...rowData[i], company_name: companyName, company_code: companyCode, emp_id: empId, order_name: orderName});
     };
-    console.log(rowData);
+    
+    //데이터 보내기
+    let result = await axios.post(`${ajaxUrl}/mtril/insertMtOrderList`, rowData)
+                             .catch(err=>console.log(err));
+
+    //console.log('결과 ', result.data);
+    if(result.data == 'success') {
+        toast.add({ severity: 'success', summary: '발주 등록 완료', detail: '처리가 완료되었습니다.', life: 3000 });
+        removeReq(rowData);
+    } else {
+        toast.add({ severity: 'warn', summary: '발주 등록 실패', detail: '문제가 생겼습니다.', life: 3000 });
+    };
+    
 };
 
+//발주 등록 성공 후 요청 리스트에서 삭제하기
+const removeReq = (rowData) => {
+    //발주명, 거래처명, 거래처코드 초기화
+    orderName = "";
+    companyName = "";
+    companyCode = "";
+
+    for(let i=0; i<reqRowData.value.length; i++) {
+        console.log('요청리스트 요청코드: ', reqRowData.value[i]);
+        console.log('보낸 데이터 요청코드: ', rowData[i]); 
+        //요청 코드가 없다면 함수종료
+        if(rowData[i].req_code == "") {
+            return;
+        };
+        //요청코드가 있다면 해당 행 삭제, 행추가는 아래서부터 되기때문에 rowData배열의 길이가 더 길어도 상관없음
+        if(reqRowData.value[i].req_code == rowData[i].req_code) {
+            reqRowData.value.splice(i, 1);
+            //그리드 api를 이용해서 행 삭제하기
+            console.log('삭제될 행', reqRowData.value[i]);
+            //gridApi.value.applyTransaction({ remove: [reqRowData.value[i]] });
+        };
+    };
+    orderRowData.value = ref([]);
+};
 </script>
 
 <style>

@@ -53,9 +53,6 @@ router.get('/mtril/reqOrderList', async (req, res) => {
 
 //자재 발주완료건 검색
 router.post('/mtril/orderList', async (req, res) => {
-    //let searchInfo =req.params.obj;
-    //console.log(searchInfo);
-    console.log(req.body);
     let searchInfo = req.body;
     let result = await mtrilService.mtOrderList(searchInfo);
     res.send(result);
@@ -67,4 +64,11 @@ router.get('/mtril/mtListOnOrder/:orderCode', async(req, res) => {
     let result = await mtrilService.mtListOnOrder(orderCode);
     res.send(result);
 });
+
+//발주관리 발주건 자재리스트 입력
+router.post('/mtril/insertMtOrderList', async(req, res) => {
+    let orderMtList = req.body;
+    let result = await mtrilService.insertMtToOrder(orderMtList);
+    res.send(result);
+})
 module.exports = router;

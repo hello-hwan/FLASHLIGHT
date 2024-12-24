@@ -206,7 +206,7 @@ const mtOrderList = async(searchInfo) => {
                               .catch(err=>console.log(err));
 
     return result;
-}
+};
 
 //발주건 자재 리스트
 const mtListOnOrder = async(orderCode) => {
@@ -214,7 +214,72 @@ const mtListOnOrder = async(orderCode) => {
                               .catch(err=>console.log(err));
     console.log('결과',result);
     return result;
-}
+};
+
+//발주 자재 입력
+const insertMtToOrder = async(orderMtList) => {
+    //insertId를 담을 변수
+    let key = '';
+
+    //리턴할 결과를 더할 변수 선언
+    let resultCnt = 0;
+
+    for(let i=0; i<orderMtList.length; i++) {
+        //값이 없이 넘어오는게 있음. 구별하기 쉽게 none으로 임의 설정 프로시저 내에서 처리함.
+        orderMtRowData = [
+            orderMtList[i].dedt,
+            orderMtList[i].emp_id,
+            orderMtList[i].mt_code,
+            orderMtList[i].mt_name,
+            orderMtList[i].order_date,
+            orderMtList[i].order_qy,
+            orderMtList[i].req_code == '' ? 'none': orderMtList[i].req_code,
+            orderMtList[i].company_code,
+            orderMtList[i].order_name,
+            orderMtList[i].company_name,
+            orderMtList[i].price,
+            key == '' ? 'none': key
+        ];
+
+        /*
+            IN p_dedt VARCHAR(20),
+            IN p_emp_id INT,
+            IN p_mt_code VARCHAR(50),
+            IN p_mt_name VARCHAR(50),
+            IN p_order_date VARCHAR(50),
+            IN p_order_qy INT,
+            IN p_req_code VARCHAR(50),
+            IN p_company_code VARCHAR(50),
+            IN p_orderName VARCHAR(50),
+            IN p_company_name VARCHAR(50),
+            IN p_price INT,
+            IN p_key VARCHAR(50)
+        */
+        let queryResult = await mariaDB.query('mt_orderInsert', orderMtRowData)
+                                  .catch(err=>console.log(err));
+        console.log('쿼리 결과:', queryResult);
+
+        
+        //결과에서 인서트 아이디를 가지고 옴.
+        if(key == "") {
+            key = queryResult[0][0].id;
+        };
+        console.log('출력: ', queryResult);
+        console.log('선택: ', queryResult[0][0].result);
+        //결과가 1이면 성공 그 값을 모두 더함.
+        resultCnt += queryResult[0][0].result;
+        
+    };
+    
+    //결과로 돌아온 값의 합과 입력할 행의 수와 같으면 success리턴
+    if(resultCnt == orderMtList.length) {
+        return 'success';
+    } else {
+        return 'fail';
+    };
+    
+};
+
 module.exports = {
     returnMt,
     orderMt,
@@ -224,5 +289,6 @@ module.exports = {
     dlivyMt,
     reqMtOrderList,
     mtOrderList,
-    mtListOnOrder
+    mtListOnOrder,
+    insertMtToOrder
 };
