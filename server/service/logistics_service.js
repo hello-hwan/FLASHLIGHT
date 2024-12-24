@@ -36,7 +36,7 @@ const prduct_n_possible = async(prdCode) => {
   let dataList = [];
   for(let i = 0; i < list.length; i++){
     let prductNLOT = await mariaDB.query('prduct_n_qy', list[i].prd_code)
-                                       .catch(err => console.log(err));
+                                      .catch(err => console.log(err));
     
     let roopCnt = prductNLOT.length == 0 ? 1 : prductNLOT.length;
 
