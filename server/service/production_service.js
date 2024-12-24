@@ -67,14 +67,17 @@ const total = async () => {
 
 
 const seldrct = async (prd_code, day_str) => {
-  if(prd_code){
-    
+  // prd_code가 없을 때
+  if(!prd_code){
+    prd_code = '';
   }
-  if(day_str){
-
+  // day_str이 없을 때 - 현재날짜 기준
+  if(!day_str){
+    day_str = new Date().getFullYear + '-' + (new Date().getMonth + 1) + '-' + new Date().getDate();
   }
+  let innerArray = [prd_code, day_str, day_str, day_str, day_str];
 
-  let list = await mariaDB.query('pr_drctnodate');
+  let list = await mariaDB.query('pr_drctnodate', innerArray);
   
   let result = [];
   let model = '';
@@ -90,14 +93,14 @@ const seldrct = async (prd_code, day_str) => {
   let end = end_time.getTime();
 
   // 제일처음의 공정시간
-  let start_time = new Date(list[0].pre_begin_time);
+  let start_time = new Date(day_str);
   start_time.setHours(0, 0, 0, 0);
   let start = start_time.getTime();
-
+  let colspan = 0;
 
   for(let i = 0; i < list.length; i++){
-    
     if(model != list[i].model_nm){
+      colspan = 0;
 
       begin_time = list[i].pre_begin_time;
       begin = new Date(begin_time).getTime();
@@ -106,6 +109,7 @@ const seldrct = async (prd_code, day_str) => {
       end = new Date(end_time).getTime();
       if(begin - start > 0){
         result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-start)/1000/60/60, "order_no" : "" });
+        colspan += (begin-start)/1000/60/60;
       }
         
     } 
@@ -113,8 +117,19 @@ const seldrct = async (prd_code, day_str) => {
     begin = new Date(begin_time).getTime();
     if(begin - end > 0){
       result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-end)/1000/60/60, "order_no" : "" });
+      colspan += (begin-start)/1000/60/60;
     }
-    result.push(list[i]);
+    if(colspan >= 168){
+      model = list[i].model_nm;
+      continue;
+    }
+    if(colspan + list[i].drct_time >= 168){
+      result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (168 - colspan), "order_no" : list[i].order_no });
+      colspan = 168;
+    } else {
+      result.push(list[i]);
+      colspan += list[i].drct_time;
+    }
     model = list[i].model_nm;
     end_time = list[i].pre_end_time;
     end = new Date(end_time).getTime();
