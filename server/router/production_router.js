@@ -64,8 +64,8 @@ router.get('/prod/total', async (req, res) => {
 //------------------------------------- 실험용 코드 생산일정(매개변수 컨트롤 해야함)
 
 router.get('/prod/seldrct', async (req, res) => {
-  let prd_code = req.body.prd_code;
-  let day_str = req.body.day_str;
+  let prd_code = req.query.prd_code;
+  let day_str = req.query.day_str;
   
   prodService.seldrct(prd_code, day_str).then(list => {res.send(list)})
   .catch(err => {res.status(500).send('Fail Process')})
