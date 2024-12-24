@@ -125,11 +125,11 @@ const model = ref([
                 items: [
                     {
                         label: '설비 상태 조회',
-                        to: '/'
+                        to: '/equipments/eqpList'
                     },
                     {
                         label: '점검 일정',
-                        to: '/'
+                        to: '/equipments/checkSchdul'
                     },
                     {
                         label: '점검 일정 현황',
@@ -276,11 +276,11 @@ const model = ref([
                     },
                     {
                         label: '공정 흐름도 관리',
-                        to: '/'
+                        to: '/standardInfo/procsFlowchartinsert'
                     },
                     {
                         label: '공정 흐름도 조회',
-                        to: '/'
+                        to: '/standardInfo/procsFlowchartList'
                     },
                     {
                         label: '품질 검사 항목 관리',
