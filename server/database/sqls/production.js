@@ -1,65 +1,66 @@
 //생산 sql
 
-// 순서 
-// 주문리스트에서 처리중, 생산인 품목이랑 수량, 주문번호, 납품기한 가져와서 
-// 공정흐름도에서 총 예상소요시간, 총 필요 자재 수량 조회해서
-// 자재에서 자재 총 수량 확인해서
-// 생산계획에 인서트 한다.
-
-// 생산해야하는 주문의 품목별소모재료
-const pr_selmtlused = 
-`
-SELECT mtril_code, usgqty * oli.order_qy
-FROM procs_matrl pm JOIN procs_flowchart pfc ON (pm.procs_code = pfc.procs_code)
-						  JOIN order_lists oli ON (oli.prd_code = pfc.prd_code)
-WHERE	prdctn_at = 'OP01'
-AND process_status = 'OD01'
-GROUP BY mtril_code
-`;
-
-// 생산해야하는 주문의 품목별 소요시간
-const pr_seltime = 
-`
-SELECT pfc.prd_code, sum(expect_reqre_time) * oli.order_qy
-FROM procs_flowchart pfc JOIN order_lists oli ON (pfc.prd_code = oli.prd_code)
-WHERE	prdctn_at = 'OP01'
-AND process_status = 'OD01'
-GROUP BY pfc.prd_code
-`;
-
-// 생산해야하는 주문의 자재 수량
-const pr_selmtl = 
-`
-SELECT mwh.mtril_code, sum(mtril_qy)
-FROM mtril_wrhousing mwh JOIN procs_matrl pm ON (mwh.mtril_code = pm.mtril_code)
-JOIN procs_flowchart pfc ON (pm.procs_code = pfc.procs_code)
-JOIN order_lists oli ON (oli.prd_code = pfc.prd_code)
-WHERE	prdctn_at = 'OP01'
-AND process_status = 'OD01'
-GROUP BY mtril_code
-`;
-
-// 생산해야하는 주문의 반제품 수량
-const pr_selprodn = 
-`
-SELECT pnw.prdlst_code, sum(prduct_n_wrhousng_qy)
-FROM prduct_n_wrhousng pnw JOIN procs_matrl pm ON (pnw.prdlst_code = pm.mtril_code)
-JOIN procs_flowchart pfc ON (pm.procs_code = pfc.procs_code)
-JOIN order_lists oli ON (oli.prd_code = pfc.prd_code)
-WHERE	prdctn_at = 'OP01'
-AND process_status = 'OD01'
-GROUP BY prdlst_code
-`
-
-
 // 조회문
+
+const pr_seldrct = // 생산 지시 조회
+`
+SELECT prdctn_code, procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time
+FROM prdctn_drct
+WHERE pre_begin_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
+OR pre_end_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
+GROUP BY model_nm
+ORDER BY pre_begin_time
+`;
+
+const pr_nem = // 재고 부족한 생산 계획 조회
+`
+
+`;
+
+const pr_eqp = // 설비 조회
+`
+SELECT eqp_code, model_nm
+FROM eqp
+`;
+
+
+
+
+// 조건 조회문
 
 const pr_selcmmn = // 공통코드 목록 조회
 `
-select *
-from cmmn
+SELECT cmmn_name
+FROM cmmn
+WHERE cmmn_code = ?
 `;
 
+const pr_srcprd = // 제품명으로 조회시 코드랑 완전한 이름 뜨기
+`
+SELECT prdlst_code, prdlst_name
+FROM repduct
+WHERE prdlst_name LIKE CONCAT('%', ?, '%') 
+`;
+
+
+
+// 삽입문
+
+
+
+
+// 수정문
+
+
+
+
+// 삭제문
+
+
+
+// ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
+
+// 조회문
 const pr_selorder = // 주문리스트에서 생산하라는 목록 조회
 `
 SELECT ol.prd_code, ol.order_no, ol.prd_name, ol.order_qy, orr.order_date, orr.dete
@@ -69,11 +70,7 @@ AND process_status = 'OD01'
 ORDER BY 6
 `;
 
-
-
-
 // 조건 조회문
-
 const pr_selflowchart = // 공정흐름도 조회 특정 품목 기반
 `
 SELECT fc.procs_code, fc.procs_nm, prd_code, prd_nm, procs_ordr_no, expect_reqre_time, bom_code, mtril_code, mtril_nm, usgqty, eqp_code
@@ -104,30 +101,40 @@ ORDER BY 1;
 `;
 
 
-
-// 삽입문
-const pr_insplan = // 생산 계획에 삽입
+const pr_drctnodate = // 조건없이 더미데이터 나오는지 보기위함
 `
-INSERT INTO prdctn_plan
-SET ?
+SELECT pd.prdctn_code, pd.procs_nm, pd.model_nm, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time, pp.order_no
+FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time
 `;
-
-
-
-// 수정문
-
-
-
-
-// 삭제문
-
-
 
 
 module.exports = {
   pr_selcmmn,
+  pr_seldrct,
+  pr_nem,
+  pr_eqp,
+  pr_srcprd,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   pr_selorder,
   pr_selflowchart,
   pr_selsumtime,
-  pr_selsumqy
+  pr_selsumqy,
+  pr_drctnodate,
+  
 };

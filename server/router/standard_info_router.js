@@ -5,34 +5,6 @@ const router = express.Router();
 const standard_info_service = require('../service/standard_info_service.js');
 
 // 기준정보 데이터 select 테스트
-router.get('/cmmn', async (req, res)=>{
-  let searchs = req.query;
-  let cmmnList = await standard_info_service.cmmntest(searchs);
-  res.send(cmmnList);
-});
-
-// BOM 데이터 select 테스트
-router.get('/bom', async (req, res) => {
-  let searchs = req.query;
-  let bomlist = await standard_info_service.bomtest(searchs);
-  res.send(bomlist);
-});
- 
-// BOM 상세조회 
-router.get('/bom/:bomCode', async (req, res) => {
-  let bomCode = req.params.bomCode;
-  let info = await standard_info_service.bomInfo(bomCode); 
-  res.send(info);
-});
- 
-// BOM소모품 등록
-router.post('/bom', async (req, res) => {
-  let bominfo = req.body;
-  let result = await standard_info_service.bominsert(bominfo);
-  res.send(result);
-})
-
-// 기준정보 데이터 select 테스트
 router.get('/cmmn', async (req, res)=>{ 
   let searchs = req.query;
   let cmmnList = await standard_info_service.cmmntest(searchs);  
@@ -67,7 +39,6 @@ router.get('/bomManage/:bomCode', async (req, res) => {
   let info = await standard_info_service.bomManage(bomCode);
   res.send(info);  
 })
-
 // BOM 소모품 update
 router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
   let cmpdsNo = req.params.no;  
@@ -92,7 +63,7 @@ router.get('/standardInfo/qiList', async (req, res) => {
   let result = await standard_info_service.qiList(qiNo);
   res.send(result);
 });
- 
+
 // 공정 흐름도 조회
 router.get('/procsFlowchartList', async (req, res) => {
     let list = await standard_info_service.procsFlowchartList();
@@ -173,5 +144,5 @@ router.delete('/ProcsCodeToDeleteFlowchart/:procs_code', async(req, res)=>{
   let result = await standard_info_service.ProcsCodeToDeleteFlowchart(procs_code);
   res.send(result);
 });
- 
-module.exports = router;   
+
+module.exports = router;     

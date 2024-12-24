@@ -29,7 +29,7 @@
       <!--자재 상세보기 ref객체로 감싼경우 
       .value를 사용하지 않아도 template에서는 그대로 사용가능하다.
       스크립트 내부에서 값을 사용할 때는 .value를 사용해야 됨.-->
-      <detailTable v-bind:code="reqCodeForCondition"/>
+      <detailTable v-bind:code="reqCodeForCondition" @removeRowDataInfo="removeRow"/>
 
   </div>
 </template>
@@ -44,7 +44,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import goDetails from '@/components/materials/mtReqGotoDetails.vue'; //상세보기 버튼
-import detailTable from '@/components/materials/mtDetailTable.vue'; //요청 자재 상세보기 테이블
+import detailTable from '@/components/materials/mtDelivyDetailTable.vue'; //요청 자재 상세보기 테이블
 
 //요청명리스트 담을 변수
 const reqRowData = ref([]);
@@ -56,7 +56,7 @@ const getReqList = async () => {
   //console.log(result);  //데이터 확인
   //데이터 담기
   reqRowData.value = result.data;
-}
+};
 
 //요청명 리스트 데이터 담기 함수 실행
 getReqList();
@@ -83,6 +83,22 @@ const getReqCode = (reqCode) => {
   reqCodeForCondition.value = reqCode;
   console.log('부모 컴포넌트: ', reqCodeForCondition.value); //확인
 }
+// let info = ref('');
+//자식 컴포넌트에서 보내진 삭제될 행의 prdctn_code를 가져옴, 해당 행을 삭제
+const removeRow = (delRowInfo) => {
+  // console.log(delRowInfo);
+
+
+  console.log("info: ", delRowInfo);
+  for(let i=0; i<reqRowData.value.length; i++) {
+    console.log('작동');
+    console.log("code: ", reqRowData.value[i].code);
+    if(delRowInfo == reqRowData.value[i].code) {
+      
+      reqRowData.value.splice(i, 1);
+    };
+  };
+};
 
 //ag grid 옵션 설정
 const gridOptionsReq = {
