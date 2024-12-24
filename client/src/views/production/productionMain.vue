@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>
+  <div class="container">
+    <div class="prod-schedule">
       <p>생산 일정 안내 </p>
       <input type="date" v-model="day">
       <input type="text" placeholder="제품코드" v-model="prd" @keydown="getprdlist()">
@@ -9,7 +9,7 @@
       </div>
       <button type="button" @click="getanotherlist(prd, day)">검색</button>
     </div>
-    <div>
+    <div class="table-container">
       <table class="table">
         <thead>
           <tr>
@@ -43,12 +43,14 @@
           <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
             <th>{{ eqp.model_nm }}</th>
             <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+            <td v-if="drctlist.length == 0" colspan="168">No Data Found</td>
           </tr>
 
         </tbody>
         
         </table>
       </div>
+      <ImpossibleProduction/>
     </div>
 </template>
 
@@ -57,6 +59,7 @@
   import axios from 'axios';
   import { ajaxUrl } from '@/utils/commons.js';
   import useDates from '@/utils/useDates';
+  import ImpossibleProduction from '@/components/production/ImpossibleProduction.vue';
 
   // 제품 검색 할 코드
   const prd = ref('');
@@ -83,11 +86,16 @@
   // 생산일정 담을 변수
   const drctlist = ref([]);
   // 생산일정 불러올 함수
-  const getdrct = async () => {
+  const getdrct = async (prd_code, day_str) => {
+
    // let result = await axios.get(`${ajaxUrl}/prod/drctlist`)
-   let result = await axios.get(`${ajaxUrl}/prod/seldrct`)
+   let result = await axios.get(`${ajaxUrl}/prod/seldrct`, {params: {"prd_code":prd_code, "day_str":day_str}})
                            .catch(err => console.log(err));
-    
+    // console.log(result);
+    if(result == undefined){
+      drctlist.value = [];
+      return;
+    }
     // 색상 배열
     const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "purple"];
 
@@ -120,7 +128,7 @@
 
   };
   // 생산일정 불러올 함수 실행
-  getdrct();
+  getdrct(prd.value, day.value);
 
   
 
@@ -140,19 +148,14 @@
 
   // 검색 클릭시 실행할 함수
   const getanotherlist = async (prd_code, day_str) => {
-
-    let result = await axios.get(`${ajaxUrl}/prod/srcdrct`, prd_code, day_str )
-                            .catch(err => console.log(err));
-    drctlist.value = result.data;
+    getdrct(prd_code, day_str);
   };
-
-  
- 
 </script>
 
 <style>
-  table , th, td {
+  .table th, .table td {
     border: 2px, solid, black;
+    width: 0.5%;
   }
 
 </style>

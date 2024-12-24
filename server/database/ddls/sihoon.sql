@@ -514,6 +514,7 @@ BEGIN
 					ORDER BY 1
 					LIMIT 1 OFFSET 0;
 					
+					-- 물품 요청 테이블에 삽입
 					INSERT INTO thng_req (req_code, req_name, mnfct_no, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
 					VALUES ( NEXTVAL(req_seq), '', v_mnfct_no, )
 							
@@ -732,15 +733,4 @@ DELIMITER ;
 
 CALL play_drct();
 
-SELECT * FROM prdctn_plan;
-SELECT * FROM prdctn_drct;
-SELECT * FROM thng_req;
-SELECT * FROM cmmn;
-SELECT * FROM eqp;
-
-SELECT * FROM repduct;
-
-SELECT prdctn_code, procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time, TIMESTAMPDIFF(hour, pre_begin_time, pre_end_time) AS drct_time
-FROM prdctn_drct
-GROUP BY eqp_code, model_nm, prdctn_code
-ORDER BY eqp_code, pre_begin_time;
+-- 517행 물품 요청 삽입 프로시저
