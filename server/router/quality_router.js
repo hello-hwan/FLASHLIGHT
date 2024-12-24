@@ -4,20 +4,19 @@ const express = require('express');
 const router = express.Router();
 const qualityService = require('../service/quality_service.js')
 
-//품질입고검사
-router.get('/quality/inspec_prd', async(req, res) =>{
-    let reNo = req.query.re_info;    
-    let result = await qualityService.inspec_prd(reNo);
+//발주요청
+router.get('/quality/order_request', async(req, res) =>{
+    let reNo = req.query.mt_info;    
+    let result = await qualityService.order_request(reNo).catch(err => console.log(err));
     res.send(result);
 });
 
-//품질입고검사등록
-router.post('/inspecInsert',async(req,res)=>{
-    let Insert = req.body;
-    let result = await qualityService.inspecInsert(Insert);
+//검사항목
+router.get('/quality/inspec_item', async(req, res) =>{
+    let reNo = req.query.in_info;    
+    let result = await qualityService.inspec_item(reNo);
     res.send(result);
 });
-
 
 //
 module.exports = router;
