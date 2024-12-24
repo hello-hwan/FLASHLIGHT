@@ -39,7 +39,6 @@ router.get('/bomManage/:bomCode', async (req, res) => {
   let info = await standard_info_service.bomManage(bomCode);
   res.send(info);  
 })
-
 // BOM 소모품 update
 router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
   let cmpdsNo = req.params.no;  
@@ -64,7 +63,7 @@ router.get('/standardInfo/qiList', async (req, res) => {
   let result = await standard_info_service.qiList(qiNo);
   res.send(result);
 });
- 
+
 // 공정 흐름도 조회
 router.get('/procsFlowchartList', async (req, res) => {
     let list = await standard_info_service.procsFlowchartList();
@@ -145,6 +144,5 @@ router.delete('/ProcsCodeToDeleteFlowchart/:procs_code', async(req, res)=>{
   let result = await standard_info_service.ProcsCodeToDeleteFlowchart(procs_code);
   res.send(result);
 });
-
 
 module.exports = router;     
