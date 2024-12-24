@@ -7,6 +7,8 @@ const quality = require('./sqls/quality.js');               //품질
 const standardInfo = require('./sqls/standard_info.js');    //기준정보
 const statistisc = require('./sqls/statistics.js');         //통계
 
+//기준정보 작업자별로 분류 : **모두 옮겨도 일단 standartInfo는 삭제되지 않습니다.**
+const mingyu = require('./sqls/mingyu.js');
 
 module.exports = {
     ...business,
@@ -16,5 +18,6 @@ module.exports = {
     ...production,
     ...quality,
     ...standardInfo,
-    ...statistisc
+    ...statistisc, 
+    ...mingyu
 };
