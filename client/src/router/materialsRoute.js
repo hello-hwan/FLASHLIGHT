@@ -6,6 +6,8 @@ import mtrilQy from '@/views/materials/materialQy.vue';
 import mtWrhousingCnt from '@/views/materials/mtWrhousingControl.vue';
 //자재 출고
 import mtdlivyCnt from '@/views/materials/mtDelivyControl.vue';
+//발주 관리
+import mtOrderCnt from '@/views/materials/mtOrderControl.vue';
 
 const materialsRoute = [
     {
@@ -33,6 +35,11 @@ const materialsRoute = [
         name: 'dlivy',
         component: mtdlivyCnt
     },
+    {
+        path: 'mtOrder',
+        name: 'mtOrder',
+        component: mtOrderCnt
+    }
     
 ];
 
