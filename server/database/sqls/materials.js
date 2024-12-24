@@ -1,10 +1,11 @@
 //자재 
 
 //자재 발주 관리 - mt001 / 생산으로부터 발주 요청 리스트 select
-//자재명, 자재코드, 요청수량, 단위, 요청날짜.
 const mt_prRequestList = 
 `
-SELECT  m.prd_nm mt_name,
+SELECT  m.req_code req_code,
+        m.req_name req_name,
+        m.prd_nm mt_name,
         m.prd_code mt_code,
         m.req_qy req_qy,
         s.unit unit,
@@ -12,12 +13,11 @@ SELECT  m.prd_nm mt_name,
 FROM    thng_req m JOIN mtril s
                      ON (m.prd_code = s.mtril_code)
 WHERE   m.prdctn_code IS NULL
-AND     m.prd_se = '자재'
-AND     m.dlivy_at = '미처리'
+AND     m.prd_se = 'PI01'
+AND     m.procs_at = 'RD02'
 `;
 
 //자재 발주 관리 - mt001 / 발주서 등록(MTRIL_ORDER테이블에 insert)
-//발주명, 자재명, 자재코드, 거래처명, 거래처 코드, 입고단가, 수량, 단위, 발주일, 납기일, 담당자
 const mt_orderInsert =
 `
 INSERT INTO mtril_order(mtril_order_code, 
@@ -39,7 +39,19 @@ VALUES (CONCAT('order' , nextval(mt_order_code_seq)),
         ?,
         ?,
         ?,
-        ?);
+        ?)
+`;
+
+//
+
+//자재 발주관리 - mt001 / 발주서 수정
+const mt_ordermodify =
+`
+
+`;
+
+//자재 발주관리 - mt001 / 발주서 삭제
+`
 `;
 
 //자재 검색 모달 - mt002 
@@ -65,11 +77,50 @@ const mt_searchCompanyWithKey =
 //수정할 발주건 검색 - mt004
 const mt_searchOrder = 
 `
+select  order_code,
+	order_name,
+        mtlty_name,
+        bcnc_code,
+        order_date,
+        dedt,
+        empl_no
+from    mtril_order
 `;
 
 //수정할 발주건 검색 - mt004 조건
 const mt_searchOrderWithKey =
 `
+SELECT  order_code,
+	order_name,
+        mtlty_name,
+        bcnc_code,
+        order_date,
+        dedt,
+        empl_no
+FROM    mtril_order
+WHERE   order_name LIKE CONCAT('%', IFNULL(?, order_name), '%')
+AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
+AND     order_date BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
+AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
+AND     empl_no = IFNULL(?, empl_no)
+GROUP BY order_code
+`;
+
+//발주한 건 자재 목록
+const mt_listOnOrder =
+`
+SELECT  m.order_code AS req_code, 
+        m.order_name AS req_name, 
+        m.mtril_name AS mt_name,
+        m.mtril_code AS mt_code,
+        m.mtlty_name AS company_name,
+        m.bcnc_code AS company_code,
+        m.order_price AS price,
+        m.order_qy AS order_qy,
+        s.unit
+FROM    mtril_order m JOIN mtril s
+                        ON (m.mtril_code = s.mtril_code)
+WHERE   order_code = ?
 `;
 
 //자재 발주 조회 - mt005
@@ -100,7 +151,7 @@ FROM    mtril_dlivy m JOIN mtril_wrhousing s
                          ON (m.mtril_lot = s.mtril_lot)
                        JOIN mtril t
                          ON (m.mtril_code = t.mtril_code)
-WHERE   m.usgstt = '미사용'
+WHERE   m.usgstt = 'MU02'
 `;
 
 //자재 입고처리 - mt007 풀질검사 끝난 자재 리스트
@@ -108,15 +159,16 @@ WHERE   m.usgstt = '미사용'
 const mt_fromOrder =
 `
 SELECT m.mtril_name AS name,         
-       m.mtril_code AS code, 
+       m.prd_code AS code, 
        m.pass_amount AS qy, 
        m.mtril_check_code AS checkCode, 
        s.unit AS unit, 
        CURDATE() AS wrdate          
-FROM material_inspection_check m JOIN mtril s 
-                                   ON (m.mtril_code = s.mtril_code)
-WHERE  m.mtril_check_code NOT IN (SELECT t.mtril_check_code
-				  FROM   mtril_wrhousing t);
+FROM inspection_check m JOIN mtril s 
+			  ON (m.prd_code = s.mtril_code)
+WHERE m.mtril_check_code NOT IN (SELECT t.mtril_check_code
+				FROM mtril_wrhousing t
+                                WHERE t.mtril_check_code IS NOT NULL)
 `;
 
 //자재 입고 테이블에 insert, 생산 반환 리스트 상태 업데이트
@@ -151,9 +203,9 @@ SELECT req_name name,
         prdctn_code code,
         req_de req_date
 FROM    thng_req
-WHERE   procs_at = '미처리'
+WHERE   procs_at = 'RD02'
 AND     prdctn_code IS NOT NULL
-AND     prd_se = '자재'
+AND     prd_se = 'PI01'
 GROUP BY prdctn_code
 `;
 
@@ -166,10 +218,10 @@ SELECT  m.req_name AS req_name,
 	m.prd_code AS mt_code,
 	m.req_qy AS qy,
 	s.unit AS unit,
-        m.prdctn_code prdctn_code
+        m.prdctn_code AS prdctn_code
 FROM    thng_req m JOIN mtril s
 		     ON (m.prd_code = s.mtril_code)
-WHERE   procs_at = '미처리'
+WHERE   procs_at = 'RD02'
 AND     prdctn_code = ?
 `;
 
@@ -187,6 +239,8 @@ AND     mtril_qy > 0
 const mt_requestCheckOut =
 `
 CALL mt_dlivy_process(
+    ?,
+    ?,
     ?,
     ?,
     ?,
@@ -298,11 +352,14 @@ const mt_returnListWithKey =
 `;
 
 module.exports = {
+        mt_prRequestList,
         mt_fromProduction,
         mt_fromOrder,
         mt_wrhousingInsert,
         mt_requestList,
         mt_requestDetails,
         mt_lotInvenList,
-        mt_requestCheckOut
+        mt_requestCheckOut,
+        mt_searchOrderWithKey,
+        mt_listOnOrder
 };

@@ -1,15 +1,15 @@
 <template>
-    <div>
-        <layout />
-    </div>
+  <div>
+      <layout />
+  </div>
 </template>
 
 <script>
 import layout from '@/layout/AppLayout.vue';
 
 export default {
-  components : {
-    layout
-  }
+components : {
+  layout
+}
 }
 </script>

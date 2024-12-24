@@ -50,7 +50,7 @@ const model = ref([
                     },
                     {
                         label: '발주 관리',
-                        to: '/'
+                        to: '/materials/mtOrder'
                     },
                     {
                         label: '발주 조회',
@@ -108,15 +108,11 @@ const model = ref([
                 items: [
                     {
                         label: '품질 검사 요청',
-                        to: '/'
-                    },
-                    {
-                        label: '품질 검사 관리',
-                        to: '/'
-                    },
+                        to: '/quality/qualityRequest'
+                    },                   
                     {
                         label: '품질 검사 결과',
-                        to: '/'
+                        to: '/quality/qiResult'
                     }
                 ]
             },
@@ -178,15 +174,15 @@ const model = ref([
                     },
                     {
                         label: '반제품 입고 관리',
-                        to: '/'
+                        to: '/logistics/prductNListwrhousng'
                     },
                     {
                         label: '반제품 입고 조회',
-                        to: '/'
+                        to: '/logistics/prductNList'
                     },
                     {
                         label: '반제품 출고 관리',
-                        to: '/'
+                        to: '/logistics/prductNDlivy' 
                     },
                     {
                         label: '반제품 출고 조회',
@@ -244,7 +240,7 @@ const model = ref([
                     },
                     {
                         label: '반제품 조회',
-                        to: '/'
+                        to: '/standardInfo/prductNDlivyModar'
                     },
                     {
                         label: '자재 관리',
@@ -253,13 +249,9 @@ const model = ref([
                     {
                         label: '자재 조회',
                         to: '/'
-                    },
+                    }, 
                     {
-                        label: 'BOM 관리',
-                        to: '/standardInfo/bomInsert'
-                    },
-                    {
-                        label: 'BOM 조회',
+                        label: 'BOM 관리/BOM 조회',
                         to: '/standardInfo/bomList'
                     },
                     {
@@ -272,7 +264,7 @@ const model = ref([
                     },
                     {
                         label: '품질 검사 항목 관리',
-                        to: '/'
+                        to: '/standardInfo/qiList'
                     },
                 ]
             },  
