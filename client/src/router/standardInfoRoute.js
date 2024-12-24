@@ -9,6 +9,7 @@ import procsFlowchartinsert from "@/views/standardInfo/procsFlowchartinsert.vue"
 
 import bomManage from "@/views/standardInfo/bomManage.vue";
 import prductNDlivyModar from "@/views/standardInfo/prduct_n_dlivy_modar.vue"
+import qiList from "@/views/standardInfo/qiList.vue";
 
 
 const standardInfoRoute = [
@@ -41,8 +42,8 @@ const standardInfoRoute = [
         path: 'procsFlowchartinsert',
         name: 'procsFlowchartinsert',
         component: procsFlowchartinsert
-    }
-
+    },
+    {
         path: 'bomManage',
         name: 'bomManage',
         component: bomManage
@@ -51,8 +52,12 @@ const standardInfoRoute = [
         path: 'prductNDlivyModar',
         name: 'prductNDlivyModar',
         component: prductNDlivyModar
+    },
+    {
+        path: 'qiList',
+        name: 'qiList',
+        component: qiList
     }
-
 
 ];
 
