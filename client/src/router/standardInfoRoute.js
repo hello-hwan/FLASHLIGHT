@@ -2,6 +2,7 @@
 import bomList from "@/views/standardInfo/bomList.vue";
 import bomManage from "@/views/standardInfo/bomManage.vue";
 import prductNDlivyModar from "@/views/standardInfo/prduct_n_dlivy_modar.vue"
+import qiList from "@/views/standardInfo/qiList.vue";
 
 const standardInfoRoute = [
     {
@@ -22,6 +23,11 @@ const standardInfoRoute = [
         path: 'prductNDlivyModar',
         name: 'prductNDlivyModar',
         component: prductNDlivyModar
+    },
+    {
+        path: 'qiList',
+        name: 'qiList',
+        component: qiList
     },
 
 ];
