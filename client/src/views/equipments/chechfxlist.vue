@@ -72,15 +72,15 @@
                         다음 점검 예정일
                     </th>
                     <th style="width: 25%;">
-                        <input style="background-color:lightsteelblue; text-align: center;" type="text"
-                            v-model="next_date">
+                        {{ this.next_date }}
                     </th>
                 </tr>
             </tbody>
         </table>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 200px; width: 100%;"
-                @grid-ready="onGridReady" rowSelection="multiple" class="ag-theme-alpine">
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions"
+                style="height: 310px; width: 100%;" @grid-ready="onGridReady" rowSelection="multiple"
+                class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
         <table class="table table-hover">
@@ -92,11 +92,14 @@
                     <th style="width: 10%;">
                         <button type="button" class="btn btn-outline-danger" @click="delete_btn()">행 삭제</button>
                     </th>
-                    <th style="width: 50%;">
+                    <th style="width: 40%;">
                         <input style="background-color:lightsteelblue;" type="text" size="50" v-model="not_check">
                     </th>
                     <th style="width: 10%;">
                         <button type="button" class="btn btn-outline-warning" @click="not_check_btn()">미점검</button>
+                    </th>
+                    <th style="width: 10%;">
+                        <button type="button" class="btn btn-outline-danger" @click="not_opr_btn()">미가동</button>
                     </th>
                     <th style="width: 10%;">
                         최종 결과
@@ -140,7 +143,7 @@ export default {
             now_date: '',
             next_date: '',
             chck_sttus: '',
-            not_check: '미점검 입력'
+            not_check: ''
         }
     },
     created() {
@@ -154,6 +157,19 @@ export default {
         ];
         let now = new Date();
         this.now_date = useDateUtils.dateFormat(now, "yyyy-MM-dd");
+        this.gridOptions = {
+            columnDefs: this.orderColDefs,
+            pagination: true,
+            paginationPageSize: 5,
+            paginationPageSizeSelector: [5, 10, 50, 100],
+            paginateChildRows: true,
+            animateRows: false,
+            defaultColDef: {
+                filter: true,
+                flex: 1,
+                minWidth: 10
+            }
+        };
     },
     components: {
         AgGridVue // Add Vue Data Grid component
@@ -245,7 +261,7 @@ export default {
                 this.not_check,
                 this.fx_code_list.charger,
                 this.fx_code_list.chck_time,
-                this.chck_sttus,
+                '미점검',
                 parseInt(this.$route.params.fx_code)
             ];
             console.log(input);
@@ -289,6 +305,28 @@ export default {
                     this.rowData = [...this.rowData, new_sample];
                 }
             }
+        },
+        async not_opr_btn() {
+            let list = [
+                this.fx_code_list.eqp_code,
+                this.fx_code_list.charger,
+                this.not_check,
+                'OD01'
+            ];
+            console.log(list);
+            let result = await axios.post(`${ajaxUrl}/equip/not_opr_insert`, list)
+                .catch(err => console.log(err));
+
+            let input = [
+                this.not_check,
+                this.fx_code_list.charger,
+                this.fx_code_list.chck_time,
+                '미가동',
+                parseInt(this.$route.params.fx_code)
+            ];
+            console.log(input);
+            let result_2 = await axios.put(`${ajaxUrl}/equip/not_check_update`, input)
+                .catch(err => console.log(err));
         }
     }
 }

@@ -70,5 +70,44 @@ router.get('/equip/chck_iem_list/:eqp_code', async (req, res) => {
     res.send(list);
 });
 
+// 미점검 기기 조회
+router.get('/equip/not_check_list', async (req, res) => {
+    let list = await equipmentsService.not_check_list();
+    res.send(list);
+});
+
+// 장비 전체 조회
+router.get('/equip/eqp_all_list', async (req, res) => {
+    let list = await equipmentsService.eqp_all_list();
+    res.send(list);
+});
+
+// 설비 등록
+router.post('/equip/eqp_insert', async(req, res)=>{
+    let list = req.body;
+    let result = await equipmentsService.eqp_insert(list);
+    res.send(result);
+});
+
+// 미가동 등록
+router.post('/equip/not_opr_insert', async(req, res)=>{
+    let list = req.body;
+    let result = await equipmentsService.not_opr_insert(list);
+    res.send(result);
+});
+
+// 미가동 설비 조회
+router.get('/equip/not_opr_list', async (req, res) => {
+    let list = await equipmentsService.not_opr_list();
+    res.send(list);
+});
+
+// 미가동 설비 가동 변경
+router.put('/equip/not_opr_update', async (req, res) => {
+    let list = req.body;
+    let result = await equipmentsService.not_opr_update(list);
+    res.send(result);
+});
+
 module.exports = router;  
 
