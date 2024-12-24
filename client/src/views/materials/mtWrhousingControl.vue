@@ -5,7 +5,8 @@
       <v-card
         class="mx-auto card-custom"
         style=" border-bottom-right-radius: 13px;
-                border-bottom-left-radius: 13px;"
+                border-bottom-left-radius: 13px;
+                margin-bottom: 30px;"
         >
         <template v-slot:title>
           <span class="font-weight-black">검사 통과 자재 리스트</span>
@@ -13,8 +14,6 @@
     
         <v-card-text class="bg-surface-light pt-4">
             <AgGridVue style=" height: 519px; margin: 0 auto;"
-                @grid-ready="onGridReady"
-                :defaultColDef="defaultColDef"
                 :rowData="orderRowData"
                 :gridOptions="gridOptionsOrder"
                 class="ag-theme-alpine"
@@ -27,8 +26,7 @@
         <v-card
         class="mx-auto"
         style=" border-bottom-right-radius: 13px;
-                border-bottom-left-radius: 13px;
-                margin-bottom: 30px;"
+                border-bottom-left-radius: 13px;"
         >
         <template v-slot:title>
           <span class="font-weight-black">반환 자재 리스트</span>
@@ -36,8 +34,6 @@
     
         <v-card-text class="bg-surface-light pt-4">
             <AgGridVue style=" height: 519px; margin: 0 auto;"
-                @grid-ready="onGridReady"
-                :defaultColDef="defaultColDef"
                 :rowData="returnRowData"
                 :gridOptions="gridOptionsReturn"
                 class="ag-theme-alpine"
@@ -48,7 +44,6 @@
     
 
 
-      <btn />
     </div>
 </template>
 
@@ -60,7 +55,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import userDateUtils from '@/utils/useDates.js';
-//import CustomButtonComponent from "@/components/materials/wrhousingButtonComponent.vue";
 import wrhousingBtn from "@/components/materials/mtWrhousingBtn.vue";
 
 export default {
@@ -133,19 +127,22 @@ export default {
         AgGridVue,
     },
     methods: {
+        //반환
         async getReturnList() {
             let result = await axios.get(`${ajaxUrl}/mtril/returnMt`)
                 .catch(err => console.log(err));
             this.returnRowData = result.data;
         },
+        //검사 통과 자재
         async getOrderList() {
             let result = await axios.get(`${ajaxUrl}/mtril/orderMt`)
                 .catch(err => console.log(err));
+            console.log("검사통과 자재:", result);
             this.orderRowData = result.data;
         },
         //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
         customDateFormat(params) {
-            console.log(params);
+            //onsole.log(params);
             return userDateUtils.dateFormat(params.data.wrdate, 'yyyy-MM-dd');  //wrdate는 알레아스 이름
         }
 
