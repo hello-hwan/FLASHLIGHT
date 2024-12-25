@@ -128,7 +128,7 @@
             return {            
                 rowData: [],
                 colDefs: [],
-                mt_num :'',
+                mt_num :'', //큰그릇
                 mt_no: '', // 발주번호
                 mtr_code:'', //자재코드
                 mtr_name:'', //자재명
@@ -137,7 +137,8 @@
                 ord_num:'', //발주량
                 inspec_date:'', //검사일자
                 mtl_code:'', //품질검사코드
-                pass_num:'' //합격량
+                pass_num:'', //합격량
+                mt_num2:''
           
             };
         },
@@ -146,6 +147,7 @@
                 { field: "inspec_item",headerName: "검사항목"},
                 { field: "inspec_standard",headerName : "검사기준"},
                 { field: "error_amount",headerName : "불량량",editable : true} 
+
             ]);
     
             this.gridOptions = {
@@ -169,12 +171,26 @@
             async getmt_no() {
                 let result = await axios.get(`${ajaxUrl}/quality/order_request?mt_info=${this.mt_no}`)
                     .catch(err => console.log(err));
+
                 this.mt_num = result.data;
-                this.mtr_name=this.mt_num.mtlty_name;
-                                
+                this.bc_name=this.mt_num.mtlty_name; //거래처명
+                this.bc_code=this.mt_num.bcnc_code; //거래처코드
+                this.mtr_name=this.mt_num.mtril_name; //자재명
+                this.mtr_code=this.mt_num.mtril_code; //자재코드=품목코드
+                this.ord_num=this.mt_num.order_qy; //발주량=입고수량
+                
+                
+                let result2 = await axios.get(`${ajaxUrl}/quality/inspec_item?in_info=${this.mtr_code}`)
+                                         .catch(err => console.log(err)); 
+                this.mt_no = result2.data;
+                this.rowData = ref(this.mt_no)               
+                console.log(result2);                         
+                this.mt_num2 = result2.data;
+                console.log(this.mtr_code);
+
                 console.log(this.mt_num);
                 //let res = result.data;
-                //console.log(res.bcnc_code);
+                //console.lg(reos.bcnc_code);
               
 
                 
