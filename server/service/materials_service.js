@@ -268,9 +268,9 @@ const insertMtToOrder = async(orderMtList) => {
         console.log('선택: ', queryResult[0][0].result);
         //결과가 1이면 성공 그 값을 모두 더함.
         resultCnt += queryResult[0][0].result;
-        
     };
-    
+    console.log('쿼리결과: ',resultCnt);
+    console.log('넘어온 데이터 길이: ', orderMtList.length);
     //결과로 돌아온 값의 합과 입력할 행의 수와 같으면 success리턴
     if(resultCnt == orderMtList.length) {
         return 'success';
@@ -279,6 +279,16 @@ const insertMtToOrder = async(orderMtList) => {
     };
     
 };
+
+//발주건 삭제
+const mtDelete = async(orderCode) => {
+    let result = await mariaDB.query('mt_orderDelete', orderCode)
+                              .catch(err=>console.log(err));
+    console.log('결과',result);
+    return result;
+};
+
+
 
 module.exports = {
     returnMt,
@@ -290,5 +300,6 @@ module.exports = {
     reqMtOrderList,
     mtOrderList,
     mtListOnOrder,
-    insertMtToOrder
+    insertMtToOrder,
+    mtDelete
 };

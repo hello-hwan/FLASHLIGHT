@@ -70,5 +70,13 @@ router.post('/mtril/insertMtOrderList', async(req, res) => {
     let orderMtList = req.body;
     let result = await mtrilService.insertMtToOrder(orderMtList);
     res.send(result);
-})
+});
+
+//발주건 삭제
+router.delete('/mtril/deleteOrder/:orderCode', async(req, res) => {
+    let orderCode = req.params.orderCode;
+    let result = await mtrilService.mtDelete(orderCode);
+    res.send(result);
+});
+
 module.exports = router;

@@ -36,21 +36,18 @@ Call mt_order_process(
 )
 `;
 
-//자재 발주관리 - 요청 자재 발주 등록
-//where req_code, procs_at='RD01'
-const mt_orderInsertFromReq =
-`
 
-`;
-
-//자재 발주관리 - mt001 / 발주서 수정
+//자재 발주관리 - mt001 / 발주서 수정 프로시저
 const mt_ordermodify =
 `
-
+Call mt...
 `;
 
 //자재 발주관리 - mt001 / 발주서 삭제
+const mt_orderDelete = 
 `
+DELETE FROM mtril_order
+WHERE  order_code = ?
 `;
 
 //자재 검색 모달 - mt002 
@@ -76,7 +73,8 @@ const mt_searchCompanyWithKey =
 //수정할 발주건 검색 - mt004 조건
 const mt_searchOrderWithKey =
 `
-SELECT  order_code,
+SELECT  order_no,
+        order_code,
 	order_name,
         mtlty_name,
         bcnc_code,
@@ -96,7 +94,8 @@ ORDER BY order_no desc
 //발주한 건 자재 목록
 const mt_listOnOrder =
 `
-SELECT  m.order_code AS req_code, 
+SELECT  m.order_no AS order_no,
+        m.order_code AS req_code, 
         m.order_name AS req_name, 
         m.mtril_name AS mt_name,
         m.mtril_code AS mt_code,
@@ -350,5 +349,6 @@ module.exports = {
         mt_searchOrderWithKey,
         mt_listOnOrder,
         mt_orderInsert,
-        mt_orderInsertFromReq
+        mt_orderDelete,
+        mt_ordermodify
 };
