@@ -24,7 +24,7 @@ const prdctNList = async() => {
 }
 
 // 반제품 출고 리스트
-const prduct_n_dlivy = async() => {
+const prduct_n_dlivy = async() => { 
   let list = await mariaDB.query('prduct_n_dlivy');
   return list;
 }

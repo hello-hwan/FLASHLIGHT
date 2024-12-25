@@ -16,8 +16,8 @@ AND p.prduct_n_wrhousng_day IS NULL`;
 // 반제품 등록
 const prduct_n_wrhousng = 
 `INSERT INTO prduct_n_wrhousng( prduct_n_lot
-                               ,prduct_name 
-                               ,prduct_n_wrhousng_day
+                              ,prduct_name 
+                              ,prduct_n_wrhousng_day
 					,se
 					,prdlst_code
 					,qltinsp_code 
