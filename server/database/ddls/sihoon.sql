@@ -734,3 +734,6 @@ DELIMITER ;
 CALL play_drct();
 
 -- 517행 물품 요청 삽입 프로시저
+
+SELECT * FROM thng_req ORDER BY req_code desc;
+COMMIT;

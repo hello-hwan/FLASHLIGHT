@@ -23,7 +23,7 @@
 
     <!-- 생산지시 테이블 -->
     <div class="table-container">
-      <table class="table">
+      <table class="table-plan">
 
         <!-- 테이블 헤드 일자/오전,오후 -->
         <thead>
@@ -77,8 +77,10 @@
       <ImpossibleProduction v-if="!issrc"/>
 
       <!-- 검색 없을시 표시창 자체 생산 지시 추가 -->
-      
+      <SelfProduction v-if="!issrc"/>
 
+      <!-- 검색 있을시 표시창 공정실적조회 -->
+      <StateList v-if="issrc" />
 
     </div>
 </template>
@@ -89,6 +91,8 @@
   import { ajaxUrl } from '@/utils/commons.js';
   import useDates from '@/utils/useDates';
   import ImpossibleProduction from '@/components/production/ImpossibleProduction.vue';
+  import SelfProduction from '@/components/production/SelfProduction.vue';
+  import StateList from '@/components/production/StateList.vue';
 
   // 제품 검색 할 코드
   const prd = ref('');
@@ -172,6 +176,7 @@
                             .catch(err => console.log(err));
     prdlist.value = result.data;
   };
+
   // 검색 클릭시 실행할 함수
   const getprdcode = (code) => {
     prd.value = code;
@@ -186,7 +191,7 @@
 </script>
 
 <style>
-  .table th, .table td {
+  .table-plan th, .table-plan td {
     border: 2px, solid, black;
     width: 0.5%;
   }

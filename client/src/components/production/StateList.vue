@@ -14,14 +14,13 @@
                   border-bottom-left-radius: 13px;
                   display: inline-block;">
           <template v-slot:title>
-            <span class="font-weight-black">자체 생산 추가</span>
+            <span class="font-weight-black">공정 현황</span>
           </template>
       
           <v-card-text class="bg-surface-light pt-4">
-              <AgGridVue style=" height: 93px; margin: 0 auto;"
+              <AgGridVue style=" height: 300px; margin: 0 auto;"
                   :defaultColDef="defaultColDef"
                   :rowData="rowData"
-                  @cellClicked="adddrct"
                   :gridOptions="gridOptions"
                   class="ag-theme-alpine">
               </AgGridVue>
@@ -50,40 +49,55 @@ const toast = useToast();
 //   toast.add({ severity: 'success', summary: '출고 성공', detail: '처리가 완료되었습니다.', life: 3000 });
 //   toast.add({ severity: 'error', summary: '출고 실패', detail: '문제가 생겼습니다.\n관리자에게 문의해주세요.', life: 3000 });
 
-//행 정보 - 행이 하나라 따로 넣는 작업은 없음
-const rowData = ref([{"prd_code":"", "prd_nm": "", "order_qy": 0, "dedt": ""}]);
+/*
+//출고버튼 보여주는걸 결정하는 boolean타입변수
+let isdlivyBtn = ref(true);
+console.log(isdlivyBtn);
+
+//부모로부터 가져옴
+const props = defineProps(['code']);
+
+props로 값을 받은경우 객체 형태이기 때문에 
+watch(props.code, (newValue) => {}); 
+의 일반적인 watch의 형태에서는 사용이 불가하다.
+그래서 한번더 감싸는 깊은 복사의 형태가 된다. 
+watch(() => props.code, (newValue) => {
+ //watch (변경을 감지하는 변수, (새로운 값, 이전값)), 값이 변경되면 아래 함수 실행됨.
+ getReqDetails(newValue);
+ 
+ //console.log('watch: 값이 변경됨');
+ 
+ });
+*/
+
+//행 정보
+const rowData = ref([]);
 
 // 컬럼명 정의
 // field : 배열안 객체의 필드명, headerName : 우리가 표시할 컬럼 이름, flex: 열 크기, hide: 숨길건지(검색시 필요할수도 있으니 표시할거만 표시), suppressToolPanel: hide 쓰면 같이 써야하는거
 const ColDefs = [
-  { field: "prd_code", headerName:"제품 코드", editable: true},
-  { field: "prd_nm", headerName:"제품 명" , editable: true},
-  { field: "order_qy", headerName:"요청량" , editable: true},
-  { field: "dedt", headerName:"기한" , editable: true},
-  { field: "추가", headerName: "추가", cellRenderer: () => "추가"}
+  { field: "", headerName:"공정명"},
+  { field: "", headerName:"생산량"},
+  { field: "", headerName:"원재료명"},
+  { field: "", headerName:"원재료양"},
+  { field: "", headerName:"시작일자"},
+  { field: "", headerName:"종료일자"},
+  { field: "", headerName:"작업자"},
 ];
 
-
-// 생산 추가 함수
-const adddrct = async (event) => {
-  if(event.colDef.field == "추가"){
-      let result = await axios.post(`${ajaxUrl}/prod/insertdrct`, {"code": event.data.prd_code ,"qy": event.data.real_qy, "dedt": ""})
-                              .catch(err => console.log(err));
-      if(result.data[0].retCode == 1){
-        toast.add({ severity: 'success', summary: '추가 성공', detail: '처리가 완료되었습니다.', life: 3000 });
-      } else {
-        toast.add({ severity: 'error', summary: '추가 실패', detail: '추가 실패하였습니다. \n다시 시도해주십시오.', life: 3000 });
-      }
-
-      rowData.value = [{"prd_code":"", "prd_nm": "", "order_qy": 0, "dedt": ""}];
-      // 생산 추가 이후 목록 다시 재 리스트
-
-  }
-}
+// 공정 현황 리스트 불러오기
+const getlist = async () => {
+  
+};
+getlist();
 
 //ag grid 옵션 설정
 const gridOptions = {
       columnDefs: ColDefs,
+      pagination: true,
+      paginationPageSize: 5,
+      paginationPageSizeSelector: [5, 10, 50, 100],
+      paginateChildRows: true,
       animateRows: false,
       defaultColDef: {
           flex: 1,

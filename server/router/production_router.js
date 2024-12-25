@@ -83,6 +83,21 @@ router.put('/prod/requpdate/:code', async(req, res) => {
   })
 });
 
+// 자체 생산 추가
+router.post('/prod/insertdrct', async (req, res) => {
+  let code = req.params.code;
+  let qy = req.params.qy;
+  let dedt = req.params.dedt;
+  prodService
+  .drctinsert(code, qy, dedt)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
 
 
 
