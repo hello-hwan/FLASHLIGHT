@@ -66,6 +66,7 @@ import userDateUtils from '@/utils/useDates.js';
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
 
+
 export default {
   data() {
     return {
@@ -137,6 +138,7 @@ export default {
       if (event.colDef.field === "상세보기") {
         const selectedprdCode = event.data.prdctn_code; 
         this.getprductNdlivyPossible(selectedprdCode); 
+        console.log(selectedprdCode);
       }
     },
 
@@ -152,11 +154,16 @@ export default {
       }
     },
     async getprductNdlivyPossible(prdCode) {
-      let result = await axios.get(`${ajaxUrl}/prduct_n_possible/${prdCode}`).catch(err => console.log(err));
+      console.log(prdCode)
+      let result = await axios.get(`${ajaxUrl}/prduct_n_possible/${prdCode}`)
+                                             .catch(err => console.log(err));
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
+      //console.log(this.obj);
     },
+
+    // 출고완료처리
     async testData() {
 
       let sendPrductNList = [];
@@ -167,7 +174,13 @@ export default {
       console.log(sendPrductNList);
       let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
                               .catch(err => console.log(err));
-      // 반제품 출고 프로시저 호출 메소드 만들어야됨
+
+      if(result){
+        alert('출고완료');
+        this.getprductNDlivyList();
+        this.getprductNdlivyPossible();
+      }
+
     },
     // 그리드 준비 완료 후 호출되는 메서드
     onGridReady(params) {
@@ -183,6 +196,9 @@ export default {
         return '처리중';
       }
     },
+    model(){
+
+    }
   },
   components: {
     AgGridVue, // ag-Grid 컴포넌트

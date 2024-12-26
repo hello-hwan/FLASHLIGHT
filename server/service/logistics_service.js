@@ -53,6 +53,8 @@ const prduct_n_possible = async(prdCode) => {
 
       sumLotQy += lotQy;
 
+      //console.log(sumLotQy);
+
       if(j == (prductNLOT.length-1) && sumLotQy < list[i].qy){
         lotName = '재고 부족';
       };
@@ -69,41 +71,40 @@ const prduct_n_possible = async(prdCode) => {
         prdctn_code: list[i].prdctn_code
       };
       reqQy -= lotQy;
-      
-      dataList.push(newObj);
+      //console.log(reqQy);
+      dataList.push(newObj); 
       if(reqQy <= 0) {
         break;
       };  
       
     }
-    
+     
   }
-  return dataList;
+  return dataList; 
 
 }
-
+ 
 // 반제품 출고완료처리
 const prduct_n_dlivyTest = async(prdctnNInfo) => {
-  //let resultSum = 0;
-  //console.log('service',prdctnNInfo);
+  let resultSum = 0;
+ // console.log('service',prdctnNInfo);
   for(let i=0; i<prdctnNInfo.length; i++) {
     let dataArr = [ prdctnNInfo[i].prd_nm,        
                     prdctnNInfo[i].prd_code,      
-                    prdctnNInfo[i].req_qy,      
-                    'MU01',        
-                    prdctnNInfo[i].req_de,      
+                    prdctnNInfo[i].lot_qy,        
+                    prdctnNInfo[i].empl_no,            
                     prdctnNInfo[i].lot,        
                     prdctnNInfo[i].req_code,        
-                    prdctnNInfo[i].empl_no, 
+                    prdctnNInfo[i].prdctn_code,
                     prdctnNInfo[i].req_name ];
-          console.log('dataArr', dataArr);
-          // let result = await mariaDB.query('prduct_n_dlivyTest', dataArr)
-          //                           .catch(err => console.log(err));
+                   // console.log(dataArr);
+          let result = await mariaDB.query('prduct_n_dlivyTest', dataArr)
+                                    .catch(err => console.log(err));
           //성공하면 1을 리턴, 실패하면 0을 리턴
           //console.log(result);
-          //resultSum += result;
+          resultSum += result;
       };
-  
+      
       //성공한 수의 총합과 등록하는 데이터의 개수를 비교, 같으면 성공, 다르면 실패.
       if(resultSum = prdctnNInfo.length) {
           return 'success';
@@ -113,12 +114,18 @@ const prduct_n_dlivyTest = async(prdctnNInfo) => {
 }
 
 
-
+// 반제품 입고 리스트 
+const prduct_n_dlivyList = async() => {
+  let list = await mariaDB.query('prduct_n_dlivyList');
+  return list;
+}
+ 
 module.exports = {
   prdctn_n_list,
   prduct_n_wrhousng,
   prdctNList,
   prduct_n_dlivy,
   prduct_n_possible,
-  prduct_n_dlivyTest
-};
+  prduct_n_dlivyTest,
+  prduct_n_dlivyList
+};  

@@ -46,5 +46,13 @@ router.post('/prduct_n_dlivyTest', async(req, res) => {
   res.send(result);
 })
 
+// 반제품 출고 리스트
+router.get('/prduct_n_dlivyList', async (req, res) => {
+  let searchs = req.query; 
+  let prdctn_n_list = await logistics_service.prduct_n_dlivyList(searchs);
+  res.send(prdctn_n_list);
+})
+
+
 
 module.exports = router;  

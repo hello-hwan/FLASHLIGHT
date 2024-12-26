@@ -75,7 +75,28 @@ router.post('/mtril/insertMtOrderList', async(req, res) => {
 //발주건 삭제
 router.delete('/mtril/deleteOrder/:orderCode', async(req, res) => {
     let orderCode = req.params.orderCode;
-    let result = await mtrilService.mtDelete(orderCode);
+    let result = await mtrilService.mtOrderDelete(orderCode);
+    res.send(result);
+});
+
+//발주건 수정
+router.post('/mtril/modifyOrderList', async(req, res) => {
+    let modifyInfo = req.body;
+    let result = await mtrilService.mtOrderModify(modifyInfo);
+    res.send(result);
+})
+
+//자재 검색 모달 - 자재 검색하기
+router.post('/mtril/searchMt', async(req, res) => {
+    let searchMtKey = req.body;
+    let result = await mtrilService.searchMtModal(searchMtKey);
+    res.send(result);
+});
+
+//거래처 검색 모달 - 거래처 검색하기
+router.post('/mtril/searchCompany', async(req, res) => {
+    let searchCompanyKey = req.body;
+    let result = await mtrilService.searchCompanyModal(searchCompanyKey)
     res.send(result);
 });
 

@@ -1,74 +1,93 @@
 <template>
-    <div class="businessOrderListTitle">
-        주문 상세
-    </div>
-    <div class="container">
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label" >업체코드</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.p_code" diabled>
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                PRD-00
-                </span>
-            </div>
-        </div>
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label">주문일자</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.order_date" placeholder="2024-12-28">
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                2024-00-00
-                </span>
-            </div>
-        </div>
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label">납품일자</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.dete" placeholder="2025-08-17">
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                2024-00-00
-                </span>
-            </div>
-        </div>
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label">주문번호</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="this.selectNo" disabled>
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                ORDER-00
-                </span>
-            </div>
-        </div>
+    <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+        <template v-slot:title>
+            <span class="font-weight-black">
+                주문 상세
+            </span>
+        </template>
+    </v-card>
+
+    <v-container fluid >
+        <v-row>
+        <!-- 검색 필드 -->
+        <v-col cols="12" >
+          <v-card class="mx-auto" style="border-radius: 13px;">
+            <v-card-text class="bg-surface-light pt-4">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderInfoMtltyCode" class="col-form-label" >업체코드</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderInfoMtltyCode" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.p_code" diabled>
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            PRD-00
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderInfoOrderDate" class="col-form-label">주문일자</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderInfoOrderDate" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.order_date" placeholder="2024-12-28">
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            2024-00-00
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderInfoDete" class="col-form-label">납품일자</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderInfoDete" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.dete" placeholder="2025-08-17">
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            2024-00-00
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderInfoOrderNo" class="col-form-label">주문번호</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderInfoOrderNo" class="form-control" aria-describedby="passwordHelpInline" v-model="this.selectNo" disabled>
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            ORDER-00
+                            </span>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <!-- <button type="button" class="btn btn-secondary" @click="getAllRows()">저장</button> -->
+                        <button type="button" class="btn btn-success" @click="orderListReplace()" style="color:white;">주문수정</button>
+                        <button type="button" class="btn btn-warning" @click="getorderInfoList()" >초기화</button>
+                        <button type="button" class="btn btn-danger" @click="delOrderInfo()" style="color:white;">주문삭제</button>
+                        <button type="button" class="btn btn-danger orderRowInsert" @click="deleteBtn()" style="color:white;">선택행삭제</button>
+                        <button type="button" class="btn btn-success orderRowInsert" @click="onAddRow()" style="color:white;">행추가</button>
+                    </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+
+    </v-container>
+    <v-card-text class="bg-surface-light pt-4">
         <div>
-            <!-- <button type="button" class="btn btn-secondary" @click="getAllRows()">저장</button> -->
-            <button type="button" class="btn btn-secondary" @click="orderListReplace()">주문수정</button>
-            <button type="button" class="btn btn-secondary" @click="getorderInfoList()">초기화</button>
-            <button type="button" class="btn btn-secondary" @click="delOrderInfo()">주문삭제</button>
-            <button type="button" class="btn btn-secondary orderRowInsert" @click="deleteBtn()">선택행삭제</button>
-            <button type="button" class="btn btn-secondary orderRowInsert" @click="onAddRow()">행추가</button>
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 519px; margin:0 auto" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
+            @grid-ready="onGridReady" rowSelection="multiple">
+            </ag-grid-vue>
         </div>
-    </div>
-    <div>
-        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 500px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
-        @grid-ready="onGridReady" rowSelection="multiple">
-        </ag-grid-vue>
-    </div>
+
+    </v-card-text>
 </template>
     
 <script>
@@ -203,13 +222,5 @@
 </script>
     
 <style lang="scss">
-    .businessOrderListTitle{
-        background-color: darkgrey;
-        font-size:20px;
-        text-align : center;
-        width : 20%;
-        height : 60px;
-        line-height:60px;
-        margin:5px;
-        }
+
 </style>
