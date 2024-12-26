@@ -17,7 +17,18 @@ WHERE prd_code=?`;
 
 
 //품질입고검사 등록
-
+const quailtyInsert = 
+`INSERT INTO inspection_check(mtril_check_code 
+							 ,prd_code
+							 ,mtril_name
+							 ,rec_num
+							 ,test_date
+							 ,mtlty_name
+							 ,empl_no
+							 ,pass_amount
+							 ,order_code
+							 ,bcnc_code)
+VALUES(?,?,?,?,now(),?,?,?,?,?)`;
 
 //품질입고검사 등록2
 
@@ -31,6 +42,7 @@ WHERE prd_code=?`;
 // 결과
 module.exports = {
     order_request,
-    inspec_item
+    inspec_item,
+	quailtyInsert
 
 };

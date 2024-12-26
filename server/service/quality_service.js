@@ -13,7 +13,17 @@ const inspec_item = async (prd_code) => {
     return list;
 }
 
+// 등록
+const quailtyInsert = async (order_request ) =>{
+    let result = await mariaDB.query('quailtyInsert', order_request);
+    if( result.insertId > 0){
+        return { quailty_no : result.insertId};
+    }else{
+        return {};
+    }
+}
 module.exports = {
     order_request,
-    inspec_item
+    inspec_item,
+    quailtyInsert
 };
