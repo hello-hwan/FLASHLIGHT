@@ -53,6 +53,7 @@ import userDateUtils from '@/utils/useDates.js';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+
 export default {
 data() {
     return {
@@ -159,6 +160,9 @@ async onCellClicked(event) {
     customDateFormat(params) {
             return userDateUtils.dateFormat(params.data.test_date, 'yyyy-MM-dd');  // test_date는 알레아스 이름
     },
+    moder(){
+        this.moder();
+    }
 
 }
 };
