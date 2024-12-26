@@ -738,6 +738,7 @@ CALL play_drct();
 
 -- 517행 물품 요청 삽입 프로시저
 
+
 SELECT * FROM thng_req;
 INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
 VALUES ('testbyshun-4', '자재 발주 요청 테스트-4', 1, NULL, 'M-LEATHER', '가죽', 100, 'PI01', 'RD03', NOW());
@@ -748,3 +749,4 @@ FROM thng_req tr JOIN prdctn_plan pp ON (tr.mnfct_no = pp.mnfct_no)
 WHERE tr.prdctn_code IS NULL
 AND prd_se = 'PI01'
 AND tr.procs_at = 'RD03';
+

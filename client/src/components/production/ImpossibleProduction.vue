@@ -96,13 +96,15 @@
   getlist();
   
   const realReq = async (event) => {
-    console.log(event.data);
     if(event.colDef.field == "요청"){
         let result = await axios.put(`${ajaxUrl}/prod/requpdate/${event.data.req_code}`, {"qy": event.data.real_qy})
                                 .catch(err => console.log(err));
-        console.log(result);
-        toast.add({ severity: 'success', summary: '요청 성공', detail: '처리가 완료되었습니다.', life: 3000 });
-
+        if(result.data[0].retCode == 1){
+          toast.add({ severity: 'success', summary: '요청 성공', detail: '처리가 완료되었습니다.', life: 3000 });
+        } else {
+          toast.add({ severity: 'error', summary: '요청 실패', detail: '요청에 실패하였습니다. \n다시 시도해주십시오.', life: 3000 });
+        }
+        getlist();
     }
   }
   
@@ -110,8 +112,8 @@
   const gridOptions = {
         columnDefs: ColDefs,
         pagination: true,
-        paginationPageSize: 10,
-        paginationPageSizeSelector: [10, 20, 50, 100],
+        paginationPageSize: 5,
+        paginationPageSizeSelector: [5, 10, 50, 100],
         paginateChildRows: true,
         animateRows: false,
         defaultColDef: {

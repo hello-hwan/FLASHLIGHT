@@ -112,9 +112,12 @@ const requpdate = async (code, qy) => {
   }
 
   return result;
-}
+};
 
+// 자체 생산 추가
+const drctinsert = async (code, qy, dedt) => {
 
+};
 
 
 
@@ -176,6 +179,7 @@ module.exports = {
   prdlist,
   reqlist,
   requpdate,
+  drctinsert,
 
 
 
