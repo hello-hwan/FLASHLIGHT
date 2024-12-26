@@ -116,7 +116,7 @@ const getReqDetails = async (reqCode) => {
     //console.log('getReqDetails: 작동확인');
 };
 
-/*props로 값을 받은경우 객체 형태이기 때문에 
+/*props로 객체형태의 값을 받은경우
 watch(props.code, (newValue) => {}); 
 의 일반적인 watch의 형태에서는 사용이 불가하다.
 그래서 한번더 감싸는 깊은 복사의 형태가 된다. 
