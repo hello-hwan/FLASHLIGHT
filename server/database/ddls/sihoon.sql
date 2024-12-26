@@ -14,9 +14,12 @@ WHERE cmmn_name = '미처리'
 ORDER BY cmmn_code ASC
 LIMIT 10 OFFSET 0;
 
+SELECT * FROM cmmn
+WHERE cmmn_code = 'RD02';
+
 SELECT * FROM cmmn;
 INSERT INTO cmmn(cmmn_code, upper_cmmn_code, cmmn_name)
-VALUES ('RD', NULL, '재료요청처리구분'), ('RD01', 'RD', '처리'), ('RD02', 'RD', '미처리');
+VALUES ('RD03', 'RD', '요청전');
 COMMIT;
 
 -- 시퀀스 생성
@@ -735,5 +738,31 @@ CALL play_drct();
 
 -- 517행 물품 요청 삽입 프로시저
 
-SELECT * FROM thng_req ORDER BY req_code desc;
+
+SELECT * FROM thng_req;
+INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
+VALUES ('testbyshun-4', '자재 발주 요청 테스트-4', 1, NULL, 'M-LEATHER', '가죽', 100, 'PI01', 'RD03', NOW());
 COMMIT;
+
+SELECT tr.req_code, tr.prd_code AS mtril_code, tr.prd_nm AS mtril_nm, tr.req_qy, pp.prd_code, pp.prd_nm
+FROM thng_req tr JOIN prdctn_plan pp ON (tr.mnfct_no = pp.mnfct_no)
+WHERE tr.prdctn_code IS NULL
+AND prd_se = 'PI01'
+AND tr.procs_at = 'RD03';
+
+SELECT * FROM prdctn_drct;
+SELECT * FROM product_state;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
+FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+WHERE pd.pre_begin_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY )
+AND pd.pre_end_time > CURDATE();
+
+SELECT DATE_ADD(CURDATE(), INTERVAL 1 DAY );
+
+INSERT INTO prdctn_drct(prdctn_code, mnfct_no, procs_code, procs_nm, eqp_code, model_nm, prd_code, prd_nm, prdctn_co, pre_begin_time, pre_end_time)
+VALUES ('testbyshun-11', 1, 'testbyshun11', 'testbyshun11', 'testbyshun11', 'mchn-001', 'testbyshun11', 'testbyshun11', 777, '2024-12-25', '2024-12-30');
+COMMIT;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
+FROM prdctn_drct pd JOIN 

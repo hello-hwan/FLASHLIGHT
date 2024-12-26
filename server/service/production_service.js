@@ -13,7 +13,15 @@ const eqplist = async () => {
   return list;
 };
 
-// 생산 지시 리스트 조회
+// 생산 지시 조회 - 키오스크 버전 당일만 조회
+const finddrct = async () => {
+  let list = await mariaDB.query('pr_srcdrct');
+  return list;
+};
+
+
+
+// 생산 지시 리스트 조회 - 스케줄러 버전
 const drctlist = async (prd_code, day_str) => {
   // prd_code가 없을 때
   if(!prd_code){
@@ -119,6 +127,44 @@ const drctinsert = async (code, qy, dedt) => {
 
 };
 
+// 생산지시 정보 단건 조회
+const drctinfo = async (code) => {
+  let list = await mariaDB.query('pr_onedrct', code);
+  let result = list[0];
+  return result;
+};
+
+// 해당 공정의 자재 소모량 조회
+const selmatrl = async (code) => {
+  let list = await mariaDB.query('pr_selmatrl', code);
+  return list;
+};
+
+// 생산실적 삽입
+const addstate = async (array) => {
+  let result = [];
+
+  let empl = await mariaDB.query('pr_selempl', array[6]);
+  if(empl.length == 0){
+    //  사원이 없을 경우 2 빠져나감
+    result.push({retCode : 2});
+    return result;
+  }
+  
+  let name = empl[0];
+  let newArray = [...array, name.empl_nm];
+
+  let list = await mariaDB.query('pr_insstate', newArray);
+  // 성공시 1
+  if(list.affectedRows == 1){
+     result.push({retCode: 1});
+  }else {
+    // 실패시 0
+    result.push({retCode: 0});
+  }
+  return result;
+}
+
 
 
 
@@ -180,6 +226,11 @@ module.exports = {
   reqlist,
   requpdate,
   drctinsert,
+  finddrct,
+  drctinfo,
+  selmatrl,
+  addstate,
+
 
 
 

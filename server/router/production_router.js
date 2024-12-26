@@ -98,6 +98,60 @@ router.post('/prod/insertdrct', async (req, res) => {
   })
 });
 
+// 키오스크 생산지시 조회 - 당일 조회
+router.get('/prod/drcttoday', async (req, res) => {
+  prodService
+  .finddrct()
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+// 생산지시 단건 조회 - 키오스크 시작보고
+router.get('/prod/onedrct/:code', async (req, res) => {
+  let code = req.params.code;
+  prodService
+  .drctinfo(code)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+// 소모재료 조회 - 키오스크 시작보고
+router.get('/prod/selmatrl/:code', async (req, res) => {
+  let code = req.params.code;
+  prodService
+  .selmatrl(code)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+// 생산실적 삽입 - 키오스크 시작보고 버튼
+router.post('/prod/addstate', async (req, res) => {
+  let array = [];
+  
+  prodService
+  .addstate(array)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+
+
 
 
 

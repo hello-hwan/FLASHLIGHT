@@ -17,16 +17,35 @@ SELECT eqp_code, model_nm
 FROM eqp
 `;
 
+const pr_srcdrct = // 생산 지시 당일 조회
+`
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
+FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+WHERE pd.pre_begin_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY )
+AND pd.pre_end_time > CURDATE();
+`;
 
 // 조건 조회문
 
 const pr_seldrct = // 생산 지시 조회
 `
-SELECT pd.prdctn_code, pd.procs_nm, pd.model_nm, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time, pp.order_no
-FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+SELECT pd.prdctn_code
+       , pd.procs_nm
+       , pd.model_nm
+       , pd.prd_nm
+       , pd.prdctn_co
+       , pd.pre_begin_time
+       , pd.pre_end_time
+       , TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time
+       , pp.order_no
+
+FROM prdctn_drct pd 
+JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+
 WHERE pd.prd_code LIKE CONCAT('%', ?, '%')
 AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY)
-OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY) )
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY) )
+
 GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
 ORDER BY pd.model_nm, pd.pre_begin_time
 `;
@@ -45,9 +64,34 @@ FROM repduct
 WHERE prdlst_name LIKE CONCAT('%', ?, '%') 
 `;
 
+const pr_onedrct = // 생산지시 코드로 단건 조회
+`
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
+FROM prdctn_drct pd
+WHERE pd.prdctn_code = ?
+`;
+
+const pr_selmatrl = // 공정코드로 소모재료 조회
+`
+SELECT mtril_code, mtril_nm, usgqty
+FROM procs_matrl
+WHERE procs_code = ?
+`;
+
+const pr_selempl = // 사원코드로 사원명 조회
+`
+SELECT empl_name
+FROM empl
+WHERE empl_co = ?
+`;
 
 
 // 삽입문
+const pr_insstate = // 생산 실적 삽입
+`
+INSERT INTO product_state(prdctn_code, procs_nm, prd_code, prdctn_co, eqp_code, begin_time, empl_no, empl_nm)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+`;
 
 
 
@@ -117,7 +161,13 @@ module.exports = {
   pr_eqp,
   pr_srcprd,
   pr_upreq,
-  
+  pr_srcdrct,
+  pr_onedrct,
+  pr_selmatrl,
+  pr_selempl,
+  pr_insstate,
+
+
 
 
 
