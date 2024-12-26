@@ -88,6 +88,7 @@ const getinfo = async (code) => {
   let result = await axios.get(`${ajaxUrl}/prod/onedrct/${code}`)
                           .catch(err => console.log(err));
   info.value = result.data;
+  console.log(info.value.prdctn_code);
   getmatril(result.data.procs_code);
 
 };
@@ -97,18 +98,17 @@ const getmatril = async (code) => {
   let result = await axios.get(`${ajaxUrl}/prod/selmatrl/${code}`)
                           .catch(err => console.log(err));
   matril.value = result.data;
-  console.log(result);
 };
 
 // 시작 함수
 const gotostart = async (empl) => {
   if(empl.length == 0){
-    toast.add({ severity: 'warn', summary: '생산자 미입력', detail: '생산자를 입력해주세요.', life: 3000 });
+    toast.add({ severity: 'warn', summary: '생산자 미입력', detail: '사원번호를 입력해주세요.', life: 3000 });
     return;
   }
-  let result = await axios.post(`${ajaxUrl}/prod/`)
+  let result = await axios.post(`${ajaxUrl}/prod/addstate`, { "prdctn_code" : info.prdctn_code, })
                           .catch(err => console.log(err));
-  
+
   router.push({ name : 'kioskMain' });
 };
 
