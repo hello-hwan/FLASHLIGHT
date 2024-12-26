@@ -10,13 +10,13 @@
             <div id="search-bar">
                 <div class="align-left">                
                     <span>거래처 코드</span>
-                    <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchOrder"> <p>{{ searchCompanyCode }}</p></InputText>
+                    <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
                     <span>상호명</span>
-                    <InputText type="date" v-model="searchcompanyName" v-on:keyup.enter="searchOrder"> <p>{{ searchcompanyName }}</p></InputText>
+                    <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
                     <span>담당자 명</span>
-                    <InputText type="date" v-model="searchchargerName" v-on:keyup.enter="searchOrder"> <p>{{ searchchargerName }}</p></InputText>
+                    <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
                 </div>
-                <button @click="searchCompanyBtn" class="btn btn-primary search-btn" >조회</button>
+                <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
             </div>
             
             <AgGridVue 
@@ -45,6 +45,11 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
+
+//부모 컴포넌트로 데이터 보내기
+const emit = defineEmits(["companySelectedData"]);
+
+//화면에 보이는 데이터
 
 //검색조건
 let searchCompanyCode = null;
@@ -86,7 +91,7 @@ const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
     const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log('모달에서 선택된 행 데이터:', selectedData);
+    console.log('모달에서 선택된 행 데이터:', companySelectedData);
     emit("companySelectedData", companySelectedData);
 };
 //행 데이터를 담을 변수
@@ -96,7 +101,8 @@ const rowData = ref([]);
 const ColDefs = [
   { field: "bcnc_code", headerName: "발주번호"},
   { field: "mtlty_name", headerName: "발주코드"},
-  { field: "charger_name", headerName: "발주명"}
+  { field: "charger_name", headerName: "발주명"},
+  { headerName : "선택",  checkboxSelection: true, flex:0.3}
 ];
 
 const GridOptions = {
@@ -107,12 +113,12 @@ const GridOptions = {
       paginationPageSizeSelector: [10, 20, 50, 100],
 };
 
-const searchCompanyBtn = async() => {
+const searchCompany = async() => {
     //서버로 보낼 검색 데이터
     let obj = {company_code: searchCompanyCode,
                 company_name: searchcompanyName,
-                charger_name: searchchargerName};
-                
+                charger_name: searchchargerName
+            };
     //console.log("새로만든 객체: ",obj);
     let result = await axios.post(`${ajaxUrl}/mtril/searchCompany`, obj)
                             .catch(err=>console.log(err));

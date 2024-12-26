@@ -90,20 +90,20 @@ const mt_searchOrderWithKey =
 `
 SELECT  order_no,
         order_code,
-	order_name,
+        order_name,
         mtlty_name,
         bcnc_code,
         order_date,
         dedt,
         empl_no
 FROM    mtril_order
-WHERE   order_name LIKE CONCAT('%', order_name, '%')
-AND     mtlty_name LIKE CONCAT('%', mtlty_name, '%')
-AND     order_date BETWEEN order_date AND order_date
-AND     dedt BETWEEN dedt AND dedt
-AND     empl_no = empl_no
+WHERE   order_name LIKE CONCAT('%', IFNULL(?, order_name), '%')
+AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
+AND     order_date BETWEEN IFNULL(?, order_date) AND IFNULL(?, order_date)
+AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
+AND     empl_no = IFNULL(?, empl_no)
 GROUP BY order_code
-ORDER BY order_no desc
+ORDER BY order_no DESC
 `;
 
 //발주한 건 자재 목록

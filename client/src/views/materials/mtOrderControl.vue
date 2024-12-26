@@ -16,12 +16,7 @@
             <span>
                 <span>발주명</span>
                 <InputText type="text" v-model="orderName" class="emp_info"> <p>{{ orderName }}</p></InputText>
-                <span>거래처 명</span>
-                <InputText type="text" v-model="companyName" class="emp_info" > <p>{{ companyName }}</p></InputText>
-                <span style="">
-                    <span>거래처 코드</span>
-                    <InputText type="text" v-model="companyCode" class="emp_info" > <p>{{ companyCode }}</p></InputText>
-                </span> 
+                <companySearchModal @companySelectedData="getCompanyInfo"/> 
                 <span>담당자</span>
                 <InputText type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
             </span>
@@ -84,7 +79,7 @@ import { useToast } from 'primevue/usetoast';
 import orderSearchModal from '@/components/materials/orderControlModal.vue';
 
 //거래처 검색 모달
-//import companySearchModal from '@/components/materials/searchCompanyModal.vue';
+import companySearchModal from '@/components/materials/searchCompanyModal.vue';
 
 const toast = useToast();
 
@@ -116,6 +111,10 @@ const getOrderDetails = (info) => {
     orderCode.value = info[0].order_code;
 };
 
+const getCompanyInfo = (info) => {
+    companyName = info[0].mtlty_name;
+    companyCode = info[0].bcnc_code;
+};
 
 //날짜 포멧
 const customDateFormat = (params) => {
