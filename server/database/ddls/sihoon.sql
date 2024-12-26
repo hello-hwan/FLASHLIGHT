@@ -14,9 +14,12 @@ WHERE cmmn_name = '미처리'
 ORDER BY cmmn_code ASC
 LIMIT 10 OFFSET 0;
 
+SELECT * FROM cmmn
+WHERE cmmn_code = 'RD02';
+
 SELECT * FROM cmmn;
 INSERT INTO cmmn(cmmn_code, upper_cmmn_code, cmmn_name)
-VALUES ('RD', NULL, '재료요청처리구분'), ('RD01', 'RD', '처리'), ('RD02', 'RD', '미처리');
+VALUES ('RD03', 'RD', '요청전');
 COMMIT;
 
 -- 시퀀스 생성
@@ -734,3 +737,14 @@ DELIMITER ;
 CALL play_drct();
 
 -- 517행 물품 요청 삽입 프로시저
+
+SELECT * FROM thng_req;
+INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
+VALUES ('testbyshun-4', '자재 발주 요청 테스트-4', 1, NULL, 'M-LEATHER', '가죽', 100, 'PI01', 'RD03', NOW());
+COMMIT;
+
+SELECT tr.req_code, tr.prd_code AS mtril_code, tr.prd_nm AS mtril_nm, tr.req_qy, pp.prd_code, pp.prd_nm
+FROM thng_req tr JOIN prdctn_plan pp ON (tr.mnfct_no = pp.mnfct_no)
+WHERE tr.prdctn_code IS NULL
+AND prd_se = 'PI01'
+AND tr.procs_at = 'RD03';
