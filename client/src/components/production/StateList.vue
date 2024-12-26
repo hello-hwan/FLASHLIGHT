@@ -94,10 +94,6 @@ getlist();
 //ag grid 옵션 설정
 const gridOptions = {
       columnDefs: ColDefs,
-      pagination: true,
-      paginationPageSize: 5,
-      paginationPageSizeSelector: [5, 10, 50, 100],
-      paginateChildRows: true,
       animateRows: false,
       defaultColDef: {
           flex: 1,

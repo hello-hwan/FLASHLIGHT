@@ -750,3 +750,19 @@ WHERE tr.prdctn_code IS NULL
 AND prd_se = 'PI01'
 AND tr.procs_at = 'RD03';
 
+SELECT * FROM prdctn_drct;
+SELECT * FROM product_state;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
+FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+WHERE pd.pre_begin_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY )
+AND pd.pre_end_time > CURDATE();
+
+SELECT DATE_ADD(CURDATE(), INTERVAL 1 DAY );
+
+INSERT INTO prdctn_drct(prdctn_code, mnfct_no, procs_code, procs_nm, eqp_code, model_nm, prd_code, prd_nm, prdctn_co, pre_begin_time, pre_end_time)
+VALUES ('testbyshun-11', 1, 'testbyshun11', 'testbyshun11', 'testbyshun11', 'mchn-001', 'testbyshun11', 'testbyshun11', 777, '2024-12-25', '2024-12-30');
+COMMIT;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
+FROM prdctn_drct pd JOIN 

@@ -67,7 +67,7 @@ const ColDefs = [
 // 생산 추가 함수
 const adddrct = async (event) => {
   if(event.colDef.field == "추가"){
-      let result = await axios.post(`${ajaxUrl}/prod/insertdrct`, {"code": event.data.prd_code ,"qy": event.data.real_qy, "dedt": ""})
+      let result = await axios.post(`${ajaxUrl}/prod/insertdrct`, {"code": event.data.prd_code ,"qy": event.data.real_qy, "dedt": event.data.dedt })
                               .catch(err => console.log(err));
       if(result.data[0].retCode == 1){
         toast.add({ severity: 'success', summary: '추가 성공', detail: '처리가 완료되었습니다.', life: 3000 });
