@@ -100,4 +100,10 @@ router.post('/mtril/searchCompany', async(req, res) => {
     res.send(result);
 });
 
+//자재 재고 조회
+router.get('/mtril/mtAllQy', async(req, res) => {
+    let result = await mtrilService.allMtQy();
+    res.send(result);
+});
+
 module.exports = router;

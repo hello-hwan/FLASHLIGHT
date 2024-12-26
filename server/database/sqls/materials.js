@@ -102,6 +102,8 @@ AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
 AND     order_date BETWEEN IFNULL(?, order_date) AND IFNULL(?, order_date)
 AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
 AND     empl_no = IFNULL(?, empl_no)
+AND     order_no NOT IN (SELECT order_code
+			 FROM   inspection_check)
 GROUP BY order_code
 ORDER BY order_no DESC
 `;
@@ -268,13 +270,34 @@ const mt_dlivyListWithKey =
 `;
 
 //자재 재고 조회 -mt012 자재별
-const mt_inven =
+const mt_selectQy =
 `
+SELECT  m.mtril_name AS mtril_name,
+        m.mtril_code AS mtril_code,
+        (SELECT SUM(s.mtril_qy)
+        FROM   mtril_wrhousing s
+        WHERE  s.mtril_code = m.mtril_code) AS qy,
+        m.unit AS unit,
+        m.sfinvc AS sfinvc
+FROM    mtril m
 `;
 
-//자재 재고 조회 - mt013 로트별
+//자재 재고 조회 - mt013 로트별 로트, 수량, 단위, 입고일, 입고담당자 이름
 const mt_lotInven =
 `
+SELECT m.mtril_lot AS mtril_lot,
+       m.mtril_qy AS mtril_qy,
+       s.unit AS unit,
+       m.wrhousng_date AS wrhousng_date,
+       t.empl_name AS empl_name
+FROM   mtril_wrhousing m JOIN mtril s
+                           ON (m.mtril_code = s.mtril_code)
+					     JOIN empl t
+                           ON (m.empl_no = t.empl_no)
+WHERE  m.mtril_lot = IFNULL(?, m.mtril_lot)
+AND    m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
+AND    m.mtril_qy > 0
+AND    m.mtril_code = ?
 `;
 
 //자재 재고 조회 - mt013 로트별 조건
@@ -362,5 +385,7 @@ module.exports = {
         mt_orderDelete,
         mt_ordermodify,
         mt_searchMtList,
-        mt_searchCompany
+        mt_searchCompany,
+        mt_selectQy,
+        mt_lotInven
 };
