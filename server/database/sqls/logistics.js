@@ -33,7 +33,8 @@ const prduct_n_wrhousngList =
       ,se
       ,prdlst_code
       ,prduct_n_invntry_qy 
-FROM prduct_n_wrhousng`;
+FROM prduct_n_wrhousng
+WHERE prduct_n_invntry_qy > 0`;
 
 // 반제품 출고 요청 리스트
 const prduct_n_dlivy =
@@ -79,11 +80,16 @@ const prduct_n_dlivyTest =
     ?,
     ?,
     ?,
-    ?,
-    ?,
-    ?,
     ?
 )`;
+
+
+const prduct_n_dlivyList =
+`SELECT prduct_n_req_name
+       ,requst_date
+       ,prduct_n_name
+FROM prduct_n_dlivy
+GROUP BY prduct_n_req_name`;
 
 module.exports = {
   prdctn_n_list,
@@ -92,5 +98,6 @@ module.exports = {
   prduct_n_dlivy,
   prduct_n_possible,
   prduct_n_qy,
-  prduct_n_dlivyTest
+  prduct_n_dlivyTest,
+  prduct_n_dlivyList
 };

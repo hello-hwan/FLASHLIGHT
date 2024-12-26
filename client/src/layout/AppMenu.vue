@@ -186,7 +186,7 @@ const model = ref([
                     },
                     {
                         label: '반제품 출고 조회',
-                        to: '/'
+                        to: '/logistics/prductNDlivyList'
                     },
                 ]
             },   
