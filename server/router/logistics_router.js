@@ -35,17 +35,16 @@ router.get('/prduct_n_dlivy', async (req, res) => {
 //반제품 출고가능 제품
 router.get('/prduct_n_possible/:prdCode', async(req, res) => {
   let prdCode = req.params.prdCode;
-  console.log(prdCode);
   let prduct_n_possible = await logistics_service.prduct_n_possible(prdCode);
   res.send(prduct_n_possible);
 })
 
 // 반제품 출고완료처리
-router.get('/prduct_n_dlivyTest', async(req, res) => {
-  let Insert = req.body;
-  let result  = await logistics_service.prduct_n_dlivyTest(Insert);
+router.post('/prduct_n_dlivyTest', async(req, res) => {
+  let prdctnNInfo = req.body;
+  let result  = await logistics_service.prduct_n_dlivyTest(prdctnNInfo);
   res.send(result);
 })
 
- 
+
 module.exports = router;  

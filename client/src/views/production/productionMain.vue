@@ -1,16 +1,31 @@
 <template>
-  <div>
-    <div>
+  <div class="container">
+    <!-- 생산지시 테이블 검색 -->
+    <div class="prod-schedule">
       <p>생산 일정 안내 </p>
+
+      <!-- 일자 검색 -->
       <input type="date" v-model="day">
+
+      <!-- 제품 검색 제품명 입력시 아래 코드 나옴 클릭하면 선택됨 -->
       <input type="text" placeholder="제품코드" v-model="prd" @keydown="getprdlist()">
+
+      <!-- 검색 목록 있을시 표시 -->
       <div v-if="prdlist.length > 0">
-        <p v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</p>
+        <ul>
+          <li v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</li>
+        </ul>
       </div>
+
+      <!-- 버튼 클릭시 검색창 적용 -->
       <button type="button" @click="getanotherlist(prd, day)">검색</button>
     </div>
-    <div>
-      <table class="table">
+
+    <!-- 생산지시 테이블 -->
+    <div class="table-container">
+      <table class="table-plan">
+
+        <!-- 테이블 헤드 일자/오전,오후 -->
         <thead>
           <tr>
             <th rowspan="2">설비명</th>
@@ -39,16 +54,34 @@
             <th colspan="12">오후</th>
           </tr>
         </thead>
+
+        <!-- 테이블 바디 일정 표시할 목록 -->
         <tbody>
+
+          <!-- 설비명 만큼 행 반복 -->
           <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
             <th>{{ eqp.model_nm }}</th>
-            <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
-          </tr>
 
+            <!-- 일정만큼 열 반복 -->
+            <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+
+            <!-- 데이터 없으면 표시할 데이터 -->
+            <td v-if="drctlist.length == 0" colspan="168">No Data Found</td>
+          </tr>
         </tbody>
         
         </table>
       </div>
+
+      <!-- 검색없을시 표시창 생산 불가능 제품 및 자재 목록 -->
+      <ImpossibleProduction v-if="!issrc"/>
+
+      <!-- 검색 없을시 표시창 자체 생산 지시 추가 -->
+      <SelfProduction v-if="!issrc"/>
+
+      <!-- 검색 있을시 표시창 공정실적조회 -->
+      <StateList v-if="issrc" />
+
     </div>
 </template>
 
@@ -57,10 +90,12 @@
   import axios from 'axios';
   import { ajaxUrl } from '@/utils/commons.js';
   import useDates from '@/utils/useDates';
+  import ImpossibleProduction from '@/components/production/ImpossibleProduction.vue';
+  import SelfProduction from '@/components/production/SelfProduction.vue';
+  import StateList from '@/components/production/StateList.vue';
 
   // 제품 검색 할 코드
   const prd = ref('');
-  
 
   // 날짜 표기할 변수
   const day = ref('');
@@ -83,11 +118,16 @@
   // 생산일정 담을 변수
   const drctlist = ref([]);
   // 생산일정 불러올 함수
-  const getdrct = async () => {
+  const getdrct = async (prd_code, day_str) => {
+
    // let result = await axios.get(`${ajaxUrl}/prod/drctlist`)
-   let result = await axios.get(`${ajaxUrl}/prod/seldrct`)
+   let result = await axios.get(`${ajaxUrl}/prod/drctlist`, {params: {"prd_code":prd_code, "day_str":day_str}})
                            .catch(err => console.log(err));
-    
+    // console.log(result);
+    if(result == undefined){
+      drctlist.value = [];
+      return;
+    }
     // 색상 배열
     const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "purple"];
 
@@ -106,6 +146,7 @@
         if(key == "") {
           newArray[key] = "white";
         } else {
+          if(i >= colors.length) i = 0;
           newArray[key] = colors[i++];
         }
     }
@@ -120,18 +161,22 @@
 
   };
   // 생산일정 불러올 함수 실행
-  getdrct();
+  getdrct(prd.value, day.value);
 
   
+  // 검색을 했는지 안했는지 담을 변수
+  let issrc = false;
 
   // 제품 키워드로 검색 내용 담을 변수
   const prdlist = ref([]);
+
   // 제품 키워드로 검색할 함수
   const getprdlist = async () => {
     let result = await axios.get(`${ajaxUrl}/prod/prdlist/${prd.value}`)
                             .catch(err => console.log(err));
     prdlist.value = result.data;
   };
+
   // 검색 클릭시 실행할 함수
   const getprdcode = (code) => {
     prd.value = code;
@@ -140,19 +185,15 @@
 
   // 검색 클릭시 실행할 함수
   const getanotherlist = async (prd_code, day_str) => {
-
-    let result = await axios.get(`${ajaxUrl}/prod/srcdrct`, prd_code, day_str )
-                            .catch(err => console.log(err));
-    drctlist.value = result.data;
+    getdrct(prd_code, day_str);
+    issrc = true;
   };
-
-  
- 
 </script>
 
 <style>
-  table , th, td {
+  .table-plan th, .table-plan td {
     border: 2px, solid, black;
+    width: 0.5%;
   }
 
 </style>

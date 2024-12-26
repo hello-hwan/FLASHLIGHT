@@ -206,7 +206,7 @@ const mtOrderList = async(searchInfo) => {
                               .catch(err=>console.log(err));
 
     return result;
-}
+};
 
 //발주건 자재 리스트
 const mtListOnOrder = async(orderCode) => {
@@ -214,7 +214,140 @@ const mtListOnOrder = async(orderCode) => {
                               .catch(err=>console.log(err));
     console.log('결과',result);
     return result;
-}
+};
+
+//발주 자재 입력
+const insertMtToOrder = async(orderMtList) => {
+    //insertId를 담을 변수
+    let key = '';
+
+    //리턴할 결과를 더할 변수 선언
+    let resultCnt = 0;
+
+    for(let i=0; i<orderMtList.length; i++) {
+        //값이 없이 넘어오는게 있음. 구별하기 쉽게 none으로 임의 설정 프로시저 내에서 처리함.
+        orderMtRowData = [
+            orderMtList[i].dedt,
+            orderMtList[i].emp_id,
+            orderMtList[i].mt_code,
+            orderMtList[i].mt_name,
+            orderMtList[i].order_date,
+            orderMtList[i].order_qy,
+            orderMtList[i].req_code == '' ? 'none': orderMtList[i].req_code,
+            orderMtList[i].company_code,
+            orderMtList[i].order_name,
+            orderMtList[i].company_name,
+            orderMtList[i].price,
+            key == '' ? 'none': key
+        ];
+
+        let queryResult = await mariaDB.query('mt_orderInsert', orderMtRowData)
+                                  .catch(err=>console.log(err));
+        console.log('쿼리 결과:', queryResult);
+
+        
+        //결과에서 인서트 아이디를 가지고 옴.
+        if(key == "") {
+            key = queryResult[0][0].id;
+        };
+        console.log('출력: ', queryResult);
+        console.log('선택: ', queryResult[0][0].result);
+        //결과가 1이면 성공 그 값을 모두 더함.
+        resultCnt += queryResult[0][0].result;
+    };
+    console.log('쿼리결과: ',resultCnt);
+    console.log('넘어온 데이터 길이: ', orderMtList.length);
+    //결과로 돌아온 값의 합과 입력할 행의 수와 같으면 success리턴
+    if(resultCnt == orderMtList.length) {
+        return 'success';
+    } else {
+        return 'fail';
+    };
+    
+};
+
+//발주건 삭제
+const mtOrderDelete = async(orderCode) => {
+    let result = await mariaDB.query('mt_orderDelete', orderCode)
+                              .catch(err=>console.log(err));
+    console.log('결과',result);
+    return result;
+};
+
+//발주건 수정
+const mtOrderModify = async(modifyInfo) => {
+    console.log('넘어온 데이터', modifyInfo);
+    //order_code를 담을 변수 state가 insert인 경우 order_code가 공백임.
+    let order_code = "";
+
+    //order_code를 담기위해 for문 실행
+    for(let i=0; i<modifyInfo.length; i++) {
+        if(modifyInfo[i].req_code != "") {
+            //공백이 아닌 req_code
+            order_code = modifyInfo[i].req_code;
+            //변수를 담은 즉시 for문 종료
+            break;
+        };
+    };
+    //결과를 더할 결과를 담을 변수 
+    let resultSum = 0;
+    for(let i=0; i<modifyInfo.length; i++) {
+        let orderInfo = [
+            modifyInfo[i].order_no,
+            modifyInfo[i].company_code,
+            modifyInfo[i].company_name,
+            modifyInfo[i].dedt,
+            modifyInfo[i].emp_id,
+            modifyInfo[i].mt_code,
+            modifyInfo[i].mt_name,
+            modifyInfo[i].order_date,
+            modifyInfo[i].order_name,
+            modifyInfo[i].order_qy,
+            modifyInfo[i].price,
+            modifyInfo[i].state,
+            modifyInfo[i].unit,
+            modifyInfo[i].order_code
+            ];
+        //console.log('만들어진 배열:', arr);
+        
+        let result = await mariaDB.query('mt_ordermodify', orderInfo).catch(err=>console.log(err));
+
+        //console.log('결과: ', result);
+        
+        //나온 결과를 모두 더함.
+        resultSum += result[0][0].result;
+    };
+    
+    if (resultSum == modifyInfo.length) {
+        console.log('1실행');
+        return 'success';
+        
+    } else {
+        console.log('2실행');
+        return 'fail';
+    };
+};
+
+//자재검색 모달 코드, 이름 담당자
+const searchMtModal = async(key) => {
+    //검색 조건을 저장할 배열
+    let searchKey = [];
+    let result = await mariaDB.query('mt_searchMtList', searchKey)
+                              .catch(err=>console.log(err));
+
+    return result;
+};
+
+//회사 검색 모달
+const searchCompanyModal = async(key) => {
+    //검색 조건을 저장할 배열
+    let searchKey = [key.company_code, key.company_name, key.charger_name];
+    let result = await mariaDB.query('mt_searchCompany', searchKey)
+                              .catch(err=>console.log(err));
+    return result;
+};
+
+
 module.exports = {
     returnMt,
     orderMt,
@@ -224,5 +357,10 @@ module.exports = {
     dlivyMt,
     reqMtOrderList,
     mtOrderList,
-    mtListOnOrder
+    mtListOnOrder,
+    insertMtToOrder,
+    mtOrderDelete,
+    mtOrderModify,
+    searchMtModal,
+    searchCompanyModal
 };

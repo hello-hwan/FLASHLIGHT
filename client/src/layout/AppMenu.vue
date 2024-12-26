@@ -128,28 +128,16 @@ const model = ref([
                         to: '/equipments/checkSchdul'
                     },
                     {
-                        label: '점검 일정 현황',
-                        to: '/'
-                    },
-                    {
                         label: '미점검 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '점검 내역 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '생산 오류 조회',
-                        to: '/'
+                        to: '/equipments/notChckList'
                     },
                     {
                         label: '미가동 조회',
-                        to: '/'
+                        to: '/equipments/notOprList'
                     },
                     {
                         label: '설비 관리',
-                        to: '/'
+                        to: '/equipments/eqpAllList'
                     },
                 ]
             },  

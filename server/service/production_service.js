@@ -1,26 +1,179 @@
 //생산 service
 const mariaDB = require('../database/mapper.js');
 
+// 공통코드 검색
 const findcmmn = async (code) => {
   let list = await mariaDB.query('pr_selcmmn', code);
   return list;
 };
 
+// 설비 리스트 조회
 const eqplist = async () => {
   let list = await mariaDB.query('pr_eqp');
   return list;
 };
 
-const drctlist = async () => {
-  let list = await mariaDB.query('pr_seldrct');
+// 생산 지시 조회 - 키오스크 버전 당일만 조회
+const finddrct = async () => {
+  let list = await mariaDB.query('pr_srcdrct');
   return list;
-
 };
 
+
+
+// 생산 지시 리스트 조회 - 스케줄러 버전
+const drctlist = async (prd_code, day_str) => {
+  // prd_code가 없을 때
+  if(!prd_code){
+    prd_code = '';
+  }
+  // day_str이 없을 때 - 현재날짜 기준
+  if(!day_str){
+    day_str = new Date().getFullYear + '-' + (new Date().getMonth + 1) + '-' + new Date().getDate();
+  }
+  let innerArray = [prd_code, day_str, day_str, day_str, day_str];
+
+  let list = await mariaDB.query('pr_seldrct', innerArray);
+  
+  let result = [];
+  let model = '';
+
+  // 공정의 시작시간
+  let begin_time = new Date(list[0].pre_begin_time);
+  begin_time.setHours(0, 0, 0, 0);
+  let begin = begin_time.getTime();
+
+  // 공정의 종료시간
+  let end_time = new Date (list[0].pre_begin_time);
+  end_time.setHours(0, 0, 0, 0);
+  let end = end_time.getTime();
+
+  // 제일처음의 공정시간
+  let start_time = new Date(day_str);
+  start_time.setHours(0, 0, 0, 0);
+  let start = start_time.getTime();
+  let colspan = 0;
+
+  for(let i = 0; i < list.length; i++){
+    if(model != list[i].model_nm){
+      colspan = 0;
+
+      begin_time = list[i].pre_begin_time;
+      begin = new Date(begin_time).getTime();
+
+      end_time = list[i].pre_end_time;
+      end = new Date(end_time).getTime();
+      if(begin - start > 0){
+        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-start)/1000/60/60, "order_no" : "" });
+        colspan += (begin-start)/1000/60/60;
+      }
+        
+    } 
+    begin_time = list[i].pre_begin_time;
+    begin = new Date(begin_time).getTime();
+    if(begin - end > 0){
+      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-end)/1000/60/60, "order_no" : "" });
+      colspan += (begin-start)/1000/60/60;
+    }
+    if(colspan >= 168){
+      model = list[i].model_nm;
+      continue;
+    }
+    if(colspan + list[i].drct_time >= 168){
+      result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (168 - colspan), "order_no" : list[i].order_no });
+      colspan = 168;
+    } else {
+      result.push(list[i]);
+      colspan += list[i].drct_time;
+    }
+    model = list[i].model_nm;
+    end_time = list[i].pre_end_time;
+    end = new Date(end_time).getTime();
+  
+  }
+return result;
+};
+
+// 제품리스트 검색 기능
 const prdlist = async (name) => {
   let list = await mariaDB.query('pr_srcprd', name);
   return list;
+};
+
+// 요청리스트조회
+const reqlist = async () => {
+  let list = await mariaDB.query('pr_nem');
+  return list;
+};
+
+// 요청리스트 수정
+const requpdate = async (code, qy) => {
+  let array = [qy, code];
+  let list = await mariaDB.query('pr_upreq', array);
+  let result = [];
+  // 성공시 1
+  if(list.affectedRows == 1){
+     result.push({retCode: 1});
+  }else {
+    // 실패시 0
+    result.push({retCode: 0});
+  }
+
+  return result;
+};
+
+// 자체 생산 추가
+const drctinsert = async (code, qy, dedt) => {
+
+};
+
+// 생산지시 정보 단건 조회
+const drctinfo = async (code) => {
+  let list = await mariaDB.query('pr_onedrct', code);
+  let result = list[0];
+  return result;
+};
+
+// 해당 공정의 자재 소모량 조회
+const selmatrl = async (code) => {
+  let list = await mariaDB.query('pr_selmatrl', code);
+  return list;
+};
+
+// 생산실적 삽입
+const addstate = async (array) => {
+  let result = [];
+
+  let empl = await mariaDB.query('pr_selempl', array[6]);
+  if(empl.length == 0){
+    //  사원이 없을 경우 2 빠져나감
+    result.push({retCode : 2});
+    return result;
+  }
+  
+  let name = empl[0];
+  let newArray = [...array, name.empl_nm];
+
+  let list = await mariaDB.query('pr_insstate', newArray);
+  // 성공시 1
+  if(list.affectedRows == 1){
+     result.push({retCode: 1});
+  }else {
+    // 실패시 0
+    result.push({retCode: 0});
+  }
+  return result;
 }
+
+
+
+
+
+
+
+
+
+
 
 
 // ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
@@ -65,70 +218,21 @@ const total = async () => {
 };
 
 
-
-const seldrct = async (prd_code, day_str) => {
-  if(prd_code){
-    
-  }
-  if(day_str){
-
-  }
-
-  let list = await mariaDB.query('pr_drctnodate');
-  
-  let result = [];
-  let model = '';
-
-  // 공정의 시작시간
-  let begin_time = new Date(list[0].pre_begin_time);
-  begin_time.setHours(0, 0, 0, 0);
-  let begin = begin_time.getTime();
-
-  // 공정의 종료시간
-  let end_time = new Date (list[0].pre_begin_time);
-  end_time.setHours(0, 0, 0, 0);
-  let end = end_time.getTime();
-
-  // 제일처음의 공정시간
-  let start_time = new Date(list[0].pre_begin_time);
-  start_time.setHours(0, 0, 0, 0);
-  let start = start_time.getTime();
-
-
-  for(let i = 0; i < list.length; i++){
-    
-    if(model != list[i].model_nm){
-
-      begin_time = list[i].pre_begin_time;
-      begin = new Date(begin_time).getTime();
-
-      end_time = list[i].pre_end_time;
-      end = new Date(end_time).getTime();
-      if(begin - start > 0){
-        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-start)/1000/60/60, "order_no" : "" });
-      }
-        
-    } 
-    begin_time = list[i].pre_begin_time;
-    begin = new Date(begin_time).getTime();
-    if(begin - end > 0){
-      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-end)/1000/60/60, "order_no" : "" });
-    }
-    result.push(list[i]);
-    model = list[i].model_nm;
-    end_time = list[i].pre_end_time;
-    end = new Date(end_time).getTime();
-  
-  }
-return result;
-};
-
-
 module.exports = { 
   findcmmn,
   drctlist,
   eqplist,
   prdlist,
+  reqlist,
+  requpdate,
+  drctinsert,
+  finddrct,
+  drctinfo,
+  selmatrl,
+  addstate,
+
+
+
 
 
 
@@ -142,5 +246,4 @@ module.exports = {
 
   
   total,
-  seldrct
 };
