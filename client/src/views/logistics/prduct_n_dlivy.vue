@@ -174,11 +174,13 @@ export default {
       console.log(sendPrductNList);
       let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
                               .catch(err => console.log(err));
+
       if(result){
         alert('출고완료');
         this.getprductNDlivyList();
         this.getprductNdlivyPossible();
       }
+
     },
     // 그리드 준비 완료 후 호출되는 메서드
     onGridReady(params) {

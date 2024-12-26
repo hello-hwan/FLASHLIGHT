@@ -53,5 +53,6 @@ router.get('/prduct_n_dlivyList', async (req, res) => {
   res.send(prdctn_n_list);
 })
 
- 
+
+
 module.exports = router;  
