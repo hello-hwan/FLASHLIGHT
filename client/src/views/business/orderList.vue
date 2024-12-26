@@ -1,70 +1,85 @@
 <template>
-    <div class="businessOrderListTitle">
-        주문 조회
-    </div>
-    <div class="container">
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label">업체명</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_mtlty_name">
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                ex 예담
-                </span>
-            </div>
-        </div>
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label">주문일자</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_date">
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                ex 2024-12-15
-                </span>
-            </div>
-        </div>
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label">납품일자</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_dete">
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                ex 2025-08-23
-                </span>
-            </div>
-        </div>
-        <div class="row g-3 align-items-center">
-            <div class="col-2">
-                <label for="inputPassword6" class="col-form-label">주문번호</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_no">
-            </div>
-            <div class="col-auto">
-                <span class="form-text">
-                ex ORDER-01
-                </span>
-            </div>
-        </div>
+    <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+        <template v-slot:title>
+            <span class="font-weight-black">
+                주문 조회
+            </span>
+        </template>
+    </v-card>
+    <v-container fluid>
+        <v-row>
+        <!-- 검색 필드 -->
+        <v-col cols="12">
+          <v-card class="mx-auto" style="border-radius: 13px;">
+            <v-card-text class="bg-surface-light pt-4">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderListMtltyName" class="col-form-label">업체명</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderListMtltyName" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_mtlty_name">
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            ex 예담
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderListOrderDate" class="col-form-label">주문일자</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderListOrderDate" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_date">
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            ex 2024-12-15
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderListDete" class="col-form-label">납품일자</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderListDete" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_dete">
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            ex 2025-08-23
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-2">
+                            <label for="orderListOrderNo" class="col-form-label">주문번호</label>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" id="orderListOrderNo" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_no">
+                        </div>
+                        <div class="col-auto">
+                            <span class="form-text">
+                            ex ORDER-01
+                            </span>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <button type="button" class="btn btn-success" @click="filteredResult()" style="color:white;">조회</button>
+                        <button type="button" class="btn btn-warning" @click="resetFilter()" >초기화</button>
+                    </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-card-text class="bg-surface-light pt-4">
         <div>
-            <button type="button" class="btn btn-secondary" @click="filteredResult()">조회</button>
-            <button type="button" class="btn btn-secondary" @click="resetFilter()">초기화</button>
+            <ag-grid-vue :rowData="filteredRowData" :columnDefs="colDefs" style="height: 519px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
+            @grid-ready="onGridReady" rowSelection="multiple">
+            </ag-grid-vue>
         </div>
-    </div>
-    <div>
-        <ag-grid-vue :rowData="filteredRowData" :columnDefs="colDefs" style="height: 500px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
-        @grid-ready="onGridReady" rowSelection="multiple">
-        </ag-grid-vue>
-    </div>
+    </v-card-text>
 </template>
 
 <script>
@@ -181,14 +196,5 @@ export default {
 </script>
 
 <style lang="scss">
-    .businessOrderListTitle{
-        background-color: darkgrey;
-        font-size:20px;
-        text-align : center;
-        width : 20%;
-        height : 60px;
-        line-height:60px;
-        margin:5px;
-    }
 
 </style>
