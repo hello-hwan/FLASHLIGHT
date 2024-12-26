@@ -190,7 +190,7 @@
   };
 </script>
 
-<style>
+<style scoped>
   .table-plan th, .table-plan td {
     border: 2px, solid, black;
     width: 0.5%;

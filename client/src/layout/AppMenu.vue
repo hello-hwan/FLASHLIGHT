@@ -100,6 +100,10 @@ const model = ref([
                     {
                         label: '공장 실적 조회',
                         to: '/production/productionResult'
+                    },
+                    {
+                        label: '키오스크',
+                        to: '/kiosk'
                     }
                 ]
             },
