@@ -8,7 +8,7 @@
                 <label for="inputPassword6" class="col-form-label">업체명</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_mtlty_name">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -21,7 +21,7 @@
                 <label for="inputPassword6" class="col-form-label">주문일자</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_date">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -34,7 +34,7 @@
                 <label for="inputPassword6" class="col-form-label">납품일자</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_dete">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -47,7 +47,7 @@
                 <label for="inputPassword6" class="col-form-label">주문번호</label>
             </div>
             <div class="col-auto">
-                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline">
+                <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_no">
             </div>
             <div class="col-auto">
                 <span class="form-text">
@@ -56,13 +56,13 @@
             </div>
         </div>
         <div>
-            <button type="button" class="btn btn-secondary">조회</button>
-            <button type="button" class="btn btn-secondary">취소</button>
-            <button type="button" class="btn btn-secondary">수정</button>
+            <button type="button" class="btn btn-secondary" @click="filteredResult()">조회</button>
+            <button type="button" class="btn btn-secondary" @click="resetFilter()">초기화</button>
         </div>
     </div>
     <div>
-        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 500px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder">
+        <ag-grid-vue :rowData="filteredRowData" :columnDefs="colDefs" style="height: 500px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
+        @grid-ready="onGridReady" rowSelection="multiple">
         </ag-grid-vue>
     </div>
 </template>
@@ -82,7 +82,13 @@ export default {
         return { 
             orderList: [], 
             rowData: '', 
-            colDefs: ''
+            filteredRowData:'', 
+            colDefs: '', 
+
+            filter_order_no: '', 
+            filter_mtlty_name: '', 
+            filter_order_date: '', 
+            filter_dete: '', 
         }; 
     }, 
     created() { 
@@ -109,7 +115,6 @@ export default {
                 paginationPageSizeSelector: [10, 20, 50, 100], 
                 paginateChildRows: true, 
                 animateRows: false, 
-                filter: 'agTextColumnFilter', 
                 defaultColDef: { 
                     filter: true, 
                     flex: 1, 
@@ -127,12 +132,17 @@ export default {
         AgGridVue, // Add Vue Data Grid component
     }, 
     methods: { 
+        onGridReady(params){ 
+            this.gridApi = params.api; 
+            this.columnApi = params.columnApi; 
+        }, 
         async getorderList() { 
             let result = await axios.get(`${ajaxUrl}/business/orderList`) 
                 .catch(err => console.log(err)); 
             this.orderList = result.data; 
-            console.log(result, result.data);
+            console.log(result, result.data); 
             this.rowData = ref(this.orderList); 
+            this.filteredRowData= this.rowData; 
             // console.log(this.rowData);
             // console.log(...this.rowData);
         }, 
@@ -144,7 +154,28 @@ export default {
         }, 
         goToDetail(order_no){ 
             this.$router.push({name:'orderInfo', params : {order_no:order_no}}); 
-        } 
+        }, 
+        filteredResult(){ 
+            //console.log(this.gridApi, this.colDefs, this.rowData.filter()); 
+            this.filteredRowData = this.rowData.filter((row)=>{ 
+                let orderDate = row.order_date; 
+                let newDete = row.dete; 
+                let filter_order_date = !this.filter_order_date || orderDate >= this.filter_order_date;
+                let filter_dete = !this.filter_dete || newDete >= this.filter_dete;
+                return( 
+                    (!this.filter_order_no || row.order_no.includes(this.filter_order_no)) && 
+                    (!this.filter_mtlty_name || row.mtlty_name.includes(this.filter_mtlty_name)) && 
+                    filter_order_date && filter_dete
+                ) ;
+            }) 
+        }, 
+        resetFilter(){
+            this.filter_order_no = ''; 
+            this.filter_mtlty_name = ''; 
+            this.filter_order_date = ''; 
+            this.filter_dete = ''; 
+            this.filteredRowData = this.rowData; 
+        }
     } 
 }; 
 </script>

@@ -79,18 +79,11 @@ export default {
       rowDataInfo: [],
       colDefsInfo: [],  // 출고가능제품의 컬럼 정의
       req_de: "",
-      req_code: "",
+      prdctn_code: "",
       req_name: "",
-      obj: { 
-            prdlst_code: "",
-            prduct_n_invntry_qy: "",
-            prduct_n_lot: "",
-            prduct_name: "",
-            req_qy: "",
-            req_de: "",
-            req_code: "",
-            req_name: ""
-      }
+      obj: {},
+      emp_name: "이주현",
+      emp_id: 200,
     };
   },
   created() {
@@ -107,11 +100,11 @@ export default {
 
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
-      { field: "prduct_name", headerName: "반제품제품명" },
-      { field: "prdlst_code", headerName: "반제품제품코드" },
-      { field: "prduct_n_lot", headerName: "반제품LOT" },
+      { field: "prd_nm", headerName: "반제품제품명" },
+      { field: "prd_code", headerName: "반제품제품코드" },
+      { field: "lot", headerName: "반제품LOT" },
       { field: "req_qy", headerName: "요청수량" },
-      { field: "prduct_n_invntry_qy", headerName: "출고가능수량" },
+      { field: "lot_qy", headerName: "출고가능수량" },
     ];
 
     // AgGrid 기본 옵션 설정
@@ -142,13 +135,8 @@ export default {
     // 셀 클릭 시 호출되는 이벤트
     onCellClicked(event) {
       if (event.colDef.field === "상세보기") {
-        const selectedprdCode = event.data.prd_code; // 선택된 BOM 코드 추출
-        console.log(`선택된 품목 코드: ${selectedprdCode}`);
-        console.log('요청코드:', event.data.req_code);
-        this.getprductNdlivyPossible(selectedprdCode); // BOM 상세 정보 조회
-        this.req_de = event.data.req_de;
-        this.req_code = event.data.req_code;
-        this.req_name = event.data.req_name;
+        const selectedprdCode = event.data.prdctn_code; 
+        this.getprductNdlivyPossible(selectedprdCode); 
       }
     },
 
@@ -160,7 +148,7 @@ export default {
         this.rowData = this.prductNDlivyList; // 받아온 데이터를 rowData에 할당
         this.filteredRowData = this.rowData;  // 필터링된 데이터로 초기 설정
       } catch (err) {
-        console.log("데이터 로딩 실패:", err);  // 오류 처리
+        console.log("데이터 로딩 실패:", err);  
       }
     },
     async getprductNdlivyPossible(prdCode) {
@@ -169,17 +157,16 @@ export default {
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
     },
-    testData() {
-      // rowDataInfo를 순회하면서 각 항목에 req_code를 추가한 새로운 배열 생성
-      this.obj = this.rowDataInfo.map((row) => {
-        return {
-          ...row,
-          req_code: this.req_code, 
-          req_de: this.req_de,
-          req_name: this.req_name,
-        };
-      });
-      console.log(this.obj); 
+    async testData() {
+
+      let sendPrductNList = [];
+      for(let i = 0; i < this.rowDataInfo.length; i++){
+        let newObj = {...this.rowDataInfo[i], empl_no : this.emp_id};
+        sendPrductNList.push(newObj);
+      }
+      console.log(sendPrductNList);
+      let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
+                              .catch(err => console.log(err));
       // 반제품 출고 프로시저 호출 메소드 만들어야됨
     },
     // 그리드 준비 완료 후 호출되는 메서드
