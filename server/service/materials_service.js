@@ -241,20 +241,6 @@ const insertMtToOrder = async(orderMtList) => {
             key == '' ? 'none': key
         ];
 
-        /*
-            IN p_dedt VARCHAR(20),
-            IN p_emp_id INT,
-            IN p_mt_code VARCHAR(50),
-            IN p_mt_name VARCHAR(50),
-            IN p_order_date VARCHAR(50),
-            IN p_order_qy INT,
-            IN p_req_code VARCHAR(50),
-            IN p_company_code VARCHAR(50),
-            IN p_orderName VARCHAR(50),
-            IN p_company_name VARCHAR(50),
-            IN p_price INT,
-            IN p_key VARCHAR(50)
-        */
         let queryResult = await mariaDB.query('mt_orderInsert', orderMtRowData)
                                   .catch(err=>console.log(err));
         console.log('쿼리 결과:', queryResult);
@@ -281,13 +267,85 @@ const insertMtToOrder = async(orderMtList) => {
 };
 
 //발주건 삭제
-const mtDelete = async(orderCode) => {
+const mtOrderDelete = async(orderCode) => {
     let result = await mariaDB.query('mt_orderDelete', orderCode)
                               .catch(err=>console.log(err));
     console.log('결과',result);
     return result;
 };
 
+//발주건 수정
+const mtOrderModify = async(modifyInfo) => {
+    console.log('넘어온 데이터', modifyInfo);
+    //order_code를 담을 변수 state가 insert인 경우 order_code가 공백임.
+    let order_code = "";
+
+    //order_code를 담기위해 for문 실행
+    for(let i=0; i<modifyInfo.length; i++) {
+        if(modifyInfo[i].req_code != "") {
+            //공백이 아닌 req_code
+            order_code = modifyInfo[i].req_code;
+            //변수를 담은 즉시 for문 종료
+            break;
+        };
+    };
+    //결과를 더할 결과를 담을 변수 
+    let resultSum = 0;
+    for(let i=0; i<modifyInfo.length; i++) {
+        let orderInfo = [
+            modifyInfo[i].order_no,
+            modifyInfo[i].company_code,
+            modifyInfo[i].company_name,
+            modifyInfo[i].dedt,
+            modifyInfo[i].emp_id,
+            modifyInfo[i].mt_code,
+            modifyInfo[i].mt_name,
+            modifyInfo[i].order_date,
+            modifyInfo[i].order_name,
+            modifyInfo[i].order_qy,
+            modifyInfo[i].price,
+            modifyInfo[i].state,
+            modifyInfo[i].unit,
+            modifyInfo[i].order_code
+            ];
+        //console.log('만들어진 배열:', arr);
+        
+        let result = await mariaDB.query('mt_ordermodify', orderInfo).catch(err=>console.log(err));
+
+        //console.log('결과: ', result);
+        
+        //나온 결과를 모두 더함.
+        resultSum += result[0][0].result;
+    };
+    
+    if (resultSum == modifyInfo.length) {
+        console.log('1실행');
+        return 'success';
+        
+    } else {
+        console.log('2실행');
+        return 'fail';
+    };
+};
+
+//자재검색 모달 코드, 이름 담당자
+const searchMtModal = async(key) => {
+    //검색 조건을 저장할 배열
+    let searchKey = [];
+    let result = await mariaDB.query('mt_searchMtList', searchKey)
+                              .catch(err=>console.log(err));
+
+    return result;
+};
+
+//회사 검색 모달
+const searchCompanyModal = async(key) => {
+    //검색 조건을 저장할 배열
+    let searchKey = [key.company_code, key.company_name, key.charger_name];
+    let result = await mariaDB.query('mt_searchCompany', searchKey)
+                              .catch(err=>console.log(err));
+    return result;
+};
 
 
 module.exports = {
@@ -301,5 +359,8 @@ module.exports = {
     mtOrderList,
     mtListOnOrder,
     insertMtToOrder,
-    mtDelete
+    mtOrderDelete,
+    mtOrderModify,
+    searchMtModal,
+    searchCompanyModal
 };

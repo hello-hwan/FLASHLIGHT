@@ -32,15 +32,27 @@ Call mt_order_process(
         ?,
         ?,
         ?,
-        ?
-)
+        ?)
 `;
 
 
 //자재 발주관리 - mt001 / 발주서 수정 프로시저
 const mt_ordermodify =
 `
-Call mt...
+Call mt_order_modify_process(?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?)
 `;
 
 //자재 발주관리 - mt001 / 발주서 삭제
@@ -53,21 +65,24 @@ WHERE  order_code = ?
 //자재 검색 모달 - mt002 
 const mt_searchMtList =
 `
-`;
-
-//자재 검색 모달 - mt002 조건
-const mt_searchMtListWithKey = 
-`
+select mtril_code,
+       mtril_name,
+       unit
+from   mtril
+WHERE  mtril_name = IFNULL(?, mtril_name)
+AND    mtril_code = IFNULL(?, mtril_code)
 `;
 
 //거래처 검색 모달 - mt003
 const mt_searchCompany = 
 `
-`;
-
-//거래처 검색 모달 - mt003조건
-const mt_searchCompanyWithKey =
-`
+SELECT  bcnc_code,
+	mtlty_name,
+        charger_name
+FROM    bcnc
+WHERE   bcnc_code = IFNULL(?, bcnc_code)
+AND     mtlty_name = IFNULL(?, mtlty_name)
+AND     charger_name = IFNULL(?, charger_name)
 `;
 
 //수정할 발주건 검색 - mt004 조건
@@ -174,11 +189,6 @@ CALL mt_wrhousing_process(
 
 //자재 입고 조회 - mt008 
 const mt_wrhousngList =
-`
-`;
-
-//자재 입고 조회 - mt008 조건
-const mt_wrhousngListWithKey =
 `
 `;
 
@@ -350,5 +360,7 @@ module.exports = {
         mt_listOnOrder,
         mt_orderInsert,
         mt_orderDelete,
-        mt_ordermodify
+        mt_ordermodify,
+        mt_searchMtList,
+        mt_searchCompany
 };
