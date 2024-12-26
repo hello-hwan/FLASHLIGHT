@@ -16,8 +16,11 @@
            </div>
        </div>
    <div>
-       <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 500px" class="ag-theme-alpine">
-       </ag-grid-vue>
+    <div>
+        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
+                @grid-ready="onGridReady" class="ag-theme-alpine">
+            </ag-grid-vue>
+    </div>
    </div>
 </template>
 
@@ -44,7 +47,21 @@ export default {
            { field: "inspec_item",headerName: "검사항목"},
            { field: "inspec_standard",headerName : "검사기준"}
        ]);
-   },
+       
+       this.gridOptions = {
+                columnDefs: this.orderColDefs,
+                pagination: true,
+                paginationPageSize: 10,
+                paginationPageSizeSelector: [10, 20, 50, 100],
+                paginateChildRows: true,
+                animateRows: false,
+                defaultColDef: {
+                    filter: true,
+                    flex: 1,
+                    minWidth: 10
+                },
+   };
+},
    name: "App",
    components: {
        AgGridVue, // Add Vue Data Grid component
