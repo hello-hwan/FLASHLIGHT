@@ -21,7 +21,7 @@
                 <span style="">
                     <span>거래처 코드</span>
                     <InputText type="text" v-model="companyCode" class="emp_info" > <p>{{ companyCode }}</p></InputText>
-                </span>
+                </span> 
                 <span>담당자</span>
                 <InputText type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
             </span>
@@ -33,7 +33,7 @@
                  선택항목 발주서 작성 </button>
                  
                  <!--검색 모달 열기-->
-                 <searchModal @selectedData="getOrderDetails"/> 
+                 <orderSearchModal @selectedData="getOrderDetails"/> 
             </div>
             <button type="button" class="btn btn-danger"
                  style="color: #fff; margin-left: 30px" v-show="delBtn" @click="delOrder">발주삭제</button>
@@ -61,7 +61,7 @@
 
            <button type="button" @click="insertMtOrderList"
             class="btn btn-primary" v-if="orderCode == ''">등록</button>
-           <button type="button" @click="modifyOrder"
+           <button type="button" @click="insertMtOrderList"
             class="btn btn-primary" v-else>수정</button>
         </div>
     </div>
@@ -79,7 +79,12 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import { useToast } from 'primevue/usetoast';
-import searchModal from '@/components/materials/orderControlModal.vue';
+
+//발주건 검색 모달
+import orderSearchModal from '@/components/materials/orderControlModal.vue';
+
+//거래처 검색 모달
+//import companySearchModal from '@/components/materials/searchCompanyModal.vue';
 
 const toast = useToast();
 
@@ -106,7 +111,7 @@ let orderCode = ref("");
 
 let delBtn = ref(false);
 
-//자식 컴포넌트로부터 받은(선택한) 데이터
+//자식 컴포넌트로부터 받은(선택한) 데이터 (발주건)
 const getOrderDetails = (info) => {
     orderCode.value = info[0].order_code;
 };
@@ -123,7 +128,7 @@ const customDateToday = () => {
 
 //요청 리스트 열 정보
 const reqColDefs = [
-  { field: "req_code", headerName:"요청 코드",flex:3},
+  { field: "req_code", headerName:"요청 코드",flex:3, hide: true, suppressToolPanel: true, flex:3},
   { field: "req_name", headerName:"요청 명" },
   { field: "mt_code", headerName:"자재 코드" },
   { field: "mt_name", headerName:"자재 명",flex:3},
@@ -135,7 +140,7 @@ const reqColDefs = [
 
 //자재 리스트 열 정보
 const mtListColDefs = [
-    { field: "order_no", headerName: "발주번호"},
+    { field: "order_no", headerName: "발주번호", hide: true, suppressToolPanel: true, flex:3},
     { field: "req_code", headerName:"요청 코드", hide: true, suppressToolPanel: true, flex:3},
     { field: "mt_name", headerName: "*자재명", editable: true},
     { field: "mt_code", headerName: "*자재코드", editable: true},
@@ -245,15 +250,8 @@ const removeAllRow = () => {
         //삭제
         mtListGridApi.value.applyTransaction({ remove: [row] });
     };
-    //삭제버튼 비활성화
-    delBtn.value = false;
-    //수정버튼 상태 변경
-    orderCode.value = '';
-
-    //발주명, 거래처명, 거래처코드 초기화
-    orderName = "";
-    companyName = "";
-    companyCode = "";
+    //입력한 데이터 모두 화면에서 삭제
+    removeAllInfo();
 };
 
 //watch사용. 선택한 발주건 발주코드 값이 변할때마다 처리해야함.
@@ -341,10 +339,12 @@ const insertMtOrderList = async() => {
         rowData[i] = ({...rowData[i], company_name: companyName, company_code: companyCode, emp_id: empId, order_name: orderName});
     };
     
-;
+
     if(orderCode.value != "") {
+        //모달에서 수정할 데이터를 선택하면 orderCode.value에 값이 담기게 됨. 수정일때 공백이 아니면 조건에 해당.
+
         //수정 데이터 보내기
-        //modifyOrder();
+        modifyOrder(rowData);
 
     } else {
         //입력 데이터 보내기
@@ -366,10 +366,9 @@ const insertMtOrderList = async() => {
 
 //발주 등록 성공 후 요청 리스트에서 삭제하기
 const removeReq = (rowData) => {
-    //발주명, 거래처명, 거래처코드 초기화
-    orderName = "";
-    companyName = "";
-    companyCode = "";
+
+    //입력한 데이터 모두 화면에서 삭제
+    removeAllInfo();
 
     for(let i=0; i<reqRowData.value.length; i++) {
         //요청 코드가 없다면 함수종료
@@ -382,23 +381,34 @@ const removeReq = (rowData) => {
             reqRowData.value.splice(i, 1);
         };
     };
-    orderRowData.value = ref([]);
 };
 
 //발주건 수정하기
-const modifyOrder = async() => {
+const modifyOrder = async(rowData) => {
+
+    /*
+    기존 데이터를 모두 삭제할 경우의 예외처리는 아래
+    현재는 행을 삭제하면 아래서부터 순차적으로 삭제되기 때문에 기존데이터가 모두 삭제될 경우 수정버튼이 발주버튼으로 바뀌게 됨.
+    만약 선택 삭제 기능이 들어온다면 사용할수 있도록 주석처리. 서버는 해당 예외처리가 돼 있음. 수정없어도 됨.
+
+    let isReqCode = true;
+    for(let i=0; i<rowData.length; i++) {
+        if(rowData[i].reqCode != "") {
+            isReqCode = false;    
+        };
+    };
+    if(isReqCode) {
+        toast.add({ severity: 'warn', summary: '발주 수정 실패', detail: '기존 데이터를 모두 삭제할 수 없습니다.', life: 3000 });
+        return;
+    }
+    */
+
     //사용자가 수정한 데이터 orderRowData.value
     //db에서 처음 가져온 자재 리스트 데이터 orderDataFromDb.value
 
-    //입력된 데이터를 저장할 변수
-    let rowData = [];
-    //각 행의 데이터를 가져와서 rowData배열에 푸쉬(객체의 배열 형식)
-    mtListGridApi.value.forEachNode((node) => rowData.push(node.data));
+    //console.log(rowData);
+    //console.log(orderDataFromDb.value);
 
-    //원 데이터 확인
-    console.log('원데이터: ', orderDataFromDb.value[0].order_no);
-    //입력된 데이터 확인
-    console.log('입력된 데이터: ', rowData);
 
     //행이 아무것도 없으면 에러 메시지 출력
     if(rowData.length == 0) {
@@ -408,75 +418,57 @@ const modifyOrder = async() => {
 
     //db로 보낼 수정할 데이터
     let sendData = [];
+    
+    //입력된 행 데이터 배열의 길이만큼 반복
+    for(let i=0; i<rowData.length; i++) {
 
-    //두 데이터를 비교해서 길이가 더 긴것으로 반복문 실행
-    let LongLength = rowData.length >= orderDataFromDb.value.length ? rowData.length : orderDataFromDb.value.length;
-    //객체들의 배열을 비교해야함. 이중 for문 사용. 이를 위해 내부 for문에서 사용할 변수
-    let lessLength = rowData.length <= orderDataFromDb.value.length ? rowData.length : orderDataFromDb.value.length;
+        if(rowData[i].order_no == 0) {
+            //입력된 데이터의 order_no가 0일 경우 '행추가'를 하여 새롭게 등록하는 데이터. ==> 입력
+            sendData.push({...rowData[i], state: 'insert', order_code: orderCode.value});
+        };
 
-    //임시 배열에 데이터 추가
-    for(let i=0; i<LongLength; i++) {
-        //데이터 삭제를 위한 카운트 변수
-        let delCnt = 0;
-
-        for(let j=0; j<lessLength; j++) {    
-            if(rowData.length >= orderDataFromDb.value.length) {
-                console.log('1실행');
-                //입력된 데이터의 행이 더 많을 경우
-
-                console.log('원데이터: ', orderDataFromDb.value[j]);
-                console.log('입력된 데이터: ', rowData[i]);
-
-                if(orderDataFromDb.value[j].order_no == rowData[i].order_no) {
-
-                    //(수정)입력된 데이터에 기존 데이터의 order_no가 있는 경우 입력된 데이터의 행과 delRow를 추가했음
-                    sendData.push({...rowData[j], delRow: false});
-
-                } else if (rowData[i].order_no == 0) {
-                    //(등록)새로 입력된 데이터와 delRow를 추가함.
-                    sendData.push({...rowData[j], delRow: false});
-
-                } else if (orderDataFromDb.value[j].order_no !== rowData[i].order_no ) {
-                    //원 데이터에 order_no가 새로운 배열의 객체에 없으면 카운트가 올라감.
-                    delCnt++;
-                    
-                };
-
-                //원 데이터의 order_no가 새로운 객체에 없으면 해당 order_no는 삭제돼야 함. delRow: true로 설정
-                if ( (lessLength -1 != 0) && delCnt == (lessLength-1)) {
-                    sendData.push({order_no: orderDataFromDb.value[j].order_no, delRow: true});
-                    console.log(delCnt);
-                };
-
-            } else {
-                //db에서 처음 가져온 데이터의 행이 더 많은 경우
-
-                if(orderDataFromDb.value[i].order_no == rowData[j].order_no) {
-                    //(수정)입력된 데이터에 기존 데이터의 order_no가 있는 경우 입력된 데이터의 행과 delRow를 추가했음
-                    sendData.push({...rowData[i], delRow: false});
-
-                } else if (rowData[j].order_no == 0) {
-                    //(등록)새로 입력된 데이터와 delRow를 추가함.
-                    sendData.push({...rowData[i], delRow: false});
-
-                } else if (rowData[j].order_no != 0 && (orderDataFromDb.value[i].order_no != rowData[j].order_no)) {
-                    //새로 입력된 데이터의 order_no의 값이 공백이 아니고, 원데이터의 order_no와 비교해서 값이 같지 않다면 카운트가 올라감.
-                    delCnt++;
-                };
-
-                //새로 입력된 데이터의 order_no이 공백이 아니고, 원데이터와 비교했을때 값이 없다면 삭제되는 값. delRow: true로 설정
-                if ((lessLength -1 != 0) && delCnt == (lessLength-1)) {
-                    sendData.push({order_no: rowData[j].order_no, delRow: true});
-                };
+        //처음 db에서 가져온 데이터 배열의 길이만큼 반복
+        for(let j=0; j<orderDataFromDb.value.length; j++) {
+            if(rowData[i].order_no == orderDataFromDb.value[j].order_no) {
+                //입력된 정보와 원데이터의 order_no가 같은 경우 ==> 업데이트
+                sendData.push({...rowData[i], state: 'update', order_code: orderCode.value});
             };
         };
     };
+
+    //원데이터의 길이만큼 반복
+    for(let i=0; i<orderDataFromDb.value.length; i++) {
+        //해당 주문번호를 삭제 해야되면 false로 값이 할당됨.
+        let delCnt = true;
+
+        //보낼 데이터의 길이만큼 반복
+        for(let j=0; j<sendData.length; j++) {
+            if(orderDataFromDb.value[i].order_no == sendData[j].order_no) {
+                //원데이터의 order_no가 sendData에 같은게 있으면 삭제하면 안됨. 없는 경우 ==> 삭제
+                delCnt = false;
+            }; 
+        };
+        if(delCnt) {
+            //삭제할 주문번호와 상태를 배열에 푸쉬
+            sendData.push({order_no: orderDataFromDb.value[i].order_no, state: 'delete', order_code: orderCode.value});
+        };
+    };
+
 
     //보낼 데이터 확인
     console.log('보낼 데이터: ', sendData);
 
     //수정데이터 보내기, 등록, 삭제 한번에 처리함.
-    //let result = await axios.post(`${ajaxUrl}/mtril`)
+    let result = await axios.post(`${ajaxUrl}/mtril/modifyOrderList`, sendData)
+                            .catch(err=>console.log(err));
+
+    if(result.data == 'success') {
+        toast.add({ severity: 'success', summary: '수정 완료', detail: '처리가 완료되었습니다.', life: 3000 });
+        //입력한 데이터 모두 화면에서 삭제
+        removeAllInfo();
+    } else {
+        toast.add({ severity: 'error', summary: '수정 실패', detail: '처리를 실패했습니다.', life: 3000 });
+    }
 };
 
 //발주건 삭제하기
@@ -488,25 +480,29 @@ const delOrder = async() => {
     if(result.data.affectedRows == orderRowData.value.length) {
         //처리완료 메세지
         toast.add({ severity: 'success', summary: '발주 삭제 완료', detail: '처리가 완료되었습니다.', life: 3000 });
-
-        //보이는 내용 삭제
-        orderRowData.value = [];
-
-        //발주명, 거래처명, 거래처코드 초기화
-        orderName = "";
-        companyName = "";
-        companyCode = "";
-
-        //삭제버튼 비활성화
-        delBtn.value = false;
-
-        //수정버튼 비활성화
-        orderCode.value = false;
+        removeAllInfo();
     } else {
         //처리 실패 메세지
         toast.add({ severity: 'error', summary: '발주 삭제 실패', detail: '문제가 생겼습니다.', life: 3000 });
     };
 
+};
+
+//내용 삭제 함수
+const removeAllInfo = () => {
+    //보이는 내용 삭제
+    orderRowData.value = [];
+
+    //발주명, 거래처명, 거래처코드 초기화
+    orderName = "";
+    companyName = "";
+    companyCode = "";
+
+    //삭제버튼 비활성화
+    delBtn.value = false;
+
+    //수정버튼 비활성화
+    orderCode.value = false;
 };
 
 </script>
