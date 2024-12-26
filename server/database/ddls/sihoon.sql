@@ -765,4 +765,5 @@ VALUES ('testbyshun-11', 1, 'testbyshun11', 'testbyshun11', 'testbyshun11', 'mch
 COMMIT;
 
 SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
-FROM prdctn_drct pd JOIN 
+FROM prdctn_drct pd
+WHERE pd.prdctn_code = ?;
