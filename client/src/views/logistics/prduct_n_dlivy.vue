@@ -165,8 +165,8 @@ export default {
         sendPrductNList.push(newObj);
       }
       console.log(sendPrductNList);
-       let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
-                               .catch(err => console.log(err));
+      let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
+                              .catch(err => console.log(err));
       // 반제품 출고 프로시저 호출 메소드 만들어야됨
     },
     // 그리드 준비 완료 후 호출되는 메서드

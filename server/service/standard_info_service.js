@@ -12,10 +12,10 @@ const bomtest = async() => {
   let list = await mariaDB.query('bom');
   return list;
 } 
- 
+
 // BOM 상세보기 
 const bomInfo = async(bomCode) => {
-  let list = await mariaDB.query('bomInfo',bomCode);
+  let list = await mariaDB.query('bomInfo',bomCode); 
   return list;
 }
 
@@ -34,7 +34,7 @@ const bomInsert = async (bomInfo) => {
     return { message: '데이터 삽입 실패' };
   } 
 }
-   
+
 
 
 // BOM 관리 select
@@ -42,7 +42,7 @@ const bomManage = async (bomCode) => {
   let list = await mariaDB.query('bomManage', bomCode);
   return list;
 }
- 
+
 
 // BOM소모품 업데이트
 const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
