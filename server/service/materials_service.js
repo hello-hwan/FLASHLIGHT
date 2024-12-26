@@ -331,7 +331,7 @@ const mtOrderModify = async(modifyInfo) => {
 //자재검색 모달 코드, 이름 담당자
 const searchMtModal = async(key) => {
     //검색 조건을 저장할 배열
-    let searchKey = [];
+    let searchKey = [key.mtril_name, key.mtril_code];
     let result = await mariaDB.query('mt_searchMtList', searchKey)
                               .catch(err=>console.log(err));
 
@@ -347,6 +347,19 @@ const searchCompanyModal = async(key) => {
     return result;
 };
 
+//자재 총 재고 조회
+const allMtQy = async() => {
+    let result = await mariaDB.query('mt_selectQy')
+                              .catch(err=>console.log(err));
+    return result;
+};
+
+//로트별 자재 재고 조회
+const mtLotQy = async() => {
+    let result = await mariaDB.query('mt_lotInven')
+                              .catch(err=>console.log(err));
+    return result;
+}
 
 module.exports = {
     returnMt,
@@ -362,5 +375,6 @@ module.exports = {
     mtOrderDelete,
     mtOrderModify,
     searchMtModal,
-    searchCompanyModal
+    searchCompanyModal,
+    allMtQy
 };
