@@ -9,8 +9,11 @@ import mtdlivyCnt from '@/views/materials/mtDelivyControl.vue';
 //발주 관리
 import mtOrderCnt from '@/views/materials/mtOrderControl.vue';
 //발주 조회
-import mtOrderInquiry from '@/views/materials/orderInquiry.vue';
-
+import mtOrderInquiry from '@/views/materials/mtOrderInquiry.vue';
+//입고 조회
+import mtWrhousingList from '@/views/materials/mtWrhousingList.vue';
+//출고 조회
+import mtDlivyList from '@/views/materials/mtDlivyList.vue';
 const materialsRoute = [
     {
         path: '',
@@ -46,8 +49,17 @@ const materialsRoute = [
         path: 'mtOrderInquiry',
         name: 'mtOrderInquiry',
         component: mtOrderInquiry
-    }
-    
+    },
+    {
+        path: 'mtWrhousingList',
+        name: 'mtWrhousingList',
+        component: mtWrhousingList
+    },
+    {
+        path: 'mtDlivyList',
+        name: 'mtDlivyList',
+        component: mtDlivyList
+    },
 ];
 
 export default materialsRoute;
