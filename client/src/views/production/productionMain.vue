@@ -8,13 +8,13 @@
       <input type="date" v-model="day">
 
       <!-- 제품 검색 제품명 입력시 아래 코드 나옴 클릭하면 선택됨 -->
-      <input type="text" placeholder="제품코드" v-model="prd" @keydown="getprdlist()">
+      <input type="text" placeholder="제품코드" v-model="prd" @input="getprdlist()">
 
       <!-- 검색 목록 있을시 표시 -->
       <div v-if="prdlist.length > 0">
-        <ul>
-          <li v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</li>
-        </ul>
+        <datalist>
+          <option v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</option>
+        </datalist>
       </div>
 
       <!-- 버튼 클릭시 검색창 적용 -->
