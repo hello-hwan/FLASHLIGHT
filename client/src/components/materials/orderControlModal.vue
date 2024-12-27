@@ -56,6 +56,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+
 //부모 행 삭제를 위해서 사용하는 emit
 const emit = defineEmits(["selectedData"]);
 

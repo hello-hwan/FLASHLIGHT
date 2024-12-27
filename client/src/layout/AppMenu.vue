@@ -54,7 +54,7 @@ const model = ref([
                     },
                     {
                         label: '발주 조회',
-                        to: '/'
+                        to: '/materials/mtOrderInquiry'
                     },
                     {
                         label: '입고 관리',

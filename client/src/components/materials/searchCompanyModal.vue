@@ -42,7 +42,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
@@ -50,13 +50,37 @@ import { ajaxUrl } from '@/utils/commons.js';
 const emit = defineEmits(["companySelectedData"]);
 
 //화면에 보이는 데이터
-let companyName = null;
-let companyCode = null;
+let companyName = ref(null);
+let companyCode = ref(null);
 
 //검색조건
 let searchCompanyCode = null;
 let searchcompanyName = null;
 let searchchargerName = null;
+
+//부모로 부터 받은 회사 정보
+const props = defineProps(['companyInfo']);
+
+//부모로 부터 받은 값이 바뀌면(거래처 상호명, 거래처 코드)
+watch(() => props.companyInfo, (newValue) => {
+    console.log(newValue);
+    console.log("회사코드", newValue.company_code);
+    console.log("회사명", newValue.company_name);
+    //부모 컴포넌트의 회사명, 회사코드가 바뀌면 새로운 값이 할당됨
+    companyName.value = newValue.company_name;
+    companyCode.value = newValue.company_code;
+});
+/* 
+객체를 받기때문에 () => ...의 형태로 한번 더 싸는 깊은 복사의 형태가 돼야함.
+그렇지 않으면 watch에서 감지안됨.
+watch(() => props.companyInfo.company_code, (newValue) => {
+    console.log('회사코드: ', newValue);
+});
+watch(() => props.companyInfo.company_name, (newValue) => {
+    console.log('회사명: ', newValue);
+});
+*/
+
 
 //그리드 api를 담을 변수
 const gridApi = ref(null);
@@ -94,10 +118,12 @@ const selectOrder = () => {
     const selectedNodes = gridApi.value.getSelectedNodes();
     const companySelectedData = selectedNodes.map((node) => node.data);
     console.log('모달에서 선택된 행 데이터:', companySelectedData);
-    companyName = companySelectedData[0].mtlty_name;
-    companyCode = companySelectedData[0].bcnc_code;
+    companyName.value = companySelectedData[0].mtlty_name;
+    companyCode.value = companySelectedData[0].bcnc_code;
 
-    console.log(companyName, companyCode);
+    //console.log(companyName, companyCode);
+    companyName.value = companySelectedData[0].mtlty_name;
+    companyCode.value = companySelectedData[0].bcnc_code;
     emit("companySelectedData", companySelectedData);
 };
 //행 데이터를 담을 변수
