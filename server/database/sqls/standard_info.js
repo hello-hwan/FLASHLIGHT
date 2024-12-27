@@ -56,6 +56,15 @@ const bom_cmpdsDel =
 bom_cmpds
 WHERE cmpds_no = ?`;
 
+// 자재 조회
+const mtril =
+`SELECT mtril_code
+       ,mtril_name
+       ,unit
+       ,untpc
+       ,sfinvc
+FROM mtril`;
+
 
 // 품질검사항목관리
 const qiList =
@@ -180,6 +189,7 @@ module.exports = {
   bomManage,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
+  mtril,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

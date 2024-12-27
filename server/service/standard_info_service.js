@@ -58,9 +58,9 @@ const bom_cmpdsDel = async (cmpdsNo) => {
     return result;
 }
 
-// 반제품입고리스트
-const prduct_n_wrhousngList = async () => {
-  let list = await mariaDB.query('prduct_n_wrhousngList');
+// 자재 조회
+const mtril = async () => {
+  let list = await mariaDB.query('mtril');
   return list;
 }
 
@@ -147,10 +147,9 @@ module.exports = {
   bomtest,
   bomInfo,
   bomInsert,
-  bomManage,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
-  prduct_n_wrhousngList,
+  mtril,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 
@@ -163,6 +162,7 @@ module.exports = {
   prdCodeToProcsCode, 
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
-  ProcsCodeToDeleteFlowchart, 
+  ProcsCodeToDeleteFlowchart,
+  bomManage,
   prd_code_search
 };

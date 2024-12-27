@@ -142,27 +142,19 @@ const model = ref([
                     },
                     {
                         label: '제품 출고 관리',
-                        to: '/'
+                        to: '/logistics/prductDlivy'
                     },
                     {
                         label: '제품 입고 관리',
-                        to: '/'
+                        to: '/logistics/prductWrhousngList'
                     },
                     {
                         label: '제품 입고 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 입고 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 입고 조회',
-                        to: '/'
+                        to: '/logistics/prductList'
                     },
                     {
                         label: '반제품 입고 관리',
-                        to: '/logistics/prductNListwrhousng'
+                        to: '/logistics/prductNWrhousngList'
                     },
                     {
                         label: '반제품 입고 조회',
@@ -236,7 +228,7 @@ const model = ref([
                     },
                     {
                         label: '자재 조회',
-                        to: '/'
+                        to: '/standardInfo/mtrilList'
                     }, 
                     {
                         label: 'BOM 관리/BOM 조회',

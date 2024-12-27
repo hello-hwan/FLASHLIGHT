@@ -7,7 +7,7 @@ const prdctn_n_list = async() => {
   return list;
 }
 
-// 반제품 등록
+// 반제품 입고 등록
 const prduct_n_wrhousng = async(data) => {
   let result = await mariaDB.query('prduct_n_wrhousng', data);
   if (result.insertId != null){
@@ -119,13 +119,40 @@ const prduct_n_dlivyList = async() => {
   let list = await mariaDB.query('prduct_n_dlivyList');
   return list;
 }
+
+
+// 완제품 입고대기 리스트(일반)
+const prductList = async() => {
+  let list =await mariaDB.query('prductList');
+  return list;
+}
+
+// 완제품 입고 등록
+const prductWrhousng = async(data) => {
+  let result = await mariaDB.query('prductWrhousng', data);
+  if (result.insertId != null){
+    return { message: '등록성공' }; 
+  }else {
+    return { message: '등록실패' };
+  }
+}
+
+// 완제품 입고완료 리스트
+const prductWrhousngList = async() => {
+  let list = await mariaDB.query('prductWrhousngList');
+  return list;
+}
  
+
 module.exports = {
   prdctn_n_list,
   prduct_n_wrhousng,
   prdctNList,
   prduct_n_dlivy,
   prduct_n_possible,
-  prduct_n_dlivyTest,
-  prduct_n_dlivyList
+  prduct_n_dlivyTest, 
+  prduct_n_dlivyList,
+  prductList,
+  prductWrhousng,
+  prductWrhousngList
 };  
