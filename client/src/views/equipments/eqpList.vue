@@ -10,7 +10,7 @@
             </thead>
         </table>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>

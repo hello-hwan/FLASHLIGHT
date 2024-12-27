@@ -72,31 +72,34 @@
                         다음 점검 예정일
                     </th>
                     <th style="width: 25%;">
-                        <input style="background-color:lightsteelblue; text-align: center;" type="text"
-                            v-model="next_date">
+                        {{ this.next_date }}
                     </th>
                 </tr>
             </tbody>
         </table>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 200px; width: 100%;"
-                @grid-ready="onGridReady" rowSelection="multiple" class="ag-theme-alpine">
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions"
+                style="height: 310px; width: 100%;" @grid-ready="onGridReady" rowSelection="multiple"
+                class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
         <table class="table table-hover">
             <tbody>
                 <tr>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-primary" @click="add_btn()">행 추가</button>
+                        <button type="button" class="btn btn-primary" style="color: white;" @click="add_btn()">행 추가</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-danger" @click="delete_btn()">행 삭제</button>
+                        <button type="button" class="btn btn-danger" style="color: white;" @click="delete_btn()">행 삭제</button>
                     </th>
-                    <th style="width: 50%;">
+                    <th style="width: 40%;">
                         <input style="background-color:lightsteelblue;" type="text" size="50" v-model="not_check">
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-warning" @click="not_check_btn()">미점검</button>
+                        <button type="button" class="btn btn-warning" style="color: white;" @click="not_check_btn()">미점검</button>
+                    </th>
+                    <th style="width: 10%;">
+                        <button type="button" class="btn btn-danger" style="color: white;" @click="not_opr_btn()">미가동</button>
                     </th>
                     <th style="width: 10%;">
                         최종 결과
@@ -111,8 +114,8 @@
                     </th>
                 </tr>
                 <tr>
-                    <th style="width: 50%;" colspan="6">
-                        <button type="button" class="btn btn-outline-success" @click="chck_fx_insert()">등록</button>
+                    <th style="width: 50%;" colspan="7">
+                        <button type="button" class="btn btn-success" style="color: white;" @click="chck_fx_insert()">등록</button>
                     </th>
                 </tr>
             </tbody>
@@ -140,7 +143,7 @@ export default {
             now_date: '',
             next_date: '',
             chck_sttus: '',
-            not_check: '미점검 입력'
+            not_check: ''
         }
     },
     created() {
@@ -154,6 +157,19 @@ export default {
         ];
         let now = new Date();
         this.now_date = useDateUtils.dateFormat(now, "yyyy-MM-dd");
+        this.gridOptions = {
+            columnDefs: this.orderColDefs,
+            pagination: true,
+            paginationPageSize: 5,
+            paginationPageSizeSelector: [5, 10, 50, 100],
+            paginateChildRows: true,
+            animateRows: false,
+            defaultColDef: {
+                filter: true,
+                flex: 1,
+                minWidth: 10
+            }
+        };
     },
     components: {
         AgGridVue // Add Vue Data Grid component
@@ -227,6 +243,8 @@ export default {
             let result_2 = await axios.post(`${ajaxUrl}/equip/chck_fc_insert`, list)
                 .catch(err => console.log(err));
 
+
+            let insert_arr = [];
             for (let i = 0; i < this.rowData.length; i++) {
                 let chck_result_insert = [
                     parseInt(this.fx_code),
@@ -234,10 +252,12 @@ export default {
                     parseInt(this.rowData[i].mesure_value),
                     this.rowData[i].stblt_at,
                 ];
+                insert_arr.push(chck_result_insert);
                 console.log(chck_result_insert);
-                let result = await axios.post(`${ajaxUrl}/equip/chck_result_insert`, chck_result_insert)
-                    .catch(err => console.log(err));
             }
+
+            let result_3 = await axios.post(`${ajaxUrl}/equip/chck_result_insert`, insert_arr)
+                .catch(err => console.log(err));
             this.$router.push({ name: 'checkSchdul' });
         },
         async not_check_btn() {
@@ -245,7 +265,7 @@ export default {
                 this.not_check,
                 this.fx_code_list.charger,
                 this.fx_code_list.chck_time,
-                this.chck_sttus,
+                '미점검',
                 parseInt(this.$route.params.fx_code)
             ];
             console.log(input);
@@ -289,6 +309,28 @@ export default {
                     this.rowData = [...this.rowData, new_sample];
                 }
             }
+        },
+        async not_opr_btn() {
+            let list = [
+                this.fx_code_list.eqp_code,
+                this.fx_code_list.charger,
+                this.not_check,
+                'OD01'
+            ];
+            console.log(list);
+            let result = await axios.post(`${ajaxUrl}/equip/not_opr_insert`, list)
+                .catch(err => console.log(err));
+
+            let input = [
+                this.not_check,
+                this.fx_code_list.charger,
+                this.fx_code_list.chck_time,
+                '미가동',
+                parseInt(this.$route.params.fx_code)
+            ];
+            console.log(input);
+            let result_2 = await axios.put(`${ajaxUrl}/equip/not_check_update`, input)
+                .catch(err => console.log(err));
         }
     }
 }

@@ -53,9 +53,6 @@ router.get('/mtril/reqOrderList', async (req, res) => {
 
 //자재 발주완료건 검색
 router.post('/mtril/orderList', async (req, res) => {
-    //let searchInfo =req.params.obj;
-    //console.log(searchInfo);
-    console.log(req.body);
     let searchInfo = req.body;
     let result = await mtrilService.mtOrderList(searchInfo);
     res.send(result);
@@ -67,4 +64,59 @@ router.get('/mtril/mtListOnOrder/:orderCode', async(req, res) => {
     let result = await mtrilService.mtListOnOrder(orderCode);
     res.send(result);
 });
+
+//발주관리 발주건 자재리스트 입력
+router.post('/mtril/insertMtOrderList', async(req, res) => {
+    let orderMtList = req.body;
+    let result = await mtrilService.insertMtToOrder(orderMtList);
+    res.send(result);
+});
+
+//발주건 삭제
+router.delete('/mtril/deleteOrder/:orderCode', async(req, res) => {
+    let orderCode = req.params.orderCode;
+    let result = await mtrilService.mtOrderDelete(orderCode);
+    res.send(result);
+});
+
+//발주건 수정
+router.post('/mtril/modifyOrderList', async(req, res) => {
+    let modifyInfo = req.body;
+    let result = await mtrilService.mtOrderModify(modifyInfo);
+    res.send(result);
+})
+
+//자재 검색 모달 - 자재 검색하기
+router.post('/mtril/searchMt', async(req, res) => {
+    let searchMtKey = req.body;
+    let result = await mtrilService.searchMtModal(searchMtKey);
+    res.send(result);
+});
+
+//거래처 검색 모달 - 거래처 검색하기
+router.post('/mtril/searchCompany', async(req, res) => {
+    let searchCompanyKey = req.body;
+    let result = await mtrilService.searchCompanyModal(searchCompanyKey)
+    res.send(result);
+});
+
+//자재 재고 조회
+router.get('/mtril/mtAllQy', async(req, res) => {
+    let result = await mtrilService.allMtQy();
+    res.send(result);
+});
+
+//로트별 자재 재고 조회
+router.post('/mtril/lot', async(req, res) => {
+    let searchKey = req.body;
+    let result = await mtrilService.mtLotQy(searchKey);
+    res.send(result);
+});
+
+//자재 발주조회
+router.post('/mtril/allOrderList', async(req, res) => {
+    let searchKey = req.body;
+    let result = await mtrilService.allOrderList(searchKey);
+    res.send(result);
+})
 module.exports = router;

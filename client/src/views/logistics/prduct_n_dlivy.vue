@@ -1,15 +1,55 @@
 <template>
   <div>
-    <div class="col-1">
-      <button type="button" class="btn btn-primary" @click="">조회</button>
-    </div>
     <v-container fluid>
+      <v-row>
+        <v-col cols="12" class="mb-4">
+        <!-- 검색 필드 -->
+        <v-card class="mx-auto" style="border-radius: 13px;">
+          <template v-slot:title>
+                <span class="font-weight-black">반제품 출고 관리</span>
+          </template>
+          <v-card-text class="bg-surface-light pt-4">
+            <!-- 필터 검색 필드 -->
+            <div class="row g-3 align-items-center">
+              <!-- 반제품LOT번호 -->
+                <div class="col-1">
+                  <label for="itemCode" class="col-form-label">요청명</label>
+                </div>
+                <div class="col-2">
+                  <input type="text" id="itemCode" class="form-control" v-model="prductNReqName" />
+                </div>
+                <!-- 입고일자 -->
+                <div class="col-1">
+                  <label for="startDate" class="col-form-label">요청일</label>
+                </div>
+                <div class="col-2">
+                  <input type="date" id="startDate" class="form-control" v-model="startDate" :max="endDate"/>
+                </div>
+                <div class="col-auto">
+                  <label for="endDate" class="col-form-label">-</label>
+                </div>
+                <div class="col-2">
+                  <input type="date" id="endDate" class="form-control" v-model="endDate" :min="startDate"/>
+                </div>
+                <div class="col-3">
+                  <button class="btn btn-primary mx-2" @click="filterByCode">검색</button>
+                  <button class="btn btn-secondary mx-2" @click="resetFilter">초기화</button>
+              </div>
+              </div>
+
+              
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+
       <v-row>
         <!-- 첫 번째 그리드: 출고리스트 -->
         <v-col cols="6">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">출고리스트</span>
+              <span class="font-weight-black">출고 요청 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
@@ -31,7 +71,7 @@
         <v-col cols="6">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">출고가능제품</span>
+              <span class="font-weight-black">출고 제품</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
@@ -52,8 +92,8 @@
     </v-container>
 
     <!-- 출고 버튼을 오른쪽으로 정렬 -->
-    <div class="col-10 text-right">
-      <button type="button" class="btn btn-primary" @click="testData">출고</button>
+    <div class="col-11 text-right">
+      <button class="btn btn-primary mx-2" @click="testData">출고</button>
     </div>
   </div>
 </template>
@@ -66,31 +106,31 @@ import userDateUtils from '@/utils/useDates.js';
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
 
+
 export default {
   data() {
     return {
-      prductNDlivyList: [],  // 데이터 저장을 위한 배열
+      prductNDlivyList: [],   // 데이터 저장을 위한 배열
       rowData: [],            // 실제로 grid에 표시할 데이터
       colDefs: [],            // 컬럼 정의
-
+      filteredRowData: [],    // 필터링 데이터
       gridOptionsReturn: {},  // grid 옵션
 
       prductNdlivyPossible: [],
       rowDataInfo: [],
       colDefsInfo: [],  // 출고가능제품의 컬럼 정의
       req_de: "",
-      req_code: "",
+      prdctn_code: "",
       req_name: "",
-      obj: { 
-            prdlst_code: "",
-            prduct_n_invntry_qy: "",
-            prduct_n_lot: "",
-            prduct_name: "",
-            req_qy: "",
-            req_de: "",
-            req_code: "",
-            req_name: ""
-      }
+      obj: {},
+      // 사원이름, 사원코드 임의값 
+      emp_name: "이주현",
+      emp_id: 200,
+      // 검색 입력값
+      prductNReqName: "",
+      prductNName: "",
+      startDate:"",
+      endDate: "",
     };
   },
   created() {
@@ -107,11 +147,11 @@ export default {
 
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
-      { field: "prduct_name", headerName: "반제품제품명" },
-      { field: "prdlst_code", headerName: "반제품제품코드" },
-      { field: "prduct_n_lot", headerName: "반제품LOT" },
+      { field: "prd_nm", headerName: "반제품제품명" },
+      { field: "prd_code", headerName: "반제품제품코드" },
+      { field: "lot", headerName: "반제품LOT" },
       { field: "req_qy", headerName: "요청수량" },
-      { field: "prduct_n_invntry_qy", headerName: "출고가능수량" },
+      { field: "lot_qy", headerName: "출고가능수량" },
     ];
 
     // AgGrid 기본 옵션 설정
@@ -142,13 +182,9 @@ export default {
     // 셀 클릭 시 호출되는 이벤트
     onCellClicked(event) {
       if (event.colDef.field === "상세보기") {
-        const selectedprdCode = event.data.prd_code; // 선택된 BOM 코드 추출
-        console.log(`선택된 품목 코드: ${selectedprdCode}`);
-        console.log('요청코드:', event.data.req_code);
-        this.getprductNdlivyPossible(selectedprdCode); // BOM 상세 정보 조회
-        this.req_de = event.data.req_de;
-        this.req_code = event.data.req_code;
-        this.req_name = event.data.req_name;
+        const selectedprdCode = event.data.prdctn_code; 
+        this.getprductNdlivyPossible(selectedprdCode); 
+        console.log(selectedprdCode);
       }
     },
 
@@ -160,28 +196,60 @@ export default {
         this.rowData = this.prductNDlivyList; // 받아온 데이터를 rowData에 할당
         this.filteredRowData = this.rowData;  // 필터링된 데이터로 초기 설정
       } catch (err) {
-        console.log("데이터 로딩 실패:", err);  // 오류 처리
+        console.log("데이터 로딩 실패:", err);  
       }
     },
     async getprductNdlivyPossible(prdCode) {
-      let result = await axios.get(`${ajaxUrl}/prduct_n_possible/${prdCode}`).catch(err => console.log(err));
+      console.log(prdCode)
+      let result = await axios.get(`${ajaxUrl}/prduct_n_possible/${prdCode}`)
+                                             .catch(err => console.log(err));
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
+      //console.log(this.obj);
     },
-    testData() {
-      // rowDataInfo를 순회하면서 각 항목에 req_code를 추가한 새로운 배열 생성
-      this.obj = this.rowDataInfo.map((row) => {
-        return {
-          ...row,
-          req_code: this.req_code, 
-          req_de: this.req_de,
-          req_name: this.req_name,
-        };
+
+    // 출고완료처리
+    async testData() {
+
+      let sendPrductNList = [];
+      for(let i = 0; i < this.rowDataInfo.length; i++){
+        let newObj = {...this.rowDataInfo[i], empl_no : this.emp_id};
+        sendPrductNList.push(newObj);
+      }
+      console.log(sendPrductNList);
+      let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
+                              .catch(err => console.log(err));
+
+      if(result){
+        alert('출고완료');
+        this.getprductNDlivyList();
+        this.getprductNdlivyPossible();
+      }
+
+    },
+
+     // 검색버튼 클릭 = 검색값에 따른 필터링
+    filterByCode() {
+      this.filteredRowData = this.rowData.filter((row) => {
+        let reqDe = row.req_de;
+        let startDate = !this.startDate || reqDe >= this.startDate;
+        let endDate = !this.endDate || reqDe <= this.endDate;
+        return (
+          (!this.prductNReqName || row.req_name.includes(this.prductNReqName)) &&
+          startDate && endDate
+        );
       });
-      console.log(this.obj); 
-      // 반제품 출고 프로시저 호출 메소드 만들어야됨
     },
+
+    // 초기화 버튼 클릭 : 초기화 버튼 클릭시 데이터 초기값으로 초기화
+    resetFilter() {
+      this.prductNReqName = "";
+      this.startDate = "";
+      this.endDate = "";
+      this.filteredRowData = this.rowData;
+    },
+    
     // 그리드 준비 완료 후 호출되는 메서드
     onGridReady(params) {
       this.gridOptionsReturn.api = params.api;
@@ -196,6 +264,9 @@ export default {
         return '처리중';
       }
     },
+    model(){
+
+    }
   },
   components: {
     AgGridVue, // ag-Grid 컴포넌트

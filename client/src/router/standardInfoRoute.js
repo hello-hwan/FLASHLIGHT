@@ -1,15 +1,13 @@
 //기준정보 라우터
 import bomList from "@/views/standardInfo/bomList.vue";
 
-
-
 import procsFlowchartList from "@/views/standardInfo/procsFlowchartList.vue";
 import procsFlowchartDetail from "@/views/standardInfo/procsFlowchartDetail.vue";
 import procsFlowchartinsert from "@/views/standardInfo/procsFlowchartinsert.vue";
 
 import bomManage from "@/views/standardInfo/bomManage.vue";
-import prductNDlivyModar from "@/views/standardInfo/prduct_n_dlivy_modar.vue"
 import qiList from "@/views/standardInfo/qiList.vue";
+import mtrilList from "@/views/standardInfo/mtrilList.vue"
 
 
 const standardInfoRoute = [
@@ -22,7 +20,6 @@ const standardInfoRoute = [
         name: 'bomList',
         component: bomList
     },
-    
     {
         path: 'procsFlowchartList',
         name: 'procsFlowchartList',
@@ -44,14 +41,14 @@ const standardInfoRoute = [
         component: bomManage
     },
     {
-        path: 'prductNDlivyModar',
-        name: 'prductNDlivyModar',
-        component: prductNDlivyModar
-    },
-    {
         path: 'qiList',
         name: 'qiList',
         component: qiList
+    },
+    {
+        path: 'mtrilList',
+        name: 'mtrilList',
+        component: mtrilList
     }
 
 ];

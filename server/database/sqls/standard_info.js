@@ -56,6 +56,15 @@ const bom_cmpdsDel =
 bom_cmpds
 WHERE cmpds_no = ?`;
 
+// 자재 조회
+const mtril =
+`SELECT mtril_code
+       ,mtril_name
+       ,unit
+       ,untpc
+       ,sfinvc
+FROM mtril`;
+
 
 // 품질검사항목관리
 const qiList =
@@ -166,6 +175,13 @@ const ProcsCodeToDeleteFlowchart =
  WHERE procs_code = ?
 `;
 
+// 품목코드 검색용 조회
+const prd_code_search = 
+`SELECT DISTINCT prd_code, 
+                 prd_nm
+ FROM procs_flowchart
+ WHERE prd_code LIKE CONCAT('%', ?, '%')`;
+
 module.exports = {
   bom,
   bomInfo,
@@ -173,6 +189,7 @@ module.exports = {
   bomManage,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
+  mtril,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 
@@ -185,5 +202,6 @@ module.exports = {
   prdCodeToProcsCode, 
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
-  ProcsCodeToDeleteFlowchart
+  ProcsCodeToDeleteFlowchart, 
+  prd_code_search
 };

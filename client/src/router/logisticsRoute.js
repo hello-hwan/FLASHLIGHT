@@ -1,6 +1,11 @@
 import prductNList from "@/views/logistics/prductNList.vue";
 import prductNDlivy from "@/views/logistics/prduct_n_dlivy.vue"
-import prductNListwrhousng from "@/views/logistics/prductNListwrhousng.vue"
+import prductNWrhousngList from "@/views/logistics/prductNWrhousngList.vue"
+import prductNDlivyList from "@/views/logistics/prductNDlivyList.vue"
+import prductWrhousngList from "@/views/logistics/prductWrhousngList.vue"
+import prductList from "@/views/logistics/prductList.vue"
+import prductDlivy from "@/views/logistics/prductDlivy.vue"
+
 
 const logisticsRoute = [
   {
@@ -18,9 +23,29 @@ const logisticsRoute = [
     component: prductNDlivy
   },
   {
-    path: 'prductNListwrhousng',
-    name: 'prductNListwrhousng',
-    component: prductNListwrhousng
+    path: 'prductNWrhousngList',
+    name: 'prductNWrhousngList',
+    component: prductNWrhousngList
+  },
+  {
+    path: 'prductNDlivyList',
+    name: 'prductNDlivyList',
+    component: prductNDlivyList
+  },
+  {
+    path: 'prductWrhousngList',
+    name: 'prductWrhousngList',
+    component: prductWrhousngList
+  },
+  {
+    path: 'prductList',
+    name: 'prductList',
+    component: prductList
+  },
+  {
+    path: 'prductDlivy',
+    name: 'prductDlivy',
+    component: prductDlivy
   }
 ];
 

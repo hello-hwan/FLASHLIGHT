@@ -2,31 +2,53 @@
 
 // 조회문
 
-const pr_seldrct = // 생산 지시 조회
-`
-SELECT prdctn_code, procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time
-FROM prdctn_drct
-WHERE pre_begin_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
-OR pre_end_time BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 7 DAY)
-GROUP BY model_nm
-ORDER BY pre_begin_time
-`;
-
 const pr_nem = // 재고 부족한 생산 계획 조회
 `
-
+SELECT tr.req_code, tr.prd_code AS mtril_code, tr.prd_nm AS mtril_nm, tr.req_qy, tr.req_qy AS real_qy, pp.prd_code, pp.prd_nm
+FROM thng_req tr JOIN prdctn_plan pp ON (tr.mnfct_no = pp.mnfct_no)
+WHERE tr.prdctn_code IS NULL
+AND prd_se = 'PI01'
+AND tr.procs_at = 'RD03'
 `;
 
-const pr_eqp = // 설비 조회
+const pr_eqp = // 설비 조회 (생산지시)
 `
 SELECT eqp_code, model_nm
 FROM eqp
 `;
 
-
-
+const pr_srcdrct = // 생산 지시 당일 조회
+`
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
+FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+WHERE pd.pre_begin_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY )
+AND pd.pre_end_time > CURDATE();
+`;
 
 // 조건 조회문
+
+const pr_seldrct = // 생산 지시 조회
+`
+SELECT pd.prdctn_code
+       , pd.procs_nm
+       , pd.model_nm
+       , pd.prd_nm
+       , pd.prdctn_co
+       , pd.pre_begin_time
+       , pd.pre_end_time
+       , TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time
+       , pp.order_no
+
+FROM prdctn_drct pd 
+JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+
+WHERE pd.prd_code LIKE CONCAT('%', ?, '%')
+AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY) )
+
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time
+`;
 
 const pr_selcmmn = // 공통코드 목록 조회
 `
@@ -35,22 +57,71 @@ FROM cmmn
 WHERE cmmn_code = ?
 `;
 
-const pr_srcprd = // 제품명으로 조회시 코드랑 완전한 이름 뜨기
+const pr_srcprd = // 제품명으로 조회시 코드랑 완전한 이름 뜨기 (검색 기능)
 `
 SELECT prdlst_code, prdlst_name
 FROM repduct
 WHERE prdlst_name LIKE CONCAT('%', ?, '%') 
 `;
 
+const pr_onedrct = // 생산지시 코드로 단건 조회
+`
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
+FROM prdctn_drct pd
+WHERE pd.prdctn_code = ?
+`;
+
+const pr_selmatrl = // 공정코드로 소모재료 조회
+`
+SELECT mtril_code, mtril_nm, usgqty
+FROM procs_matrl
+WHERE procs_code = ?
+`;
+
+const pr_selempl = // 사원코드로 사원명 조회
+`
+SELECT empl_name
+FROM empl
+WHERE empl_no = ?
+`;
+
+const pr_onestate = // 생산지시 코드로 실적 단건 조회
+`
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, ps.prdctn_co, ps.eqp_code, pd.model_nm, ps.empl_no, ps.empl_nm
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+WHERE ps.prdctn_code = ?
+`;
 
 
 // 삽입문
+const pr_insstate = // 생산 실적 삽입
+`
+INSERT INTO product_state(prdctn_code, procs_nm, prd_code, prdctn_co, eqp_code, begin_time, empl_no, empl_nm)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+`;
 
+const pr_insbad = // 불량품 정보 삽입
+`
+INSERT INTO badn_info(badn_code, badn_qy, badn_ty, prdctn_code)
+VALUES (?, ?, ?, ?);
+`;
 
+const pr_cobad = // 생산지시 코드로 불량품 카운트 조회
+`
+SELECT CONCAT(?, '-', COUNT(badn_code)+1) as badn_code, sum(badn_qy) total_qy
+FROM badn_info
+WHERE prdctn_code = ?
+`;
 
 
 // 수정문
 
+const pr_upreq = // 요청물품 수정(요청량, 처리중)
+`
+UPDATE thng_req
+SET procs_at = 'RD02', req_de = NOW(), req_qy = ?
+WHERE req_code = ?
+`;
 
 
 
@@ -101,21 +172,23 @@ ORDER BY 1;
 `;
 
 
-const pr_drctnodate = // 조건없이 더미데이터 나오는지 보기위함
-`
-SELECT pd.prdctn_code, pd.procs_nm, pd.model_nm, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time, pp.order_no
-FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
-GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
-ORDER BY pd.model_nm, pd.pre_begin_time
-`;
-
-
 module.exports = {
   pr_selcmmn,
   pr_seldrct,
   pr_nem,
   pr_eqp,
   pr_srcprd,
+  pr_upreq,
+  pr_srcdrct,
+  pr_onedrct,
+  pr_selmatrl,
+  pr_selempl,
+  pr_insstate,
+  pr_onestate,
+  pr_insbad,
+  pr_cobad,
+
+
 
 
 
@@ -135,6 +208,4 @@ module.exports = {
   pr_selflowchart,
   pr_selsumtime,
   pr_selsumqy,
-  pr_drctnodate,
-  
 };

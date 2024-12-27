@@ -7,7 +7,7 @@ SELECT  m.req_code req_code,
         m.req_name req_name,
         m.prd_nm mt_name,
         m.prd_code mt_code,
-        m.req_qy req_qy,
+        m.req_qy order_qy,
         s.unit unit,
         m.req_de date
 FROM    thng_req m JOIN mtril s
@@ -17,20 +17,13 @@ AND     m.prd_se = 'PI01'
 AND     m.procs_at = 'RD02'
 `;
 
-//자재 발주 관리 - mt001 / 발주서 등록(MTRIL_ORDER테이블에 insert)
+//자재 발주 관리 - mt001 / 발주서 등록
 const mt_orderInsert =
 `
-INSERT INTO mtril_order(mtril_order_code, 
-                        order_name, 
-                        mtril_name,
-                        mtril_code,
-                        mtlty_name,
-                        bcnc_code,
-                        order_price,
-                        order_qy,
-                        dedt,
-                        empl_no)
-VALUES (CONCAT('order' , nextval(mt_order_code_seq)), 
+Call mt_order_process(
+        ?,
+        ?,
+        ?,
         ?,
         ?,
         ?,
@@ -42,56 +35,62 @@ VALUES (CONCAT('order' , nextval(mt_order_code_seq)),
         ?)
 `;
 
-//
 
-//자재 발주관리 - mt001 / 발주서 수정
+//자재 발주관리 - mt001 / 발주서 수정 프로시저
 const mt_ordermodify =
 `
-
+Call mt_order_modify_process(?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        ?)
 `;
 
 //자재 발주관리 - mt001 / 발주서 삭제
+const mt_orderDelete = 
 `
+DELETE FROM mtril_order
+WHERE  order_code = ?
 `;
 
 //자재 검색 모달 - mt002 
 const mt_searchMtList =
 `
-`;
-
-//자재 검색 모달 - mt002 조건
-const mt_searchMtListWithKey = 
-`
+select mtril_code,
+       mtril_name,
+       unit
+from   mtril
+WHERE  mtril_name = IFNULL(?, mtril_name)
+AND    mtril_code = IFNULL(?, mtril_code)
 `;
 
 //거래처 검색 모달 - mt003
 const mt_searchCompany = 
 `
-`;
-
-//거래처 검색 모달 - mt003조건
-const mt_searchCompanyWithKey =
-`
-`;
-
-//수정할 발주건 검색 - mt004
-const mt_searchOrder = 
-`
-select  order_code,
-	order_name,
-        mtlty_name,
-        bcnc_code,
-        order_date,
-        dedt,
-        empl_no
-from    mtril_order
+SELECT  bcnc_code,
+	mtlty_name,
+        charger_name
+FROM    bcnc
+WHERE   bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
+AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
+AND     charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')
 `;
 
 //수정할 발주건 검색 - mt004 조건
 const mt_searchOrderWithKey =
 `
-SELECT  order_code,
-	order_name,
+SELECT  order_no,
+        order_code,
+        order_name,
         mtlty_name,
         bcnc_code,
         order_date,
@@ -100,16 +99,20 @@ SELECT  order_code,
 FROM    mtril_order
 WHERE   order_name LIKE CONCAT('%', IFNULL(?, order_name), '%')
 AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
-AND     order_date BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
+AND     order_date BETWEEN IFNULL(?, order_date) AND IFNULL(?, order_date)
 AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
 AND     empl_no = IFNULL(?, empl_no)
+AND     order_no NOT IN (SELECT order_code
+			 FROM   inspection_check)
 GROUP BY order_code
+ORDER BY order_no DESC
 `;
 
 //발주한 건 자재 목록
 const mt_listOnOrder =
 `
-SELECT  m.order_code AS req_code, 
+SELECT  m.order_no AS order_no,
+        m.order_code AS req_code, 
         m.order_name AS req_name, 
         m.mtril_name AS mt_name,
         m.mtril_code AS mt_code,
@@ -117,20 +120,40 @@ SELECT  m.order_code AS req_code,
         m.bcnc_code AS company_code,
         m.order_price AS price,
         m.order_qy AS order_qy,
-        s.unit
+        s.unit,
+        m.dedt AS dedt
 FROM    mtril_order m JOIN mtril s
                         ON (m.mtril_code = s.mtril_code)
 WHERE   order_code = ?
 `;
 
 //자재 발주 조회 - mt005
-const mt_orderList = 
+const mt_selectAllOrderList = 
 `
-`;
-
-//자재 발주 조회 - mt005 조건
-const mt_orderListWithKey =
-`
+SELECT  m.order_no AS order_no,
+        m.order_code AS order_code,
+        m.order_name AS order_name,
+        m.mtlty_name AS mtlty_name,
+        m.bcnc_code AS bcnc_code,
+        m.order_date AS order_date,
+        m.dedt AS dedt,
+        t.empl_name AS empl_name,
+        m.mtril_name AS mtril_name,
+        m.mtril_code AS mtril_code,
+        m.order_price AS order_price,
+        m.order_qy AS order_qy,
+        s.unit AS unit
+FROM    mtril_order m JOIN mtril s
+			ON (m.mtril_code = s.mtril_code)
+		      JOIN empl t
+                        ON (t.empl_no = m.empl_no)
+WHERE   m.order_name LIKE CONCAT('%', IFNULL(?, m.order_name), '%')
+AND     m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name), '%')
+AND     m.mtlty_name LIKE CONCAT('%', IFNULL(?, m.mtlty_name), '%')
+AND     m.order_date BETWEEN IFNULL(?, m.order_date) AND IFNULL(?, m.order_date)
+AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
+AND     t.empl_name = IFNULL(?, t.empl_name)
+ORDER BY m.order_date desc
 `;
 
 //발주서 양식에 들어가는 정보 - mt006
@@ -188,11 +211,6 @@ CALL mt_wrhousing_process(
 
 //자재 입고 조회 - mt008 
 const mt_wrhousngList =
-`
-`;
-
-//자재 입고 조회 - mt008 조건
-const mt_wrhousngListWithKey =
 `
 `;
 
@@ -272,18 +290,36 @@ const mt_dlivyListWithKey =
 `;
 
 //자재 재고 조회 -mt012 자재별
-const mt_inven =
+const mt_selectQy =
 `
+SELECT  m.mtril_name AS mtril_name,
+        m.mtril_code AS mtril_code,
+        (SELECT SUM(s.mtril_qy)
+        FROM   mtril_wrhousing s
+        WHERE  s.mtril_code = m.mtril_code) AS qy,
+        m.unit AS unit,
+        m.sfinvc AS sfinvc
+FROM    mtril m
 `;
 
-//자재 재고 조회 - mt013 로트별
+//자재 재고 조회 - mt013 로트별 로트, 수량, 단위, 입고일, 입고담당자 이름
 const mt_lotInven =
 `
-`;
-
-//자재 재고 조회 - mt013 로트별 조건
-const mt_lotInvenWithKey =
-`
+SELECT m.mtril_name AS mtril_name, 
+       m.mtril_lot AS mtril_lot,
+       m.mtril_qy AS mtril_qy,
+       s.unit AS unit,
+       m.wrhousng_date AS wrhousng_date,
+       t.empl_name AS empl_name
+FROM   mtril_wrhousing m JOIN mtril s
+                           ON (m.mtril_code = s.mtril_code)
+					     JOIN empl t
+                           ON (m.empl_no = t.empl_no)
+WHERE  m.mtril_lot = IFNULL(?, m.mtril_lot)
+AND    m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
+AND    m.mtril_qy > 0
+AND    t.empl_name = IFNULL(?, t.empl_name)
+AND    m.mtril_code = ?
 `;
 
 //자재 조정관리 - mt014 자재별 조정 내용 입력
@@ -361,5 +397,13 @@ module.exports = {
         mt_lotInvenList,
         mt_requestCheckOut,
         mt_searchOrderWithKey,
-        mt_listOnOrder
+        mt_listOnOrder,
+        mt_orderInsert,
+        mt_orderDelete,
+        mt_ordermodify,
+        mt_searchMtList,
+        mt_searchCompany,
+        mt_selectQy,
+        mt_lotInven,
+        mt_selectAllOrderList
 };

@@ -17,19 +17,35 @@ router.get('/business/orderList', async (req, res) => {
     res.send(businessList);
 });
 
-//주문 요청 등록
-router.post('/business/orderForm', async (req, res) => {
+// 주문요청 상세조회
+router.get('/business/orderList/:order_no', async (req, res) => {
+    let orderNo = req.params.order_no; 
+    //let searchs = req.query;
+    let orderInfo = await businessService.findOrderRequestByNo(orderNo);
+    res.send(orderInfo);
+});
+
+// 주문 요청과 주문리스트 등록
+router.post('/business/orderForm', async (req,res)=>{
     let orderRequestInfo = req.body;
+    console.log(orderRequestInfo);
     let result = await businessService.createNewOrderRequest(orderRequestInfo);
     res.send(result);
-}); 
+});
 
-//주문 요청 리스트 등록
-// router.post('/business/:no', async (req, res) => {
-//     let orderRequestListInfo = req.body;
-//     let result = await businessService.createNewOrderListRequest(orderRequestListInfo);
-//     res.send(result);
-// });
+// 주문 요청 삭제
+router.delete('/business/orderInfo/:order_no',async(req,res)=>{
+    let order_no = req.params.order_no;
+    let result = await businessService.deleteOrderRequestByOrderNo(order_no);
+    res.send(result);
+});
+
+// 거래처 검색
+router.post('/business/searchCompany', async(req,res)=>{
+    let searchCompanyKey = req.body;
+    let result = await businessService.searchCompanyModal(searchCompanyKey);
+    res.send(result);
+})
 
 module.exports = router;
 

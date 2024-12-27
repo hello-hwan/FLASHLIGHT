@@ -56,6 +56,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+
 //부모 행 삭제를 위해서 사용하는 emit
 const emit = defineEmits(["selectedData"]);
 
@@ -127,6 +128,7 @@ const orderRowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
+  { field: "order_no", headerName: "발주번호"},
   { field: "order_code", headerName: "발주코드", hide: true, suppressToolPanel: true},
   { field: "order_name", headerName: "발주명"},
   { field: "bcnc_code", headerName:"거래처 코드", hide: true, suppressToolPanel: true },
@@ -155,7 +157,7 @@ const searchOrder = async() => {
                end_dedt: endDedt,
                emp_id: parseInt(empId) 
                 };
-    //console.log("새로만든 객체: ",obj);
+    console.log("새로만든 객체: ",obj);
     let result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
                             .catch(err=>console.log(err));
 

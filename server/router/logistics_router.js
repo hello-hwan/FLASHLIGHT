@@ -11,7 +11,7 @@ router.get('/prdctn_n_list', async (req, res) => {
   res.send(prdctn_n_list);
 })
 
-// 반제품 등록
+// 반제품 입고 등록
 router.post('/prduct_n_wrhousng', async (req, res) => {
   let Insert = req.body;
   let result = await logistics_service.prduct_n_wrhousng(Insert);
@@ -35,17 +35,45 @@ router.get('/prduct_n_dlivy', async (req, res) => {
 //반제품 출고가능 제품
 router.get('/prduct_n_possible/:prdCode', async(req, res) => {
   let prdCode = req.params.prdCode;
-  console.log(prdCode);
   let prduct_n_possible = await logistics_service.prduct_n_possible(prdCode);
   res.send(prduct_n_possible);
 })
 
 // 반제품 출고완료처리
-router.get('/prduct_n_dlivyTest', async(req, res) => {
-  let Insert = req.body;
-  let result  = await logistics_service.prduct_n_dlivyTest(Insert);
+router.post('/prduct_n_dlivyTest', async(req, res) => {
+  let prdctnNInfo = req.body;
+  let result  = await logistics_service.prduct_n_dlivyTest(prdctnNInfo);
   res.send(result);
 })
+  
+// 반제품 출고 리스트
+router.get('/prduct_n_dlivyList', async (req, res) => {
+  let searchs = req.query; 
+  let prdctn_n_list = await logistics_service.prduct_n_dlivyList(searchs);
+  res.send(prdctn_n_list);
+})
 
- 
+// 완제품 입고대기 리스트(일반)
+router.get('/prductList', async (req, res) => {
+  let searchs = req.query;
+  let prductList = await logistics_service.prductList(searchs);
+  res.send(prductList);
+})
+
+
+// 완제품 등록
+router.post('/prductWrhousng', async (req, res) => {
+  let Insert = req.body;
+  let result = await logistics_service.prductWrhousng(Insert);
+  res.send(result);
+});
+
+
+// 완제품 입고완료 리스트
+router.get('/prductWrhousngList', async (req, res) => {
+  let searchs = req.query;
+  let prductWrhousngList = await logistics_service.prductWrhousngList(searchs);
+  res.send(prductWrhousngList);
+})
+
 module.exports = router;  

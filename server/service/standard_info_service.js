@@ -12,10 +12,10 @@ const bomtest = async() => {
   let list = await mariaDB.query('bom');
   return list;
 } 
- 
+
 // BOM 상세보기 
 const bomInfo = async(bomCode) => {
-  let list = await mariaDB.query('bomInfo',bomCode);
+  let list = await mariaDB.query('bomInfo',bomCode); 
   return list;
 }
 
@@ -34,7 +34,7 @@ const bomInsert = async (bomInfo) => {
     return { message: '데이터 삽입 실패' };
   } 
 }
-   
+
 
 
 // BOM 관리 select
@@ -42,7 +42,7 @@ const bomManage = async (bomCode) => {
   let list = await mariaDB.query('bomManage', bomCode);
   return list;
 }
- 
+
 
 // BOM소모품 업데이트
 const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
@@ -58,9 +58,9 @@ const bom_cmpdsDel = async (cmpdsNo) => {
     return result;
 }
 
-// 반제품입고리스트
-const prduct_n_wrhousngList = async () => {
-  let list = await mariaDB.query('prduct_n_wrhousngList');
+// 자재 조회
+const mtril = async () => {
+  let list = await mariaDB.query('mtril');
   return list;
 }
 
@@ -136,16 +136,20 @@ const ProcsCodeToDeleteFlowchart = async (procs_code)=>{
   await mariaDB.query('ProcsCodeToDeleteFlowchart', procs_code);
 }
 
+// 품목코드 검색용 조회
+const prd_code_search = async (prd_code) => {
+  let list = await mariaDB.query('prd_code_search', prd_code);
+  return list;
+}
 
 module.exports = {
   cmmntest,
   bomtest,
   bomInfo,
   bomInsert,
-  bomManage,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
-  prduct_n_wrhousngList,
+  mtril,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 
@@ -158,5 +162,7 @@ module.exports = {
   prdCodeToProcsCode, 
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
-  ProcsCodeToDeleteFlowchart
+  ProcsCodeToDeleteFlowchart,
+  bomManage,
+  prd_code_search
 };

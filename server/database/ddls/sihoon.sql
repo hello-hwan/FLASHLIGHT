@@ -14,9 +14,12 @@ WHERE cmmn_name = '미처리'
 ORDER BY cmmn_code ASC
 LIMIT 10 OFFSET 0;
 
+SELECT * FROM cmmn
+WHERE cmmn_code = 'RD02';
+
 SELECT * FROM cmmn;
 INSERT INTO cmmn(cmmn_code, upper_cmmn_code, cmmn_name)
-VALUES ('RD', NULL, '재료요청처리구분'), ('RD01', 'RD', '처리'), ('RD02', 'RD', '미처리');
+VALUES ('RD03', 'RD', '요청전');
 COMMIT;
 
 -- 시퀀스 생성
@@ -28,6 +31,9 @@ DROP sequence req_seq;
 CREATE sequence req_seq START WITH 1 increment BY 1;
 SELECT NEXTVAL(req_seq);
 
+DROP sequence badn_seq;
+CREATE sequence badn_seq START WITH 1 increment BY 1;
+SELECT NEXTVAL(badn_seq);
 -- 계획 순서 
 -- 주문리스트에서 처리중, 생산인 품목이랑 수량, 주문번호, 주문일자, 납품기한, 우선순위 조회
 -- 공정흐름도에서 품목별 공정 조회
@@ -422,9 +428,9 @@ BEGIN
 		 			LEAVE useqy_loop;
 		 		END IF;
 		 		
-				-- 여기서 부터 변수 지정 안함 
+-- --------------------------------------------------------------------------------------------------------------------
 				
-				-- 물품 요청 수량 조회
+				-- 물품 요청 수량 조회 - 현재 발주 처리건만 되어있음
 				SELECT IFNULL( SUM(req_qy), 0 )
 				INTO v_req_qy
 				FROM thng_req
@@ -514,6 +520,7 @@ BEGIN
 					ORDER BY 1
 					LIMIT 1 OFFSET 0;
 					
+					-- 물품 요청 테이블에 삽입
 					INSERT INTO thng_req (req_code, req_name, mnfct_no, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
 					VALUES ( NEXTVAL(req_seq), '', v_mnfct_no, )
 							
@@ -578,6 +585,8 @@ BEGIN
 	DECLARE v_chck_end DATETIME;
 	DECLARE v_null INT;
 	DECLARE v_chck_null INT;
+	
+	DECLARE v_before DATETIME DEFAULT NOW();
 	
 	-- 실제로 삽입할 변수 선언
 	DECLARE v_real_begin DATETIME;
@@ -650,7 +659,8 @@ BEGIN
 			SET v_null = 0 ;
 			SET v_chck_null = 0;
 			SET v_real_begin = STR_TO_DATE('9999-12-31 23:59:59', '%Y-%m%d %H:%i%s');
-						
+
+			
 			-- 생산 지시 커서
 			OPEN cursor_drct;
 			drct_loop : LOOP
@@ -693,6 +703,14 @@ BEGIN
 												
 			END IF;
 			
+			-- 이전 작업 끝나는 시간이 지금 시작 설정한 시간 보다 클 때
+			IF v_before > v_begin_time THEN
+			
+				SET v_begin_time = v_before;
+				
+			END IF;
+			
+			
 			SET v_end_time = DATE_ADD(v_begin_time, INTERVAL (v_expect_reqre_time * v_prdctn_co) MINUTE);
 			
 			-- 점검 일정이 있을때
@@ -723,6 +741,8 @@ BEGIN
 		
 		INSERT INTO prdctn_drct ( prdctn_code, mnfct_no, procs_code, procs_nm, eqp_code, model_nm, prd_code, prd_nm, prdctn_co, pre_begin_time, pre_end_time)
 		VALUES ( IFNULL(CONCAT(v_mnfct_no, '-', v_real_code ), '-') , v_mnfct_no, v_procs_code, v_procs_nm, v_real_code, v_real_nm, v_prd_code, v_prd_nm, v_prdctn_co, v_real_begin, v_real_end );
+		
+		SET v_before = v_real_end;
 	
 	-- 생산계획 커서 닫음
 	END LOOP plan_loop;
@@ -732,15 +752,85 @@ DELIMITER ;
 
 CALL play_drct();
 
-SELECT * FROM prdctn_plan;
-SELECT * FROM prdctn_drct;
+-- 523행 물품 요청 삽입 프로시저
+
+SELECT * FROM empl;
+
+SELECT * FROM cmmn
+WHERE cmmn_name LIKE CONCAT('%', '생산사원', '%');
+
+SELECT * FROM cmmn
+WHERE cmmn_name LIKE CONCAT('%', '관리자', '%');
+
+INSERT INTO empl(empl_no, empl_name, PASSWORD, phone, dept_se, encpn, author)
+VALUES (200, '최시훈', '0000', '010-4024-9325', 'DP05', NOW(), 'AZ01');
+COMMIT;
+
 SELECT * FROM thng_req;
-SELECT * FROM cmmn;
-SELECT * FROM eqp;
+INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
+VALUES ('testbyshun-4', '자재 발주 요청 테스트-4', 1, NULL, 'M-LEATHER', '가죽', 100, 'PI01', 'RD03', NOW());
+COMMIT;
 
-SELECT * FROM repduct;
+SELECT tr.req_code, tr.prd_code AS mtril_code, tr.prd_nm AS mtril_nm, tr.req_qy, pp.prd_code, pp.prd_nm
+FROM thng_req tr JOIN prdctn_plan pp ON (tr.mnfct_no = pp.mnfct_no)
+WHERE tr.prdctn_code IS NULL
+AND prd_se = 'PI01'
+AND tr.procs_at = 'RD03';
 
-SELECT prdctn_code, procs_nm, model_nm, prd_nm, prdctn_co, pre_begin_time, pre_end_time, TIMESTAMPDIFF(hour, pre_begin_time, pre_end_time) AS drct_time
-FROM prdctn_drct
-GROUP BY eqp_code, model_nm, prdctn_code
-ORDER BY eqp_code, pre_begin_time;
+SELECT * FROM prdctn_drct;
+SELECT * FROM product_state;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
+FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+WHERE pd.pre_begin_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY )
+AND pd.pre_end_time > CURDATE();
+
+SELECT DATE_ADD(CURDATE(), INTERVAL 1 DAY );
+
+INSERT INTO prdctn_drct(prdctn_code, mnfct_no, procs_code, procs_nm, eqp_code, model_nm, prd_code, prd_nm, prdctn_co, pre_begin_time, pre_end_time)
+VALUES ('testbyshun-11', 1, 'testbyshun11', 'testbyshun11', 'testbyshun11', 'mchn-001', 'testbyshun11', 'testbyshun11', 777, '2024-12-25', '2024-12-30');
+COMMIT;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
+FROM prdctn_drct pd
+WHERE pd.prdctn_code = ?;
+
+SELECT * FROM product_state;
+
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, ps.prdctn_co, ps.eqp_code, ps.empl_no
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+WHERE ps.prdctn_code = 'testbyshun-11';
+
+SELECT * FROM procs_matrl;
+
+DELETE FROM product_state;
+
+COMMIT;
+
+SELECT * FROM badn_info;
+
+INSERT INTO badn_info(badn_code, badn_qy, badn_ty, prdctn_code)
+VALUES (CONCAT('testbyshun-11', '-', (SELECT COUNT(*)+1 
+								FROM badn_info 
+								WHERE prdctn_code = 'testbyshun-11')), 8, '기계결함', 'testbyshun-11');
+
+SELECT CONCAT('testbyshun-11', '-', COUNT(badn_code)+1) as badn_code, sum(badn_qy) total_qy
+FROM badn_info
+WHERE prdctn_code = 'testbyshun-11';
+
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS play_state //
+CREATE PROCEDURE play_state
+(
+  
+)
+BEGIN
+	
+END //
+DELIMITER ;
+
+SELECT *
+FROM thng_req
+WHERE procs_at = 'RD01'
+AND prdctn_code IS NOT NULL; 

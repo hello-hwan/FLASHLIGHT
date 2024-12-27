@@ -38,7 +38,9 @@ const chck_fc_insert = async (list) => {
 
 // 점검 결과 등록
 const chck_result_insert = async (list) => {
-    await mariaDB.query('chck_result_insert', list);
+    for (let i = 0 ; i < list.length ; i++) {
+        await mariaDB.query('chck_result_insert', list[i]);
+    }
 }
 
 // 점검 결과 등록할 일정 코드 찾기
@@ -58,6 +60,40 @@ const chck_iem_list = async (eqp_code) => {
     return list;
 }
 
+// 미점검 기기 조회
+const not_check_list = async () => {
+    let list = await mariaDB.query('not_check_list');
+    return list;
+}
+
+// 장비 전체 조회
+const eqp_all_list = async () => {
+    let list = await mariaDB.query('eqp_all_list');
+    return list;
+}
+
+// 설비 등록
+const eqp_insert = async (list) => {
+    await mariaDB.query('eqp_insert', list);
+}
+
+// 미가동 등록
+const not_opr_insert = async (list) => {
+    await mariaDB.query('not_opr_insert', list);
+}
+
+// 미가동 설비 조회
+const not_opr_list = async () => {
+    let list = await mariaDB.query('not_opr_list');
+    return list;
+}
+
+// 미가동 설비 가동 변경
+const not_opr_update = async (list) => {
+    await mariaDB.query('not_opr_update', list);
+}
+
+
 module.exports = {
     eqp_list,
     eqp_list_prod,
@@ -68,5 +104,11 @@ module.exports = {
     chck_result_insert,
     find_last_fx_code,
     not_check_update, 
-    chck_iem_list
+    chck_iem_list, 
+    not_check_list, 
+    eqp_all_list, 
+    eqp_insert, 
+    not_opr_insert, 
+    not_opr_list, 
+    not_opr_update
 };

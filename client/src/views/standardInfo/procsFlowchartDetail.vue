@@ -3,21 +3,24 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th style="width: 75%; font-size: 30px;">
+                    <th style="width: 80%; font-size: 30px;">
                         공정 흐름도 상세 조회
                     </th>
-                    <th style="width: 9%;">
+                    <th style="width: 10%;">
                         품목코드 검색
                     </th>
-                    <th style="width: 9%;">
-                        <input style="background-color: lightsteelblue;" type="text" v-model="search_prd_code" size="9">
-                    </th>
-                    <th style="width: 7%;">
-                        <button type="button" class="btn btn-outline-secondary" @click="search_btn()">검색</button>
+                    <th style="width: 10%;">
+                        <input style="background-color: lightsteelblue;" type="text" v-model="search_prd_code" size="9"
+                            @click="input_click()">
                     </th>
                 </tr>
             </thead>
         </table>
+        <div style="height: 300px;" v-show="input_div">
+            <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions"
+                style="height: 250px; width: 50%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
+            </ag-grid-vue>
+        </div>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -79,7 +82,10 @@ export default {
             topTable: {},
             search_prd_code: '',
             toast: '',
-            prd_code: ''
+            prd_code: '',
+            input_div: false,
+            rowData_search: [],
+            colDefs_search: []
         };
     },
     created() {
@@ -108,6 +114,10 @@ export default {
             }
         };
         this.toast = useToast();
+        this.colDefs_search = [
+            { field: "prd_code", headerName: "품목코드" },
+            { field: "prd_nm", headerName: "품목명" }
+        ];
     },
     components: {
         AgGridVue // Add Vue Data Grid component
@@ -165,6 +175,21 @@ export default {
             console.log("edit")
             this.$router.push({ name: 'procsFlowchartinsert', query: { prd_code: this.prd_code } });
         },
+        input_click() {
+            console.log("click");
+            this.input_div = true;
+        },
+        async input_change() {
+            let result = await axios.get(`${ajaxUrl}/prd_code_search/${this.search_prd_code}`)
+                .catch(err => console.log(err));;
+            this.rowData_search = result.data;
+            console.log(this.rowData_search);
+        }
+    },
+    watch: {
+        search_prd_code: function (input) {
+            this.input_change(input)
+        }
     }
 };
 </script>

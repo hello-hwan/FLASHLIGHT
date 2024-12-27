@@ -54,7 +54,7 @@ const model = ref([
                     },
                     {
                         label: '발주 조회',
-                        to: '/'
+                        to: '/materials/mtOrderInquiry'
                     },
                     {
                         label: '입고 관리',
@@ -62,7 +62,7 @@ const model = ref([
                     },
                     {
                         label: '입고 조회',
-                        to: '/'
+                        to: '/materials/mtWrhousingList'
                     },
                     {
                         label: '출고 관리',
@@ -70,24 +70,8 @@ const model = ref([
                     },
                     {
                         label: '출고 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '조정 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '조정 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 조회',
-                        to: '/'
-                    },
+                        to: '/materials/mtDlivyList'
+                    }
                 ]
             },
             {
@@ -100,6 +84,10 @@ const model = ref([
                     {
                         label: '공장 실적 조회',
                         to: '/production/productionResult'
+                    },
+                    {
+                        label: '키오스크',
+                        to: '/kiosk'
                     }
                 ]
             },
@@ -128,28 +116,16 @@ const model = ref([
                         to: '/equipments/checkSchdul'
                     },
                     {
-                        label: '점검 일정 현황',
-                        to: '/'
-                    },
-                    {
                         label: '미점검 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '점검 내역 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '생산 오류 조회',
-                        to: '/'
+                        to: '/equipments/notChckList'
                     },
                     {
                         label: '미가동 조회',
-                        to: '/'
+                        to: '/equipments/notOprList'
                     },
                     {
                         label: '설비 관리',
-                        to: '/'
+                        to: '/equipments/eqpAllList'
                     },
                 ]
             },  
@@ -166,27 +142,19 @@ const model = ref([
                     },
                     {
                         label: '제품 출고 관리',
-                        to: '/'
+                        to: '/logistics/prductDlivy'
                     },
                     {
                         label: '제품 입고 관리',
-                        to: '/'
+                        to: '/logistics/prductWrhousngList'
                     },
                     {
                         label: '제품 입고 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 입고 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 입고 조회',
-                        to: '/'
+                        to: '/logistics/prductList'
                     },
                     {
                         label: '반제품 입고 관리',
-                        to: '/logistics/prductNListwrhousng'
+                        to: '/logistics/prductNWrhousngList'
                     },
                     {
                         label: '반제품 입고 조회',
@@ -198,7 +166,7 @@ const model = ref([
                     },
                     {
                         label: '반제품 출고 조회',
-                        to: '/'
+                        to: '/logistics/prductNDlivyList'
                     },
                 ]
             },   
@@ -260,7 +228,7 @@ const model = ref([
                     },
                     {
                         label: '자재 조회',
-                        to: '/'
+                        to: '/standardInfo/mtrilList'
                     }, 
                     {
                         label: 'BOM 관리/BOM 조회',

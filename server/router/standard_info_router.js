@@ -39,6 +39,7 @@ router.get('/bomManage/:bomCode', async (req, res) => {
   let info = await standard_info_service.bomManage(bomCode);
   res.send(info);  
 })
+
 // BOM 소모품 update
 router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
   let cmpdsNo = req.params.no;  
@@ -54,6 +55,13 @@ router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {
   let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
   res.send(result);
 });
+
+// 자재 조회
+router.get('/mtril', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.mtril(searchs);
+  res.send(list);
+})
 
 
 // 품질검사항목관리
@@ -144,5 +152,13 @@ router.delete('/ProcsCodeToDeleteFlowchart/:procs_code', async(req, res)=>{
   let result = await standard_info_service.ProcsCodeToDeleteFlowchart(procs_code);
   res.send(result);
 });
+
+// 품목코드 검색용 조회
+router.get('/prd_code_search/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.prd_code_search(prd_code);
+  res.send(list);
+});
+
 
 module.exports = router;     

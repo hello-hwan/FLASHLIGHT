@@ -1,5 +1,12 @@
 <template>
 <v-row>
+    <v-col cols="12">
+        <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 5px;">
+            <template v-slot:title>
+                        <span class="font-weight-black">반제품 입고 관리</span>
+            </template>
+        </v-card>
+    </v-col>
     <v-col cols="6">
         <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
@@ -52,6 +59,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
+
 
 export default {
 data() {
@@ -159,6 +167,9 @@ async onCellClicked(event) {
     customDateFormat(params) {
             return userDateUtils.dateFormat(params.data.test_date, 'yyyy-MM-dd');  // test_date는 알레아스 이름
     },
+    moder(){
+        this.moder();
+    }
 
 }
 };
