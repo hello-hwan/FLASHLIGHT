@@ -21,11 +21,10 @@ router.get('/quality/inspec_item', async(req, res) =>{
 //등록
 router.post(`/quality/quailtyInsert`, async(req, res) =>{
     let order_request=req.body;
-    console.log(order_request);
     let result = await qualityService.quailtyInsert(order_request);
     res.send(result);
-
-
 });
-//
+
+
+
 module.exports = router;

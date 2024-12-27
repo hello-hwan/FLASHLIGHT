@@ -16,6 +16,8 @@ FROM inspection_detail
 WHERE prd_code=?`;
 
 
+
+
 //품질입고검사 등록
 const quailtyInsert = 
 `INSERT INTO inspection_check(mtril_check_code 
@@ -26,12 +28,19 @@ const quailtyInsert =
 							 ,mtlty_name
 							 ,empl_no
 							 ,pass_amount
-							 ,order_code
+							 ,order_no
 							 ,bcnc_code)
 VALUES(?,?,?,?,now(),?,?,?,?,?)`;
 
 //품질입고검사 등록2
-
+const quailtyInsert2 =
+`INSERT INTO check_result(p_name
+						 ,inspec_standard
+						 ,inspec_item
+						 ,p_result
+						 ,error_amount
+						 ,mtril_check_code)
+VALUES(?,?,?,?,?,?)`;
 
 //합격량 변경
 
@@ -43,6 +52,7 @@ VALUES(?,?,?,?,now(),?,?,?,?,?)`;
 module.exports = {
     order_request,
     inspec_item,
-	quailtyInsert
+	quailtyInsert,
+	quailtyInsert2
 
 };

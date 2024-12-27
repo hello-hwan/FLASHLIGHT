@@ -13,7 +13,9 @@
                 <div class="col-auto">
                     <span class="form-text">
                         <button type="button" class="btn btn-xs btn-info" @click="getmt_no()">검색</button>
+                   
                     </span>
+                    
                 </div>         
             </div>
             <div class="row g-3 align-items-center">
@@ -100,6 +102,7 @@
             
             
     </div>
+    ====<search-modal @selectedData="getOrderDetails"/> 
     <div class="businessOrderListTitle">
             검사상세항목
     </div>     
@@ -126,6 +129,7 @@
     import { ref } from 'vue';
     import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
     import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+    import SearchModal from '@/components/materials/orderControlModal.vue';
     ModuleRegistry.registerModules([AllCommunityModule]);
     
     import axios from 'axios';
@@ -133,6 +137,9 @@
     
     export default {
         name: "App",
+        components: {
+            SearchModal
+         },
         data() {
             return {            
                 rowData: [],
@@ -156,7 +163,8 @@
             this.colDefs =ref([
                 { field: "inspec_item",headerName: "검사항목"},
                 { field: "inspec_standard",headerName : "검사기준"},
-                { field: "error_amount",headerName : "불량량",editable : true} 
+                { field: "error_amount",headerName : "불량량",editable : true} ,
+                { field: "p_result",headerName : "제품검사결과",editable : true} 
 
             ]);
     
@@ -205,7 +213,7 @@
                                     
             },
             async quailtyInsert(){
-                let obj = [
+                let inspect = [
                     this.mtl_code,//품질검사코드
                     this.mtr_code,//자재코드
                     this.mtr_name, //자재명
@@ -218,6 +226,11 @@
                                                       
                 ];
                 
+                let obj = {
+                    inspect : inspect,
+                    check : this.rowData
+
+                }
                 console.log(obj);
                 let result3 = await axios.post(`${ajaxUrl}/quality/quailtyInsert`, obj)
                                          .catch(err => console.log(err));
@@ -230,8 +243,15 @@
                     alert('등록되었습니다.');
                     this.mt_no = addRes.quailty_no;
                 }
-            */              
-            } 
+                */              
+            },
+            async getOrderDetails (info) {
+               // this.mt_no = info[0].order_code;
+            },
+            async onGridReady() {}
+        
+
+
             
         }
     };
