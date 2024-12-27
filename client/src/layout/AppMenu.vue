@@ -54,7 +54,7 @@ const model = ref([
                     },
                     {
                         label: '발주 조회',
-                        to: '/'
+                        to: '/materials/mtOrderInquiry'
                     },
                     {
                         label: '입고 관리',
@@ -62,7 +62,7 @@ const model = ref([
                     },
                     {
                         label: '입고 조회',
-                        to: '/'
+                        to: '/materials/mtWrhousingList'
                     },
                     {
                         label: '출고 관리',
@@ -70,24 +70,8 @@ const model = ref([
                     },
                     {
                         label: '출고 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '조정 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '조정 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 조회',
-                        to: '/'
-                    },
+                        to: '/materials/mtDlivyList'
+                    }
                 ]
             },
             {

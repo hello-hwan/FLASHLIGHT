@@ -200,7 +200,6 @@ const mtOrderList = async(searchInfo) => {
                     searchInfo.start_dedt,
                     searchInfo.end_dedt,
                     searchInfo.emp_id];
-    //console.log(searchInfo);
 
     let result = await mariaDB.query('mt_searchOrderWithKey', infoArr)
                               .catch(err=>console.log(err));
@@ -355,12 +354,38 @@ const allMtQy = async() => {
 };
 
 //로트별 자재 재고 조회
-const mtLotQy = async() => {
-    let result = await mariaDB.query('mt_lotInven')
+const mtLotQy = async(key) => {
+    //db에 보낼 새로운 배열 생성
+    let searchKeyArr = [
+        key.mt_lot == "" ? null: key.mt_lot,
+        key.start_wrhousng_date == "" ? null: key.start_wrhousng_date,
+        key.end_wrhousng_date == "" ? null: key.end_wrhousng_date,
+        key.charger == "" ? null: key.charger,
+        key.mtril_code
+    ];
+
+    let result = await mariaDB.query('mt_lotInven', searchKeyArr)
                               .catch(err=>console.log(err));
     return result;
 }
 
+//전체 주문 목록 조회
+const allOrderList = async(key) => {
+    //검색조건 배열
+    let searchKeyArr = [key.order_name == "" ? null : key.order_name,
+                        key.mtril_name == "" ? null : key.mtril_name,
+                        key.company_name == "" ? null : key.company_name,
+                        key.start_order_date == "" ? null : key.start_order_date,
+                        key.end_order_date == "" ? null : key.end_order_date,
+                        key.start_dedt == "" ? null : key.start_dedt,
+                        key.end_dedt == "" ? null : key.end_dedt,
+                        key.charger_name == "" ? null : key.charger_name];
+
+    let result = await mariaDB.query('mt_selectAllOrderList', searchKeyArr)
+                              .catch(err=>console.log(err));
+    console.log('조회 결과: ', result);
+    return result;
+};
 module.exports = {
     returnMt,
     orderMt,
@@ -376,5 +401,7 @@ module.exports = {
     mtOrderModify,
     searchMtModal,
     searchCompanyModal,
-    allMtQy
+    allMtQy,
+    mtLotQy,
+    allOrderList
 };

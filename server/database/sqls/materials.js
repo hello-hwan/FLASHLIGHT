@@ -82,7 +82,7 @@ SELECT  bcnc_code,
 FROM    bcnc
 WHERE   bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
 AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
-AND     charger_name = LIKE CONCAT('%', IFNULL(?, charger_name), '%')
+AND     charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')
 `;
 
 //수정할 발주건 검색 - mt004 조건
@@ -120,20 +120,40 @@ SELECT  m.order_no AS order_no,
         m.bcnc_code AS company_code,
         m.order_price AS price,
         m.order_qy AS order_qy,
-        s.unit
+        s.unit,
+        m.dedt AS dedt
 FROM    mtril_order m JOIN mtril s
                         ON (m.mtril_code = s.mtril_code)
 WHERE   order_code = ?
 `;
 
 //자재 발주 조회 - mt005
-const mt_orderList = 
+const mt_selectAllOrderList = 
 `
-`;
-
-//자재 발주 조회 - mt005 조건
-const mt_orderListWithKey =
-`
+SELECT  m.order_no AS order_no,
+        m.order_code AS order_code,
+        m.order_name AS order_name,
+        m.mtlty_name AS mtlty_name,
+        m.bcnc_code AS bcnc_code,
+        m.order_date AS order_date,
+        m.dedt AS dedt,
+        t.empl_name AS empl_name,
+        m.mtril_name AS mtril_name,
+        m.mtril_code AS mtril_code,
+        m.order_price AS order_price,
+        m.order_qy AS order_qy,
+        s.unit AS unit
+FROM    mtril_order m JOIN mtril s
+			ON (m.mtril_code = s.mtril_code)
+		      JOIN empl t
+                        ON (t.empl_no = m.empl_no)
+WHERE   m.order_name LIKE CONCAT('%', IFNULL(?, m.order_name), '%')
+AND     m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name), '%')
+AND     m.mtlty_name LIKE CONCAT('%', IFNULL(?, m.mtlty_name), '%')
+AND     m.order_date BETWEEN IFNULL(?, m.order_date) AND IFNULL(?, m.order_date)
+AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
+AND     t.empl_name = IFNULL(?, t.empl_name)
+ORDER BY m.order_date desc
 `;
 
 //발주서 양식에 들어가는 정보 - mt006
@@ -285,7 +305,8 @@ FROM    mtril m
 //자재 재고 조회 - mt013 로트별 로트, 수량, 단위, 입고일, 입고담당자 이름
 const mt_lotInven =
 `
-SELECT m.mtril_lot AS mtril_lot,
+SELECT m.mtril_name AS mtril_name, 
+       m.mtril_lot AS mtril_lot,
        m.mtril_qy AS mtril_qy,
        s.unit AS unit,
        m.wrhousng_date AS wrhousng_date,
@@ -297,12 +318,8 @@ FROM   mtril_wrhousing m JOIN mtril s
 WHERE  m.mtril_lot = IFNULL(?, m.mtril_lot)
 AND    m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
 AND    m.mtril_qy > 0
+AND    t.empl_name = IFNULL(?, t.empl_name)
 AND    m.mtril_code = ?
-`;
-
-//자재 재고 조회 - mt013 로트별 조건
-const mt_lotInvenWithKey =
-`
 `;
 
 //자재 조정관리 - mt014 자재별 조정 내용 입력
@@ -387,5 +404,6 @@ module.exports = {
         mt_searchMtList,
         mt_searchCompany,
         mt_selectQy,
-        mt_lotInven
+        mt_lotInven,
+        mt_selectAllOrderList
 };

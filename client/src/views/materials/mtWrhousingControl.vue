@@ -101,7 +101,7 @@ export default {
         { field: "checkCode", headerName: "검사코드"},
         { field: "name", headerName:"자재명" },
         { field: "code", headerName:"자재코드" },
-        { field: "qy", headerName:"반환량" },
+        { field: "qy", headerName:"검사 통과량" },
         { field: "unit", headerName:"단위" },
         { field: "wrdate", headerName:"입고일",
             valueFormatter: this.customDateFormat, //valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.  
