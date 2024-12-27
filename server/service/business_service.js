@@ -39,9 +39,18 @@ const deleteOrderRequestByOrderNo = async (keywords)=>{
     await mariaDB.query('orderRequestDelete',keywords);
 };
 
+// 거래처 검색
+const searchCompanyModal = async(key)=>{
+    let searchKey = [key.company_code, key.company_name, key.charger_name];
+    let result = await mariaDB.query('bs_searchCompany',searchKey)
+                                    .catch(err=>console.log(err));
+    return result;
+}
+
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
     deleteOrderRequestByOrderNo,
-    findOrderRequestByNo
+    findOrderRequestByNo,
+    searchCompanyModal
 };

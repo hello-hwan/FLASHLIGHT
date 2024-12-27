@@ -40,5 +40,12 @@ router.delete('/business/orderInfo/:order_no',async(req,res)=>{
     res.send(result);
 });
 
+// 거래처 검색
+router.post('/business/searchCompany', async(req,res)=>{
+    let searchCompanyKey = req.body;
+    let result = await businessService.searchCompanyModal(searchCompanyKey);
+    res.send(result);
+})
+
 module.exports = router;
 
