@@ -156,7 +156,7 @@ const searchOrder = async() => {
                end_dedt: endDedt,
                emp_id: parseInt(empId) 
                 };
-    //console.log("새로만든 객체: ",obj);
+    console.log("새로만든 객체: ",obj);
     let result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
                             .catch(err=>console.log(err));
 

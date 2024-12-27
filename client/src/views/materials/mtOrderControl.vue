@@ -16,12 +16,7 @@
             <span>
                 <span>발주명</span>
                 <InputText type="text" v-model="orderName" class="emp_info"> <p>{{ orderName }}</p></InputText>
-                <span>거래처 명</span>
-                <InputText type="text" v-model="companyName" class="emp_info" > <p>{{ companyName }}</p></InputText>
-                <span style="">
-                    <span>거래처 코드</span>
-                    <InputText type="text" v-model="companyCode" class="emp_info" > <p>{{ companyCode }}</p></InputText>
-                </span> 
+                <companySearchModal @companySelectedData="getCompanyInfo"/> 
                 <span>담당자</span>
                 <InputText type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
             </span>
@@ -50,8 +45,7 @@
         >
         </AgGridVue>
         <div class="btnGroup"style="">
-            <button type="button" @click="addRow"
-            class="btn btn-primary">행 추가</button>
+            <mtSearchModal @mtSelectedData="addRow"/>
             
            <button type="button" @click="removeRow"
             class="btn btn-warning">행 삭제</button>
@@ -84,7 +78,10 @@ import { useToast } from 'primevue/usetoast';
 import orderSearchModal from '@/components/materials/orderControlModal.vue';
 
 //거래처 검색 모달
-//import companySearchModal from '@/components/materials/searchCompanyModal.vue';
+import companySearchModal from '@/components/materials/searchCompanyModal.vue';
+
+//자재 검색 모달
+import mtSearchModal from '@/components/materials/searchMtModal.vue';
 
 const toast = useToast();
 
@@ -116,6 +113,14 @@ const getOrderDetails = (info) => {
     orderCode.value = info[0].order_code;
 };
 
+//회사 검색 모달에서 넘어오는 데이터 (상호명, 거래처 코드)
+const getCompanyInfo = (info) => {
+    //보이는 데이터는 자식 컴포넌트에 있음.
+    //실제 db로 보내거나 사용하는 데이터는 emit으로 부모로 보내서 받음.
+    companyName = info[0].mtlty_name;
+    companyCode = info[0].bcnc_code;
+
+};
 
 //날짜 포멧
 const customDateFormat = (params) => {
@@ -199,10 +204,11 @@ const getOrderRowData = () => {
 };
 
 //행 추가
-const addRow = () => {
+const addRow = (info) => {
+    console.log(info);
     //행추가할 객체 생성
-    let obj = {order_no: 0, req_code: "", mt_name: "", mt_code: "", price: 0, order_qy: 0, 
-    unit: "", order_date: "", dedt: ""};
+    let obj = {order_no: 0, req_code: "", mt_name: info[0].mtril_name, mt_code: info[0].mtril_code, price: 0, order_qy: 0, 
+    unit: info[0].unit, order_date: "", dedt: ""};
 
     //add:[]배열안에 객체 형태로 데이터를 넣으면 됨.
     mtListGridApi.value.applyTransaction({add: [obj]});

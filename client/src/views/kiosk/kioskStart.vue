@@ -32,13 +32,13 @@
             <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;"></div>
-            <label for="empl_no" class="display-6">생산자</label>
-            <input type="text" id="empl_no" v-model="empl" class="display-6 text-lg-right" style="background-color: white; margin-left: 5%;" @click="gotoNumber()">
+            <label for="empl_no" class="display-6 font-weight-black">생산자</label>
+            <Number v-model="empl"></Number>
             <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;"></div>
 
-            <button type="button" class="kiosk-btn back-blue display-6 font-weight-black" @click="gotostart(empl)">시작</button>
+            <button type="button" class="kiosk-btn back-blue display-6 font-weight-black" @click="gotostart()">시작</button>
             <button type="button" class="kiosk-btn back-red display-6 font-weight-black" @click="gotoback()">뒤로가기</button>
             <br>
             <button type="button" class="kiosk-btn back-green display-6 font-weight-black" @click="gotoshift()">공정이동표</button>
@@ -58,6 +58,7 @@ import { ref, onBeforeMount, watch } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import useDates from "@/utils/useDates";
 import { useToast } from 'primevue/usetoast';
+import Number from "@/components/kiosk/Number.vue";
 
 // 알림창
 const toast = useToast();
@@ -88,6 +89,7 @@ const getinfo = async (code) => {
   let result = await axios.get(`${ajaxUrl}/prod/onedrct/${code}`)
                           .catch(err => console.log(err));
   info.value = result.data;
+  console.log(info.value.prdctn_code);
   getmatril(result.data.procs_code);
 
 };
@@ -97,18 +99,17 @@ const getmatril = async (code) => {
   let result = await axios.get(`${ajaxUrl}/prod/selmatrl/${code}`)
                           .catch(err => console.log(err));
   matril.value = result.data;
-  console.log(result);
 };
 
 // 시작 함수
 const gotostart = async (empl) => {
   if(empl.length == 0){
-    toast.add({ severity: 'warn', summary: '생산자 미입력', detail: '생산자를 입력해주세요.', life: 3000 });
+    toast.add({ severity: 'warn', summary: '생산자 미입력', detail: '사원번호를 입력해주세요.', life: 3000 });
     return;
   }
-  let result = await axios.post(`${ajaxUrl}/prod/`)
+  let result = await axios.post(`${ajaxUrl}/prod/addstate`, { "prdctn_code" : info.prdctn_code, })
                           .catch(err => console.log(err));
-  
+
   router.push({ name : 'kioskMain' });
 };
 
@@ -120,7 +121,7 @@ const gotoback = async () => {
 
 // 공정이동표 함수
 const gotoshift = async () => {
-
+  console.log(empl.value);
 };
 
 const gotoNumber = async () => {
@@ -136,7 +137,7 @@ onBeforeMount(() => {
 
 
 </script>
-<style>
+<style scoped>
   .kiosk-btn {
     width: 25%;
     height: 100px;

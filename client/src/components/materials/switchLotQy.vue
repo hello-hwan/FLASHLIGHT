@@ -1,22 +1,23 @@
 <template>
+    
     <span style="margin-left:20px">
-        <span>거래처 명</span>
-        <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
-        <span>거래처 코드</span>
-        <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText>
+        <button @click="modalOpen" class="btn  btn-primary" >상세수량</button>
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
             <div id="search-bar">
+                <span>자재명</span>
+                <InputText type="text" v-model="mtrilName" readonly> <p>{{ mtrilName }}</p></InputText>
                 <div class="align-left">                
-                    <span>거래처 코드</span>
-                    <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
-                    <span>상호명</span>
-                    <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
-                    <span>담당자 명</span>
-                    <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
+                    <span>로트명</span>
+                    <InputText type="text" v-model="keyLotName" v-on:keyup.enter="searchMt"> <p>{{ keyLotName }}</p></InputText>
+                    <span>입고 담당자</span>
+                    <InputText type="text" v-model="wrhousingCharger" v-on:keyup.enter="searchMt"> <p>{{ wrhousingCharger }}</p></InputText>
+                    <span>입고일</span>
+                    <InputText type="date" v-model="wrhDateStart" v-on:keyup.enter="searchMt"> <p>{{ wrhDateStart }}</p></InputText>
+                    <InputText type="date" v-model="wrhDateEnd" v-on:keyup.enter="searchMt"> <p>{{ wrhDateEnd }}</p></InputText>
                 </div>
-                <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
+                <button @click="searchMt"class="btn btn-primary search-btn" >조회</button>
             </div>
             
             <AgGridVue 
@@ -46,17 +47,23 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
-//부모 컴포넌트로 데이터 보내기
-const emit = defineEmits(["companySelectedData"]);
+import { defineProps } from "vue";
 
-//화면에 보이는 데이터
-let companyName = null;
-let companyCode = null;
+//부모 컴포넌트에서 보내준 데이터
+const props = defineProps(["params"]);
+
+const sendCodeToParent = () => {
+  //console.log(props);
+  const mtInfo = props.params.data; // 부모에서 선택한 행데이터
+  console.log('버튼 컴포넌트', mtInfo);
+};
+
+//화면에 보일 자재명
+let mtrilName = null;
 
 //검색조건
-let searchCompanyCode = null;
-let searchcompanyName = null;
-let searchchargerName = null;
+let keyLotName = null;
+let wrhousingCharger = null;
 
 //그리드 api를 담을 변수
 const gridApi = ref(null);
@@ -88,27 +95,16 @@ const modalOpen = () => {
     searchchargerName = null;
 }
 
-//모달 발주건을 선택하고 확인버튼 클릭
-const selectOrder = () => {
-    modalOpen()
-    const selectedNodes = gridApi.value.getSelectedNodes();
-    const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log('모달에서 선택된 행 데이터:', companySelectedData);
-    companyName = companySelectedData[0].mtlty_name;
-    companyCode = companySelectedData[0].bcnc_code;
-
-    console.log(companyName, companyCode);
-    emit("companySelectedData", companySelectedData);
-};
 //행 데이터를 담을 변수
 const rowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "bcnc_code", headerName: "발주번호"},
-  { field: "mtlty_name", headerName: "발주코드"},
-  { field: "charger_name", headerName: "발주명"},
-  { headerName : "선택",  checkboxSelection: true, flex:0.3}
+  { field: "mtril_lot", headerName: "로트명"},
+  { field: "mtril_qy", headerName: "재고 수량"},
+  { field: "unit", headerName: "단위"},
+  { field: "wrhousng_date", headerName: "입고일"},
+  { field: "empl_name", headerName: "입고 담당자"}
 ];
 
 const GridOptions = {
@@ -119,7 +115,7 @@ const GridOptions = {
       paginationPageSizeSelector: [10, 20, 50, 100],
 };
 
-const searchCompany = async() => {
+const searchMt = async() => {
     //서버로 보낼 검색 데이터
     let obj = {company_code: searchCompanyCode,
                 company_name: searchcompanyName,
@@ -133,8 +129,8 @@ const searchCompany = async() => {
     //행 데이터 담기
     rowData.value = result.data;   
 };
-
 </script>
+
 
 <style>
 /* dimmed */
@@ -145,7 +141,7 @@ const searchCompany = async() => {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 3;
+  z-index: 5;
 }
 /* modal or popup */
 .modal-container {
