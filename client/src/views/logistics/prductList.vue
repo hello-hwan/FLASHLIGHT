@@ -5,28 +5,36 @@
         <!-- 검색 필드 -->
         <v-col cols="12" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
+            <template v-slot:title>
+              <span class="font-weight-black">완제품조회</span>
+            </template>
             <v-card-text class="bg-surface-light pt-4">
+              <!-- 필터 검색 필드 -->
               <div class="row g-3 align-items-center">
-                <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">요청명</label>
+                <!-- 반제품LOT번호 -->
+                <div class="col-1">
+                  <label for="itemCode" class="col-form-label">완제품LOT번호</label>
                 </div>
-                <div class="col-auto">
-                  <input type="text" id="itemCode" class="form-control" v-model="LOTCode" placeholder="반제품출고요청명을 입력하세요" />
+                <div class="col-2">
+                  <input type="text" id="itemCode" class="form-control" v-model="LOTCode" />
                 </div>
-                <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">반제품명</label>
-                </div>
-                <div class="col-auto">
-                  <input type="text" id="itemCode" class="form-control" v-model="prdlstCode" placeholder="반제품명을 입력하세요" />
-                </div>
+                <!-- 품목코드 --> 
                 <div class="col-auto">
                   <label for="itemCode" class="col-form-label">품목코드</label>
                 </div>
-                <div class="col-auto">
-                  <input type="text" id="itemCode" class="form-control" v-model="prdlstName" placeholder="품목코드를 입력하세요" />
+                <div class="col-2">
+                  <input type="text" id="itemCode" class="form-control" v-model="prdlstCode" />
                 </div>
+                <!-- 제품명 -->
                 <div class="col-auto">
-                  <label for="startDate" class="col-form-label">요청일</label>
+                  <label for="itemCode" class="col-form-label">제품명</label>
+                </div>
+                <div class="col-2">
+                  <input type="text" id="itemCode" class="form-control" v-model="prdlstName"/>
+                </div>
+                <!-- 입고일자 -->
+                <div class="col-auto">
+                  <label for="startDate" class="col-form-label">입고일자</label>
                 </div>
                 <div class="col-auto">
                   <input type="date" id="startDate" class="form-control" v-model="startDate" :max="endDate"/>
@@ -37,27 +45,29 @@
                 <div class="col-auto">
                   <input type="date" id="endDate" class="form-control" v-model="endDate" :min="startDate"/>
                 </div>
-                <div class="col-auto">
-                  <button class="btn btn-primary" @click="filterByCode">검색</button>
-                </div>
-                <div class="col-auto">
-                  <button class="btn btn-secondary" @click="resetFilter">초기화</button>
-                </div>
+              </div>
+
+              <!-- 버튼 영역 (아래쪽 중앙 정렬) -->
+              <div class="d-flex justify-content-center mt-4">
+                <button class="btn btn-primary mx-2" @click="filterByCode">검색</button>
+                <button class="btn btn-secondary mx-2" @click="resetFilter">초기화</button>
               </div>
             </v-card-text>
           </v-card>
         </v-col>
       </v-row>
 
+      <!-- 그리드 영역 -->
       <v-row>
-        <v-col cols="6">
+        <v-col cols="12">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">반제품출고모달</span>
+              <span class="font-weight-black">완제품 입고 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
+              <!-- AgGrid -->
               <AgGridVue
-                style="height: 500px; margin: 0 auto;"
+                style="height: 400px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 :rowData="filteredRowData"
                 :columnDefs="colDefs"
@@ -80,17 +90,16 @@ import { AgGridVue } from "ag-grid-vue3";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
-
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
 
 export default {
   data() {
     return {
-      prductNDlivyList: [], 
-      rowData: [], 
-      filteredRowData: [], 
-      colDefs: [], 
+      prductWrhousngList: [], // 반제품입고완료 리스트
+      rowData: [], // 반제품입고완료 데이터
+      filteredRowData: [], // 검색된 데이터
+      colDefs: [], // 반제품입고완료 컬럼 정의
 
       gridOptionsReturn: {}, // AgGrid 옵션
 
@@ -100,24 +109,19 @@ export default {
       seCode: "",
       startDate: "",
       endDate: ""
-
     };
   },
   created() {
-    this.getprductNDlivyList();
+    this.getprductWrhousngList();
 
     this.colDefs = [
-      { field: "req_name", headerName: "요청명" },
-      { field: "req_de", headerName: "요청일",
-        valueFormatter: this.customDateFormat, //valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
-      },
-      { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
-      // { field: "procs_at", headerName: "처리상태",
-      //   valueFormatter: this.formet, // 처리상태 값 변환
-      // },
+      { field: "prduct_lot", headerName: "반제품LOT" },
+      { field: "prdlst_c_code", headerName: "품목코드" },
+      { field: "prduct_name", headerName: "제품명" },
+      { field: "wrhousng_day", headerName: "입고일자", valueFormatter: this.customDateFormat },
+      { field: "prduct_invntry_qy", headerName: "재고수량" },
     ];
 
-    // AgGrid 기본 옵션 설정
     this.gridOptionsReturn = {
       pagination: true,
       paginationPageSize: 10,
@@ -131,52 +135,45 @@ export default {
     };
   },
   methods: {
-    async getprductNDlivyList() {
-
-        let result = await axios.get(`${ajaxUrl}/prduct_n_dlivy`);
-        this.prductNDlivyList = result.data;
-        this.rowData = this.prductNDlivyList; // 받아온 데이터를 rowData에 할당
-        this.filteredRowData = this.rowData;  // 필터링된 데이터로 초기 설정
-
+    async getprductWrhousngList() {
+      let result = await axios.get(`${ajaxUrl}/prductWrhousngList`)
+        .catch(err => console.log(err));
+      this.prductWrhousngList = result.data;
+      this.rowData = this.prductWrhousngList;
+      this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
 
     filterByCode() {
-      // 필터링 조건이 없으면 전체 데이터 반환
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.req_de;
-
+        let prductNDate = row.wrhousng_day;
         let startDate = !this.startDate || prductNDate >= this.startDate;
         let endDate = !this.endDate || prductNDate <= this.endDate;
-
         return (
-          (!this.LOTCode || row.req_name.includes(this.LOTCode)) &&
-          startDate && // 시작일 비교
-          endDate // 종료일 비교
+          (!this.LOTCode || row.prduct_lot.includes(this.LOTCode)) &&
+          (!this.prdlstCode || row.prdlst_c_code.includes(this.prdlstCode)) &&
+          (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
+          startDate && endDate
         );
       });
     },
+    
     resetFilter() {
-      // 필터 초기화
       this.LOTCode = "";
+      this.prdlstCode = "";
+      this.prdlstName = "";
       this.seCode = "";
       this.startDate = "";
       this.endDate = "";
       this.filteredRowData = this.rowData;
     },
 
-    // 셀 클릭 시의 이벤트 핸들러 
-    onCellClicked2(event) {
-      console.log("선택된 셀:", event);
-    },
-    // 그리드 준비 완료 후 실행되는 메서드
     onGridReady(params) {
       this.gridOptionsReturn.api = params.api;
       this.gridOptionsReturn.columnApi = params.columnApi;
     },
-    //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
+
     customDateFormat(params) {
-      console.log(params);
-      return userDateUtils.dateFormat(params.data.prduct_n_wrhousng_day, 'yyyy-MM-dd');  //wrdate는 알레아스 이름
+      return userDateUtils.dateFormat(params.data.prduct_n_wrhousng_day, 'yyyy-MM-dd');
     }
   },
   components: {
@@ -184,3 +181,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.ag-theme-alpine {
+  height: 500px;
+}
+
+button {
+  margin-right: 10px;
+}
+</style>

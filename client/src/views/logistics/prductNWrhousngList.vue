@@ -1,5 +1,12 @@
 <template>
 <v-row>
+    <v-col cols="12">
+        <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 5px;">
+            <template v-slot:title>
+                        <span class="font-weight-black">반제품 입고 관리</span>
+            </template>
+        </v-card>
+    </v-col>
     <v-col cols="6">
         <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>

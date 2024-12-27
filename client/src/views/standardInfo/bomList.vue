@@ -2,7 +2,6 @@
   <div>
     <v-container fluid>
       <v-row>
-        <!-- 검색 필드와 입력 폼을 나란히 배치 -->
         <v-col cols="12" sm="6" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
             <v-card-text class="bg-surface-light pt-4">
@@ -54,7 +53,6 @@
         </v-col>
       </v-row>
 
-      <!-- 나머지 코드 유지 (그리드 등) -->
       <v-row>
         <v-col cols="12" sm="6" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
@@ -208,6 +206,9 @@
           this.getbomListInfo(this.selectedBomCode); // 상세 정보 조회
         }
       },
+      /**
+       * 
+       */
       async getbomList() {
         let result = await axios.get(`${ajaxUrl}/bom`)
                           .catch(err => console.log(err));
@@ -215,6 +216,7 @@
         this.rowData = this.bomList;
         this.filteredRowData = this.rowData; // 초기 데이터 설정
       },
+
       async getbomListInfo(bomCode) {
         let result = await axios.get(`${ajaxUrl}/bomManage/${bomCode}`)
                                   .catch(err => console.log(err));

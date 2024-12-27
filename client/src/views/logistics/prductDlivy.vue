@@ -6,7 +6,7 @@
         <!-- 검색 필드 -->
         <v-card class="mx-auto" style="border-radius: 13px;">
           <template v-slot:title>
-                <span class="font-weight-black">반제품 출고 관리</span>
+                <span class="font-weight-black">완제품 출고 관리</span>
           </template>
           <v-card-text class="bg-surface-light pt-4">
             <!-- 필터 검색 필드 -->
