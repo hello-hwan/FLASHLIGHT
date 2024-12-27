@@ -106,7 +106,7 @@
                     <th style="width: 25%;">
                     </th>
                     <th style="width: 25%;">
-                        <button type="button" class="btn btn-outline-success" @click="eqp_insert()">등록</button>
+                        <button type="button" class="btn btn-success" style="color: white;" @click="eqp_insert()">등록</button>
                     </th>
                 </tr>
             </tbody>

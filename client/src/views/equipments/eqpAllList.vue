@@ -18,7 +18,7 @@
             <tbody>
                 <tr>
                     <th style="width: 50%;" colspan="6">
-                        <button type="button" class="btn btn-outline-success" @click="chck_add_eqp()">설비 추가</button>
+                        <button type="button" class="btn btn-success" style="color: white;" @click="chck_add_eqp()">설비 추가</button>
                     </th>
                 </tr>
             </tbody>
