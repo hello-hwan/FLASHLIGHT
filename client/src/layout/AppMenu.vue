@@ -18,27 +18,7 @@ const model = ref([
                     {
                         label: '주문 요청 조회',
                         to: '/business/orderList'
-                    },
-                    {
-                        label: '반품 리스트 등록',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 리스트 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 재고 조정 등록',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 재고 조정 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 재고 조정 수량',
-                        to: '/'
-                    },
+                    }
                 ]
             },
             {
