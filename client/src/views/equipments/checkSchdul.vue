@@ -16,7 +16,7 @@
             </tr>
         </thead>
     </table>
-    <div style="width: 50%; display: inline-block;">
+    <div style="width: 50%; height: 525px; display: inline-block;">
         <v-row>
             <v-col>
                 <v-sheet height="525">
@@ -142,7 +142,6 @@ export default {
                     allDay: 0
                 })
             }
-            
         }
     }
 };

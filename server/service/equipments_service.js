@@ -93,6 +93,7 @@ const not_opr_update = async (list) => {
     await mariaDB.query('not_opr_update', list);
 }
 
+
 module.exports = {
     eqp_list,
     eqp_list_prod,
