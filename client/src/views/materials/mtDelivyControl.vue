@@ -106,9 +106,9 @@ const gridOptionsReq = {
         componentParent: { getReqCode } 
         /*
         cellRenderer에 설정한 자식 컴포넌트의 값을 받기위한 방식.
-        emit대신이라고 생각해야 될 것 같음. emit은 부모에서 이벤트가 있고 하위 컴포넌트에서 
-        어떤 데이터를 돌려줘야하는 형식이라면 cellRendereer는 조금 다름.
-        이벤트 자체가 하위 컴포넌트에서 발생하기 때문에 emit사용 불가*/
+        emit대신이라고 생각해야 될 것 같음. 
+        cellrenderer안에서 emit으로 받을 값을 받을 
+        함수를 설정할 수 없기 때문에 emit사용 불가*/
       },
       columnDefs: reqColDefs,
       pagination: true,

@@ -47,11 +47,21 @@ WHERE UPPER( r.order_no ) =UPPER( ? )`;
 const orderRequestDelete = `
 CALL p_delete_order_info(?)`;
 
+const bs_searchCompany =`
+SELECT bcnc_code,
+       mtlty_name,
+       charger_name
+FROM bcnc
+WHERE bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
+AND mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
+AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')`
+
 module.exports = {
     orderRequest,
     orderRequestInsert,
     orderRequestDetail,
-    orderRequestDelete
+    orderRequestDelete,
+    bs_searchCompany
 };
 
 

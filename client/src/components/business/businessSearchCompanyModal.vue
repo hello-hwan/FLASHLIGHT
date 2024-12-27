@@ -1,14 +1,14 @@
 <template>
-    <span style="margin-left:20px">
+    <span style="margin-left:20px; ">
         <span>거래처 명</span>
         <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
         <span>거래처 코드</span>
         <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText>
 
-        <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
+        <div class="modal-wrap" @click="modalOpen" v-show="modalCheck" >
         <div class="modal-container" @click.stop="">
             <div id="search-bar">
-                <div class="align-left">                
+                <div class="align-left"> 
                     <span>거래처 코드</span>
                     <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
                     <span>상호명</span>
@@ -42,7 +42,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
@@ -50,37 +50,13 @@ import { ajaxUrl } from '@/utils/commons.js';
 const emit = defineEmits(["companySelectedData"]);
 
 //화면에 보이는 데이터
-let companyName = ref(null);
-let companyCode = ref(null);
+let companyName = null;
+let companyCode = null;
 
 //검색조건
 let searchCompanyCode = null;
 let searchcompanyName = null;
 let searchchargerName = null;
-
-//부모로 부터 받은 회사 정보
-const props = defineProps(['companyInfo']);
-
-//부모로 부터 받은 값이 바뀌면(거래처 상호명, 거래처 코드)
-watch(() => props.companyInfo, (newValue) => {
-    console.log(newValue);
-    console.log("회사코드", newValue.company_code);
-    console.log("회사명", newValue.company_name);
-    //부모 컴포넌트의 회사명, 회사코드가 바뀌면 새로운 값이 할당됨
-    companyName.value = newValue.company_name;
-    companyCode.value = newValue.company_code;
-});
-/* 
-객체를 받기때문에 () => ...의 형태로 한번 더 싸는 깊은 복사의 형태가 돼야함.
-그렇지 않으면 watch에서 감지안됨.
-watch(() => props.companyInfo.company_code, (newValue) => {
-    console.log('회사코드: ', newValue);
-});
-watch(() => props.companyInfo.company_name, (newValue) => {
-    console.log('회사명: ', newValue);
-});
-*/
-
 
 //그리드 api를 담을 변수
 const gridApi = ref(null);
@@ -118,12 +94,10 @@ const selectOrder = () => {
     const selectedNodes = gridApi.value.getSelectedNodes();
     const companySelectedData = selectedNodes.map((node) => node.data);
     console.log('모달에서 선택된 행 데이터:', companySelectedData);
-    companyName.value = companySelectedData[0].mtlty_name;
-    companyCode.value = companySelectedData[0].bcnc_code;
+    companyName = companySelectedData[0].mtlty_name;
+    companyCode = companySelectedData[0].bcnc_code;
 
-    //console.log(companyName, companyCode);
-    companyName.value = companySelectedData[0].mtlty_name;
-    companyCode.value = companySelectedData[0].bcnc_code;
+    console.log(companyName, companyCode);
     emit("companySelectedData", companySelectedData);
 };
 //행 데이터를 담을 변수
@@ -152,7 +126,7 @@ const searchCompany = async() => {
                 charger_name: searchchargerName
             };
     //console.log("새로만든 객체: ",obj);
-    let result = await axios.post(`${ajaxUrl}/mtril/searchCompany`, obj)
+    let result = await axios.post(`${ajaxUrl}/business/searchCompany`, obj)
                             .catch(err=>console.log(err));
 
     //console.log("통신결과: ",result);
@@ -162,7 +136,7 @@ const searchCompany = async() => {
 
 </script>
 
-<style>
+<style scoped>
 /* dimmed */
 .modal-wrap {
   position: fixed;

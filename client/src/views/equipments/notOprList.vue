@@ -21,7 +21,7 @@
                         <th>
                             특이사항 : 
                             <input style="background-color:lightsteelblue;" type="text" size="30" v-model="not_opr">
-                            <button type="button" class="btn btn-outline-primary" @click="submit_btn()">미가동 해제</button>
+                            <button type="button" class="btn btn-primary" style="color: white;" @click="submit_btn()">미가동 해제</button>
                         </th>
                     </tr>
                 </tbody>

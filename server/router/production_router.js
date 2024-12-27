@@ -139,7 +139,13 @@ router.get('/prod/selmatrl/:code', async (req, res) => {
 // 생산실적 삽입 - 키오스크 시작보고 버튼
 router.post('/prod/addstate', async (req, res) => {
   let array = [];
-  
+  array.push(req.body.prdctn_code);
+  array.push(req.body.procs_nm);
+  array.push(req.body.prd_code);
+  array.push(req.body.prdctn_co);
+  array.push(req.body.eqp_code);
+  array.push(req.body.begin_time);
+  array.push(parseInt(req.body.empl_no));
   prodService
   .addstate(array)
   .then(list => {
@@ -149,6 +155,41 @@ router.post('/prod/addstate', async (req, res) => {
     res.status(500).send('Fail Process');
   })
 });
+
+// 생산 실적 단건조회 - 키오스크 완료 보고
+router.get('/prod/stateinfo/:code', async (req, res) => {
+  let code = req.params.code;
+  prodService
+  .stateinfo(code)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+// 불량품 정보 삽입 - 키오스크 완료보고
+router.post('/prod/addbad', async (req, res) => {
+  let array = [];
+  array.push(parseInt(req.body.badn_qy));
+  array.push(req.body.badn_ty);
+  array.push(req.body.prdctn_code);
+  prodService
+  .addbad(array)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+// 생산 완료 보고 - 키오스크 완료보고
+router.put('/prod/updstate', async (req, res) => {
+  let array = [];
+
+})
 
 
 

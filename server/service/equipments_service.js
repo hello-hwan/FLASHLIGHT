@@ -38,7 +38,9 @@ const chck_fc_insert = async (list) => {
 
 // 점검 결과 등록
 const chck_result_insert = async (list) => {
-    await mariaDB.query('chck_result_insert', list);
+    for (let i = 0 ; i < list.length ; i++) {
+        await mariaDB.query('chck_result_insert', list[i]);
+    }
 }
 
 // 점검 결과 등록할 일정 코드 찾기
@@ -90,6 +92,7 @@ const not_opr_list = async () => {
 const not_opr_update = async (list) => {
     await mariaDB.query('not_opr_update', list);
 }
+
 
 module.exports = {
     eqp_list,

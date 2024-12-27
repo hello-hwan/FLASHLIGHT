@@ -153,4 +153,12 @@ router.delete('/ProcsCodeToDeleteFlowchart/:procs_code', async(req, res)=>{
   res.send(result);
 });
 
+// 품목코드 검색용 조회
+router.get('/prd_code_search/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.prd_code_search(prd_code);
+  res.send(list);
+});
+
+
 module.exports = router;     

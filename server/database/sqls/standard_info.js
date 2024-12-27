@@ -175,6 +175,13 @@ const ProcsCodeToDeleteFlowchart =
  WHERE procs_code = ?
 `;
 
+// 품목코드 검색용 조회
+const prd_code_search = 
+`SELECT DISTINCT prd_code, 
+                 prd_nm
+ FROM procs_flowchart
+ WHERE prd_code LIKE CONCAT('%', ?, '%')`;
+
 module.exports = {
   bom,
   bomInfo,
@@ -195,5 +202,6 @@ module.exports = {
   prdCodeToProcsCode, 
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
-  ProcsCodeToDeleteFlowchart
+  ProcsCodeToDeleteFlowchart, 
+  prd_code_search
 };

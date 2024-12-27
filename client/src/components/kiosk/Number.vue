@@ -1,6 +1,6 @@
 <template>
   <span style="margin-left:20px">
-      <input type="text" id="empl_no" v-model="inputValue" class="display-6 text-lg-right" style="background-color: white; margin-left: 5%;" @click="modalOpen">
+      <input type="text" id="empl_no" v-model="inputValue" class="display-6 text-lg-right" style="background-color: white; margin-left: 5%; width: 70%;" @click="modalOpen">
       <!-- 모달창 열기 -->
       <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
@@ -33,9 +33,9 @@
                   <th @click="typing">9</th>
                 </tr>
                 <tr>
-                  <th @click="typing">-</th>
+                  <th @click="typing">초기화</th>
                   <th @click="typing">0</th>
-                  <th @click="typing">←</th>
+                  <th @click="typing">지우기</th>
                 </tr>
               </table>
             </div>
@@ -60,9 +60,11 @@ let check = ref('');
 // 숫자 버튼 클릭시 함수
 const typing = (event) => {
   let newText = check.value;
-  if(event.target.innerHTML == '←'){
+  if(event.target.innerHTML == '지우기'){
     newText = newText.slice(0, newText.length-1);
-  } else {
+  } else if (event.target.innerHTML == '초기화') {
+    newText = '';
+  }else {
     newText += event.target.innerHTML;
   }
   check.value = newText;
@@ -83,6 +85,7 @@ const modalOpen = () => {
   if(modalCheck.value == false) {
       modalCheck.value = !modalCheck.value;
       html.style.overflow = 'hidden';
+      check.value = '';
   } else {
       modalCheck.value = !modalCheck.value;
       html.style.overflow = 'auto';

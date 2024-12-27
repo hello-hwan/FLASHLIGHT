@@ -87,19 +87,19 @@
             <tbody>
                 <tr>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-primary" @click="add_btn()">행 추가</button>
+                        <button type="button" class="btn btn-primary" style="color: white;" @click="add_btn()">행 추가</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-danger" @click="delete_btn()">행 삭제</button>
+                        <button type="button" class="btn btn-danger" style="color: white;" @click="delete_btn()">행 삭제</button>
                     </th>
                     <th style="width: 40%;">
                         <input style="background-color:lightsteelblue;" type="text" size="50" v-model="not_check">
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-warning" @click="not_check_btn()">미점검</button>
+                        <button type="button" class="btn btn-warning" style="color: white;" @click="not_check_btn()">미점검</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-danger" @click="not_opr_btn()">미가동</button>
+                        <button type="button" class="btn btn-danger" style="color: white;" @click="not_opr_btn()">미가동</button>
                     </th>
                     <th style="width: 10%;">
                         최종 결과
@@ -114,8 +114,8 @@
                     </th>
                 </tr>
                 <tr>
-                    <th style="width: 50%;" colspan="6">
-                        <button type="button" class="btn btn-outline-success" @click="chck_fx_insert()">등록</button>
+                    <th style="width: 50%;" colspan="7">
+                        <button type="button" class="btn btn-success" style="color: white;" @click="chck_fx_insert()">등록</button>
                     </th>
                 </tr>
             </tbody>
@@ -243,6 +243,8 @@ export default {
             let result_2 = await axios.post(`${ajaxUrl}/equip/chck_fc_insert`, list)
                 .catch(err => console.log(err));
 
+
+            let insert_arr = [];
             for (let i = 0; i < this.rowData.length; i++) {
                 let chck_result_insert = [
                     parseInt(this.fx_code),
@@ -250,10 +252,12 @@ export default {
                     parseInt(this.rowData[i].mesure_value),
                     this.rowData[i].stblt_at,
                 ];
+                insert_arr.push(chck_result_insert);
                 console.log(chck_result_insert);
-                let result = await axios.post(`${ajaxUrl}/equip/chck_result_insert`, chck_result_insert)
-                    .catch(err => console.log(err));
             }
+
+            let result_3 = await axios.post(`${ajaxUrl}/equip/chck_result_insert`, insert_arr)
+                .catch(err => console.log(err));
             this.$router.push({ name: 'checkSchdul' });
         },
         async not_check_btn() {

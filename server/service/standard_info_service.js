@@ -136,6 +136,11 @@ const ProcsCodeToDeleteFlowchart = async (procs_code)=>{
   await mariaDB.query('ProcsCodeToDeleteFlowchart', procs_code);
 }
 
+// 품목코드 검색용 조회
+const prd_code_search = async (prd_code) => {
+  let list = await mariaDB.query('prd_code_search', prd_code);
+  return list;
+}
 
 module.exports = {
   cmmntest,
@@ -158,5 +163,6 @@ module.exports = {
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
   ProcsCodeToDeleteFlowchart,
-  bomManage
+  bomManage,
+  prd_code_search
 };
