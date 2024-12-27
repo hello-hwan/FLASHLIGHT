@@ -7,7 +7,7 @@
         </template>
     </v-card>
 
-    <v-container fluid>
+    <v-container fluid style="position:relative; z-index: 1;">
         <v-row>
         <!-- 검색 필드 -->
         <v-col cols="12">
@@ -18,12 +18,7 @@
                         <label for="orderFormMtltyCode" class="col-form-label" >업체코드</label>
                     </div>
                     <div class="col-auto">
-                        <input type="text" id="orderFormMtltyCode" class="form-control" v-model="this.requst.p_code" placeholder="BCNC-01">
-                    </div>
-                    <div class="col-auto">
-                        <span class="form-text">
-                        PRD-00
-                        </span>
+                        <bfSearchCompanyModal @companySelectedData="getBFCompanyInfo"  />
                     </div>
                 </div>
                 <div class="row g-3 align-items-center">
@@ -66,7 +61,6 @@
                     </div>
                 </div>
                 <div style="margin-top:10px;">
-                    <!-- <button type="button" class="btn btn-secondary" @click="getAllRows()">저장</button> -->
                     <button type="button" class="btn btn-success" @click="orderInsert()" style="color:white;">주문등록</button>
                     <button type="button" class="btn btn-warning" @click="onInsertInit()" >초기화</button>
                     <button type="button" class="btn btn-danger orderRowInsert" @click="deleteBtn()" style="color:white;">선택행삭제</button>
@@ -77,12 +71,11 @@
         </v-col>
       </v-row>
 
-
     </v-container>
-    <v-card-text class="bg-surface-light pt-4">
+    <v-card-text class="bg-surface-light pt-4" style="position: relative; z-index:0;">
     <div>
-        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 519px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
-        @grid-ready="onGridReady" rowSelection="multiple">
+        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 519px; position:relative; z-index:0;" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
+        @grid-ready="onGridReady" rowSelection="multiple" >
         </ag-grid-vue>
     </div>
     </v-card-text>
@@ -98,13 +91,16 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue';
+
 export default {
-    data() {
-        return {
+    data() { 
+        return { 
             orderList: [], 
             rowData: ref([]), 
             colDefs: '', 
-            requst:{} 
+            requst:{}, 
+            companyCode: ''
         }; 
     }, 
     created() { 
@@ -133,7 +129,8 @@ export default {
     }, 
     name: "App", 
     components: { 
-        AgGridVue // Add Vue Data Grid component
+        AgGridVue, // Add Vue Data Grid component
+        bfSearchCompanyModal
     }, 
     methods: { 
         onGridReady(params) { 
@@ -218,7 +215,10 @@ export default {
                 untpc: 0, 
                 order_qy: 0,
                 wrter:"김기환"
-            }];
+            }]; 
+        },
+        getBFCompanyInfo(info){
+            this.requst.p_code = info[0].bcnc_code;
         }
     }
 };

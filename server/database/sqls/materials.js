@@ -80,9 +80,9 @@ SELECT  bcnc_code,
 	mtlty_name,
         charger_name
 FROM    bcnc
-WHERE   bcnc_code = IFNULL(?, bcnc_code)
-AND     mtlty_name = IFNULL(?, mtlty_name)
-AND     charger_name = IFNULL(?, charger_name)
+WHERE   bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
+AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
+AND     charger_name = LIKE CONCAT('%', IFNULL(?, charger_name), '%')
 `;
 
 //수정할 발주건 검색 - mt004 조건
