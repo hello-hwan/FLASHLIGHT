@@ -7,16 +7,14 @@
         rowSelection="multiple"
         class="ag-theme-alpine"
         @grid-ready="onGridReady"
-        style="height: 300px"
-
-        >
+        style="height: 300px">
         </AgGridVue>
 
         <div style="margin: 20px; text-align: right">
             <span>
                 <span>발주명</span>
                 <InputText type="text" v-model="orderName" class="emp_info"> <p>{{ orderName }}</p></InputText>
-                <companySearchModal @companySelectedData="getCompanyInfo"/> 
+                <companySearchModal v-bind:companyInfo="companyInfoForChildComponent" @companySelectedData="getCompanyInfo"/> 
                 <span>담당자</span>
                 <InputText type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
             </span>
@@ -111,7 +109,11 @@ let delBtn = ref(false);
 //자식 컴포넌트로부터 받은(선택한) 데이터 (발주건)
 const getOrderDetails = (info) => {
     orderCode.value = info[0].order_code;
+    //자식 컴포넌트로 상호명, 거래처코드 넘겨주기
+
 };
+//자식 컴포넌트로 보낼 회사명, 코드를 담을 변수
+let companyInfoForChildComponent = ref({company_name: "", company_code:""});
 
 //회사 검색 모달에서 넘어오는 데이터 (상호명, 거래처 코드)
 const getCompanyInfo = (info) => {
@@ -119,7 +121,13 @@ const getCompanyInfo = (info) => {
     //실제 db로 보내거나 사용하는 데이터는 emit으로 부모로 보내서 받음.
     companyName = info[0].mtlty_name;
     companyCode = info[0].bcnc_code;
+};
 
+//보이는 값을 바꾸기 위해서 자식 컴포넌트로 거래처 상호명, 코드를 v-bind로 전달함.
+
+const sendCompanyInfo = (info) => {
+    companyInfoForChildComponent.value = {company_name: info.data[0].company_name, 
+                                            company_code: info.data[0].company_code};
 };
 
 //날짜 포멧
@@ -198,9 +206,9 @@ const mtListonGridReady = (params) => {
 const getOrderRowData = () => {
       const selectedNodes = gridApi.value.getSelectedNodes();
       const selectedData = selectedNodes.map((node) => node.data);
-      
+
       //행에 데이터 넣기
-      orderRowData.value = selectedData;   
+      orderRowData.value = selectedData;
 };
 
 //행 추가
@@ -266,6 +274,7 @@ watch(() => orderCode.value, async(newVal) => {
     let result = await axios.get(`${ajaxUrl}/mtril/mtListOnOrder/${orderCode.value}`)
                       .catch(err=>console.log(err));
 
+    console.log(result);
     //거래처명, 주문명 인풋박스에 넣기
     companyName = result.data[0].company_name;
     orderName = result.data[0].req_name;
@@ -279,7 +288,10 @@ watch(() => orderCode.value, async(newVal) => {
 
     //삭제버튼 활성화
     delBtn.value = true;
+    sendCompanyInfo(result);
 });
+
+
 
 //요청 자재 리스트 가져오기
 const mtReqList = async() => {
@@ -321,7 +333,7 @@ const insertMtOrderList = async() => {
             //발주명, 거래처명 이 비어있으면 오류
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명, 거래처 명을 확인해주세요.', life: 3000 });
             return;
-        } else if (rowData[i].dedt.length == 11 ) {
+        } else if (rowData[i].dedt.length == 0 ) {
             //주문수량이 비어 있으면 오류 메세지 출력
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
             return;

@@ -18,7 +18,7 @@
     //console.log(props);
     const reqCode = props.params.data.code; // 요청 코드 가져오기
     console.log('버튼 컴포넌트', reqCode);
-    props.params.context.componentParent.getReqCode(reqCode); // 부모로 전달
+    props.params.context.componentParent.getReqCode(reqCode); // 부모로 컴포넌트의 함수로 전달
   };
   </script>
 

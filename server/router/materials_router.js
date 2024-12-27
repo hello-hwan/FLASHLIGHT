@@ -106,4 +106,17 @@ router.get('/mtril/mtAllQy', async(req, res) => {
     res.send(result);
 });
 
+//로트별 자재 재고 조회
+router.post('/mtril/lot', async(req, res) => {
+    let searchKey = req.body;
+    let result = await mtrilService.mtLotQy(searchKey);
+    res.send(result);
+});
+
+//자재 발주조회
+router.post('/mtril/allOrderList', async(req, res) => {
+    let searchKey = req.body;
+    let result = await mtrilService.allOrderList(searchKey);
+    res.send(result);
+})
 module.exports = router;
