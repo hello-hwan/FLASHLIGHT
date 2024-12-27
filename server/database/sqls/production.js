@@ -82,7 +82,14 @@ const pr_selempl = // 사원코드로 사원명 조회
 `
 SELECT empl_name
 FROM empl
-WHERE empl_co = ?
+WHERE empl_no = ?
+`;
+
+const pr_onestate = // 생산지시 코드로 실적 단건 조회
+`
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, ps.prdctn_co, ps.eqp_code, pd.model_nm, ps.empl_no, ps.empl_nm
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+WHERE ps.prdctn_code = ?
 `;
 
 
@@ -93,7 +100,18 @@ INSERT INTO product_state(prdctn_code, procs_nm, prd_code, prdctn_co, eqp_code, 
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
+const pr_insbad = // 불량품 정보 삽입
+`
+INSERT INTO badn_info(badn_code, badn_qy, badn_ty, prdctn_code)
+VALUES (?, ?, ?, ?);
+`;
 
+const pr_cobad = // 생산지시 코드로 불량품 카운트 조회
+`
+SELECT CONCAT(?, '-', COUNT(badn_code)+1) as badn_code, sum(badn_qy) total_qy
+FROM badn_info
+WHERE prdctn_code = ?
+`;
 
 
 // 수정문
@@ -166,6 +184,10 @@ module.exports = {
   pr_selmatrl,
   pr_selempl,
   pr_insstate,
+  pr_onestate,
+  pr_insbad,
+  pr_cobad,
+
 
 
 

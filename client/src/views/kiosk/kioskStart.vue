@@ -27,8 +27,8 @@
             <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;"></div>
-            <p v-for="mt in matril" :key="mt.mtril_code">{{ mt.mtril_nm + ' ' + mt.usgqty + '개 사용 예정' }}</p>
-            <p v-if="matril.length == 0" class="font-weight-black display-6">원자재 미사용</p>
+            <p v-for="mt in matril" :key="mt.mtril_code">{{ mt.mtril_nm + ' ' + (mt.usgqty * info.prdctn_co) + '개 사용 예정' }}</p>
+            <p v-if="matril.length == 0" class="font-weight-black display-6">재료 미사용</p>
             <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;"></div>
@@ -38,10 +38,10 @@
                 text-align: right;
                 height: 38px;"></div>
 
-            <button type="button" class="kiosk-btn back-blue display-6 font-weight-black" @click="gotostart()">시작</button>
+            <button type="button" class="kiosk-btn back-blue display-6 font-weight-black" @click="gotostart(empl)">시작</button>
             <button type="button" class="kiosk-btn back-red display-6 font-weight-black" @click="gotoback()">뒤로가기</button>
             <br>
-            <button type="button" class="kiosk-btn back-green display-6 font-weight-black" @click="gotoshift()">공정이동표</button>
+            <button type="button" class="kiosk-btn back-green display-6 font-weight-black" @click="gotoshift(empl)">공정이동표</button>
 
           </v-card-text>
         </v-card>
@@ -54,7 +54,7 @@
 <script setup>
 import axios from "axios";
 import { ajaxUrl } from '@/utils/commons.js';
-import { ref, onBeforeMount, watch } from "vue";
+import { ref, onBeforeMount } from "vue";
 import { useRoute, useRouter } from 'vue-router';
 import useDates from "@/utils/useDates";
 import { useToast } from 'primevue/usetoast';
@@ -102,15 +102,30 @@ const getmatril = async (code) => {
 };
 
 // 시작 함수
-const gotostart = async (empl) => {
+const gotostart = async (emplno) => {
   if(empl.length == 0){
     toast.add({ severity: 'warn', summary: '생산자 미입력', detail: '사원번호를 입력해주세요.', life: 3000 });
     return;
   }
-  let result = await axios.post(`${ajaxUrl}/prod/addstate`, { "prdctn_code" : info.prdctn_code, })
-                          .catch(err => console.log(err));
 
-  router.push({ name : 'kioskMain' });
+
+  let result = await axios.post(`${ajaxUrl}/prod/addstate`, { "prdctn_code" : info.value.prdctn_code, "procs_nm": info.value.procs_nm, "prd_code": info.value.prd_code, "prdctn_co": info.value.prdctn_co, "eqp_code": info.value.eqp_code, "begin_time": datetime.value, "empl_no": emplno })
+                          .catch(err => console.log(err));
+  console.log(result);
+  if(result == undefined) return;
+
+  // 해당 사원이 없을때
+  if(result.data.retCode == 2){
+    empl.value = '';
+    toast.add({ severity: 'warn', summary: '사원번호 오류', detail: '해당번호의 사원번호가 없습니다.\n사원번호를 다시 입력해주세요.', life: 3000 });
+  } else if (result.data.retCode == 0){
+    // 삽입 실패 했을때
+    toast.add({ severity: 'error', summary: '처리 실패', detail: '시작 보고에 실패되었습니다.\n다시 시도해주세요.', life: 3000 });
+  } else {
+    // 삽입 성공했을 때
+    toast.add({ severity: 'success', summary: '처리 성공', detail: '시작 보고가 완료되었습니다.\n처음페이지로 이동합니다.', life: 3000 });
+    router.push({ name : 'kioskMain' });
+  }
 };
 
 
@@ -120,12 +135,8 @@ const gotoback = async () => {
 };
 
 // 공정이동표 함수
-const gotoshift = async () => {
-  console.log(empl.value);
-};
-
-const gotoNumber = async () => {
-
+const gotoshift = async (empl) => {
+  console.log(empl);
 };
 
 

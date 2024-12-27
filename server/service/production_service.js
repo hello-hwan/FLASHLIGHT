@@ -137,33 +137,69 @@ const drctinfo = async (code) => {
 // 해당 공정의 자재 소모량 조회
 const selmatrl = async (code) => {
   let list = await mariaDB.query('pr_selmatrl', code);
+  for(let i = 0; i < list.length; i++){
+    list[i].usage = "";
+  }
   return list;
 };
 
 // 생산실적 삽입
 const addstate = async (array) => {
-  let result = [];
-
+  let result = {};
+  // 사원 검색
   let empl = await mariaDB.query('pr_selempl', array[6]);
+  console.log(empl);
+
+  //  사원이 없을 경우 2 빠져나감
   if(empl.length == 0){
-    //  사원이 없을 경우 2 빠져나감
-    result.push({retCode : 2});
+    result.retCode = 2;
     return result;
   }
   
-  let name = empl[0];
-  let newArray = [...array, name.empl_nm];
+  // 사원 있을경우 새 배열에 값 넣기
+  let name = empl[0].empl_name;
+  let newArray = [...array, name];
 
+  console.log(newArray);
+
+  // 생산 실적에 시작하는 값 넣기
   let list = await mariaDB.query('pr_insstate', newArray);
   // 성공시 1
   if(list.affectedRows == 1){
-     result.push({retCode: 1});
+    result.retCode = 1;
   }else {
     // 실패시 0
-    result.push({retCode: 0});
+    result.retCode = 0;
   }
   return result;
-}
+};
+
+// 생산 실적 단건 조회
+const stateinfo = async (code) => {
+  let list = await mariaDB.query('pr_onestate', code);
+  let result = list[0];
+  return result;
+};
+
+// 불량품 삽입
+const addbad = async (array) => {
+  let result = {};
+  // 불량 코드 만들기
+  let co = await mariaDB.query('pr_cobad', [array[2], array[2]]);
+  // 불량 정보 삽입
+  let list = await mariaDB.query('pr_insbad', [co[0].badn_code, ...array]);
+  // 성공시 1
+  if(list.affectedRows == 1){
+    result.retCode = 1;
+  }else {
+    // 실패시 0
+    result.retCode = 0;
+  }
+  return result;
+};
+
+// 완료 보고 정상실행
+
 
 
 
@@ -230,6 +266,8 @@ module.exports = {
   drctinfo,
   selmatrl,
   addstate,
+  stateinfo,
+  addbad,
 
 
 
