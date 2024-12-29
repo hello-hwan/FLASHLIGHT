@@ -92,6 +92,20 @@ FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
 WHERE ps.prdctn_code = ?
 `;
 
+const pr_cobad = // 생산지시 코드로 불량품 카운트 조회
+`
+SELECT CONCAT(?, '-', COUNT(badn_code)+1) as badn_code, sum(badn_qy) total_qy
+FROM badn_info
+WHERE prdctn_code = ?
+`;
+
+const pr_badco = // 생산지시 코드로 불량품 수량 조회
+`
+SELECT SUM(badn_qy) as badn_qy
+FROM badn_info
+WHERE prdctn_code = ?
+`;
+
 
 // 삽입문
 const pr_insstate = // 생산 실적 삽입
@@ -106,12 +120,7 @@ INSERT INTO badn_info(badn_code, badn_qy, badn_ty, prdctn_code)
 VALUES (?, ?, ?, ?);
 `;
 
-const pr_cobad = // 생산지시 코드로 불량품 카운트 조회
-`
-SELECT CONCAT(?, '-', COUNT(badn_code)+1) as badn_code, sum(badn_qy) total_qy
-FROM badn_info
-WHERE prdctn_code = ?
-`;
+
 
 
 // 수정문
@@ -123,6 +132,12 @@ SET procs_at = 'RD02', req_de = NOW(), req_qy = ?
 WHERE req_code = ?
 `;
 
+const pr_upstate = // 생산 실적 수정(종료시간, 양품, 불량품)
+`
+UPDATE product_state
+SET end_time = ?, nrmlt = ?, badn = ?
+WHERE prdctn_code = ?
+`;
 
 
 // 삭제문
@@ -187,6 +202,8 @@ module.exports = {
   pr_onestate,
   pr_insbad,
   pr_cobad,
+  pr_badco,
+  pr_upstate,
 
 
 

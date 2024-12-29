@@ -836,3 +836,14 @@ SELECT *
 FROM thng_req
 WHERE procs_at = 'RD01'
 AND prdctn_code IS NOT NULL; 
+
+SELECT *
+FROM badn_info;
+
+SELECT SUM(badn_qy)
+FROM badn_info
+WHERE prdctn_code = ?
+
+UPDATE product_state
+SET end_time = ?, nrmlt = ?, badn = ?
+WHERE prdctn_code = ?

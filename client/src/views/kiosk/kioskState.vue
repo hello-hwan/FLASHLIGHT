@@ -134,8 +134,8 @@ const getinfo = async (code) => {
 
 // 공정흐름도에서 소모자재 조회
 const getmatril = async (code) => {
-  // let result = await axios.get(`${ajaxUrl}/prod/selmatrl/${code}`)
-  let result = await axios.get(`${ajaxUrl}/prod/selmatrl/aaa1-1`)
+  let result = await axios.get(`${ajaxUrl}/prod/selmatrl/${code}`)
+  // let result = await axios.get(`${ajaxUrl}/prod/selmatrl/aaa1-1`)
                           .catch(err => console.log(err));
   matril.value = result.data;
 };
@@ -180,15 +180,37 @@ const finishstate = async () => {
     toast.add({ severity: 'warn', summary: '사원 번호 오류', detail: '사원 번호가 다릅니다. \n 사원번호를 다시 입력해주세요.', life: 3000 });
     return;
   }
+  // 양품 입력 안하면 보고 불가
   if(!nrmlt.value){
     toast.add({ severity: 'warn', summary: '양품 수량 미입력', detail: '양품 수량을 입력하세요.', life: 3000 });
     return;
   }
-  console.log(matril.value);
+  // 소모 재료 없을 때
   if(matril.value.length == 0){
-    let result = await axios.put(`${ajaxUrl}/prod/updstate`, { "end_time" : datetime.value, "nrmlt" : nrmlt.value, "prdctn_code" : info.value.prdctn_code })
+    let result = await axios.put(`${ajaxUrl}/prod/updstate/no`, { "end_time" : datetime.value, "nrmlt" : nrmlt.value, "prdctn_code" : info.value.prdctn_code })
                             .catch(err => console.log(err));
+    if(result.data.retCode == 1){
+      toast.add({ severity: 'success', summary: '제출 성공', detail: '생산완료 보고 처리가 완료되었습니다.', life: 3000 });
+      router.push({ name : 'kioskMain' });
+    } else {
+      toast.add({ severity: 'error', summary: '제출 실패', detail: '생산완료 보고 처리에 실패했습니다.\n다시 시도해주세요.', life: 3000 });
+    }
   } else {
+    // 소모 재료 있을 때
+    let checkisnull = false;
+    for(let i = 0; i < matril.value.length; i++){
+      if(!matril.value[i].usage){
+        checkisnull = true;
+      }
+    }
+    // 소모량 입력 안하면 보고 불가
+    if(checkisnull){
+      toast.add({ severity: 'warn', summary: '사용 재료 미입력', detail: '재료 수량을 모두 입력하세요.', life: 3000 });
+      return;
+    }
+    let result = await axios.put(`${ajaxUrl}/prod/updstate/yes`, { "end_time" : datetime.value, "nrmlt" : nrmlt.value, "prdctn_code" : info.value.prdctn_code, "matril": matril.value })
+                            .catch(err => console.log(err));
+    console.log(result);
 
   }
 };
