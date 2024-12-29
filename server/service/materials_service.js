@@ -386,6 +386,25 @@ const allOrderList = async(key) => {
     console.log('조회 결과: ', result);
     return result;
 };
+
+//자재 입고조회
+const wrhousingList = async(key) => {
+    let searchKeyArr = [];
+    let result = await mariaDB.query('mt_wrhousngList', searchKeyArr)
+                              .catch(err => console.log(err));
+
+    return result;
+};
+
+//자재 출고 조회
+const dlivyList = async(key) => {
+    let searchKeyArr = [];
+    let result = await mariaDB.query('mt_dlivyList', searchKeyArr)
+                              .catch(err => console.log(err));
+
+    return result;
+};
+
 module.exports = {
     returnMt,
     orderMt,
@@ -403,5 +422,7 @@ module.exports = {
     searchCompanyModal,
     allMtQy,
     mtLotQy,
-    allOrderList
+    allOrderList,
+    wrhousingList,
+    dlivyList
 };

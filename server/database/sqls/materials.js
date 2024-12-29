@@ -209,9 +209,25 @@ CALL mt_wrhousing_process(
 )
 `;
 
-//자재 입고 조회 - mt008 
+//자재 입고 조회 - mt008 조건 자재명, 구분, 담당자, 날짜1,2
 const mt_wrhousngList =
 `
+SELECT  m.mtril_code AS mtril_code,
+        m.mtril_name AS mtril_name,
+        m.wrh_qy AS wrh_qy,
+        s.unit AS unit,
+        m.mtril_lot AS mtril_lot,
+        m.wrhousng_se AS wrhousng_se,
+        m.wrhousng_date AS wrhousng_date,
+        t.empl_name AS empl_name
+FROM    mtril_wrhousing m JOIN mtril s
+                            ON (m.mtril_code = s.mtril_code)
+                          JOIN empl t
+                            ON (m.empl_no = t.empl_no)
+WHERE   m.mtril_name IN CONCAT('%', IFNULL(?, m.mtril_name) ,'%')
+AND     m.wrhousng_se IN CONCAT('%', IFNULL(?, m.wrhousng_se), '%')
+AND     t.empl_name IN CONCAT('%', IFNULL(?, t.empl_name), '%')
+AND     m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
 `;
 
 //자재 출고 관리 - mt009 요청가져오기
@@ -269,24 +285,25 @@ CALL mt_dlivy_process(
 )
 `;
 
-//자재 출고 관리 요청명 검색 모달 - mt010
-const mt_searchRequest = 
-`
-`;
-
-//자재 출고 관리 요청명 검색 모달 - mt010 조건
-const mt_searchRequestWithKey =
-`
-`;
-
 //자재 출고 조회 - mt011
 const mt_dlivyList =
 `
-`;
-
-//자재 출고 조회 조건 - mt011
-const mt_dlivyListWithKey =
-`
+SELECT  m.req_name,
+        m.requst_date,
+        m.mtril_code,
+        m.mtril_name,
+        m.mtril_lot,
+        m.requst_qy,
+        s.unit,
+        t.empl_name
+FROM    mtril_dlivy m JOIN mtril s
+                        ON (m.mtril_code = s.mtril_code)
+                      JOIN empl t
+                        ON (m.empl_no = t.empl_no)
+WHERE   m.req_name IN IFNULL(?, m.req_name)
+AND     m.mtril_name IN IFNULL(?, m.mtril_name)
+AND     t.empl_name IN IFNULL(?, t.empl_name)
+AND     m.requst_date BETWEEN IFNULL(?, m.requst_date) AND IFNULL(?, m.requst_date)
 `;
 
 //자재 재고 조회 -mt012 자재별
@@ -405,5 +422,7 @@ module.exports = {
         mt_searchCompany,
         mt_selectQy,
         mt_lotInven,
-        mt_selectAllOrderList
+        mt_selectAllOrderList,
+        mt_wrhousngList,
+        mt_dlivyList
 };
