@@ -645,6 +645,8 @@ BEGIN
 		FROM procs_flowchart
 		WHERE procs_code = c_procs_code;
 		
+		SET v_real_begin = STR_TO_DATE('9999-12-31 23:59:59', '%Y-%m%d %H:%i%s');
+		
 		-- 설비 커서
 		OPEN cursor_eqp;
 		eqp_loop : LOOP
@@ -658,7 +660,7 @@ BEGIN
 			-- 생산지시가 없을때 확인할 변수 초기화
 			SET v_null = 0 ;
 			SET v_chck_null = 0;
-			SET v_real_begin = STR_TO_DATE('9999-12-31 23:59:59', '%Y-%m%d %H:%i%s');
+			
 
 			
 			-- 생산 지시 커서
