@@ -1,7 +1,7 @@
 <template>
       <div>
         <span>자재명</span>
-        <InputText type="text" v-model="reqName" class="emp_info"> <p>{{ reqName }}</p></InputText>
+        <InputText type="text" v-model="mtrilName" class="emp_info"> <p>{{ mtrilName }}</p></InputText>
         <span>구분</span>
         <select v-model="selected">
           <option value="MW01">발주</option>
@@ -13,6 +13,9 @@
         <InputText type="date" v-model="wrhDateStart" class="emp_info"> <p>{{ wrhDateStart }}</p></InputText>
         <InputText type="date" v-model="wrhDateEnd" class="emp_info"> <p>{{ wrhDateEnd }}</p></InputText>
     </div>
+    <button @click="getList"class="btn btn-primary search-btn" >조회</button>
+    <button @click="remove"class="btn btn-primary search-btn" >초기화</button>
+
     <h1>입고조회</h1>
     <AgGridVue 
     :rowData="rowData"
@@ -31,8 +34,8 @@ import { ref, watch } from 'vue';
 //행 데이터를 담을 변수
 const rowData = ref([]);
 
-const selected = ref("order");
-const reqName = ref("");
+const selected = ref("MW01"); //기본값 설정
+const mtrilName = ref("");
 const chargerName = ref("");
 const wrhDateStart = ref("");
 const wrhDateEnd = ref("");
@@ -64,11 +67,33 @@ const GridOptions = {
       paginationPageSize: 10,
       paginationPageSizeSelector: [10, 20, 50, 100],
 };
-</script>
 
-<style>
-/*ag grid 테이블 내부 헤더(컬럼) 두줄로 보이게 하기 */
-.ag-header-cell-label .ag-header-cell-text {
-   white-space: pre-wrap !important;
-}
-</style>
+//데이터 가져오기
+const getList = async() => {
+    let obj = {selected: selected.value,
+               req_name: mtrilName.value,
+               charger_name: chargerName.value,
+               start_date: wrhDateStart.value,
+               end_date: wrhDateEnd.value
+    };
+    let result = await axios.post(`${ajaxUrl}/mtril/wrhousingList`, obj)
+                            .catch(err=> console.log(err));
+
+    //console.log(result.data);
+    //행 데이터 담기
+    rowData.value = result.data;
+};
+getList();
+
+//검색조건 삭제
+const remove = () => {
+  selected.value = "";
+  reqName.value = "";
+  chargerName.value = "";
+  wrhDateStart.value = "";
+  wrhDateEnd.value = "";
+
+  //조회
+  getList();
+};
+</script>

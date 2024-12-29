@@ -389,7 +389,12 @@ const allOrderList = async(key) => {
 
 //자재 입고조회
 const wrhousingList = async(key) => {
-    let searchKeyArr = [];
+    let searchKeyArr = [key.mtrilName,
+                        key.selected,
+                        key.charger_name,
+                        key.start_date,
+                        key.end_date
+    ];
     let result = await mariaDB.query('mt_wrhousngList', searchKeyArr)
                               .catch(err => console.log(err));
 
@@ -398,7 +403,12 @@ const wrhousingList = async(key) => {
 
 //자재 출고 조회
 const dlivyList = async(key) => {
-    let searchKeyArr = [];
+    let searchKeyArr = [key.req_name,
+                        key.mtril_name,
+                        key.charger_name,
+                        key.start_date,
+                        key.end_date
+    ];
     let result = await mariaDB.query('mt_dlivyList', searchKeyArr)
                               .catch(err => console.log(err));
 

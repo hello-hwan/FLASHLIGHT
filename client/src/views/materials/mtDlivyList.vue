@@ -10,6 +10,9 @@
         <InputText type="date" v-model="reqDateStart" class="emp_info"> <p>{{ reqDateStart }}</p></InputText>
         <InputText type="date" v-model="reqDateEnd" class="emp_info"> <p>{{ reqDateEnd }}</p></InputText>
     </div>
+    <button @click="getList"class="btn btn-primary search-btn" >조회</button>
+    <button @click="remove"class="btn btn-primary search-btn" >초기화</button>
+
     <h1>출고조회</h1>
     <AgGridVue 
     :rowData="rowData"
@@ -25,6 +28,8 @@ import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 import { ref } from 'vue';
+import axios from 'axios';
+
 //행 데이터를 담을 변수
 const rowData = ref([]);
 
@@ -45,6 +50,35 @@ const ColDefs = [
   { field: "unit", headerName: "단위", flex:1},
   { field: "charger", headerName: "담당자", flex:1},
 ];
+
+//데이터 가져오기
+const getList = async() => {
+    let obj = {req_name: reqName.value,
+                mtril_name: mtrilName.value,
+                charger_name: chargerName.value,
+                start_date: reqDateStart.value,
+                end_date: reqDateEnd.value
+    };
+
+    let result = await axios.post(`${ajaxUrl}/mtril/wrhousingList`, obj)
+                            .catch(err=> console.log(err));
+
+    //console.log(result.data);
+    //행 데이터 담기
+    rowData.value = result.data;
+};
+getList();
+
+//검색조건 삭제
+const remove = () => {
+    reqName.value = "";
+    mtrilName.value = ""; 
+    chargerName.value = "";
+    reqDateStart.value = "";
+    reqDateEnd .value = "";
+
+    getList();
+};
 
 //ag grid 테이블 속성 설정
 const GridOptions = {
