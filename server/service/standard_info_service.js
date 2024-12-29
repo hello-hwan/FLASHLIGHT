@@ -19,11 +19,6 @@ const bomInfo = async(bomCode) => {
   return list;
 }
 
-// const bomInsert = async (Insert)=>{
-//   console.log('service', Insert);
-//   await mariaDB.query('bomInsert', Insert);
-// }
-
 // BOM 등록  
 const bomInsert = async (bomInfo) => {
   let result = await mariaDB.query('bomInsert', bomInfo); 
@@ -36,7 +31,6 @@ const bomInsert = async (bomInfo) => {
 }
 
 
-
 // BOM 관리 select
 const bomManage = async (bomCode) => {
   let list = await mariaDB.query('bomManage', bomCode);
@@ -47,20 +41,87 @@ const bomManage = async (bomCode) => {
 // BOM소모품 업데이트
 const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
     let datas = [updateInfo, cmpdsNo];
+    console.log(datas);
     let result = await mariaDB.query('bom_cmpdsUpdate', datas)
                           .catch(err => console.log(err));
-    console.log(result);
-    
+    console.log(result);  
 }
+
+
 // BOM소모품 삭제
 const bom_cmpdsDel = async (cmpdsNo) => {
     let result = await mariaDB.query('bom_cmpdsDel',cmpdsNo);
     return result;
 }
 
+
 // 자재 조회
 const mtril = async () => {
   let list = await mariaDB.query('mtril');
+  return list;
+}
+
+// 자재 등록
+const mtrilAdd = async (info) => {
+  let result = await mariaDB.query('mtrilAdd', info);
+  
+  try{
+  if (result.insertId != null) {
+    return { message: '데이터 삽입 성공' };
+  } else {
+    return { message: '데이터 삽입 실패' };
+  }
+  }catch(err){
+    console.log(err);
+  }
+}
+
+// 자재 삭제
+const mtrilDelete = async (code) => {
+  let result = await mariaDB.query('mtrilDelete', code);
+  return result;
+}
+
+// 자재 수정
+const mtrilUpdate = async (info,code) => {
+  let data = [info,code];
+  console.log(data);
+  let result = await mariaDB.query('mtrilUpdate', data);
+  return result;
+}
+
+// 반제품 조회
+const prductNList = async() => {
+  let list = await mariaDB.query('infoprductNList');
+  return list;
+}
+
+// 반제품 등록
+const prductNAdd = async (info) => {
+  let result = await mariaDB.query('prductNAdd', info);
+
+  try{
+    if (result.insertId != null) {
+      return { message: '데이터 삽입 성공' };
+    } else {
+      return { message: '데이터 삽입 실패' };
+    }
+    }catch(err){
+      console.log(err);
+    }
+}
+
+// 반제품 삭제
+const prductNDelete = async (code) => {
+  let result = await mariaDB.query('prductNDelete', code);
+  return result;
+}
+
+// 반제품 수정
+
+// 완제품 조회
+const prductList = async () => {
+  let list = await mariaDB.query('infoprductList');
   return list;
 }
 
@@ -69,7 +130,7 @@ const qiList = async (prd_code) => {
   let list = await mariaDB.query('qiList',prd_code);  
   return list;
 }
- 
+
 // 공정 흐름도 조회
 const procsFlowchartList = async () => {
     let list = await mariaDB.query('procsFlowchartList'); 
@@ -150,6 +211,13 @@ module.exports = {
   bom_cmpdsUpdate,
   bom_cmpdsDel,
   mtril,
+  mtrilAdd,
+  mtrilDelete,
+  mtrilUpdate,
+  prductNList,
+  prductNAdd,
+  prductNDelete,
+  prductList,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

@@ -21,11 +21,11 @@ on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
- const bomInsert =  
+const bomInsert =  
 `INSERT INTO bom_cmpds 
- SET ?`;
+SET ?`;
 
- 
+
 // BOM 소모품 조회
 const bomManage = 
 `SELECT c.cmpds_no
@@ -46,8 +46,8 @@ WHERE b.prdlst_code = ?`;
 // BOM 소모품 업데이트
 const bom_cmpdsUpdate = 
 `UPDATE bom_cmpds
- SET ?
- WHERE cmpds_no = ?`;
+SET ?
+WHERE cmpds_no = ?`;
 
 
 // BOM소모품 삭제
@@ -65,19 +65,72 @@ const mtril =
        ,sfinvc
 FROM mtril`;
 
+// 자재 등록
+const mtrilAdd =
+`INSERT INTO mtril
+SET ? `;
+
+// 자재 삭제
+const mtrilDelete = 
+`DELETE FROM
+mtril
+WHERE mtril_code = ? `
+
+// 자재 수정
+const mtrilUpdate =
+`UPDATE mtril
+set ? 
+WHERE mtril_code = ?`;
+
+// 반제품 조회
+const infoprductNList = 
+`SELECT prdlst_code
+       ,prdlst_name
+       ,stndrd_x
+       ,stndrd_y
+       ,stndrd_z
+       ,unit
+       ,wrhousng_unite
+       ,dlivy_unit
+       ,sfinvc
+FROM prduct_n`;
+
+// 반제품 등록
+const prductNAdd = 
+`INSERT INTO prduct_n
+SET ?`;
+
+// 반제품 삭제
+const prductNDelete = 
+`DELETE FROM
+prduct_n
+WHERE prdlst_code = ?`
+
+// 완제품 조회
+const infoprductList = 
+`SELECT prdlst_code
+       ,prdlst_name
+       ,stndrd_x
+       ,stndrd_y
+       ,stndrd_z
+       ,unit
+       ,wrhousng_untpc
+       ,dlivy_untpc
+       ,sfinvc
+FROM repduct`;
 
 // 품질검사항목관리
 const qiList =
 `SELECT inspec_item  
-        ,inspec_standard
+       ,inspec_standard
 FROM inspection_detail 
 WHERE prd_code=?`; 
- 
+
 // 공정 흐름도 조회
 const procsFlowchartList = 
 `SELECT prd_code, prd_nm, sum(expect_reqre_time) as all_time
- FROM procs_flowchart
- GROUP BY prd_code, prd_nm
+FROM procs_flowchart
+GROUP BY prd_code, prd_nm
 `;
 
 // 공정 흐름도 상세 조회
@@ -186,10 +239,17 @@ module.exports = {
   bom,
   bomInfo,
   bomInsert,
-  bomManage,
+  bomManage, 
   bom_cmpdsUpdate,
   bom_cmpdsDel,
   mtril,
+  mtrilAdd,
+  mtrilDelete,
+  mtrilUpdate,
+  infoprductNList,
+  prductNAdd,
+  prductNDelete,
+  infoprductList,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 
