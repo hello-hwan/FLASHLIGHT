@@ -198,7 +198,28 @@ const addbad = async (array) => {
   return result;
 };
 
-// 완료 보고 정상실행
+// 완료 보고 정상실행 - 재료 없을 때
+const finnomt = async (array) => {
+  let result = {};
+  // 불량품 수량
+  let badn = await mariaDB.query('pr_badco', array[2]);
+  // 생산실적 수정
+  let list = await mariaDB.query('pr_upstate', [ array[0], array[1], badn[0].badn_qy, array[2] ]);
+  // 성공시 1
+  if(list.affectedRows == 1){
+    result.retCode = 1;
+  }else {
+    // 실패시 0
+    result.retCode = 0;
+  }
+  return result;
+};
+
+// 완료보고 정상실행 - 재료 있을 때
+const finyesmt = async (array, matril) => {
+  
+};
+
 
 
 
@@ -268,7 +289,8 @@ module.exports = {
   addstate,
   stateinfo,
   addbad,
-
+  finnomt,
+  
 
 
 
