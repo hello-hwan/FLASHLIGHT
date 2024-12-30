@@ -16,7 +16,14 @@
             </tr>
         </thead>
     </table>
-    <div style="width: 50%; height: 525px; display: inline-block;">
+    <div style="width: 49%; display: inline-block;">
+        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
+            @grid-ready="onGridReady" class="ag-theme-alpine">
+        </ag-grid-vue>
+    </div>
+    <div style="width: 2%; display: inline-block;">
+    </div>
+    <div style="width: 49%; height: 525px; display: inline-block;">
         <v-row>
             <v-col>
                 <v-sheet height="525">
@@ -24,11 +31,6 @@
                 </v-sheet>
             </v-col>
         </v-row>
-    </div>
-    <div style="width: 50%; display: inline-block;">
-        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-            @grid-ready="onGridReady" class="ag-theme-alpine">
-        </ag-grid-vue>
     </div>
 </template>
 

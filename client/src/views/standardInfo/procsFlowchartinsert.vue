@@ -25,7 +25,7 @@
                         총 소요시간
                     </th>
                     <th style="width: 25%;">
-                        <button type="button" class="btn btn-primary" @click="submit_btn()">저장</button>
+                        <button type="button" class="btn btn-primary" style="color: white;" @click="submit_btn()">저장</button>
                     </th>
                 </tr>
             </thead>
@@ -38,7 +38,7 @@
                         <input style="background-color: lightsteelblue;" type="text" v-model="prd_nm">
                     </td>
                     <td>
-                        <input style="background-color: lightsteelblue;" type="text" v-model="all_time">
+                        {{ all_time }} 시간
                     </td>
                     <td>
                     </td>
@@ -54,10 +54,10 @@
                     <th style="width: 65%;">
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-primary" @click="add_btn()">행 추가</button>
+                        <button type="button" class="btn btn-primary" style="color: white;" @click="add_btn()">행 추가</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-outline-danger" @click="delete_btn()">행 삭제</button>
+                        <button type="button" class="btn btn-danger" style="color: white;" @click="delete_btn()">행 삭제</button>
                     </th>
                 </tr>
             </thead>

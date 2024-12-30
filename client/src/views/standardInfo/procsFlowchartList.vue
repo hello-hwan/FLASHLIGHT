@@ -17,7 +17,7 @@
             </thead>
         </table>
         <div style="height: 300px;" v-show="input_div">
-            <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions"
+            <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
                 style="height: 250px; width: 50%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
@@ -26,6 +26,7 @@
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
+        <button type="button" class="btn btn-danger" style="color: white;" @click="test_btn()">test</button>
     </div>
 </template>
 
@@ -38,8 +39,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
-import { useToast } from 'primevue/usetoast';
-
 export default {
     name: 'App',
     data() {
@@ -48,7 +47,6 @@ export default {
             rowData: [],
             colDefs: [],
             search_prd_code: '',
-            toast: '',
             input_div: false,
             rowData_search: [],
             colDefs_search: []
@@ -76,11 +74,13 @@ export default {
             },
             onCellClicked: (CellClickedEvent) => this.goToDetail(CellClickedEvent.data.prd_code)
         };
-        this.toast = useToast();
         this.colDefs_search = [
             { field: "prd_code", headerName: "품목코드" },
             { field: "prd_nm", headerName: "품목명" }
         ];
+        this.gridOptions_search = {
+            onCellClicked: (CellClickedEvent) => this.goToDetail(CellClickedEvent.data.prd_code)
+        };
     },
     components: {
         AgGridVue // Add Vue Data Grid component
@@ -103,29 +103,18 @@ export default {
         goToDetail(prd_code) {
             this.$router.push({ name: 'procsFlowchartDetail', params: { prd_code: prd_code } });
         },
-        async search_btn() {
-            if (this.search_prd_code.length < 1) {
-                this.toast.add({ severity: 'error', summary: '실패', detail: '검색어를 입력해주세요.', life: 3000 });
-            } else {
-                let result = await axios.get(`${ajaxUrl}/procsFlowchartDetailTop/${this.search_prd_code}`)
-                    .catch(err => console.log(err));
-                if (result.data != "") {
-                    this.toast.add({ severity: 'success', summary: '성공', detail: '검색에 성공했습니다.', life: 3000 });
-                    this.$router.push({ name: 'procsFlowchartDetail', params: { prd_code: this.search_prd_code } });
-                } else {
-                    this.toast.add({ severity: 'error', summary: '실패', detail: '검색 결과가 없습니다.', life: 3000 });
-                }
-            }
-        },
         input_click() {
-            console.log("click");
             this.input_div = true;
         },
         async input_change() {
             let result = await axios.get(`${ajaxUrl}/prd_code_search/${this.search_prd_code}`)
                 .catch(err => console.log(err));;
             this.rowData_search = result.data;
-            console.log(this.rowData_search);
+        }, 
+        async test_btn() {
+            let input = [[3, 4], [5, 6]];
+            let result = await axios.post(`${ajaxUrl}/testing`, input);
+            console.log(result.data.result);
         }
     },
     watch: {
