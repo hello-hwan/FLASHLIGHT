@@ -1,54 +1,71 @@
 <template>
-    <!--반환 자재 리스트-->
-    <v-card
-        class="mx-auto"
-        style=" border-bottom-right-radius: 13px;
-                border-bottom-left-radius: 13px;"
-        >
-        <template v-slot:title>
-          <span class="font-weight-black">자재별 재고 수량</span>
-        </template>
-    
-        <v-card-text class="bg-surface-light pt-4">
-            <!--ag grid영역-->
-            <AgGridVue style=" height: 519px; margin: 0 auto;"
-                :rowData="mtRowData"
-                :gridOptions="gridOptions"
-                class="ag-theme-alpine">
-            </AgGridVue>
-        </v-card-text>
-    </v-card>
-
-    <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
-        <div class="modal-container" @click.stop="">
-            <div id="search-bar">
-                <div class="align-left">                
-                    <span>로트명</span>
-                    <InputText type="text" v-model="keyLotName" v-on:keyup.enter="searchMt"> <p>{{ keyLotName }}</p></InputText>
-                    <span>입고 담당자</span>
-                    <InputText type="text" v-model="wrhousingCharger" v-on:keyup.enter="searchMt"> <p>{{ wrhousingCharger }}</p></InputText>
-                    <span>입고일</span>
-                    <InputText type="date" v-model="wrhDateStart" v-on:keyup.enter="searchMt"> <p>{{ wrhDateStart }}</p></InputText>
-                    <InputText type="date" v-model="wrhDateEnd" v-on:keyup.enter="searchMt"> <p>{{ wrhDateEnd }}</p></InputText>
+    <div class="main-contents">
+        <div class="card flex flex-col gap-4">
+            <div class="font-semibold text-xl">재고 조회</div>
+            <div class="grid grid-cols-12 gap-2">
+                <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Name</label>
+                <div class="col-span-12 md:col-span-10">
+                    <InputText id="name3" type="text" />
                 </div>
-                <button @click="searchMt"class="btn btn-primary search-btn" >조회</button>
             </div>
-            
-            <AgGridVue 
-                :rowData="lotRowData"
-                :gridOptions="lotGridOptions"
-                class="ag-theme-alpine"
-                style="height: 500px"
-                @grid-ready="onGridReady"
-                >
-            </AgGridVue>
-            
-            <div class="modal-btn">
-            <button @click="modalOpen"class="btn btn-secondary">닫기</button>
-            <button @click="selectOrder" class="btn btn-primary">확인</button>
+            <div class="grid grid-cols-12 gap-2">
+                <label for="email3" class="flex items-center col-span-12 mb-2 md:col-span-2 md:mb-0">Email</label>
+                <div class="col-span-12 md:col-span-10">
+                    <InputText id="email3" type="text" />
+                </div>
             </div>
         </div>
+        <!--자재 리스트-->
+        <v-card
+            class="mx-auto"
+            style=" border-bottom-right-radius: 13px;
+                    border-bottom-left-radius: 13px;"
+            >
+            <template v-slot:title>
+            <span class="font-weight-black">재고조회</span>
+            </template>
+        
+            <v-card-text class="bg-surface-light pt-4">
+                <!--ag grid영역-->
+                <AgGridVue style=" height: 519px; margin: 0 auto;"
+                    :rowData="mtRowData"
+                    :gridOptions="gridOptions"
+                    class="ag-theme-alpine">
+                </AgGridVue>
+            </v-card-text>
+        </v-card>
+
+        <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
+            <div class="modal-container" @click.stop="">
+                <div id="search-bar">
+                    <div class="align-left">                
+                        <span>로트명</span>
+                        <InputText type="text" v-model="keyLotName" v-on:keyup.enter="searchMt"> <p>{{ keyLotName }}</p></InputText>
+                        <span>입고 담당자</span>
+                        <InputText type="text" v-model="wrhousingCharger" v-on:keyup.enter="searchMt"> <p>{{ wrhousingCharger }}</p></InputText>
+                        <span>입고일</span>
+                        <InputText type="date" v-model="wrhDateStart" v-on:keyup.enter="searchMt"> <p>{{ wrhDateStart }}</p></InputText>
+                        <InputText type="date" v-model="wrhDateEnd" v-on:keyup.enter="searchMt"> <p>{{ wrhDateEnd }}</p></InputText>
+                    </div>
+                    <button @click="searchMt"class="btn btn-primary search-btn" >조회</button>
+                </div>
+                
+                <AgGridVue 
+                    :rowData="lotRowData"
+                    :gridOptions="lotGridOptions"
+                    class="ag-theme-alpine"
+                    style="height: 500px"
+                    @grid-ready="onGridReady"
+                    >
+                </AgGridVue>
+                
+                <div class="modal-btn">
+                <button @click="modalOpen"class="btn btn-secondary">닫기</button>
+                <button @click="selectOrder" class="btn btn-primary">확인</button>
+                </div>
+            </div>
         </div>
+    </div>
 </template>
 
 <script setup>
@@ -211,7 +228,7 @@ const searchMt = async() => {
 };
 </script>
 
-<style>
+<style scoped>
 /* dimmed */
 .modal-wrap {
   position: fixed;
@@ -256,5 +273,7 @@ const searchMt = async() => {
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
-
+.main-contents {
+    text-align: justify;
+}
 </style>

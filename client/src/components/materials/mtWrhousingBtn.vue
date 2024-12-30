@@ -39,13 +39,11 @@ async function onButtonClicked() {
         //처리 완료 안내
         toast.add({ severity: 'success', summary: '성공', detail: '처리가 완료되었습니다.', life: 3000 });
         //화면에서 삭제
-        props.params.api.applyTransaction({
-        remove: [props.params.node.data]
-    });
+        props.params.api.applyTransaction({remove: [props.params.node.data]});
     } else {
         //처리 실패 안내
         toast.add({ severity: 'warn', summary: '실패', detail: '문제가 생겼습니다.\n관리자에게 문의해주세요.', life: 3000 });
-    }
+    };
    
 
 }
