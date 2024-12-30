@@ -174,7 +174,7 @@ const dlivyMt = async(dlivyInfo) => {
         //console.log(result);
         resultSum += result;
     };
-
+    
     //성공한 수의 총합과 등록하는 데이터의 개수를 비교, 같으면 성공, 다르면 실패.
     if(resultSum = dlivyInfo.length) {
         return 'success';

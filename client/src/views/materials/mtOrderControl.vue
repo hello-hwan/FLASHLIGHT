@@ -1,61 +1,81 @@
 <template>
     <div>
-        <span>발주 요청</span>
-        <AgGridVue 
-        :rowData="reqRowData"
-        :gridOptions="reqGridOptions"
-        rowSelection="multiple"
-        class="ag-theme-alpine"
-        @grid-ready="onGridReady"
-        style="height: 300px">
-        </AgGridVue>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    발주요청
+                </span>
+            </template>
+        </v-card>
 
-        <div style="margin: 20px; text-align: right">
-            <span>
-                <span>발주명</span>
-                <InputText type="text" v-model="orderName" class="emp_info"> <p>{{ orderName }}</p></InputText>
-                <companySearchModal v-bind:companyInfo="companyInfoForChildComponent" @companySelectedData="getCompanyInfo"/> 
-                <span>담당자</span>
-                <InputText type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
-            </span>
-     
-            <div class="align-left">
-                 <button type="button" class="btn btn-primary"
-                 @click="getOrderRowData"
-                 style="color: #fff;">
-                 선택항목 발주서 작성 </button>
-                 
-                 <!--검색 모달 열기-->
-                 <orderSearchModal @selectedData="getOrderDetails"/> 
+        <v-card
+            class="mx-auto"
+            style="margin-top: 30px; border-radius:13px;">
+        
+            <v-card-text class="bg-surface-light pt-4">
+                <button type="button" class="btn btn-primary select-req-mt"
+                     @click="getOrderRowData"
+                     style="color: #fff">
+                     선택항목 발주서 작성 </button>
+                <!--ag grid영역-->
+                <AgGridVue 
+                :rowData="reqRowData"
+                :gridOptions="reqGridOptions"
+                rowSelection="multiple"
+                class="ag-theme-alpine"
+                @grid-ready="onGridReady"
+                style="height: 300px">
+                </AgGridVue>
+            </v-card-text>
+        </v-card>
+
+        <v-card style="margin-top: 30px; border: 1px solid #ccc;">
+            <div style="margin: 20px; text-align: right;">
+
+        
+                <div class="align-left">
+                    <!--검색 모달 열기-->
+                    <div class="btnGroup"style="">
+                        <orderSearchModal @selectedData="getOrderDetails"/> 
+                        <button type="button" class="btn btn-danger"
+                        style="color: #fff; margin-left: 30px" v-show="delBtn" @click="delOrder">발주삭제</button>
+                        <hr>
+                    </div>
+                    <span>
+                        <span>발주명 </span>
+                        <InputText type="text" v-model="orderName" class="emp_info" placeholder="발주명을 입력해주세요"> <p>{{ orderName }}</p></InputText>
+                        <companySearchModal v-bind:companyInfo="companyInfoForChildComponent" @companySelectedData="getCompanyInfo"/> 
+                        <span>담당자 </span>
+                        <InputText style="width: 100px;" type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
+                        <mtSearchModal @mtSelectedData="addRow"/>
+                            
+                        <button type="button" @click="removeRow"
+                        class="btn btn-warning" style="color: #fff;">행 삭제</button>
+                        
+                        <button type="button" @click="removeAllRow"
+                        class="btn btn-secondary" style="color: #fff;">초기화</button>
+
+                        <button type="button" @click="insertMtOrderList"
+                        class="btn btn-primary" style="color: #fff;" v-if="orderCode == ''">등록</button>
+                        <button type="button" @click="insertMtOrderList"
+                        class="btn btn-primary" style="color: #fff;" v-else>수정</button>
+                    </span>
+                </div>
+
             </div>
-            <button type="button" class="btn btn-danger"
-                 style="color: #fff; margin-left: 30px" v-show="delBtn" @click="delOrder">발주삭제</button>
-        </div>
+            <v-card-text class="bg-surface-light pt-4">
+                <AgGridVue 
+                    :rowData="orderRowData"
+                    :gridOptions="mtListGridOptions"
+                    rowSelection="multiple"
+                    class="ag-theme-alpine"
+                    @grid-ready="mtListonGridReady"
+                    style="height: 600px"
+                    >
+                    </AgGridVue>
+            </v-card-text>
 
-       <div>발주 자재 목록</div>
-       <AgGridVue 
-        :rowData="orderRowData"
-        :gridOptions="mtListGridOptions"
-        rowSelection="multiple"
-        class="ag-theme-alpine"
-        @grid-ready="mtListonGridReady"
-        style="height: 600px"
-        >
-        </AgGridVue>
-        <div class="btnGroup"style="">
-            <mtSearchModal @mtSelectedData="addRow"/>
-            
-           <button type="button" @click="removeRow"
-            class="btn btn-warning">행 삭제</button>
-           
-           <button type="button" @click="removeAllRow"
-            class="btn btn-secondary">초기화</button>
-
-           <button type="button" @click="insertMtOrderList"
-            class="btn btn-primary" v-if="orderCode == ''">등록</button>
-           <button type="button" @click="insertMtOrderList"
-            class="btn btn-primary" v-else>수정</button>
-        </div>
+        </v-card>
     </div>
 
 </template>
@@ -525,7 +545,7 @@ const removeAllInfo = () => {
 
 </script>
 
-<style>
+<style scoped>
 .emp_info {
   width: 100px;
   margin-right: 20px;
@@ -533,7 +553,7 @@ const removeAllInfo = () => {
 
 .btn {
     margin-left: 10px;
-    --bs-btn-line-height: 1;
+    --bs-btn-line-height: 1.5px;
 }
 .btnGroup{
     margin: 10px;
@@ -541,5 +561,17 @@ const removeAllInfo = () => {
 .btnGroup{
     line-height: 1px; 
     color: #fff;
+}
+.font-weight-black>button {
+    text-align: right;
+}
+.select-req-mt {
+    margin-bottom: 10px; 
+    margin-left: 87%;
+}
+.p-inputtext {
+    width: 310px;
+    height: 37px;
+    padding: 0!important;
 }
 </style>

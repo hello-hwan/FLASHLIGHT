@@ -88,8 +88,7 @@ AND     charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')
 //수정할 발주건 검색 - mt004 조건
 const mt_searchOrderWithKey =
 `
-SELECT  order_no,
-        order_code,
+SELECT  order_code,
         order_name,
         mtlty_name,
         bcnc_code,
@@ -102,8 +101,8 @@ AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
 AND     order_date BETWEEN IFNULL(?, order_date) AND IFNULL(?, order_date)
 AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
 AND     empl_no = IFNULL(?, empl_no)
-AND     order_no NOT IN (SELECT order_no
-			 FROM   inspection_check)
+AND     order_no NOT IN (SELECT s.order_no
+			 FROM   inspection_check s)
 GROUP BY order_code
 ORDER BY order_no DESC
 `;
@@ -307,7 +306,7 @@ WHERE   m.req_name LIKE CONCAT('%', IFNULL(?, m.req_name), '%')
 AND     m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name), '%')
 AND     t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
 AND     m.requst_date BETWEEN IFNULL(?, m.requst_date) AND IFNULL(?, m.requst_date)
-ORDER BY m.requst_date desc
+ORDER BY m.dlivy_no desc
 `;
 
 //자재 재고 조회 -mt012 자재별
