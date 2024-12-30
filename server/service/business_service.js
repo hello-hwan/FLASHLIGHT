@@ -7,6 +7,12 @@ const findAllOrderRequest = async ()=>{
     return list;
 };
 
+// 주문번호정렬
+const findOrderArray = async ()=>{
+    let list = await mariaDB.query('bs_orderArray');
+    return list;
+};
+
 // 등록
 // 주문요청과 리스트 처리하는 프로시저로 연결
 const createNewOrderRequest = async (orderRequestInfo)=>{
@@ -16,7 +22,6 @@ const createNewOrderRequest = async (orderRequestInfo)=>{
         orderRequestInfo.dete, 
         orderRequestInfo.p_code, 
         orderRequestInfo.wrter,
-        orderRequestInfo.order_list_no,
         orderRequestInfo.prd_code, 
         orderRequestInfo.untpc, 
         orderRequestInfo.order_qy 
@@ -52,5 +57,6 @@ module.exports = {
     createNewOrderRequest,
     deleteOrderRequestByOrderNo,
     findOrderRequestByNo,
-    searchCompanyModal
+    searchCompanyModal,
+    findOrderArray
 };
