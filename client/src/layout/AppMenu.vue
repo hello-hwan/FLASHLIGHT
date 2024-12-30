@@ -207,11 +207,7 @@ const model = ref([
                         to: '/standardInfo/infobcncList'
                     },
                     {
-                        label: '제품 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 조회',
+                        label: '제품 관리 / 제품 조회',
                         to: '/standardInfo/infoprductList'
                     },
                     {

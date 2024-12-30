@@ -147,8 +147,8 @@ export default {
       gridOptionsReturn: {}, // AgGrid 옵션
 
       // 검색 입력값
-      mtrilCode: "", 
-      mtrilName: "",
+      prductNCode: "", 
+      prductNName: "",
 
     };
   },
@@ -157,14 +157,15 @@ export default {
 
     this.colDefs = [
       { field: "prdlst_code", headerName: "반제품 코드" },
-      { field: "prdlst_name", headerName: "반제품 명" },
-      { field: "stndrd_x", headerName: "규격x" },
+      { field: "prdlst_name", headerName: "반제품 명", editable: true },
+      { field: "stndrd_x", headerName: "규격x", editable: true },
       { field: "stndrd_y", headerName: "규격y", editable: true },
       { field: "stndrd_z", headerName: "규격z" , editable: true},
       { field: "unit", headerName: "단위" , editable: true},
       { field: "wrhousng_unite", headerName: "입고단가" , editable: true},
       { field: "dlivy_unit", headerName: "출고단가" , editable: true},
-      { field: "sfinvc", headerName: "안전재고" , editable: true}
+      { field: "sfinvc", headerName: "안전재고" , editable: true},
+      { field: "procs_ordr_no", headerName: "생산공정코드" , editable: true}
     ];
 
     this.gridOptionsReturn = {
@@ -218,13 +219,26 @@ export default {
                         .catch(err => console.log(err));
                         this.rowData.push(obj); //등록시 그리드에 바로적용
     },
-
+ 
     async saveChanges(){
-      let obj = {
-
+      for(let i = 0; i < this.rowData.length; i++){
+        let row = this.rowData[i];
+        let obj ={
+          prdlst_name: row.prdlst_name,
+          stndrd_x: row.stndrd_x,
+          stndrd_y: row.stndrd_y,
+          stndrd_z: row.stndrd_z,
+          unit: row.unit,
+          wrhousng_unite: row.wrhousng_unite,
+          dlivy_unit: row.dlivy_unit,
+          sfinvc: row.sfinvc
+        }
+        console.log(obj);
+        let result = await axios.put(`${ajaxUrl}/prductNUpdate/${this.rowData[i].prdlst_code}`,obj)
+                                  .catch(err => console.log(err));
       }
-    },
-
+    }, 
+ 
     deleteRow() {
         const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
 
@@ -254,8 +268,8 @@ export default {
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
         return (
-          (!this.prductNCode || row.mtril_code.includes(this.prductNCode)) &&
-          (!this.prductNName || row.mtril_name.includes(this.prductNName))
+          (!this.prductNCode || row.prdlst_code.includes(this.prductNCode)) &&
+          (!this.prductNName || row.prdlst_name.includes(this.prductNName))
         );
       });
     },

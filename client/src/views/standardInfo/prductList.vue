@@ -15,13 +15,13 @@
                   <label for="itemCode" class="col-form-label">완제품 코드</label>
                 </div>
                 <div class="col-3">
-                  <input type="text" id="itemCode" class="form-control" v-model="mtrilCode" />
+                  <input type="text" id="itemCode" class="form-control" v-model="prductCode" />
                 </div> 
                 <div class="col-auto">
                   <label for="itemCode" class="col-form-label">완제품 명</label>
                 </div>
                 <div class="col-3">
-                  <input type="text" id="itemCode" class="form-control" v-model="mtrilName" />
+                  <input type="text" id="itemCode" class="form-control" v-model="prductName" />
                 </div>
                 <div class="col-3">
                   <button class="btn btn-primary mx-2" @click="filterByCode">검색</button>
@@ -47,13 +47,13 @@
                   <label for="itemCode" class="col-form-label">완제품 코드</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilCodeAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="prdlstCodeAdd" />
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">완제품 명</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilNameAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="prdlstNameAdd" />
               </div>
               <div class="col-auto">
                 <label for="dimensions" class="col-form-label">규격</label>
@@ -64,23 +64,29 @@
                 <input type="number" id="dimensionZ" class="form-control mx-1" v-model="stndrdZ" placeholder="규격Z" style="width: 130px;" />
               </div>
               <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">단위</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" />
+              </div>
+              <div class="col-auto">
                   <label for="itemCode" class="col-form-label">입고단가</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="wrhousngUntpcAdd" />
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">출고단가</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="dlivyUntpcAdd" />
               </div>
-              <div class="col-auto">
+              <!-- <div class="col-auto">
                   <label for="itemCode" class="col-form-label">총수량</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
-              </div>
+              </div> -->
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">안전재고</label>
               </div>
@@ -104,7 +110,7 @@
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
-                style="height: 400px; margin: 0 auto;"
+                style="height: 500px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"
@@ -149,8 +155,8 @@ export default {
       gridOptionsReturn: {}, // AgGrid 옵션
 
       // 검색 입력값
-      mtrilCode: "", 
-      mtrilName: "",
+      prductCode: "", 
+      prductName: "",
 
     };
   },
@@ -164,8 +170,8 @@ export default {
       { field: "stndrd_y", headerName: "규격y", editable: true },
       { field: "stndrd_z", headerName: "규격z" , editable: true},
       { field: "unit", headerName: "단위"},
-      { field: "wrhousng_untpc", headerName: "총수량" }, // join으로 들고와야됨
-      { field: "wrhousng_untpc", headerName: "입고단가" },
+      { field: "prduct_invntry_qy", headerName: "총수량" },
+      { field: "wrhousng_untpc", headerName: "입고단가" , editable: true },
       { field: "dlivy_untpc", headerName: "출고단가" , editable: true},
       { field: "sfinvc", headerName: "안전재고" , editable: true}
     ];
@@ -203,15 +209,20 @@ export default {
       this.rowData = this.prductList;
       this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
-
+    
     async addData(){
       let obj = {
-        mtril_code: this.mtrilCodeAdd,
-        mtril_name: this.mtrilNameAdd,
+        prdlst_code: this.prdlstCodeAdd,
+        prdlst_name: this.prdlstNameAdd,
+        stndrd_x: this.stndrdX,
+        stndrd_y: this.stndrdY,
+        stndrd_z: this.stndrdZ,
         unit: this.unitAdd,
+        wrhousng_untpc: this.wrhousngUntpcAdd,
+        dlivy_untpc: this.dlivyUntpcAdd,
         sfinvc: this.sfinvcAdd
       }
-      let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
+      let result = await axios.post(`${ajaxUrl}/prductInsert`, obj)
                         .catch(err => console.log(err));
                         this.rowData.push(obj); //등록시 그리드에 바로적용
     },
@@ -246,10 +257,10 @@ export default {
         this.gridOptionsReturn.api.applyTransaction({ remove: selectedData });
 
         selectedData.forEach((data) => {
-          if (data.mtril_code) {
-            axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
-              .then(() => console.log(`행 삭제 완료: ${data.mtril_code}`))
-              .catch((err) => console.error(`행 삭제 실패: ${data.mtril_code}`, err));
+          if (data.prdlst_code) {
+            axios.delete(`${ajaxUrl}/prductDelete/${data.prdlst_code}`)
+              .then(() => console.log(`행 삭제 완료: ${data.prdlst_code}`))
+              .catch((err) => console.error(`행 삭제 실패: ${data.prdlst_code}`, err));
           }
         });
     },
@@ -258,16 +269,16 @@ export default {
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
         return (
-          (!this.mtrilCode || row.mtril_code.includes(this.mtrilCode)) &&
-          (!this.mtrilName || row.mtril_name.includes(this.mtrilName))
+          (!this.prductCode || row.prdlst_code.includes(this.prductCode)) &&
+          (!this.prductName || row.prdlst_name.includes(this.prductName))
         );
       });
     },
     
     // 검색 필터 초기화
     resetFilter() {
-      this.mtrilCode = "";
-      this.mtrilName = "";
+      this.prductCode = "";
+      this.prductName = "";
       this.filteredRowData = this.rowData;
     },
 

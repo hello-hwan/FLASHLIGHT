@@ -105,11 +105,41 @@ router.delete('/prductNDelete/:code', async (req, res) => {
 })
 
 // 반제품 수정
+router.put('/prductNUpdate/:code', async (req, res) => {
+  let code = req.params.code
+  let info = req.body;
+  console.log('router code =>', code);
+  console.log('router info =>', info);
+  let result = await standard_info_service.prductNUpdate(code,info);
+  res.send(result);
+})
 
 // 완제품 조회
 router.get('/infoprductList', async (req, res) => {
   let searchs = req.query;
   let list = await standard_info_service.prductList(searchs);
+  res.send(list);
+})
+
+// 완제품 등록
+router.post('/prductInsert', async (req, res) => {
+  let info = req.body;
+  console.log('router => ', info);
+  let result = await standard_info_service.prductInsert(info);
+  res.send(result);
+})
+
+// 완제품 삭제
+router.delete('/prductDelete/:code', async (req, res) => {
+  let code = req.params.code;
+  let result = await standard_info_service.prductDelete(code);
+  res.send(result);
+})
+
+// 거래처 조회
+router.get('/bcncList', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.bcncList(searchs);
   res.send(list);
 })
 

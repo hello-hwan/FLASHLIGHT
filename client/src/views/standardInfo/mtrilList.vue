@@ -149,8 +149,9 @@ export default {
       { field: "mtril_code", headerName: "자재코드" },
       { field: "mtril_name", headerName: "자재명" },
       { field: "unit", headerName: "단위" },
+      { field: "mtril_qy", headerName: "총수량"},
       { field: "untpc", headerName: "입고단가", editable: true },
-      { field: "sfinvc", headerName: "안전재고" , editable: true},
+      { field: "sfinvc", headerName: "안전재고" , editable: true}
     ];
 
     this.gridOptionsReturn = {
@@ -165,28 +166,6 @@ export default {
       },
       rowSelection: "single",
     };
-
-    this.colDefsInsert = [
-      { field: "자재코드", headerName: "자재코드" },
-      { field: "자재명", headerName: "자재명" },
-      { field: "단위", headerName: "단위" },
-      { field: "입고단가", headerName: "입고단가" },
-      { field: "안전재고", headerName: "안전재고" },
-    ];
-    this.gridOptions = {
-      pagination: true,
-      paginationPageSize: 10,
-      paginationPageSizeSelector: [10, 20, 50, 100],
-      animateRows: false,
-      defaultColDef: {
-        filter: true,
-        flex: 1,
-        minWidth: 10,
-        editable: true,
-      },
-      rowSelection: "single",
-    };
-    
   },
   methods: {
 
