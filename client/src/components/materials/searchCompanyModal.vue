@@ -1,9 +1,11 @@
 <template>
     <span style="margin-left:20px">
-        <span>거래처 명</span>
+        <span>거래처 명 </span>
         <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
-        <span>거래처 코드</span>
-        <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText>
+        <div style="display: none;">
+            <span>거래처 코드</span>
+            <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText>
+        </div>
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
@@ -162,7 +164,7 @@ const searchCompany = async() => {
 
 </script>
 
-<style>
+<style scoped>
 /* dimmed */
 .modal-wrap {
   position: fixed;

@@ -128,7 +128,7 @@ const orderRowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "order_no", headerName: "발주번호"},
+  { field: "order_no", headerName: "발주번호", hide: true, suppressToolPanel: true},
   { field: "order_code", headerName: "발주코드", hide: true, suppressToolPanel: true},
   { field: "order_name", headerName: "발주명"},
   { field: "bcnc_code", headerName:"거래처 코드", hide: true, suppressToolPanel: true },
@@ -168,7 +168,7 @@ const searchOrder = async() => {
 
 </script>
 
-<style>
+<style scoped>
 /* dimmed */
 .modal-wrap {
   position: fixed;
