@@ -118,5 +118,20 @@ router.post('/mtril/allOrderList', async(req, res) => {
     let searchKey = req.body;
     let result = await mtrilService.allOrderList(searchKey);
     res.send(result);
-})
+});
+
+//자재 입고조회
+router.post('/mtril/wrhousingList', async(req, res) => {
+    let searchKey = req.body;
+    let result = await mtrilService.wrhousingList(searchKey);
+    res.send(result);
+});
+
+//자재 출고 조회
+router.post('/mtril/dlivyList', async(req, res) => {
+    let searchKey = req.body;
+    let result = await mtrilService.dlivyList(searchKey);
+    res.send(result);
+});
+
 module.exports = router;
