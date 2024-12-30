@@ -216,10 +216,16 @@ const finnomt = async (array) => {
 };
 
 // 완료보고 정상실행 - 재료 있을 때
-const finyesmt = async (array, matril) => {
+const finyesmt = async (matril) => {
   
 };
 
+//테스트
+const test1 = async () => {
+  let list = await mariaDB.query('pr_statepro');
+  console.log(list);
+  return list;
+}
 
 
 
@@ -306,4 +312,5 @@ module.exports = {
 
   
   total,
+  test1,
 };

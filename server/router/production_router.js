@@ -211,6 +211,10 @@ router.put('/prod/updstate/yes', async (req, res) => {
   
 })
 
+router.get('/prod/test/1', async (req, res) => {
+  prodService.test1().then(list => res.send(list))
+                      .catch(err => res.status(500).send(err));
+})
 
 
 
