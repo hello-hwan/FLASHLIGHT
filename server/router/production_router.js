@@ -185,12 +185,31 @@ router.post('/prod/addbad', async (req, res) => {
   })
 });
 
-// 생산 완료 보고 - 키오스크 완료보고
-router.put('/prod/updstate', async (req, res) => {
+// 생산 완료 보고 - 키오스크 완료보고 - 재료 없을 때
+router.put('/prod/updstate/no', async (req, res) => {
   let array = [];
+  array.push(req.body.end_time);
+  array.push(req.body.nrmlt);
+  array.push(req.body.prdctn_code);
+  prodService
+  .finnomt(array)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
 
+// 생산 완료 보고 - 키오스크 완료보고 - 재료 있을 때
+router.put('/prod/updstate/yes', async (req, res) => {
+  let array = [];
+  array.push(req.body.end_time);
+  array.push(req.body.nrmlt);
+  array.push(req.body.prdctn_code);
+  let matril = req.body.matril;
+  
 })
-
 
 
 
