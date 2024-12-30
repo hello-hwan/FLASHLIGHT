@@ -25,6 +25,19 @@ router.post(`/quality/quailtyInsert`, async(req, res) =>{
     res.send(result);
 });
 
+//검사결과조회
+router.get('/quality/qiResult', async(req, res) =>{
+    let reNo = req.query.re_info;    
+    let result = await qualityService.qiResult(reNo).catch(err => console.log(err));
+    res.send(result);
+});
+
+//검사결과조회2
+router.get('/quality/qiResult2', async(req, res) =>{
+    let reNo = req.query.re_info;    
+    let result = await qualityService.qiResult2(reNo).catch(err => console.log(err));
+    res.send(result);
+});
 
 
 module.exports = router;

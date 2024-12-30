@@ -42,7 +42,23 @@ const quailtyInsert2 =
 						 ,mtril_check_code)
 VALUES(?,?,?,?,?,?)`;
 
-//합격량 변경
+//품질검사결과
+const qiResult = 
+`SELECT mtril_check_code
+		,mtril_name
+		,mtlty_name
+		,test_date
+		,empl_no
+		,pass_amount
+FROM inspection_check`;
+
+//품질검사결과2
+const qiResult2 =
+`SELECT   inspec_standard
+		,inspec_item
+		,error_amount
+		,p_result
+FROM check_result`;
 
 
 
@@ -53,6 +69,8 @@ module.exports = {
     order_request,
     inspec_item,
 	quailtyInsert,
-	quailtyInsert2
+	quailtyInsert2,
+	qiResult,
+	qiResult2
 
 };

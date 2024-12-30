@@ -18,7 +18,7 @@ const quailtyInsert = async (order_info ) =>{
     console.log(order_info.inspect);
     let result = await mariaDB.query('quailtyInsert', order_info.inspect).catch(err => console.log(err));
 
-   
+   console.log(result);
     for(let i=0; i<order_info.check.length; i++){
         let listdata = [order_info.inspect[2],
         order_info.check[i].inspec_standard,
@@ -29,23 +29,27 @@ const quailtyInsert = async (order_info ) =>{
     let result2= await mariaDB.query('quailtyInsert2',listdata).catch(err => console.log(err));
 
     }
-
-
-
-    /*
-    if( result.insertId > 0){
-        return { quailty_no : result.insertId};
-    }else{
-        return {};
-    }
-    */
+   
 }
 
+//검사결과
+const qiResult = async () => {
+    let list = await mariaDB.query('qiResult')
+    return list;   
+}
+
+//검사결과2
+const qiResult2 = async () => {
+    let list = await mariaDB.query('qiResult2')
+    return list;
+}
 
 
 module.exports = {
     order_request,
     inspec_item,
-    quailtyInsert
+    quailtyInsert,
+    qiResult,
+    qiResult2
 
 };

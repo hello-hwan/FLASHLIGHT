@@ -12,8 +12,7 @@
                 </div> 
                 <div class="col-auto">
                     <span class="form-text">
-                        <button type="button" class="btn btn-xs btn-info" @click="getmt_no()">검색</button>
-                   
+                        <search-modal @selectedData="getOrderDetails"/>        
                     </span>
                     
                 </div>         
@@ -102,7 +101,7 @@
             
             
     </div>
-    ====<search-modal @selectedData="getOrderDetails"/> 
+   
     <div class="businessOrderListTitle">
             검사상세항목
     </div>     
@@ -138,7 +137,8 @@
     export default {
         name: "App",
         components: {
-            SearchModal
+            SearchModal,
+            AgGridVue, // Add Vue Data Grid component
          },
         data() {
             return {            
@@ -163,7 +163,7 @@
             this.colDefs =ref([
                 { field: "inspec_item",headerName: "검사항목"},
                 { field: "inspec_standard",headerName : "검사기준"},
-                { field: "error_amount",headerName : "불량량",editable : true} ,
+                { field: "error_amount",headerName : "불량량",editable : true},
                 { field: "p_result",headerName : "제품검사결과",editable : true} 
 
             ]);
@@ -182,9 +182,7 @@
                 },
             };
         },    
-        components: {
-            AgGridVue, // Add Vue Data Grid component
-        },
+     
         methods: {
             async getmt_no() {
                 let result = await axios.get(`${ajaxUrl}/quality/order_request?mt_info=${this.mt_no}`)
@@ -201,15 +199,8 @@
                 let result2 = await axios.get(`${ajaxUrl}/quality/inspec_item?in_info=${this.mtr_code}`)
                                          .catch(err => console.log(err)); 
                 this.mt_num2 = result2.data;
-                this.rowData = ref(this.mt_num2)               
-                //console.log(result2);                         
-                this.mt_num2 = result2.data;
-                //console.log(this.mtr_code);
-
-                //console.log(this.mt_num);
-                //let res = result.data;
-                //console.lg(reos.bcnc_code);  
-                
+                this.rowData = ref(this.mt_num2)         
+                          
                                     
             },
             async quailtyInsert(){
@@ -238,15 +229,11 @@
                 let addRes = result3.data;
                 console.log(addRes);
                 
-                /*
-                if(addRes.quailty_no > 0){
-                    alert('등록되었습니다.');
-                    this.mt_no = addRes.quailty_no;
-                }
-                */              
+                            
             },
             async getOrderDetails (info) {
-               // this.mt_no = info[0].order_code;
+                this.mt_no = info[0].order_no;
+                this.getmt_no();
             },
             async onGridReady() {}
         

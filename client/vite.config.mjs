@@ -11,13 +11,7 @@ export default defineConfig({
         noDiscovery: true
     },
     plugins: [
-        vue({
-            template: {
-              compilerOptions: {
-                isCustomElement: (tag) => ['md-linedivider'].includes(tag),
-              }
-            }
-          }),
+        vue(),
         Components({
             resolvers: [PrimeVueResolver()]
         })
