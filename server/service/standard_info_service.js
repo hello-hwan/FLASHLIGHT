@@ -142,6 +142,28 @@ const prd_code_search = async (prd_code) => {
   return list;
 }
 
+
+// test
+const test_sql = async (test_arr) => {
+  let result = 0;
+  console.log(test_arr)
+  await mariaDB.conn.beginTransaction();
+  for (i = 0 ; i < test_arr.length ; i++) {
+    let list = await mariaDB.transaction_query('test_sql', test_arr[i]);
+    console.log("----------")
+    console.log(list);
+    result = result + 1;
+    console.log(result);
+  }
+  if (result == 2) {
+    await mariaDB.conn.commit();
+    return result;
+  } else {
+    await mariaDB.conn.rollback();
+    return result;
+  }
+}
+
 module.exports = {
   cmmntest,
   bomtest,
@@ -164,5 +186,6 @@ module.exports = {
   ProcsCodeToDeleteMatrl, 
   ProcsCodeToDeleteFlowchart,
   bomManage,
-  prd_code_search
+  prd_code_search, 
+  test_sql
 };

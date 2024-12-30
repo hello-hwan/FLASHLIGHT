@@ -30,6 +30,35 @@ const query = (alias, values)=>{
   });
 };
 
+const conn = mariadb.createConnection({
+  host : process.env.MYSQL_HOST,
+  port : process.env.MYSQL_PORT,
+  user : process.env.MYSQL_USER,
+  password : process.env.MYSQL_PWD,
+  database : process.env.MYSQL_DB,
+  connectionLimit : process.env.MYSQL_LIMIT,
+
+  trace: true,                        //log
+  permitSetMultiParamEntries : true,  //parameter가 객체일 경우 escape작업 --> insert into set절을 사용가능함.
+  insertIdAsNumber : true,            //insertId를 Number 타입으로 변환.
+  bigIntAsNumber : true,              //bigInt 타입을 자동으로 Number타입으로 변환.
+});
+
+const transaction_query = (alias, values)=>{
+  return new Promise((resolve, reject)=>{
+    let executeSql = sqlList[alias];
+    conn.query(executeSql, values, (err, results)=>{
+      if(err) {
+        reject({err});
+      }else{
+        resolve(results);
+      }
+    });
+  });
+};
+
 module.exports = {
   query,
+  transaction_query, 
+  conn
 }
