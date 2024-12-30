@@ -1,7 +1,13 @@
 <template>
-    <div class="businessOrderListTitle">
-            입고품질검사
-    </div>     
+     <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 70%; font-size: 30px;">
+                        품질입고검사
+                    </th>
+                </tr>
+            </thead>
+        </table>  
     <div class="container">
             <div class="row g-3 align-items-center">
                 <div class="col-1">
@@ -61,25 +67,9 @@
                     <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="ord_num">
                 </div>
                 
-            </div>
-             
-            <div class="row g-3 align-items-center">
-                <div class="col-1">
-                    <label for="inputPassword6" class="col-form-label">검사일자</label>
-                </div>
-                <div class="col-auto">
-                    <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="inspec_date">
-                </div>           
-            </div>        
+            </div>      
 
-            <div class="row g-3 align-items-center">
-                <div class="col-1">
-                    <label for="inputPassword6" class="col-form-label">품질검사코드</label>
-                </div>
-                <div class="col-auto">
-                    <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="mtl_code">
-                </div>           
-            </div>        
+                 
 
             <div class="row g-3 align-items-center">
                 <div class="col-1">
@@ -102,22 +92,18 @@
             
     </div>
    
-    <div class="businessOrderListTitle">
-            검사상세항목
-    </div>     
+   
     
     
-    <div>
+    <div style="margin-top: 30px">
         <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
     </div>
     
-    <div>
-    
+    <div style="margin-top: 30px">    
         <button type="button" class="btn btn-primary" @click="quailtyInsert()">등록</button>
-        <button type="button" class="btn btn-warning">초기화</button>
-    
+        <button type="button" class="btn btn-warning" @click="onInit">초기화</button>    
     </div>
     
     
@@ -164,7 +150,10 @@
                 { field: "inspec_item",headerName: "검사항목"},
                 { field: "inspec_standard",headerName : "검사기준"},
                 { field: "error_amount",headerName : "불량량",editable : true},
-                { field: "p_result",headerName : "제품검사결과",editable : true} 
+                { field: "p_result",headerName : "제품검사결과",editable : true ,cellEditor: 'agSelectCellEditor',
+        cellEditorParams: {
+            values: ['합격','불합격'],
+        }} 
 
             ]);
     
@@ -203,9 +192,10 @@
                           
                                     
             },
+           
             async quailtyInsert(){
                 let inspect = [
-                    this.mtl_code,//품질검사코드
+                    "",//품질검사코드
                     this.mtr_code,//자재코드
                     this.mtr_name, //자재명
                     this.ord_num, //발주량=입고수량                   
@@ -228,19 +218,26 @@
 
                 let addRes = result3.data;
                 console.log(addRes);
-                
-                            
+                  
             },
             async getOrderDetails (info) {
                 this.mt_no = info[0].order_no;
                 this.getmt_no();
             },
+            onInit(){ 
+                this.mt_no= "", // 발주번호
+                this.mtr_code="", //자재코드
+                this.mtr_name="", //자재명
+                this.bc_code="", //거래처코드
+                this.bc_name="", //거래처명
+                this.ord_num="", //발주량               
+                this.empl_no="",//사원번호
+                this.pass_num="", //합격량 
+                this.rowData= [] //내용
+            },
+
             async onGridReady() {}
-        
-
-
-            
-        }
+             }
     };
     
     </script>

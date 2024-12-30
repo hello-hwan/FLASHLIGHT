@@ -32,22 +32,22 @@ import { ref } from 'vue';
 import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
-
+import userDateUtils from '@/utils/useDates.js';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
 export default {
-    name: "App",   
+    name: "App",
+    components: {
+        AgGridVue, // Add Vue Data Grid component
+    },
+    
     data() {
         return {
             rowData : [],
             colDefs: [],
             mtl_rowData: [],
-            mtl_colDefs: []
-            
-            
-           
-      
+            mtl_colDefs: []     
         };
     },
     created() {
@@ -56,14 +56,16 @@ export default {
             { field: "mtril_check_code",headerName: "품질검사코드"},
             { field: "mtril_name",headerName: "자재명"},
             { field: "mtlty_name",headerName : "거래처명"},
-            { field: "test_date",headerName : "검사일자",editable : true} ,
+            { field: "test_date",headerName : "검사일자",
+              valueFormatter: this.customDateFormat,
+            },
             { field: "empl_no",headerName : "사원번호",editable : true}, 
             { field: "pass_amount",headerName : "합격량",editable : true} 
 
         ]);
 
         this.gridOptions = {
-            columnDefs: this.orderColDefs,
+            columnDefs: this.ColDefs,
             pagination: true,
             paginationPageSize: 10,
             paginationPageSizeSelector: [10, 20, 50, 100],
@@ -77,6 +79,7 @@ export default {
         };
         //불량검사결과 리스트
         this.mtl_colDefs =ref([
+            { field: "mtril_check_code",headerName: "품질검사코드"},
             { field: "inspec_item",headerName: "검사항목"},
             { field: "inspec_standard",headerName : "검사기준"},
             { field: "error_amount",headerName : "불량량",editable : true} ,
@@ -85,7 +88,7 @@ export default {
         ]);
 
         this.gridOptions = {
-            columnDefs: this.orderColDefs,
+            columnDefs: this.mtl_colDefs,
             pagination: true,
             paginationPageSize: 10,
             paginationPageSizeSelector: [10, 20, 50, 100],
@@ -105,22 +108,23 @@ export default {
             let result = await axios.get(`${ajaxUrl}/quality/qiResult`)
                                     .catch(err => console.log(err));
             let re_no = result.data;
-            console.log(re_no);
+            //console.log(re_no);
             this.rowData = ref(re_no)   
         },
         async onClickRe_no(event) {
             const reselected = event.data.mtril_check_code; 
             console.log(reselected);
-            let result2 = await axios.get(`${ajaxUrl}/quality/qiResult2`)
+            let result2 = await axios.get(`${ajaxUrl}/quality/qiResult2?re_info=${reselected}`)
                                      .catch(err => console.log(err));
             let re_no2 =result2.data;
             this.mtl_rowData = ref(re_no2)
-        }
-
-    },        
-    components: {
-        AgGridVue, // Add Vue Data Grid component
-    },
+        },
+        
+        // 날짜 yyyy-MM-dd 형식에 맞춰서 가져오기
+        customDateFormat(params) {      
+         return userDateUtils.dateFormat(params.data.test_date, 'yyyy-MM-dd');  // test_date는 alias 이름
+         }
+    },       
  
 };
 

@@ -15,8 +15,10 @@ const inspec_item =
 FROM inspection_detail
 WHERE prd_code=?`;
 
-
-
+//품질입고검사 기본키조회
+const getsquance =
+`SELECT CONCAT('INS', LPAD(IFNULL(MAX(CAST(SUBSTR(mtril_check_code, 5) AS UNSIGNED)) + 1, 1), 5, '0')) AS mtril_check_code
+FROM inspection_check`;
 
 //품질입고검사 등록
 const quailtyInsert = 
@@ -34,17 +36,16 @@ VALUES(?,?,?,?,now(),?,?,?,?,?)`;
 
 //품질입고검사 등록2
 const quailtyInsert2 =
-`INSERT INTO check_result(p_name
-						 ,inspec_standard
+`INSERT INTO check_result(inspec_standard
 						 ,inspec_item
 						 ,p_result
 						 ,error_amount
 						 ,mtril_check_code)
-VALUES(?,?,?,?,?,?)`;
+VALUES(?,?,?,?,?)`;
 
 //품질검사결과
 const qiResult = 
-`SELECT mtril_check_code
+`SELECT  mtril_check_code
 		,mtril_name
 		,mtlty_name
 		,test_date
@@ -54,11 +55,13 @@ FROM inspection_check`;
 
 //품질검사결과2
 const qiResult2 =
-`SELECT   inspec_standard
+`SELECT mtril_check_code
+		,inspec_standard
 		,inspec_item
 		,error_amount
 		,p_result
-FROM check_result`;
+FROM check_result
+WHERE mtril_check_code=?`;
 
 
 
@@ -71,6 +74,7 @@ module.exports = {
 	quailtyInsert,
 	quailtyInsert2,
 	qiResult,
-	qiResult2
+	qiResult2,
+	getsquance
 
 };

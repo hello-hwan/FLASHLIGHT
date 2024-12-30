@@ -11,7 +11,7 @@
            </div>
            <div class="col-auto">
                <span class="form-text">
-                   <button type="button" class="btn btn-xs btn-info" @click="getqiList()">검색</button>
+                <search-modal @selectedData="getOrderDetails"/>   
                </span>
            </div>
        </div>
@@ -28,12 +28,18 @@
 import { ref } from 'vue';
 import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import SearchModal from '@/components/standardInfo/quailtyModal.vue';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
-export default {
+export default {    
+    name: "App",
+    components:{
+        SearchModal, 
+        AgGridVue // Add Vue Data Grid component     
+    },
    data() {
        return {
            qiList: [],
@@ -62,10 +68,7 @@ export default {
                 },
    };
 },
-   name: "App",
-   components: {
-       AgGridVue, // Add Vue Data Grid component
-   },
+   
    methods: {
        async getqiList() {
            let result = await axios.get(`${ajaxUrl}/standardInfo/qiList?qi_info=${this.prd_cd}`)
@@ -73,7 +76,11 @@ export default {
            this.qiList = result.data;
            this.rowData = ref(this.qiList);
 
-       }
+       },
+       async getOrderDetails (info) {
+                this.prd_cd = info[0].prd_code;
+               
+            },
    }
 };
 </script>
