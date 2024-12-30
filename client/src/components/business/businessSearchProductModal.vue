@@ -1,33 +1,26 @@
 <template>
-    <div class="col-2">
-        <label for="orderFormMtltyName" class="col-form-label">거래처 명</label>
+    <!-- <div class="col-2">
+        <label for="orderFormProductName" class="col-form-label">제품 명</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyName" class="form-control" placeholder="ex 예담" @click="modalOpen" v-model="companyName" readonly>
+        <input type="text" id="orderFormProductName" class="form-control" placeholder="ex 예담" @click="modalOpen" v-model="productName" readonly>
     </div>
     <div class="col-2">
-        <label for="orderFormMtltyCode" class="col-form-label">거래처 코드</label>
+        <label for="orderFormProductCode" class="col-form-label">제품 코드</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyCode" class="form-control" placeholder="ex bcnc-01" @click="modalOpen" v-model="companyCode" readonly>
-    </div>
-    
-    <!-- <span>거래처 명</span>
-    <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
-    <span>거래처 코드</span>
-    <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText> -->
+        <input type="text" id="orderFormProductCode" class="form-control" placeholder="ex 아이폰13PRO 가죽케이스" @click="modalOpen" v-model="productCode" readonly>
+    </div> -->
     <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck" >
         <div class="modal-container" @click.stop="">
             <div id="search-bar">
                 <div class="align-left"> 
-                    <span>거래처 코드</span>
-                    <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
-                    <span>상호명</span>
-                    <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
-                    <span>담당자 명</span>
-                    <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
+                    <span>제품 코드</span>
+                    <InputText type="text" v-model="searchProductCode" v-on:keyup.enter="searchCompany"> <p>{{ searchProductCode }}</p></InputText>
+                    <span>제품 명</span>
+                    <InputText type="text" v-model="searchProductName" v-on:keyup.enter="searchCompany"> <p>{{ searchProductName }}</p></InputText>
                 </div>
                 <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
             </div>
@@ -60,16 +53,15 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
 //부모 컴포넌트로 데이터 보내기
-const emit = defineEmits(["companySelectedData"]);
+const emit = defineEmits(["productSelectedData"]);
 
 //화면에 보이는 데이터
-let companyName = null;
-let companyCode = null;
+let productName = null;
+let productCode = null;
 
 //검색조건
-let searchCompanyCode = null;
-let searchcompanyName = null;
-let searchchargerName = null;
+let searchProductCode = null;
+let searchProductName = null;
 
 //그리드 api를 담을 변수
 const gridApi = ref(null);
@@ -80,7 +72,7 @@ const onGridReady = (params) => {
 };
 
 //모달 열림 상태 담을 변수
-let modalCheck = ref(false);
+let modalCheck = ref(true);
 
 //모달이 열리면 true로 변경, 스크롤 막기
 let modalOpen = () => {
@@ -96,22 +88,21 @@ let modalOpen = () => {
     rowData.value = [];
     
     //검색조건 초기화
-    searchCompanyCode = null;
-    searchcompanyName = null;
-    searchchargerName = null;
+    searchProductCode = null;
+    searchProductName = null;
 }
 
 //모달 발주건을 선택하고 확인버튼 클릭
 const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
-    const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log('모달에서 선택된 행 데이터:', companySelectedData);
-    companyName = companySelectedData[0].mtlty_name;
-    companyCode = companySelectedData[0].bcnc_code;
+    const productSelectedData = selectedNodes.map((node) => node.data);
+    console.log('모달에서 선택된 행 데이터:', productSelectedData);
+    productName = productSelectedData[0].mtlty_name;
+    productCode = productSelectedData[0].bcnc_code;
 
-    console.log(companyName, companyCode);
-    emit("companySelectedData", companySelectedData);
+    console.log(productName, productCode);
+    emit("productSelectedData", productSelectedData);
 };
 //행 데이터를 담을 변수
 const rowData = ref([]);
@@ -120,7 +111,6 @@ const rowData = ref([]);
 const ColDefs = [
   { field: "bcnc_code", headerName: "발주번호"},
   { field: "mtlty_name", headerName: "발주코드"},
-  { field: "charger_name", headerName: "발주명"},
   { headerName : "선택",  checkboxSelection: true, flex:0.3}
 ];
 
@@ -134,9 +124,8 @@ const GridOptions = {
 
 const searchCompany = async() => {
     //서버로 보낼 검색 데이터
-    let obj = {company_code: searchCompanyCode,
-                company_name: searchcompanyName,
-                charger_name: searchchargerName
+    let obj = {product_code: searchProductCode,
+            product_name: searchProductName
             };
     //console.log("새로만든 객체: ",obj);
     let result = await axios.post(`${ajaxUrl}/business/searchCompany`, obj)

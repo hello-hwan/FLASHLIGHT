@@ -17,6 +17,13 @@ router.get('/business/orderList', async (req, res) => {
     res.send(businessList);
 });
 
+// 주문번호 생성
+router.get('/business/orderArray', async (req, res) => {
+    let query = req.query;
+    let orderArrayNoList = await businessService.findOrderArray(query);
+    res.send(orderArrayNoList);
+})
+
 // 주문요청 상세조회
 router.get('/business/orderList/:order_no', async (req, res) => {
     let orderNo = req.params.order_no; 
