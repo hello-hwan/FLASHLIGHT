@@ -18,7 +18,7 @@
         </table>
         <div style="height: 300px;" v-show="input_div">
             <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
-                style="height: 250px; width: 50%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
+                style="height: 250px; width: 30%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
         <table class="table table-hover">
@@ -167,7 +167,6 @@ export default {
                 let result = await axios.get(`${ajaxUrl}/prdCodeToProcsCode/${this.prd_code}`)
                     .catch(err => console.log(err));
                 for (let i = 0; i < result.data.length; i++) {
-                    console.log(result.data[i].procs_code)
                     let result_1 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteMchn/${result.data[i].procs_code}`)
                         .catch(err => console.log(err));
                     let result_2 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteMatrl/${result.data[i].procs_code}`)

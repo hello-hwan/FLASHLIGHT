@@ -97,8 +97,8 @@ created() {
     };
     this.getprductList();
     this.colDefsSelect = ([
-        { field: "mtril_name", headerName:"제품명" },
-        { field: "prd_code", headerName:"제품코드" },
+        { field: "prd_code", headerName:"제품명" },
+        { field: "mtril_name", headerName:"제품코드" },
         { field: "pass_amount", headerName:"검사합격수량" },
         { field: "test_date", headerName:"검사완료일",
             valueFormatter: this.customDateFormat },

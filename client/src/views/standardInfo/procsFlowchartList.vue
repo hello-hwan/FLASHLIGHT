@@ -18,7 +18,7 @@
         </table>
         <div style="height: 300px;" v-show="input_div">
             <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
-                style="height: 250px; width: 50%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
+                style="height: 250px; width: 30%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
         <div>
@@ -57,7 +57,6 @@ export default {
             { field: "prd_code", headerName: "품목코드" },
             { field: "prd_nm", headerName: "품목명" },
             { field: "all_time", headerName: "총 소요시간" },
-            { field: "details", headerName: "상세보기" }
         ];
         this.gridOptions = {
             columnDefs: this.orderColDefs,
@@ -95,7 +94,6 @@ export default {
             this.eqpList = result.data;
             for (let i = 0; i < this.eqpList.length; i++) {
                 this.eqpList[i].all_time = this.eqpList[i].all_time + " 시간";
-                this.eqpList[i].details = "클릭";
             }
             this.rowData = this.eqpList;
         },
