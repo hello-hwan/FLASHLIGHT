@@ -161,13 +161,4 @@ router.get('/prd_code_search/:prd_code', async (req, res) => {
 });
 
 
-// test
-router.post('/testing', async(req, res)=>{
-  let Insert = req.body;
-  let result = await standard_info_service.test_sql(Insert);
-  console.log("----------")
-  console.log(result)
-  res.send({"result" : result});
-});
-
 module.exports = router;     

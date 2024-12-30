@@ -26,7 +26,6 @@
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
-        <button type="button" class="btn btn-danger" style="color: white;" @click="test_btn()">test</button>
     </div>
 </template>
 
@@ -110,11 +109,6 @@ export default {
             let result = await axios.get(`${ajaxUrl}/prd_code_search/${this.search_prd_code}`)
                 .catch(err => console.log(err));;
             this.rowData_search = result.data;
-        }, 
-        async test_btn() {
-            let input = [[3, 4], [5, 6]];
-            let result = await axios.post(`${ajaxUrl}/testing`, input);
-            console.log(result.data.result);
         }
     },
     watch: {

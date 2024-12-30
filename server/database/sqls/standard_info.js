@@ -182,12 +182,6 @@ const prd_code_search =
  FROM procs_flowchart
  WHERE prd_code LIKE CONCAT('%', ?, '%')`;
 
-
-// test
-const test_sql = 
-`INSERT INTO z_test
- VALUE (?, ?);`;
-
 module.exports = {
   bom,
   bomInfo,
@@ -209,6 +203,5 @@ module.exports = {
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
   ProcsCodeToDeleteFlowchart, 
-  prd_code_search, 
-  test_sql
+  prd_code_search
 };
