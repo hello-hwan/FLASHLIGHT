@@ -182,11 +182,17 @@ const prd_code_search =
  FROM procs_flowchart
  WHERE prd_code LIKE CONCAT('%', ?, '%')`;
 
+// BOM에 등록되어있는 품목코드, 품목이름 검색
+const prd_code_bom_search = 
+`SELECT prdlst_code, 
+        prdist_name
+ FROM bom
+ WHERE prdlst_code LIKE CONCAT('%', ?, '%')`;
 
-// test
-const test_sql = 
-`INSERT INTO z_test
- VALUE (?, ?);`;
+ const prd_code_bom_all_search = 
+`SELECT prdlst_code, 
+        prdist_name
+ FROM bom`;
 
 module.exports = {
   bom,
@@ -210,5 +216,6 @@ module.exports = {
   ProcsCodeToDeleteMatrl, 
   ProcsCodeToDeleteFlowchart, 
   prd_code_search, 
-  test_sql
+  prd_code_bom_search, 
+  prd_code_bom_all_search
 };
