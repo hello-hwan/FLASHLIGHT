@@ -239,14 +239,16 @@ router.get('/prd_code_search/:prd_code', async (req, res) => {
   res.send(list);
 });
 
+// BOM에 등록되어있는 품목코드, 품목이름 검색
+router.get('/prd_code_bom_search/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.prd_code_bom_search(prd_code);
+  res.send(list);
+});
 
-// test
-router.post('/testing', async(req, res)=>{
-  let Insert = req.body;
-  let result = await standard_info_service.test_sql(Insert);
-  console.log("----------")
-  console.log(result)
-  res.send({"result" : result});
+router.get('/prd_code_bom_all_search', async (req, res) => {
+  let list = await standard_info_service.prd_code_bom_all_search();
+  res.send(list);
 });
 
 module.exports = router;     

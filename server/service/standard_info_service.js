@@ -2,32 +2,32 @@
 const mariaDB = require('../database/mapper.js');
 
 // 기준정보 데이터 select 테스트
-const cmmntest = async ()=>{
+const cmmntest = async () => {
   let list = await mariaDB.query('cmmn');
   return list;
 }
 
 // BOM 조회
-const bomtest = async() => {
+const bomtest = async () => {
   let list = await mariaDB.query('bom');
   return list;
-} 
+}
 
 // BOM 상세보기 
-const bomInfo = async(bomCode) => {
-  let list = await mariaDB.query('bomInfo',bomCode); 
+const bomInfo = async (bomCode) => {
+  let list = await mariaDB.query('bomInfo', bomCode);
   return list;
 }
 
 // BOM 등록  
 const bomInsert = async (bomInfo) => {
-  let result = await mariaDB.query('bomInsert', bomInfo); 
+  let result = await mariaDB.query('bomInsert', bomInfo);
 
   if (result.insertId != null) {
     return { message: '데이터 삽입 성공' };
   } else {
     return { message: '데이터 삽입 실패' };
-  } 
+  }
 }
 
 // BOM 관리 select
@@ -47,8 +47,8 @@ const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
 
 // BOM소모품 삭제
 const bom_cmpdsDel = async (cmpdsNo) => {
-    let result = await mariaDB.query('bom_cmpdsDel',cmpdsNo);
-    return result;
+  let result = await mariaDB.query('bom_cmpdsDel', cmpdsNo);
+  return result;
 }
 
 // 자재 조회
@@ -145,14 +145,14 @@ const bcncList = async () => {
 
 //품질검사항목관리
 const qiList = async (prd_code) => {
-  let list = await mariaDB.query('qiList',prd_code);  
+  let list = await mariaDB.query('qiList', prd_code);
   return list;
 }
 
 // 공정 흐름도 조회
 const procsFlowchartList = async () => {
-    let list = await mariaDB.query('procsFlowchartList'); 
-    return list;
+  let list = await mariaDB.query('procsFlowchartList');
+  return list;
 }
 
 // 공정 흐름도 상세 조회
@@ -183,16 +183,16 @@ const procsFlowchartSearchmtnm = async (mtril_name) => {
 }
 
 // 공정 흐름도 생성
-const procsFlowchartInsert = async (Insert)=>{
+const procsFlowchartInsert = async (Insert) => {
   await mariaDB.query('procsFlowchartInsert', Insert);
 }
 // 공정별 재료 소모 생성
-const procsMatrlInsert = async (Insert)=>{
+const procsMatrlInsert = async (Insert) => {
   await mariaDB.query('procsMatrlInsert', Insert);
 }
 
 // 공정별 작업기기 생성
-const procsMchnInsert = async (Insert)=>{
+const procsMchnInsert = async (Insert) => {
   await mariaDB.query('procsMchnInsert', Insert);
 }
 
@@ -203,15 +203,15 @@ const prdCodeToProcsCode = async (prd_code)=>{
 }
 
 // 공정 코드로 공정 흐름도 삭제 (테이블 3개)
-const ProcsCodeToDeleteMchn = async (procs_code)=>{
+const ProcsCodeToDeleteMchn = async (procs_code) => {
   await mariaDB.query('ProcsCodeToDeleteMchn', procs_code);
 }
 
-const ProcsCodeToDeleteMatrl = async (procs_code)=>{
+const ProcsCodeToDeleteMatrl = async (procs_code) => {
   await mariaDB.query('ProcsCodeToDeleteMatrl', procs_code);
 }
 
-const ProcsCodeToDeleteFlowchart = async (procs_code)=>{
+const ProcsCodeToDeleteFlowchart = async (procs_code) => {
   await mariaDB.query('ProcsCodeToDeleteFlowchart', procs_code);
 }
 
@@ -221,26 +221,15 @@ const prd_code_search = async (prd_code) => {
   return list;
 }
 
+// BOM에 등록되어있는 품목코드, 품목이름 검색
+const prd_code_bom_search = async (prd_code) => {
+  let list = await mariaDB.query('prd_code_bom_search', prd_code);
+  return list;
+}
 
-// test
-const test_sql = async (test_arr) => {
-  let result = 0;
-  console.log(test_arr)
-  await mariaDB.conn.beginTransaction();
-  for (i = 0 ; i < test_arr.length ; i++) {
-    let list = await mariaDB.transaction_query('test_sql', test_arr[i]);
-    console.log("----------")
-    console.log(list);
-    result = result + 1;
-    console.log(result);
-  }
-  if (result == 2) {
-    await mariaDB.conn.commit();
-    return result;
-  } else {
-    await mariaDB.conn.rollback();
-    return result;
-  }
+const prd_code_bom_all_search = async () => {
+  let list = await mariaDB.query('prd_code_bom_all_search');
+  return list;
 }
 
 module.exports = {
@@ -263,19 +252,20 @@ module.exports = {
   prductDelete,
   bcncList,
   qiList,
-  procsFlowchartList, 
-  procsFlowchartDetail, 
-  procsFlowchartDetailTop, 
-  procsFlowchartSearchBom, 
-  procsFlowchartSearchmtnm, 
-  procsFlowchartInsert, 
-  procsMatrlInsert, 
-  procsMchnInsert, 
-  prdCodeToProcsCode, 
-  ProcsCodeToDeleteMchn, 
-  ProcsCodeToDeleteMatrl, 
+  procsFlowchartList,
+  procsFlowchartDetail,
+  procsFlowchartDetailTop,
+  procsFlowchartSearchBom,
+  procsFlowchartSearchmtnm,
+  procsFlowchartInsert,
+  procsMatrlInsert,
+  procsMchnInsert,
+  prdCodeToProcsCode,
+  ProcsCodeToDeleteMchn,
+  ProcsCodeToDeleteMatrl,
   ProcsCodeToDeleteFlowchart,
   bomManage,
   prd_code_search, 
-  test_sql
+  prd_code_bom_search, 
+  prd_code_bom_all_search
 };
