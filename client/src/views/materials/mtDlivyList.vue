@@ -1,11 +1,11 @@
 <template>
     <div>
         <span>요청명</span>
-        <InputText type="text" v-model="reqName" class="emp_info"> <p>{{ reqName }}</p></InputText>
+        <InputText type="text" v-model="reqName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ reqName }}</p></InputText>
         <span>자재명</span>
-        <InputText type="text" v-model="mtrilName" class="emp_info"> <p>{{ mtrilName }}</p></InputText>
+        <InputText type="text" v-model="mtrilName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
         <span>담당자</span>
-        <InputText type="text" v-model="chargerName" class="emp_info"> <p>{{ chargerName }}</p></InputText>
+        <InputText type="text" v-model="chargerName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
         <span>요청날짜</span>
         <InputText type="date" v-model="reqDateStart" class="emp_info"> <p>{{ reqDateStart }}</p></InputText>
         <InputText type="date" v-model="reqDateEnd" class="emp_info"> <p>{{ reqDateEnd }}</p></InputText>
@@ -28,6 +28,7 @@ import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 import { ref } from 'vue';
+import { ajaxUrl } from "@/utils/commons";
 import axios from 'axios';
 
 //행 데이터를 담을 변수
@@ -42,7 +43,15 @@ const reqDateEnd = ref("");
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
   { field: "req_name", headerName: "요청명", flex:1},
-  { field: "req_date", headerName: "요청일자", flex:1},
+  { field: "requst_date", headerName: "요청일자", flex:1, valueFormatter: (params) => {
+          if (!params.value) {
+            return "";
+          }
+          params.value = new Date(params.value);
+          const month = params.value.getMonth() + 1;
+          const day = params.value.getDate();
+          return `${params.value.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
+        }},
   { field: "mtril_code", headerName: "자재코드", flex:1},
   { field: "mtril_name", headerName: "자재명", flex:1},
   { field: "mtril_lot", headerName: "lot", flex:1},
@@ -60,7 +69,7 @@ const getList = async() => {
                 end_date: reqDateEnd.value
     };
 
-    let result = await axios.post(`${ajaxUrl}/mtril/wrhousingList`, obj)
+    let result = await axios.post(`${ajaxUrl}/mtril/dlivyList`, obj)
                             .catch(err=> console.log(err));
 
     //console.log(result.data);
