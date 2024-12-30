@@ -6,24 +6,54 @@
         <v-col cols="12" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
             <template v-slot:title>
-              <span class="font-weight-black">자재 조회</span>
+              <span class="font-weight-black">거래처 조회</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- 필터 검색 필드 -->
               <div class="row g-3 align-items-center">
                 <!-- 반제품LOT번호 -->
                 <div class="col-1">
-                  <label for="itemCode" class="col-form-label">자재코드</label>
+                  <label for="itemCode" class="col-form-label">거래처 코드</label>
                 </div>
                 <div class="col-3">
-                  <input type="text" id="itemCode" class="form-control" v-model="mtrilCode" />
+                  <input type="text" id="itemCode" class="form-control" v-model="bcncCode" />
                 </div>
                 <!-- 품목코드 --> 
                 <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">자재명</label>
+                  <label for="itemCode" class="col-form-label">거래처 이름</label>
                 </div>
                 <div class="col-3">
-                  <input type="text" id="itemCode" class="form-control" v-model="mtrilName" />
+                  <input type="text" id="itemCode" class="form-control" v-model="mtltyName" />
+                </div>
+                <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">업태</label>
+                </div>
+                <div class="col-3">
+                  <input type="text" id="itemCode" class="form-control" v-model="searchBizcnd" />
+                </div>
+                <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">종목</label>
+                </div>
+                <div class="col-3"> 
+                  <input type="text" id="itemCode" class="form-control" v-model="searchItem" />
+                </div>
+                <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">담당자 명</label>
+                </div>
+                <div class="col-3">
+                  <input type="text" id="itemCode" class="form-control" v-model="chargerName" />
+                </div>
+                <div class="col-auto">
+                  <label for="startDate" class="col-form-label">요청일</label>
+                </div>
+                <div class="col-auto">
+                  <input type="date" id="startDate" class="form-control" v-model="startDate" :max="endDate"/>
+                </div>
+                <div class="col-auto">
+                  <label for="endDate" class="col-form-label">-</label>
+                </div>
+                <div class="col-auto">
+                  <input type="date" id="endDate" class="form-control" v-model="endDate" :min="startDate"/>
                 </div>
                 <div class="col-3">
                   <button class="btn btn-primary mx-2" @click="filterByCode">검색</button>
@@ -41,18 +71,18 @@
         <v-col cols="4">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">자재 등록</span>
+              <span class="font-weight-black">거래처 등록</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">자재코드</label>
+                  <label for="itemCode" class="col-form-label">거래처 코드</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="itemCode" class="form-control" v-model="mtrilCodeAdd" />
               </div>
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">자재명</label>
+                  <label for="itemCode" class="col-form-label">거래처 명</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="itemCode" class="form-control" v-model="mtrilNameAdd" />
@@ -81,7 +111,7 @@
         <v-col cols="8">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">자재 리스트</span>
+              <span class="font-weight-black">거래처 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
@@ -119,10 +149,10 @@ export default {
   data() {
     return {
       isModified: false, // 수정 상태 추적 변수
-      mtrilList: [], // 자재 리스트
-      rowData: [], // 자재 데이터
+      bcncList: [], // 거래처 리스트
+      rowData: [], // 거래처 데이터
       filteredRowData: [], // 검색된 데이터
-      colDefs: [], // 자재 컬럼 정의
+      colDefs: [], // 거래처 컬럼 정의
 
       mtrilInsert: [],
       rowDataInsert: [],
@@ -131,27 +161,35 @@ export default {
       gridOptionsReturn: {}, // AgGrid 옵션
 
       // 검색 입력값
-      mtrilCode: "", 
-      mtrilName: "",
+      bcncCode: "", 
+      mtltyName: "",
+      searchBizcnd: "",
+      searchItem: "",
+      chargerName: "",
+      startDate: "",
+      endDate: "",
 
       //input 입력값
       mtrilCodeAdd: "",
       mtrilNameAdd: "",
       unitAdd: "",
       sfinvcAdd: "",
-
+      
     };
   },
   created() {
-    this.getmtrilList();
+    this.getbcncList();
 
     this.colDefs = [
-      { field: "mtril_code", headerName: "자재코드" },
-      { field: "mtril_name", headerName: "자재명" },
-      { field: "unit", headerName: "단위" },
-      { field: "mtril_qy", headerName: "총수량"},
-      { field: "untpc", headerName: "입고단가", editable: true },
-      { field: "sfinvc", headerName: "안전재고" , editable: true}
+      { field: "bcnc_code", headerName: "거래처 코드" },
+      { field: "bizrno", headerName: "사업자 등록 번호" },
+      { field: "mtlty_name", headerName: "거래처 명" },
+      { field: "bizcnd", headerName: "업태" },
+      { field: "item", headerName: "종목" },
+      { field: "dvyfg_adres", headerName: "납품 주소" , editable: true},
+      { field: "charger_name", headerName: "담당자 명" , editable: true},
+      { field: "charger_phone", headerName: "담당자 번호" , editable: true},
+      { field: "regist_day", headerName: "등록 날짜" , editable: true},
     ];
 
     this.gridOptionsReturn = {
@@ -166,6 +204,7 @@ export default {
       },
       rowSelection: "single",
     };
+    
   },
   methods: {
 
@@ -179,11 +218,11 @@ export default {
     },
 
     // 그리드 초기값 불러오기
-    async getmtrilList() {
-      let result = await axios.get(`${ajaxUrl}/mtril`)
+    async getbcncList() {
+      let result = await axios.get(`${ajaxUrl}/bcncList`)
         .catch(err => console.log(err));
-      this.mtrilList = result.data;
-      this.rowData = this.mtrilList;
+      this.bcncList = result.data;
+      this.rowData = this.bcncList;
       this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
 
@@ -241,16 +280,24 @@ export default {
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
         return (
-          (!this.mtrilCode || row.mtril_code.includes(this.mtrilCode)) &&
-          (!this.mtrilName || row.mtril_name.includes(this.mtrilName))
+          (!this.bcncCode || row.bcnc_code.includes(this.bcncCode)) &&
+          (!this.mtltyName || row.mtlty_name.includes(this.mtltyName)) &&
+          (!this.searchBizcnd || row.bizcnd.includes(this.searchBizcnd)) &&
+          (!this.searchItem || row.item.includes(this.searchItem)) &&
+          (!this.chargerName || row.charger_name.includes(this.chargerName))
         );
       });
     },
     
     // 검색 필터 초기화
     resetFilter() {
-      this.mtrilCode = "";
-      this.mtrilName = "";
+      this.bcncCode = "";
+      this.mtltyName = "";
+      this.searchBizcnd = "";
+      this.searchItem = "";
+      this.chargerName = "";
+      this.startDate = "";
+      this.endDate = "";
       this.filteredRowData = this.rowData;
     },
 

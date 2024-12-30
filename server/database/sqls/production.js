@@ -106,6 +106,11 @@ FROM badn_info
 WHERE prdctn_code = ?
 `;
 
+const pr_statepro = // 생산완료 프로시저 부르는거
+`
+CALL play_state(?, ?, ?)
+`;
+
 
 // 삽입문
 const pr_insstate = // 생산 실적 삽입
@@ -204,6 +209,7 @@ module.exports = {
   pr_cobad,
   pr_badco,
   pr_upstate,
+  pr_statepro,
 
 
 

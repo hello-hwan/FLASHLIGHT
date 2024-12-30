@@ -49,7 +49,7 @@
                 </div>
               </div>
             </v-card-text>
-          </v-card>
+          </v-card> 
         </v-col>
       </v-row>
 
@@ -166,12 +166,11 @@
   
       // 상세보기 컬럼 정의
       this.colDefsInfo = [
-        { field: "cmpds_no", headerName: "소모품코드" },
-        { field: "prdlst_code", headerName: "소모품코드" },
-        { field: "cmpds_prdlst_name", headerName: "소모품명" },
-        { field: "stndrd_y", headerName: "규격" },
-        { field: "unit", headerName: "단위" },
-        { field: "cnsum_count", headerName: "소모량" },
+        { field: "cmpds_no", headerName: "소모품코드", editable: (params) => params.node.data.isNewRow },
+        { field: "cmpds_prdlst_name", headerName: "소모품명", editable: (params) => params.node.data.isNewRow },
+        { field: "stndrd_y", headerName: "규격", editable: (params) => params.node.data.isNewRow },
+        { field: "unit", headerName: "단위", editable: (params) => params.node.data.isNewRow },
+        { field: "cnsum_count", headerName: "소모량", editable: true }, // 항상 수정 가능        
       ];
   
       // AgGrid 기본 옵션 설정
@@ -191,7 +190,6 @@
         filter: true,
         sortable: true,
         resizable: true,
-        editable: true,
         flex: 1,
         minWidth: 10,
       },
@@ -202,13 +200,10 @@
       onCellClicked(event) {
         if (event.colDef.field === "상세보기") {
           this.selectedBomCode = event.data.prdlst_code; // 상세보기를 위한 데이터 추츨
-          console.log(`선택된 BOM 코드: ${this.selectedBomCode}`); 
           this.getbomListInfo(this.selectedBomCode); // 상세 정보 조회
         }
       },
-      /**
-       * 
-       */
+      // BOM 정보 SELECT 및 그리드 데이터 삽입
       async getbomList() {
         let result = await axios.get(`${ajaxUrl}/bom`)
                           .catch(err => console.log(err));
@@ -217,6 +212,7 @@
         this.filteredRowData = this.rowData; // 초기 데이터 설정
       },
 
+      // BOM 코드를 기반으로 조건SELECT 후 소모품 그리드에 데이터 삽입
       async getbomListInfo(bomCode) {
         let result = await axios.get(`${ajaxUrl}/bomManage/${bomCode}`)
                                   .catch(err => console.log(err));
@@ -230,15 +226,21 @@
           this.rowCount = this.rowData.length;
         }
       },
+
+      // 검색조건값에 따른 필터링
       filterByCode() {
         this.filteredRowData = this.rowData.filter((row) =>
           row.prdlst_code.includes(this.searchCode)
         );
       },
+
+      // 검색조건 초기화
       resetFilter() {
         this.searchCode = "";
         this.filteredRowData = [...this.bomList];
       },
+
+      // 행추가
       addRow() {
         const newRow = {
           cmpds_no: "",
@@ -247,8 +249,13 @@
           stndrd_y: "",
           unit: "",
           cnsum_count: "",
+          isNewRow: true, // 새로 추가된 행임을 나타냄(새로추가된 행을 구분하여 전체 입력가능하도록하기위함)
         };
         this.rowDataInfo = [...this.rowDataInfo, newRow];
+        // 데이터 반영을 위해 Vue 데이터 갱신
+        if (this.gridOptions.api) {
+          this.gridOptions.api.setRowData(this.rowDataInfo);
+        }
       },
       deleteRow() {
         const selectedNodes = this.gridOptions.api.getSelectedNodes();
@@ -275,8 +282,6 @@
         });
       },
       async saveData() { 
-        console.log(this.rowCount);
-        console.log(this.rowDataInfo.length);
         for(let i = this.rowCount; i < this.rowDataInfo.length; i ++) {
           let row = this.rowDataInfo[i];
           let obj = {
@@ -292,6 +297,16 @@
           let result = await axios.post(`${ajaxUrl}/bom`, obj)
                                   .catch(err => console.log(err));           
         }
+        // 저장 후 플래그 제거
+        this.rowDataInfo = this.rowDataInfo.map((row) => {
+          if (row.isNewRow) delete row.isNewRow;
+          return row;
+        });
+
+        // 데이터 갱신
+        if (this.gridOptions.api) {
+          this.gridOptions.api.setRowData(this.rowDataInfo);
+        }
       },
       async update() {
         for(let i = 0; i < this.rowData.length; i ++) {
@@ -299,13 +314,12 @@
           let obj = {
             cnsum_count: row.cnsum_count
           }
-          console.log('obj',obj);
           let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${this.rowData[i].cmpds_no}`,obj)
                                         .catch(err => console.log(err));
         }
       },
       onCellClicked2(event) {
-        console.log("선택된 셀:", event);
+        //console.log("선택된 셀:", event);
       },
       onGridReady(params) {
         this.gridOptions.api = params.api;

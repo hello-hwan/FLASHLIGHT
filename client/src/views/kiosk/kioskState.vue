@@ -58,6 +58,7 @@
             <div class="float-right align-left" style="width: 50%;">
               <div v-for="mt in matril" :key="mt.mtril_code">
                 <label class="display-6 font-weight-black">{{ mt.mtril_nm }}</label>
+                <br>
                 <Number v-model="mt.usage"></Number>
                 <div style="margin-bottom: 10px;
                             text-align: right;

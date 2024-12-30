@@ -19,7 +19,7 @@ FROM order_requst r LEFT OUTER JOIN order_lists l ON r.order_no = l.order_no LEF
 ORDER BY 1 DESC`;
 
 const orderRequestInsert = `
-CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?)`;
 /*
 const orderRequestInsert = 
 `INSERT INTO order_requst ( order_no, order_date, dete, p_code, wrter)
@@ -56,12 +56,18 @@ WHERE bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
 AND mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
 AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')`
 
+const bs_orderArray = `
+SELECT order_no
+FROM order_requst
+`
+
 module.exports = {
     orderRequest,
     orderRequestInsert,
     orderRequestDetail,
     orderRequestDelete,
-    bs_searchCompany
+    bs_searchCompany,
+    bs_orderArray
 };
 
 

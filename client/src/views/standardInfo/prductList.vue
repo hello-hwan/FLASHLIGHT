@@ -6,24 +6,22 @@
         <v-col cols="12" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
             <template v-slot:title>
-              <span class="font-weight-black">자재 조회</span>
+              <span class="font-weight-black">완제품 조회</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- 필터 검색 필드 -->
               <div class="row g-3 align-items-center">
-                <!-- 반제품LOT번호 -->
                 <div class="col-1">
-                  <label for="itemCode" class="col-form-label">자재코드</label>
+                  <label for="itemCode" class="col-form-label">완제품 코드</label>
                 </div>
                 <div class="col-3">
-                  <input type="text" id="itemCode" class="form-control" v-model="mtrilCode" />
-                </div>
-                <!-- 품목코드 --> 
+                  <input type="text" id="itemCode" class="form-control" v-model="prductCode" />
+                </div> 
                 <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">자재명</label>
+                  <label for="itemCode" class="col-form-label">완제품 명</label>
                 </div>
                 <div class="col-3">
-                  <input type="text" id="itemCode" class="form-control" v-model="mtrilName" />
+                  <input type="text" id="itemCode" class="form-control" v-model="prductName" />
                 </div>
                 <div class="col-3">
                   <button class="btn btn-primary mx-2" @click="filterByCode">검색</button>
@@ -41,21 +39,29 @@
         <v-col cols="4">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">자재 등록</span>
+              <span class="font-weight-black">완제품 등록</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">자재코드</label>
+                  <label for="itemCode" class="col-form-label">완제품 코드</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilCodeAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="prdlstCodeAdd" />
               </div>
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">자재명</label>
+                  <label for="itemCode" class="col-form-label">완제품 명</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilNameAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="prdlstNameAdd" />
+              </div>
+              <div class="col-auto">
+                <label for="dimensions" class="col-form-label">규격</label>
+              </div>
+              <div class="col-auto d-flex align-items-center">
+                <input type="number" id="dimensionX" class="form-control mx-1" v-model="stndrdX" placeholder="규격X" style="width: 130px;"/>
+                <input type="number" id="dimensionY" class="form-control mx-1" v-model="stndrdY" placeholder="규격Y" style="width: 130px;"/>
+                <input type="number" id="dimensionZ" class="form-control mx-1" v-model="stndrdZ" placeholder="규격Z" style="width: 130px;" />
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">단위</label>
@@ -63,6 +69,24 @@
               <div class="col-auto">
                 <input type="text" id="itemCode" class="form-control" v-model="unitAdd" />
               </div>
+              <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">입고단가</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" id="itemCode" class="form-control" v-model="wrhousngUntpcAdd" />
+              </div>
+              <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">출고단가</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" id="itemCode" class="form-control" v-model="dlivyUntpcAdd" />
+              </div>
+              <!-- <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">총수량</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
+              </div> -->
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">안전재고</label>
               </div>
@@ -81,12 +105,12 @@
         <v-col cols="8">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">자재 리스트</span>
+              <span class="font-weight-black">완제품 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
-                style="height: 400px; margin: 0 auto;"
+                style="height: 500px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"
@@ -119,10 +143,10 @@ export default {
   data() {
     return {
       isModified: false, // 수정 상태 추적 변수
-      mtrilList: [], // 자재 리스트
-      rowData: [], // 자재 데이터
+      prductList: [], // 완제품 리스트
+      rowData: [], // 완제품 데이터
       filteredRowData: [], // 검색된 데이터
-      colDefs: [], // 자재 컬럼 정의
+      colDefs: [], // 완제품 컬럼 정의
 
       mtrilInsert: [],
       rowDataInsert: [],
@@ -131,26 +155,24 @@ export default {
       gridOptionsReturn: {}, // AgGrid 옵션
 
       // 검색 입력값
-      mtrilCode: "", 
-      mtrilName: "",
-
-      //input 입력값
-      mtrilCodeAdd: "",
-      mtrilNameAdd: "",
-      unitAdd: "",
-      sfinvcAdd: "",
+      prductCode: "", 
+      prductName: "",
 
     };
   },
   created() {
-    this.getmtrilList();
+    this.getprductList();
 
     this.colDefs = [
-      { field: "mtril_code", headerName: "자재코드" },
-      { field: "mtril_name", headerName: "자재명" },
-      { field: "unit", headerName: "단위" },
-      { field: "mtril_qy", headerName: "총수량"},
-      { field: "untpc", headerName: "입고단가", editable: true },
+      { field: "prdlst_code", headerName: "완제품 코드" },
+      { field: "prdlst_name", headerName: "완제품 명" },
+      { field: "stndrd_x", headerName: "규격x", editable: true },
+      { field: "stndrd_y", headerName: "규격y", editable: true },
+      { field: "stndrd_z", headerName: "규격z" , editable: true},
+      { field: "unit", headerName: "단위"},
+      { field: "prduct_invntry_qy", headerName: "총수량" },
+      { field: "wrhousng_untpc", headerName: "입고단가" , editable: true },
+      { field: "dlivy_untpc", headerName: "출고단가" , editable: true},
       { field: "sfinvc", headerName: "안전재고" , editable: true}
     ];
 
@@ -166,6 +188,7 @@ export default {
       },
       rowSelection: "single",
     };
+    
   },
   methods: {
 
@@ -179,22 +202,27 @@ export default {
     },
 
     // 그리드 초기값 불러오기
-    async getmtrilList() {
-      let result = await axios.get(`${ajaxUrl}/mtril`)
+    async getprductList() {
+      let result = await axios.get(`${ajaxUrl}/infoprductList`)
         .catch(err => console.log(err));
-      this.mtrilList = result.data;
-      this.rowData = this.mtrilList;
+      this.prductList = result.data;
+      this.rowData = this.prductList;
       this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
-
+    
     async addData(){
       let obj = {
-        mtril_code: this.mtrilCodeAdd,
-        mtril_name: this.mtrilNameAdd,
+        prdlst_code: this.prdlstCodeAdd,
+        prdlst_name: this.prdlstNameAdd,
+        stndrd_x: this.stndrdX,
+        stndrd_y: this.stndrdY,
+        stndrd_z: this.stndrdZ,
         unit: this.unitAdd,
+        wrhousng_untpc: this.wrhousngUntpcAdd,
+        dlivy_untpc: this.dlivyUntpcAdd,
         sfinvc: this.sfinvcAdd
       }
-      let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
+      let result = await axios.post(`${ajaxUrl}/prductInsert`, obj)
                         .catch(err => console.log(err));
                         this.rowData.push(obj); //등록시 그리드에 바로적용
     },
@@ -229,10 +257,10 @@ export default {
         this.gridOptionsReturn.api.applyTransaction({ remove: selectedData });
 
         selectedData.forEach((data) => {
-          if (data.mtril_code) {
-            axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
-              .then(() => console.log(`행 삭제 완료: ${data.mtril_code}`))
-              .catch((err) => console.error(`행 삭제 실패: ${data.mtril_code}`, err));
+          if (data.prdlst_code) {
+            axios.delete(`${ajaxUrl}/prductDelete/${data.prdlst_code}`)
+              .then(() => console.log(`행 삭제 완료: ${data.prdlst_code}`))
+              .catch((err) => console.error(`행 삭제 실패: ${data.prdlst_code}`, err));
           }
         });
     },
@@ -241,16 +269,16 @@ export default {
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
         return (
-          (!this.mtrilCode || row.mtril_code.includes(this.mtrilCode)) &&
-          (!this.mtrilName || row.mtril_name.includes(this.mtrilName))
+          (!this.prductCode || row.prdlst_code.includes(this.prductCode)) &&
+          (!this.prductName || row.prdlst_name.includes(this.prductName))
         );
       });
     },
     
     // 검색 필터 초기화
     resetFilter() {
-      this.mtrilCode = "";
-      this.mtrilName = "";
+      this.prductCode = "";
+      this.prductName = "";
       this.filteredRowData = this.rowData;
     },
 

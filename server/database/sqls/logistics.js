@@ -1,6 +1,6 @@
 //물류 sql
 
-// 반제품 입고 리스트
+// 반제품 입고 대기 리스트
 const prdctn_n_list = 
 `SELECT i.prd_code
       ,i.mtril_name

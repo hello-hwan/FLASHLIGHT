@@ -102,7 +102,7 @@ AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
 AND     order_date BETWEEN IFNULL(?, order_date) AND IFNULL(?, order_date)
 AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
 AND     empl_no = IFNULL(?, empl_no)
-AND     order_no NOT IN (SELECT order_code
+AND     order_no NOT IN (SELECT order_no
 			 FROM   inspection_check)
 GROUP BY order_code
 ORDER BY order_no DESC
@@ -217,17 +217,20 @@ SELECT  m.mtril_code AS mtril_code,
         m.wrh_qy AS wrh_qy,
         s.unit AS unit,
         m.mtril_lot AS mtril_lot,
-        m.wrhousng_se AS wrhousng_se,
+		(CASE WHEN m.wrhousng_se = 'MW01' THEN  '발주'
+        ELSE '반환'
+        END) AS wrhousng_se,
         m.wrhousng_date AS wrhousng_date,
         t.empl_name AS empl_name
 FROM    mtril_wrhousing m JOIN mtril s
                             ON (m.mtril_code = s.mtril_code)
                           JOIN empl t
                             ON (m.empl_no = t.empl_no)
-WHERE   m.mtril_name IN CONCAT('%', IFNULL(?, m.mtril_name) ,'%')
-AND     m.wrhousng_se IN CONCAT('%', IFNULL(?, m.wrhousng_se), '%')
-AND     t.empl_name IN CONCAT('%', IFNULL(?, t.empl_name), '%')
+WHERE   m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name) ,'%')
+AND     m.wrhousng_se LIKE CONCAT('%', IFNULL(?, m.wrhousng_se), '%')
+AND     t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
 AND     m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
+ORDER BY m.wrhousng_date desc
 `;
 
 //자재 출고 관리 - mt009 요청가져오기
@@ -288,22 +291,23 @@ CALL mt_dlivy_process(
 //자재 출고 조회 - mt011
 const mt_dlivyList =
 `
-SELECT  m.req_name,
-        m.requst_date,
-        m.mtril_code,
-        m.mtril_name,
-        m.mtril_lot,
-        m.requst_qy,
-        s.unit,
-        t.empl_name
+SELECT  m.req_name AS req_name,
+        m.requst_date AS requst_date,
+        m.mtril_code AS mtril_code,
+        m.mtril_name AS mtril_name,
+        m.mtril_lot AS mtril_lot,
+        m.requst_qy AS dlivy_qy,
+        s.unit AS unit,
+        t.empl_name AS charger
 FROM    mtril_dlivy m JOIN mtril s
                         ON (m.mtril_code = s.mtril_code)
                       JOIN empl t
                         ON (m.empl_no = t.empl_no)
-WHERE   m.req_name IN IFNULL(?, m.req_name)
-AND     m.mtril_name IN IFNULL(?, m.mtril_name)
-AND     t.empl_name IN IFNULL(?, t.empl_name)
+WHERE   m.req_name LIKE CONCAT('%', IFNULL(?, m.req_name), '%')
+AND     m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name), '%')
+AND     t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
 AND     m.requst_date BETWEEN IFNULL(?, m.requst_date) AND IFNULL(?, m.requst_date)
+ORDER BY m.requst_date desc
 `;
 
 //자재 재고 조회 -mt012 자재별
@@ -332,10 +336,10 @@ FROM   mtril_wrhousing m JOIN mtril s
                            ON (m.mtril_code = s.mtril_code)
 					     JOIN empl t
                            ON (m.empl_no = t.empl_no)
-WHERE  m.mtril_lot = IFNULL(?, m.mtril_lot)
+WHERE  m.mtril_lot LIKE CONCAT('%', IFNULL(?, m.mtril_lot), '%')
 AND    m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
 AND    m.mtril_qy > 0
-AND    t.empl_name = IFNULL(?, t.empl_name)
+AND    t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
 AND    m.mtril_code = ?
 `;
 

@@ -1,14 +1,15 @@
 <template>
       <div>
         <span>자재명</span>
-        <InputText type="text" v-model="mtrilName" class="emp_info"> <p>{{ mtrilName }}</p></InputText>
+        <InputText type="text" v-model="mtrilName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
         <span>구분</span>
         <select v-model="selected">
+          <option value="">전체</option>
           <option value="MW01">발주</option>
           <option value="MW02">반환</option>
         </select>
         <span>담당자</span>
-        <InputText type="text" v-model="chargerName" class="emp_info"> <p>{{ chargerName }}</p></InputText>
+        <InputText type="text" v-model="chargerName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
         <span>입고일</span>
         <InputText type="date" v-model="wrhDateStart" class="emp_info"> <p>{{ wrhDateStart }}</p></InputText>
         <InputText type="date" v-model="wrhDateEnd" class="emp_info"> <p>{{ wrhDateEnd }}</p></InputText>
@@ -30,11 +31,14 @@ import { AgGridVue } from "ag-grid-vue3";
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
+import { ajaxUrl } from "@/utils/commons";
+import axios from 'axios';
+
 //행 데이터를 담을 변수
 const rowData = ref([]);
 
-const selected = ref("MW01"); //기본값 설정
+const selected = ref(""); //기본값 설정 (전체)
 const mtrilName = ref("");
 const chargerName = ref("");
 const wrhDateStart = ref("");
@@ -55,7 +59,15 @@ const ColDefs = [
   { field: "unit", headerName: "단위", flex:1},
   { field: "mtril_lot", headerName: "lot", flex:1},
   { field: "wrhousng_se", headerName: "구분", flex:1},
-  { field: "wrhousng_date", headerName: "입고일", flex:1},
+  { field: "wrhousng_date", headerName: "입고일", flex:1, valueFormatter: (params) => {
+          if (!params.value) {
+            return "";
+          }
+          params.value = new Date(params.value);
+          const month = params.value.getMonth() + 1;
+          const day = params.value.getDate();
+          return `${params.value.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
+        }},
   { field: "empl_name", headerName: "담당자", flex:1},
 ];
 
@@ -71,7 +83,7 @@ const GridOptions = {
 //데이터 가져오기
 const getList = async() => {
     let obj = {selected: selected.value,
-               req_name: mtrilName.value,
+               mtril_name: mtrilName.value,
                charger_name: chargerName.value,
                start_date: wrhDateStart.value,
                end_date: wrhDateEnd.value
@@ -88,7 +100,7 @@ getList();
 //검색조건 삭제
 const remove = () => {
   selected.value = "";
-  reqName.value = "";
+  mtrilName.value = "";
   chargerName.value = "";
   wrhDateStart.value = "";
   wrhDateEnd.value = "";
