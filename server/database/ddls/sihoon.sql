@@ -984,4 +984,4 @@ FROM product_state ps LEFT JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_co
 WHERE ps.end_time IS NOT NULL
 AND pd.procs_code LIKE CONCAT('%', ?, '%')
 AND ps.empl_no LIKE CONCAT('%', ?, '%')
-AND ps.end_time LIKE CONCAT('%', ?, '%');
+AND ps.end_time LIKE CONCAT('%', ?, '%')
