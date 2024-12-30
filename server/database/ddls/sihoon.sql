@@ -972,8 +972,16 @@ CALL play_state('testbyshun-11', 'M-LEATHER', 1000, @c_result);
 SELECT @c_result;
 
 SELECT * FROM prdctn_drct;
+
 COMMIT;
 SELECT * FROM thng_req;
 INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
 VALUES ('testbyshun-6', '자재 출고 요청 테스트', 1, 'testbyshun-11', 'M-LEATER', '가죽', 900, 'PI01','RD02', NOW());
 COMMIT;      
+
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn
+FROM product_state ps LEFT JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+WHERE ps.end_time IS NOT NULL
+AND pd.procs_code LIKE CONCAT('%', ?, '%')
+AND ps.empl_no LIKE CONCAT('%', ?, '%')
+AND ps.end_time LIKE CONCAT('%', ?, '%');

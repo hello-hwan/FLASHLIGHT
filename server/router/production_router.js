@@ -203,30 +203,32 @@ router.put('/prod/updstate/no', async (req, res) => {
 
 // 생산 완료 보고 - 키오스크 완료보고 - 재료 있을 때
 router.put('/prod/updstate/yes', async (req, res) => {
-  let array = [];
-  array.push(req.body.end_time);
-  array.push(req.body.nrmlt);
-  array.push(req.body.prdctn_code);
+  let code = req.body.prdctn_code;
   let matril = req.body.matril;
-  
-})
-
-router.get('/prod/test/1', async (req, res) => {
-  prodService.test1().then(list => res.send(list))
-                      .catch(err => res.status(500).send(err));
-})
-
-
-
-
-// ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
-
-router.get('/prod/total', async (req, res) => {
-  prodService.total().then(list => {
+  prodService
+  .finyesmt(code, matril)
+  .then(list => {
     res.send(list);
-  }).catch(err => {
+  })
+  .catch(err => {
     res.status(500).send('Fail Process');
   })
+});
+
+router.get('/prod/statelist', async (req, res) => {
+  let array = [];
+  array.push(req.query.procs_code);
+  array.push(req.query.empl_no);
+  array.push(req.query.end_date);
+  prodService
+  .statelist(array)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+
 });
 
 module.exports = router;
