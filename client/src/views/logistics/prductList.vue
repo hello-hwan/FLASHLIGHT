@@ -156,7 +156,6 @@ export default {
         );
       });
     },
-    
     resetFilter() {
       this.LOTCode = "";
       this.prdlstCode = "";

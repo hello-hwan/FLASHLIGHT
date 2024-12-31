@@ -106,6 +106,44 @@ FROM badn_info
 WHERE prdctn_code = ?
 `;
 
+const pr_se = // 품목 코드, 생산지시 코드로 물품 요청에서 자재 구분 조회
+`
+SELECT prd_se
+FROM thng_req
+WHERE prdctn_code = ?
+AND prd_code = ?
+`;
+
+const pr_mt = // 품목코드, 생산 지시 코드로 자재 출고에서 조회
+`
+SELECT md.dlivy_no, md.mtril_lot, md.mtril_name, md.requst_qy, md.usgqty, md.nusgqty, md.usgstt
+FROM mtril_dlivy md JOIN thng_req tr ON (md.req_code = tr.req_code)
+								    LEFT JOIN mtril_wrhousing mw ON (md.mtril_lot = mw.mtril_lot)
+WHERE tr.prdctn_code = ?
+AND tr.prd_code = ?
+ORDER BY mw.wrhousng_date
+`;
+
+const pr_prdn = // 품목코드, 생산 지시 코드로 반제품 출고에서 조회
+`
+SELECT pnd.prduct_n_dlivy_no, pnd.prduct_n_lot, pnd.prduct_n_name, pnd.requst_qy, pnd.usgqty, pnd.nusgqty, pnd.usgstt
+FROM prduct_n_dlivy pnd JOIN thng_req tr ON (pnd.req_code = tr.req_code)
+                        LEFT JOIN prduct_n_wrhousng pnw ON (pnd.prduct_n_lot = pnw.prduct_n_lot)
+WHERE tr.prdctn_code = c_prdctn_code
+AND tr.prd_code = c_matril_code
+ORDER BY pnw.prduct_n_wrhousng_day
+`;
+
+const pr_statelist = // 작업코드, 작업자, 작업시작 일자로 생산실적 조회
+`
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn
+FROM product_state ps LEFT JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+WHERE ps.end_time IS NOT NULL
+AND pd.procs_code LIKE CONCAT('%', ?, '%')
+AND ps.empl_no LIKE CONCAT('%', ?, '%')
+AND ps.end_time LIKE CONCAT('%', ?, '%')
+ORDER BY ps.end_time;
+`;
 
 // 삽입문
 const pr_insstate = // 생산 실적 삽입
@@ -118,6 +156,12 @@ const pr_insbad = // 불량품 정보 삽입
 `
 INSERT INTO badn_info(badn_code, badn_qy, badn_ty, prdctn_code)
 VALUES (?, ?, ?, ?);
+`;
+
+const pr_insuse = // 생산 재료 소모 삽입
+`
+INSERT INTO use_mtril(mtril_no, thng_lot, mtril_code,	mtril_nm, mtril_se, qy, prdctn_code, dlivy_no)
+VALUES (NEXTVAL(use_seq), ?, ?, ?, ?, ?, ?, ?);
 `;
 
 
@@ -139,52 +183,24 @@ SET end_time = ?, nrmlt = ?, badn = ?
 WHERE prdctn_code = ?
 `;
 
+const pr_upmt = // 자재 소모 수정
+`
+UPDATE mtril_dlivy
+SET usgstt = 'MU01', usgqty = ?, nusgqty = ?
+WHERE dlivy_no = ?
+`;
+
+const pr_upprdn = // 반제품 소모 수정
+`
+UPDATE prduct_n_dlivy
+SET usgstt = 'MU01', usgqty = ?, nusgqty = ?
+WHERE prduct_n_dlivy_no = ?;
+`;
+
 
 // 삭제문
 
 
-
-// ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
-
-// 조회문
-const pr_selorder = // 주문리스트에서 생산하라는 목록 조회
-`
-SELECT ol.prd_code, ol.order_no, ol.prd_name, ol.order_qy, orr.order_date, orr.dete
-FROM order_lists ol JOIN order_requst orr ON (ol.order_no = orr.order_no)
-WHERE prdctn_at = 'OP01'
-AND process_status = 'OD01'
-ORDER BY 6
-`;
-
-// 조건 조회문
-const pr_selflowchart = // 공정흐름도 조회 특정 품목 기반
-`
-SELECT fc.procs_code, fc.procs_nm, prd_code, prd_nm, procs_ordr_no, expect_reqre_time, bom_code, mtril_code, mtril_nm, usgqty, eqp_code
-FROM procs_flowchart fc JOIN procs_matrl mt ON (fc.procs_code = mt.procs_code)
-                        JOIN procs_mchn mc ON (fc.procs_code = mc.procs_code )
-WHERE prd_code = ?
-ORDER BY 1
-`;
-
-const pr_selsumtime = // 공정흐름도와 주문리스트 조인해서 예상시간 조회 특정 품목 기반(생산해야하는/ 처리중인)
-`
-SELECT SUM(pf.expect_reqre_time) * ol.order_qy AS total_time
-FROM procs_flowchart pf JOIN order_lists ol ON (pf.prd_code = ol.prd_code)
-WHERE pf.prd_code = ?
-AND ol.prdctn_at = 'OP01'
-AND ol.process_status = 'OD01'
-`;
-
-const pr_selsumqy = // 공정흐름도와 공정별소모재료, 주문리스트 조인해서 총 자재별 수량 조회 특정 품목 기반 (생산해야하는/ 처리중인)
-`
-SELECT fc.procs_code, fc.procs_nm, fc.prd_code, prd_nm, procs_ordr_no, expect_reqre_time, bom_code, mtril_code, mtril_nm, usgqty * order_qy AS total_qy
-FROM procs_flowchart fc JOIN procs_matrl mt ON (fc.procs_code = mt.procs_code)
-                        JOIN order_lists ol ON (fc.prd_code = ol.prd_code)
-WHERE fc.prd_code = ?
-AND ol.prdctn_at = 'OP01'
-AND ol.process_status = 'OD01'
-ORDER BY 1;
-`;
 
 
 module.exports = {
@@ -204,25 +220,14 @@ module.exports = {
   pr_cobad,
   pr_badco,
   pr_upstate,
+  pr_se,
+  pr_mt,
+  pr_prdn,
+  pr_insuse,
+  pr_upmt,
+  pr_upprdn,
+  pr_statelist,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  pr_selorder,
-  pr_selflowchart,
-  pr_selsumtime,
-  pr_selsumqy,
 };

@@ -216,63 +216,106 @@ const finnomt = async (array) => {
 };
 
 // 완료보고 정상실행 - 재료 있을 때
-const finyesmt = async (array, matril) => {
+const finyesmt = async (code, matril) => {
+  let result = {};
+  let real_co = 0;
+  let ins_co = 0;
+  let up_co = 0;
+  await mariaDB.conn.beginTransaction();
+  for(let i = 0; i < matril.length; i++){
+    let se_list = await mariaDB.transaction_query('pr_se', [code, matril[i].mtril_code]);
+    let se = se_list[0].prd_se;
+    let qy = parseInt(matril[i].usgqty);
+    
+    if(se == 'PI01'){
+      //자재일때
+      // 자재 출고 조회
+      let mt_list = await mariaDB.transaction_query('pr_mt', [code, matril.mtril_code]);
+      for(let j = 0; j < mt_list.length; j++){
+        
+        if(qy == 0){
+          break;
+        } // end of if(qy)
+        real_co++;
+        if(qy >= mt_list[j].requst_qy){
+          // 남은 실사용량 >= 로트 요청 수량 => 삽입 : 수량 = 로트 요청 수량, 수정 : 사용수량 = 로트 요청 수량, 미사용수량 = 로트 요청 수량 - 사용 수량
+          // 삽입
+          let mt_ins = await mariaDB.transaction_query('pr_insuse', [ mt_list[j].mtril_lot, matril[i].mtril_code, mt_list[j].mtril_name, se, mt_list[j].requst_qy, code, mt_list[j].dlivy_no ]);
+          ins_co += mt_ins.affectedRows;
+          // 수정
+          let mt_up = await mariaDB.transaction_query('pr_upmt', [ mt_list[j].requst_qy, 0 ]);
+          up_co += mt_up.affectedRows;
+          qy -= mt_list[j].requst_qy;
+        } else {
+          // 남은 실사용량 < 로트 요청 수량 => 삽입 : 수량 = 남은 실사용량, 수정 : 사용수량 = 남은 실사용량, 미사용수량 = 로트 요청 수량 - 남은실사용량
+          // 삽입
+          let mt_ins = await mariaDB.transaction_query('pr_insuse', [ mt_list[j].mtril_lot, matril[i].mtril_code, mt_list[j].mtril_name, se, qy, code, mt_list[i].dlivy_no ]);
+          ins_co += mt_ins.affectedRows;
+          // 수정
+          let mt_up = await mariaDB.transaction_query('pr_upmt', [ qy, mt_list[j].requst_qy - qy ]);
+          up_co += mt_up.affectedRows;
+          qy = 0;
+        } // end of if(mt_list[j].requst_qy)
+
+      } // end of for(j)
+
+    } else if(se == 'PI02'){
+      //반제품일때
+      // 반제품 출고 조회
+      let prdn_list = await mariaDB.transaction_query('pr_prdn', [code, matril.mtril_code]);
+      for(let k = 0; k < prdn_list.length; k++){
+        
+        if(qy == 0){
+          break;
+        } // end of if(qy)
+        real_co++;
+        if(qy >= prdn_list[k].requst_qy){
+          // 남은 실사용량 >= 로트 요청 수량 => 삽입 : 수량 = 로트 요청 수량, 수정 : 사용수량 = 로트 요청 수량, 미사용수량 = 로트 요청 수량 - 사용 수량
+          // 삽입
+          let prdn_ins = await mariaDB.transaction_query('pr_insuse', [ prdn_list[k].prduct_n_lot, matril[i].mtril_code, prdn_list[k].prduct_n_name, se, prdn_list[k].requst_qy, code, prdn_list[k].prduct_n_dlivy_no ]);
+          ins_co += prdn_ins.affectedRows;
+          // 수정
+          let prdn_up = await mariaDB.transaction_query('pr_upprdn', [prdn_list[k].requst_qy, 0 ]);
+          up_co += prdn_up.affectedRows;
+          qy -= mt_list[j].requst_qy;
+          
+        } else {
+          // 남은 실사용량 < 로트 요청 수량 => 삽입 : 수량 = 남은 실사용량, 수정 : 사용수량 = 남은 실사용량, 미사용수량 = 로트 요청 수량 - 남은실사용량
+          // 삽입
+          let prdn_ins = await mariaDB.transaction_query('pr_insuse', [ prdn_list[k].prduct_n_lot, matril[i].mtril_code, prdn_list[k].prduct_n_name, se, qy, code, prdn_list[k].prduct_n_dlivy_no ]);
+          ins_co += prdn_ins.affectedRows;
+          // 수정
+          let prdn_up = await mariaDB.transaction_query('pr_upprdn', [ qy, prdn_list[k].requst_qy - qy ]);
+          up_co += prdn_up.affectedRows;
+          qy = 0;
+        } // end of if(prdn_list[k].requst_qy)
+
+      } // end of for(k)
+
+    } // end of if(se)
   
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ----------------------  프로시저 만들기 전의 코드(서비스에서 제어하려고 한 코드)
-
-// 주문 목록 가져와서 총 소요시간 구하기
-const total = async () => {
-  let result = [];  // 모든 정보 담을 결과 선언
   
-  let list = await mariaDB.query('pr_selorder'); // 주문 목록 가져오기
-  for(let i = 0; i < list.length; i++){
-    let info = {};  // 품목 하나당 정보 담을 객체 (total_time, mtril_list)
-    info.prd_code = list[i].prd_code;
-    info.prd_name = list[i].prd_name;
-    info.order_qy = list[i].order_qy;
-    info.order_no = list[i].order_no;
-    info.order_date = list[i].order_date;
-    info.dete = list[i].dete;
+  } // end of for(i)
 
-    let totime = await mariaDB.query('pr_selsumtime', list[i].prd_code); //주문목록으로 총소요시간 구하기
-    for(let j = 0; j < totime.length; j++){
-      info.total_time = totime[j].total_time; //객체에 total_time 담기
-      info.priort = (list[i].dete - new Date() - (totime[j].total_time*1000*60))/1000/60/60;  // 우선순위(남은 시간으로 표기) = 납품일자 - (현재날짜 + 총소요시간)
-    }
-
-    let flowchart = await mariaDB.query('pr_selflowchart', list[i].prd_code);
-    let flow = {};  // 객체 하나에 공정흐름도 정보 담기
-    for(let l = 0; l < flowchart.length; l++){
-
-    }
-
-    let toqy = await mariaDB.query('pr_selsumqy', list[i].prd_code); // 주문목록으로 총소모자재 구하기
-    let mlist = {}; // 객체 하나에 자재 정보 담기
-    for(let k = 0; k < toqy.length; k++){
-      mlist[toqy[k].mtril_code] = toqy[k].total_qy; //"자재명" : 수량
-      info.mtril_list = mlist;
-    }
-    result.push(info); // 품목하나의 모든 정보 배열에 푸쉬
+  if(real_co == ins_co && real_co == up_co){
+    await mariaDB.conn.commit();
+    result.retCode = 1;
+  } else {
+    await mariaDB.conn.rollback();
+    result.retCode = 0;
   }
   return result;
-  
-//  return list;
 };
+
+// 생산 실적 조회
+const statelist = async (array) => {
+  let list = await mariaDB.query('pr_statelist', array);
+  return list;
+};
+
+
+
+
 
 
 module.exports = { 
@@ -290,20 +333,8 @@ module.exports = {
   stateinfo,
   addbad,
   finnomt,
-  
-
-
-
-
-
-
-
-
-
-
-
-
+  finyesmt,
+  statelist,
 
   
-  total,
 };

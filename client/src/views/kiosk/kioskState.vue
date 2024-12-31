@@ -58,6 +58,7 @@
             <div class="float-right align-left" style="width: 50%;">
               <div v-for="mt in matril" :key="mt.mtril_code">
                 <label class="display-6 font-weight-black">{{ mt.mtril_nm }}</label>
+                <br>
                 <Number v-model="mt.usage"></Number>
                 <div style="margin-bottom: 10px;
                             text-align: right;
@@ -208,9 +209,22 @@ const finishstate = async () => {
       toast.add({ severity: 'warn', summary: '사용 재료 미입력', detail: '재료 수량을 모두 입력하세요.', life: 3000 });
       return;
     }
-    let result = await axios.put(`${ajaxUrl}/prod/updstate/yes`, { "end_time" : datetime.value, "nrmlt" : nrmlt.value, "prdctn_code" : info.value.prdctn_code, "matril": matril.value })
+    let result = await axios.put(`${ajaxUrl}/prod/updstate/yes`, { "prdctn_code" : info.value.prdctn_code, "matril": matril.value })
                             .catch(err => console.log(err));
-    console.log(result);
+    if(result.data.retCode == 1){
+      let anoresult = await axios.put(`${ajaxUrl}/prod/updstate/no`, { "end_time" : datetime.value, "nrmlt" : nrmlt.value, "prdctn_code" : info.value.prdctn_code })
+                                 .catch(err => console.log(err));
+      if(anoresult.data.retCode == 1){
+        toast.add({ severity: 'success', summary: '제출 성공', detail: '생산완료 보고 처리가 완료되었습니다.', life: 3000 });
+        setTimeout(() => {
+          router.push({ path : 'kioskMain' });
+        }, 1000);
+      } else {
+        toast.add({ severity: 'error', summary: '제출 실패', detail: '생산완료 보고 처리에 실패했습니다.\n다시 시도해주세요.', life: 3000 });
+      }
+    } else {
+      toast.add({ severity: 'error', summary: '제출 실패', detail: '생산완료 보고 처리에 실패했습니다.\n다시 시도해주세요.', life: 3000 });
+    }
 
   }
 };

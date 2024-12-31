@@ -1,5 +1,5 @@
 //품질 라우트
-import qualityRequest from "@/views/quality/qualityResult.vue";
+import qualityRequest from "@/views/quality/quailtyRequest.vue";
 import qiResult from "@/views/quality/qiResult.vue";
 
 

@@ -21,11 +21,10 @@ on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
 // BOM 등록 쿼리
- const bomInsert =  
+const bomInsert =  
 `INSERT INTO bom_cmpds 
- SET ?`;
+SET ?`;
 
- 
 // BOM 소모품 조회
 const bomManage = 
 `SELECT c.cmpds_no
@@ -42,13 +41,11 @@ FROM bom b JOIN bom_cmpds c
 ON b.bom_code = c.bom_code
 WHERE b.prdlst_code = ?`;
 
-
 // BOM 소모품 업데이트
 const bom_cmpdsUpdate = 
 `UPDATE bom_cmpds
- SET ?
- WHERE cmpds_no = ?`;
-
+SET ?
+WHERE cmpds_no = ?`;
 
 // BOM소모품 삭제
 const bom_cmpdsDel = 
@@ -58,26 +55,129 @@ WHERE cmpds_no = ?`;
 
 // 자재 조회
 const mtril =
-`SELECT mtril_code
-       ,mtril_name
-       ,unit
-       ,untpc
-       ,sfinvc
-FROM mtril`;
+`SELECT m.mtril_code
+       ,m.mtril_name
+       ,m.unit
+       ,m.untpc
+       ,m.sfinvc
+       ,sum(w.mtril_qy) AS mtril_qy
+FROM mtril m LEFT JOIN mtril_wrhousing w
+ON m.mtril_code = w.mtril_code
+GROUP BY m.mtril_code
+        ,m.mtril_name
+	 ,m.unit
+	 ,m.untpc
+	 ,m.sfinvc`;
 
+// 자재 등록
+const mtrilAdd =
+`INSERT INTO mtril
+SET ? `;
+
+// 자재 삭제
+const mtrilDelete = 
+`DELETE FROM
+mtril
+WHERE mtril_code = ? `
+
+// 자재 수정
+const mtrilUpdate =
+`UPDATE mtril
+set ? 
+WHERE mtril_code = ?`;
+
+// 반제품 조회
+                                                  // 공정흐름도 테이블이랑 품목코드 동일해지면 join으로 변경해야됨
+const infoprductNList = 
+`SELECT p.prdlst_code
+      ,p.prdlst_name
+      ,p.stndrd_x
+      ,p.stndrd_y
+      ,p.stndrd_z
+      ,p.unit
+      ,p.wrhousng_unite
+      ,p.dlivy_unit
+      ,p.sfinvc
+      ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
+FROM prduct_n p LEFT JOIN procs_flowchart f                   
+ON prdlst_code = prd_code`;
+
+// 반제품 등록
+const prductNAdd = 
+`INSERT INTO prduct_n
+SET ?`;
+
+// 반제품 삭제
+const prductNDelete = 
+`DELETE FROM
+prduct_n
+WHERE prdlst_code = ?`
+
+// 반제품 수정
+const prductNUpdate = 
+`UPDATE prduct_n
+set ?
+WHERE prdlst_code = ?`;
+
+// 완제품 조회
+const infoprductList = 
+`SELECT r.prdlst_code
+       ,r.prdlst_name
+       ,r.stndrd_x
+       ,r.stndrd_y
+       ,r.stndrd_z
+       ,r.unit
+       ,IFNULL(SUM(p.prduct_invntry_qy),0) AS prduct_invntry_qy
+       ,r.wrhousng_untpc
+       ,r.dlivy_untpc
+       ,r.sfinvc
+FROM repduct r LEFT JOIN prduct_wrhousng p
+ON r.prdlst_code = p.prdlst_c_code
+GROUP BY r.prdlst_code
+        ,r.prdlst_name
+	 ,r.stndrd_X
+	 ,r.stndrd_y
+	 ,r.stndrd_z
+	 ,r.unit
+	 ,r.wrhousng_untpc
+	 ,r.sfinvc`;
+
+// 완제품 등록
+const prductInsert = 
+`INSERT INTO repduct
+set ?`;
+
+// 완제품 삭제
+const prductDelete = 
+`DELETE FROM
+repduct
+WHERE prdlst_code = ?`
+
+// 거래처 조회
+const bcncList = 
+`SELECT bcnc_code
+       ,bizrno
+       ,mtlty_name
+       ,bizcnd
+       ,item
+       ,dvyfg_adres
+       ,charger_name
+       ,charger_phone
+       ,regist_day
+FROM bcnc`;
 
 // 품질검사항목관리
 const qiList =
 `SELECT inspec_item  
-        ,inspec_standard
+       ,inspec_standard
 FROM inspection_detail 
 WHERE prd_code=?`; 
- 
+
 // 공정 흐름도 조회
 const procsFlowchartList = 
 `SELECT prd_code, prd_nm, sum(expect_reqre_time) as all_time
- FROM procs_flowchart
- GROUP BY prd_code, prd_nm
+FROM procs_flowchart
+GROUP BY prd_code, prd_nm
 `;
 
 // 공정 흐름도 상세 조회
@@ -182,14 +282,37 @@ const prd_code_search =
  FROM procs_flowchart
  WHERE prd_code LIKE CONCAT('%', ?, '%')`;
 
+// BOM에 등록되어있는 품목코드, 품목이름 검색
+const prd_code_bom_search = 
+`SELECT prdlst_code, 
+        prdist_name
+ FROM bom
+ WHERE prdlst_code LIKE CONCAT('%', ?, '%')`;
+
+ const prd_code_bom_all_search = 
+`SELECT prdlst_code, 
+        prdist_name
+ FROM bom`;
+
 module.exports = {
   bom,
   bomInfo,
   bomInsert,
-  bomManage,
+  bomManage, 
   bom_cmpdsUpdate,
-  bom_cmpdsDel,
+  bom_cmpdsDel, 
   mtril,
+  mtrilAdd,
+  mtrilDelete,
+  mtrilUpdate,
+  infoprductNList,
+  prductNAdd,
+  prductNDelete,
+  prductNUpdate, 
+  infoprductList,
+  prductInsert,
+  prductDelete,
+  bcncList,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 
@@ -203,5 +326,7 @@ module.exports = {
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
   ProcsCodeToDeleteFlowchart, 
-  prd_code_search
+  prd_code_search, 
+  prd_code_bom_search, 
+  prd_code_bom_all_search
 };
