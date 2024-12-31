@@ -156,9 +156,39 @@ AND     t.empl_name = IFNULL(?, t.empl_name)
 ORDER BY m.order_date desc
 `;
 
-//발주서 양식에 들어가는 정보 - mt006
-const mt_orderForm =
+//발주서 양식에 들어가는 정보 
+/*상호, 사업자번호, 대표자, 주소, 
+발주일, 납기일, 합계금액, 발주담당자
+품목명, 수량, 단위, 단가
+*/
+const mt_orderFormCompanyInfo =
 `
+SELECT  m.mtlty_name AS mtlty_name,
+        m.bizrno AS bizrno,
+        m.charger_name AS charger_name,
+        m.dvyfg_adres AS dvyfg_adres
+FROM    bcnc m
+WHERE   m.bcnc_code IN (SELECT s.bcnc_code
+                       FROM   mtril_order s
+                       WHERE  order_code = ?)
+`;
+
+//합계금액은 데이터 가져와서 구하기
+const mt_orderFormMtList = 
+`
+SELECT  m.mtril_name AS mtril_name,
+        m.order_qy AS order_qy,
+        s.unit AS unit,
+        m.order_price AS order_price,
+        TO_CHAR(m.order_date, 'yyyy-MM-dd') AS order_date,
+        TO_CHAR(m.dedt, 'yyyy-MM-dd') AS dedt,
+        t.empl_name AS empl_name
+FROM    mtril_order m JOIN mtril s
+                        ON (m.mtril_code = s.mtril_code)
+                      JOIN empl t
+                        ON (m.empl_no = t.empl_no)
+WHERE   order_code = ?
+
 `;
 
 //자재 입고처리 - mt007 생산 반환 리스트
@@ -426,5 +456,7 @@ module.exports = {
         mt_lotInven,
         mt_selectAllOrderList,
         mt_wrhousngList,
-        mt_dlivyList
+        mt_dlivyList,
+        mt_orderFormCompanyInfo,
+        mt_orderFormMtList
 };

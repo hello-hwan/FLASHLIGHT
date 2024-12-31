@@ -62,6 +62,8 @@
             style="height: 516px">
             </AgGridVue>
             <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
+            <!--pdf내보내기-->
+            <pdfExport />
         </v-card-text>
       </v-card>
     </div>
@@ -76,6 +78,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import { ref } from 'vue';
 import { ajaxUrl } from '@/utils/commons';
 import axios from 'axios';
+import pdfExport from '@/components/materials/pdfExport.vue';
 
 
 const dateFormatter = (params) => {

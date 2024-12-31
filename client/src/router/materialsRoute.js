@@ -1,5 +1,7 @@
-//자재 라우터
+//테스트
 import mttest from '@/views/materials/testmt.vue';
+//pdf 테스트
+import testPdf from '@/views/materials/pdfTest.vue';
 //재고 조회
 import mtrilQy from '@/views/materials/materialQy.vue';
 //자재 입고
@@ -14,6 +16,7 @@ import mtOrderInquiry from '@/views/materials/mtOrderInquiry.vue';
 import mtWrhousingList from '@/views/materials/mtWrhousingList.vue';
 //출고 조회
 import mtDlivyList from '@/views/materials/mtDlivyList.vue';
+
 const materialsRoute = [
     {
         path: '',
@@ -24,6 +27,11 @@ const materialsRoute = [
         name: 'mttest',
         component: mttest
 
+    },
+    {
+        path: 'pdf',
+        name: 'pdf',
+        component: testPdf
     },
     {
         path: 'mtrilQy',

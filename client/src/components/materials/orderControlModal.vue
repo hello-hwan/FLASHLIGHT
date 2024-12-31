@@ -2,7 +2,10 @@
     <span style="margin-left:20px">
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;">발주건 조회</button>
+        style="line-height: 1px; color: #fff;" v-if="props.state = 'pdf'">PDF 내보내기</button>
+        <button type="button" @click="modalOpen"
+        class="btn btn-primary"
+        style="line-height: 1px; color: #fff;" v-else>발주건 조회</button>
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
@@ -57,6 +60,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+const props = defineProps(['state']);
 
 //부모 행 삭제를 위해서 사용하는 emit
 const emit = defineEmits(["selectedData"]);

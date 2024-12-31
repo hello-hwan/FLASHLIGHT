@@ -415,6 +415,21 @@ const dlivyList = async(key) => {
     return result;
 };
 
+const orderForm = async(key) => {
+    //거래처 정보
+    let companyInfo = await mariaDB.query('mt_orderFormCompanyInfo', key)
+                              .catch(err=>console.log(err));
+
+    //주문 정보
+    let orderInfo = await mariaDB.query('mt_orderFormMtList', key)
+                                 .catch(err=>console.log(err));
+
+    console.log(companyInfo, '회사정보');
+    console.log(orderInfo, '주문정보');
+    let newArr = [...companyInfo, orderInfo];
+    return newArr;
+}
+
 module.exports = {
     returnMt,
     orderMt,
@@ -434,5 +449,6 @@ module.exports = {
     mtLotQy,
     allOrderList,
     wrhousingList,
-    dlivyList
+    dlivyList,
+    orderForm
 };
