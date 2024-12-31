@@ -6,27 +6,28 @@
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
-            <div id="search-bar">
-                <div class="align-left">                
-                    <span>발주명</span>
-                    <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrder">> <p>{{ orderName }}</p></InputText>
-                    <span>발주일</span>
-                    <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
-                    <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
-    
-                </div>
-                <div class="align-left">
-                    <span>거래처명</span>
-                    <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText>
-                    <span>납기일</span>
-                    <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
-                    <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
-                </div>
+            <div class="search-bar">
                 <div>
-                    <span>사원번호</span>
+                    <span>발주명 </span>
+                    <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrder">> <p>{{ orderName }}</p></InputText><br>
+                    <span>거래처명 </span>
+                    <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText><br>
+                    <span>담당자</span>
                     <InputText type="text" v-model="empId" v-on:keyup.enter="searchOrder"> <p>{{ empId }}</p></InputText>
                 </div>
-                <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
+                <div>
+                    <span>발주일 </span>
+                    <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
+                    <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText><br>
+                    <div> 
+                        <span>납기일 </span>
+                        <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
+                        <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
+                    </div>
+                </div>
+                <div>
+                    <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
+                </div>
             </div>
             
             <AgGridVue 
@@ -135,7 +136,7 @@ const ColDefs = [
   { field: "mtlty_name", headerName:"거래처 명"},
   { field: "order_date", headerName: "발주일", valueFormatter:customDateFormat, flex:0.8},
   { field: "dedt", headerName: "납기일", valueFormatter: customDateFormat, flex:0.8},
-  { field: "empl_no", headerName:"담당자", flex:0.5},
+  { field: "empl_name", headerName:"담당자", flex:0.5},
   { headerName : "선택",  checkboxSelection: true, flex:0.3}
 ];
 
@@ -165,7 +166,7 @@ const searchOrder = async() => {
     //행 데이터 담기
     orderRowData.value = result.data;   
 };
-
+searchOrder();
 </script>
 
 <style scoped>
@@ -194,7 +195,8 @@ const searchOrder = async() => {
 
 .modal-btn button {
     line-height: 1.1;
-    margin: 10px 0;
+    margin: 10px 10px;
+    text-align: center;
 }
 .align-left{
     margin: 10px 0;
@@ -206,15 +208,37 @@ const searchOrder = async() => {
     margin: 10px;
     line-height: 1.1;
 }
-#search-bar {
+.search-bar {
     padding: 27px;
     padding-bottom: 0px;
     background-color: #e3e3e3;
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
+    border: 1px solid #ccc;
+}
+.search-bar div{
+    display: inline-block;
+    width: 420px;
+}
+.search-bar :first-child {
+    text-align: left;
+}
+.search-bar :first-child span {
+    display: inline-block;
+    width: 100px;
+}
+.search-bar span {
+    margin: 12px 0;
+}
+.search-bar :nth-of-type(2) input {
+    margin: 5px 0;
+}
+.search-bar>:nth-of-type(2){
+    position: relative;
+top: -47px;
 }
 input[type="date"] {
-    height: 36px; /* 높이를 명시적으로 지정 */
+    height: 40px; /* 높이를 명시적으로 지정 */
     padding: 5px; /* 내부 여백 추가 */
     box-sizing: border-box; /* 패딩 포함 크기 조정 */
     vertical-align: middle; /* 세로 정렬 */

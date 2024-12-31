@@ -256,9 +256,10 @@ const removeKey = () => {
     padding: 20px;
     box-sizing: border-box;
 }
-
+.btn-primary{
+    line-height: 1;
+}
 .modal-btn button {
-    line-height: 1.1;
     margin: 10px 10px
 }
 #search-bar {

@@ -8,10 +8,12 @@
         <!--모달 영역-->
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
             <div class="modal-container" @click.stop="">
-                <div id="search-bar">
-                    <div class="align-left">                
+                <div class="search-bar">
+                    <div>             
                         <span>자재명</span>
                         <InputText type="text" v-model="mtrilName" v-on:keyup.enter="searchCompany"> <p>{{ mtrilName }}</p></InputText>
+                    </div>
+                    <div>
                         <span>자재코드</span>
                         <InputText type="text" v-model="mtrilCode" v-on:keyup.enter="searchCompany"> <p>{{ mtrilCode }}</p></InputText>
                     </div>
@@ -97,10 +99,10 @@ const rowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "mtril_code", headerName: "자재코드"},
-  { field: "mtril_name", headerName: "자재명"},
-  { field: "unit", headerName: "단위"},
-  { headerName : "선택",  checkboxSelection: true, flex:0.3}
+  { field: "mtril_code", headerName: "자재코드", flex:1},
+  { field: "mtril_name", headerName: "자재명", flex:1},
+  { field: "unit", headerName: "단위", flex:1},
+  { headerName : "선택",  checkboxSelection: true, flex:0.4}
 ];
 
 const GridOptions = {
@@ -126,7 +128,7 @@ const searchCompany = async() => {
 
 </script>
 
-<style>
+<style scoped>
 /* dimmed */
 .modal-wrap {
   position: fixed;
@@ -143,7 +145,7 @@ const searchCompany = async() => {
     top: 53%;
     left: 61%;
     transform: translate(-50%, -50%);
-    width: 60%;
+    width: 34%;
     background: #fff;
     border-radius: 10px;
     padding: 20px;
@@ -164,12 +166,29 @@ const searchCompany = async() => {
     margin: 10px;
     line-height: 1.1;
 }
-#search-bar {
+.search-bar {
     padding: 27px;
     padding-bottom: 0px;
     background-color: #e3e3e3;
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
+    border: 1px solid #ccc;
+}
+.search-bar span {
+    margin: 15px;
+    display: inline-block;
+    width: 100px;
+}
+.search-bar div {
+    text-align: left;
+}
+.modal-btn {
+    display: table;
+    margin: 0 auto;
+}
+
+.modal-btn button {
+    margin: 10px 10px;
 }
 
 </style>

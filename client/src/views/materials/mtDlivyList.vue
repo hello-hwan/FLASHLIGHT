@@ -1,25 +1,39 @@
 <template>
-    <div>
-        <span>요청명</span>
-        <InputText type="text" v-model="reqName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ reqName }}</p></InputText>
-        <span>자재명</span>
-        <InputText type="text" v-model="mtrilName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
-        <span>담당자</span>
-        <InputText type="text" v-model="chargerName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
-        <span>요청날짜</span>
-        <InputText type="date" v-model="reqDateStart" class="emp_info"> <p>{{ reqDateStart }}</p></InputText>
-        <InputText type="date" v-model="reqDateEnd" class="emp_info"> <p>{{ reqDateEnd }}</p></InputText>
+  <div>
+    <div class="content-section">
+      <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+          <template v-slot:title>
+              <span class="font-weight-black">
+                출고조회
+              </span>
+          </template>
+      </v-card>
     </div>
-    <button @click="getList"class="btn btn-primary search-btn" >조회</button>
-    <button @click="remove"class="btn btn-primary search-btn" >초기화</button>
+    <div class="search-condition">
+      <v-card-text class="bg-surface-light pt-4">
+        <span>요청명 </span>
+        <InputText type="text" v-model="reqName"  v-on:keyup.enter="getList"> <p>{{ reqName }}</p></InputText>
+        <span>자재명 </span>
+        <InputText type="text" v-model="mtrilName"  v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
+        <span>담당자 </span>
+        <InputText type="text" v-model="chargerName"  v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
+        <span>요청날짜</span>
+        <InputText type="date" v-model="reqDateStart" > <p>{{ reqDateStart }}</p></InputText> -
+        <InputText type="date" v-model="reqDateEnd" > <p>{{ reqDateEnd }}</p></InputText>
+        <div>
+          <button @click="getList"class="btn btn-primary search-btn" >조회</button>
+          <button @click="remove"class="btn btn-primary search-btn" >초기화</button>
+        </div>
+      </v-card-text>
+    </div>
 
-    <h1>출고조회</h1>
     <AgGridVue 
     :rowData="rowData"
     :gridOptions="GridOptions"
     class="ag-theme-alpine"
     style="height: 516px">
     </AgGridVue>
+  </div>
 </template>
 
 <script setup>
@@ -98,3 +112,13 @@ const GridOptions = {
       paginationPageSizeSelector: [10, 20, 50, 100],
 };
 </script>
+
+<style scoped>
+.search-condition{
+  margin: 30px 0;
+}
+input[type="text"] {
+  width: 140px;
+  margin-right: 20px;
+}
+</style>

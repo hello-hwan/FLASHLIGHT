@@ -1,36 +1,70 @@
 <template>
-    <h1>자재 발주조회</h1>
-    <div>
-        <span>
-            <span>발주명</span>
-            <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrderList"> <p>{{ orderName }}</p></InputText>
-            <span>자재명</span>
-            <InputText type="text" v-model="mtrilName" v-on:keyup.enter="searchOrderList"> <p>{{ mtrilName }}</p></InputText>
-            <span>거래처 상호명</span>
-            <InputText type="text" v-model="companyName" v-on:keyup.enter="searchOrderList"> <p>{{ companyName }}</p></InputText>
-            <span>발주 담당자</span>
-            <InputText type="text" v-model="chargerName" v-on:keyup.enter="searchOrderList"> <p>{{ chargerName }}</p></InputText>
-        </span>
-        <span>                
-            <span>발주일</span>
-            <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText>
-            <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
-            <span>납기일</span>
-            <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText>
-            <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
-        </span>
-        <button @click="searchOrderList" class="btn btn-primary search-btn" >조회</button>
-        <button @click="resetSearchKey" class="btn btn-primary search-btn" >초기화</button>
+    <div class="content-section">
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    자재 발주조회
+                </span>
+            </template>
+        </v-card>
+    </div>
+    <div class="content-section">
+        <v-card-text class="bg-surface-light pt-4">
+            <div class="search-bar">
+                <div>
+                    <div>
+                        <span>발주명</span>
+                        <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrderList"> <p>{{ orderName }}</p></InputText>
+                    </div>
+                    <div>
+                        <span>자재명</span>
+                        <InputText type="text" v-model="mtrilName" v-on:keyup.enter="searchOrderList"> <p>{{ mtrilName }}</p></InputText>
+                    </div>
+                    <div>
+                        <span>거래처 상호명</span>
+                        <InputText type="text" v-model="companyName" v-on:keyup.enter="searchOrderList"> <p>{{ companyName }}</p></InputText>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <span>발주 담당자</span>
+                        <InputText type="text" v-model="chargerName" v-on:keyup.enter="searchOrderList"> <p>{{ chargerName }}</p></InputText>
+                    </div>       
+                    <div>
+                        <span>발주일</span>
+                        <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
+                        <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
+                    </div>
+                    <div>
+                        <span>납기일</span>
+                        <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
+                        <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button @click="searchOrderList" class="btn btn-primary search-btn" >조회</button>
+                    <button @click="resetSearchKey" class="btn btn-secondary search-btn" >초기화</button>
+                </div>
+            </div>
+        </v-card-text>
+    </div>
+    <div class="content-section">
+        <v-card
+        class="mx-auto">
+    
+        <v-card-text class="bg-surface-light pt-4">
+            <AgGridVue 
+            :rowData="mtRowData"
+            :gridOptions="mtGridOptions"
+            rowSelection="multiple"
+            class="ag-theme-alpine"
+            @grid-ready="mtOnGridReady"
+            style="height: 516px">
+            </AgGridVue>
+        </v-card-text>
+      </v-card>
     </div>
 
-    <AgGridVue 
-        :rowData="mtRowData"
-        :gridOptions="mtGridOptions"
-        rowSelection="multiple"
-        class="ag-theme-alpine"
-        @grid-ready="mtOnGridReady"
-        style="height: 516px">
-        </AgGridVue>
 </template>
 
 <script setup>
@@ -128,5 +162,22 @@ const resetSearchKey = () => {
 <style scoped>
 .ag-root-wrapper.ag-layout-normal {
     height: 92.3%;
+}
+.content-section {
+    margin: 30px 0;
+}
+.search-bar>div {
+    text-align: left;
+    display: inline-block;
+    width: 50%;
+}
+.search-bar>div span{
+    display: inline-block;
+    width: 100px;
+    margin: 15px 0;
+}
+input {
+    width: 250px;
+    height: 37px
 }
 </style>

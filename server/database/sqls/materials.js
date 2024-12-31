@@ -88,23 +88,24 @@ AND     charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')
 //수정할 발주건 검색 - mt004 조건
 const mt_searchOrderWithKey =
 `
-SELECT  order_code,
-        order_name,
-        mtlty_name,
-        bcnc_code,
-        order_date,
-        dedt,
-        empl_no
-FROM    mtril_order
-WHERE   order_name LIKE CONCAT('%', IFNULL(?, order_name), '%')
-AND     mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
-AND     order_date BETWEEN IFNULL(?, order_date) AND IFNULL(?, order_date)
-AND     dedt BETWEEN IFNULL(?, dedt) AND IFNULL(?, dedt)
-AND     empl_no = IFNULL(?, empl_no)
-AND     order_no NOT IN (SELECT s.order_no
-			 FROM   inspection_check s)
-GROUP BY order_code
-ORDER BY order_no DESC
+SELECT  m.order_code,
+        m.order_name,
+        m.mtlty_name,
+        m.bcnc_code,
+        m.order_date,
+        m.dedt,
+        s.empl_name
+FROM    mtril_order m JOIN empl s
+                        ON (m.empl_no = s.empl_no)
+WHERE   m.order_name LIKE CONCAT('%', IFNULL(?, m.order_name), '%')
+AND     m.mtlty_name LIKE CONCAT('%', IFNULL(?, m.mtlty_name), '%')
+AND     m.order_date BETWEEN IFNULL(?, m.order_date) AND IFNULL(?, m.order_date)
+AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
+AND     s.empl_name = IFNULL(?, s.empl_name)
+AND     m.order_no NOT IN (SELECT t.order_no
+			   FROM   inspection_check t)
+GROUP BY m.order_code
+ORDER BY m.order_no DESC
 `;
 
 //발주한 건 자재 목록
@@ -211,24 +212,22 @@ CALL mt_wrhousing_process(
 //자재 입고 조회 - mt008 조건 자재명, 구분, 담당자, 날짜1,2
 const mt_wrhousngList =
 `
-SELECT  m.mtril_code AS mtril_code,
-        m.mtril_name AS mtril_name,
-        m.wrh_qy AS wrh_qy,
-        s.unit AS unit,
-        m.mtril_lot AS mtril_lot,
-		(CASE WHEN m.wrhousng_se = 'MW01' THEN  '발주'
-        ELSE '반환'
-        END) AS wrhousng_se,
-        m.wrhousng_date AS wrhousng_date,
-        t.empl_name AS empl_name
-FROM    mtril_wrhousing m JOIN mtril s
-                            ON (m.mtril_code = s.mtril_code)
-                          JOIN empl t
-                            ON (m.empl_no = t.empl_no)
-WHERE   m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name) ,'%')
-AND     m.wrhousng_se LIKE CONCAT('%', IFNULL(?, m.wrhousng_se), '%')
-AND     t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
-AND     m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
+SELECT   m.mtril_code AS mtril_code,
+         m.mtril_name AS mtril_name,
+         m.wrh_qy AS wrh_qy,
+         s.unit AS unit,
+         m.mtril_lot AS mtril_lot,
+	 (CASE WHEN m.wrhousng_se = 'MW01' THEN  '발주' ELSE '반환' END) AS wrhousng_se,
+         m.wrhousng_date AS wrhousng_date,
+         t.empl_name AS empl_name
+FROM     mtril_wrhousing m JOIN mtril s
+                             ON (m.mtril_code = s.mtril_code)
+                           JOIN empl t
+                             ON (m.empl_no = t.empl_no)
+WHERE    m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name) ,'%')
+AND      m.wrhousng_se LIKE CONCAT('%', IFNULL(?, m.wrhousng_se), '%')
+AND      t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
+AND      m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
 ORDER BY m.wrhousng_date desc
 `;
 
