@@ -213,5 +213,11 @@ const searchOrder = async() => {
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
-
+input[type="date"] {
+    height: 36px; /* 높이를 명시적으로 지정 */
+    padding: 5px; /* 내부 여백 추가 */
+    box-sizing: border-box; /* 패딩 포함 크기 조정 */
+    vertical-align: middle; /* 세로 정렬 */
+    line-height: normal; /* 줄 높이 초기화 */
+}
 </style>
