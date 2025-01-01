@@ -5,6 +5,7 @@ import prductNDlivyList from "@/views/logistics/prductNDlivyList.vue"
 import prductWrhousngList from "@/views/logistics/prductWrhousngList.vue"
 import prductList from "@/views/logistics/prductList.vue"
 import prductDlivy from "@/views/logistics/prductDlivy.vue"
+import prductDlivyList from "@/views/logistics/prductDlivyList.vue"
 
 
 const logisticsRoute = [
@@ -46,6 +47,11 @@ const logisticsRoute = [
     path: 'prductDlivy',
     name: 'prductDlivy',
     component: prductDlivy
+  },
+  {
+    path: 'prductDlivyList',
+    name: 'prductDlivyList',
+    component: prductDlivyList
   }
 ];
 

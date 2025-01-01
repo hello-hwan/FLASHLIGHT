@@ -6,7 +6,7 @@
         <v-col cols="12" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
             <template v-slot:title>
-              <span class="font-weight-black">반제품 출고 조회</span>
+              <span class="font-weight-black">완제품 출고 조회</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- 필터 검색 필드 -->
@@ -20,7 +20,7 @@
                 </div>
                 <!-- 품목코드 --> 
                 <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">반제품명</label>
+                  <label for="itemCode" class="col-form-label">완제품명</label>
                 </div>
                 <div class="col-2">
                   <input type="text" id="itemCode" class="form-control" v-model="prdlstCode" />
@@ -55,7 +55,7 @@
         <v-col cols="6">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">반제품 출고 리스트</span>
+              <span class="font-weight-black">완제품 출고 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
@@ -78,7 +78,7 @@
         <v-col cols="6">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">반제품 출고 리스트상세</span>
+              <span class="font-weight-black">완제품 출고 리스트상세</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
@@ -137,9 +137,9 @@ export default {
     this.getprductNDlivyList();
 
     this.colDefs = [
-      { field: "prduct_n_req_name", headerName: "반제품요청명" },
-      { field: "requst_date", headerName: "요청일자", valueFormatter: this.customDateFormat },
-      { field: "prduct_n_name", headerName: "반제품명" },
+      { field: "order_no", headerName: "주문번호" },
+      { field: "dlivy_day", headerName: "요청일자", valueFormatter: this.customDateFormat },
+      { field: "prd_name", headerName: "완제품명" },
       { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
     ];
 
@@ -155,12 +155,11 @@ export default {
       },
     }
     this.colDefsInfo = [
-      { field: "prduct_n_lot", headerName: "LOT" },
-      { field: "prduct_n_name", headerName: "반제품명" },
-      { field: "prduct_n_code", headerName: "반제품코드"},
-      { field: "requst_qy", headerName: "재고량" },
-      { field: "usgqty", headerName: "사용량" },
-      { field: "requst_date", headerName: "출고일자", valueFormatter: this.customDateFormat  },
+      { field: "prduct_lot", headerName: "LOT" },
+      { field: "prd_name", headerName: "완제품명" },
+      { field: "prdlst_code", headerName: "완제품코드"},
+      { field: "dlivy_qy", headerName: "출고수량" },
+      { field: "dlivy_day", headerName: "출고일자", valueFormatter: this.customDateFormat  },
     ];
 
     this.gridOptions = {
@@ -179,14 +178,14 @@ export default {
   methods: {
     onCellClicked(event) {
         if (event.colDef.field === "상세보기") {
-          this.selectedReqCode = event.data.req_code; // 상세보기를 위한 데이터 추츨
+          this.selectedReqCode = event.data.order_no; // 상세보기를 위한 데이터 추츨
           this.getprductNDlivyListInfo(this.selectedReqCode); // 상세 정보 조회
         }
     },
 
     async getprductNDlivyListInfo(ReqCode) {
         console.log(ReqCode);
-        let result = await axios.get(`${ajaxUrl}/prductNDlivyListInfo/${ReqCode}`)
+        let result = await axios.get(`${ajaxUrl}/prductDlivyListInfo/${ReqCode}`)
                                   .catch(err => console.log(err));
         this.prductNDlivyListInfo = result.data;
         console.log(result.data);
@@ -195,7 +194,7 @@ export default {
 
 
     async getprductNDlivyList() {
-      let result = await axios.get(`${ajaxUrl}/prduct_n_dlivyList`)
+      let result = await axios.get(`${ajaxUrl}/prduct_dlivyList`)
         .catch(err => console.log(err));
       this.prductNDlivyList = result.data;
       this.rowData = this.prductNDlivyList;
@@ -233,7 +232,7 @@ export default {
     },
 
     customDateFormat(params) {
-      return userDateUtils.dateFormat(params.data.requst_date, 'yyyy-MM-dd');
+      return userDateUtils.dateFormat(params.data.dlivy_day, 'yyyy-MM-dd');
     }
   },
   components: {
