@@ -66,8 +66,8 @@ WHERE prdlst_name LIKE CONCAT('%', ?, '%')
 
 const pr_onedrct = // 생산지시 코드로 단건 조회
 `
-SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
-FROM prdctn_drct pd
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, pp.order_no
+FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
 WHERE pd.prdctn_code = ?
 `;
 
@@ -144,6 +144,20 @@ AND ps.empl_no LIKE CONCAT('%', ?, '%')
 AND ps.end_time LIKE CONCAT('%', ?, '%')
 ORDER BY ps.end_time;
 `;
+
+const pr_movetable = // 공정이동표 조회
+`
+SELECT ps.procs_nm, ps.prdctn_co, ps.empl_nm, ps.end_time
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+							        JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+WHERE ps.prd_code = ?
+AND   pp.order_no = ?
+ORDER BY 4;
+`;
+
+
+
+
 
 // 삽입문
 const pr_insstate = // 생산 실적 삽입
@@ -227,6 +241,7 @@ module.exports = {
   pr_upmt,
   pr_upprdn,
   pr_statelist,
+  pr_movetable,
 
 
 

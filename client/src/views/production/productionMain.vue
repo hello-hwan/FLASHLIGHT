@@ -2,76 +2,116 @@
   <div class="container">
     <!-- 생산지시 테이블 검색 -->
     <div class="prod-schedule">
-      <p>생산 일정 안내 </p>
+      <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+        <template v-slot:title>
+            <span class="font-weight-black">
+              생산 일정 안내
+            </span>
+        </template>
+    </v-card>
+    <v-container fluid>
+        <v-row>
+        <!-- 검색 필드 -->
+        <v-col cols="12">
+          <v-card class="mx-auto" style="border-radius: 13px;">
+            <v-card-text class="bg-surface-light pt-4">
+              
+              <div class="row g-3 align-items-center">
+                  <div class="col-2">
+                      <label for="drct_date" class="col-form-label">날짜</label>
+                  </div>
+                  <div class="col-auto">
+                      <input type="date" id="drct_date" class="form-control" aria-describedby="passwordHelpInline" style="width: 220px;" v-model="day">
+                  </div>
+              </div>
+              <div class="row g-3 align-items-center">
+                <div class="col-2">
+                  <label for="drct_prd_code" class="col-form-label">제품 코드</label>
+                </div>
+                <div class="col-auto">
+                  <input type="text" id="drct_prd_code" class="form-control" aria-describedby="passwordHelpInline" placeholder="제품명 입력시 검색 가능" v-model="prd" @keydown="getprdlist()">
+                </div>
 
-      <!-- 일자 검색 -->
-      <input type="date" v-model="day">
+                <!-- 검색 목록 있을시 표시 -->
+                <!-- <div v-if="prdlist.length > 0">
+                  <datalist>
+                    <option v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</option>
+                  </datalist>
+                </div>
+                -->
 
-      <!-- 제품 검색 제품명 입력시 아래 코드 나옴 클릭하면 선택됨 -->
-      <input type="text" placeholder="제품코드" v-model="prd" @input="getprdlist()">
+                <!-- 검색값 있을 시 표시 -->
+                <div v-if="prd" class="search-prd-box">
+                  <ul>
+                    <li v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</li>
+                  </ul>
+                </div>
 
-      <!-- 검색 목록 있을시 표시 -->
-      <div v-if="prdlist.length > 0">
-        <datalist>
-          <option v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</option>
-        </datalist>
-      </div>
-
-      <!-- 버튼 클릭시 검색창 적용 -->
-      <button type="button" @click="getanotherlist(prd, day)">검색</button>
+              </div>
+              <div style="margin-top:10px;">
+                <button type="button" class="btn btn-success" style="color:white;" @click="getlist">조회</button>
+                <button type="button" class="btn btn-warning" @click="resetvalue">초기화</button>
+                <button type="button" class="btn btn-info" @click="getanotherlist(prd, day)">공정 현황 조회</button>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
     </div>
-
-    <!-- 생산지시 테이블 -->
-    <div class="table-container">
-      <table class="table-plan">
-
-        <!-- 테이블 헤드 일자/오전,오후 -->
-        <thead>
-          <tr>
-            <th rowspan="2">설비명</th>
-            <th colspan="24"> {{ day }}</th>
-            <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+1), 'yyyy-MM-dd') }}</th>
-            <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+2), 'yyyy-MM-dd') }}</th>
-            <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+3), 'yyyy-MM-dd') }}</th>
-            <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+4), 'yyyy-MM-dd') }}</th>
-            <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+5), 'yyyy-MM-dd') }}</th>
-            <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+6), 'yyyy-MM-dd') }}</th>
-          </tr>
-          <tr>
-            <th colspan="12">오전</th>
-            <th colspan="12">오후</th>
-            <th colspan="12">오전</th>
-            <th colspan="12">오후</th>
-            <th colspan="12">오전</th>
-            <th colspan="12">오후</th>
-            <th colspan="12">오전</th>
-            <th colspan="12">오후</th>
-            <th colspan="12">오전</th>
-            <th colspan="12">오후</th>
-            <th colspan="12">오전</th>
-            <th colspan="12">오후</th>
-            <th colspan="12">오전</th>
-            <th colspan="12">오후</th>
-          </tr>
-        </thead>
-
-        <!-- 테이블 바디 일정 표시할 목록 -->
-        <tbody>
-
-          <!-- 설비명 만큼 행 반복 -->
-          <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
-            <th>{{ eqp.model_nm }}</th>
-
-            <!-- 일정만큼 열 반복 -->
-            <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
-
-            <!-- 데이터 없으면 표시할 데이터 -->
-            <td v-if="drctlist.length == 0" colspan="168">No Data Found</td>
-          </tr>
-        </tbody>
-        
-        </table>
-      </div>
+    <v-card-text class="bg-surface-light pt-4">
+      <!-- 생산지시 테이블 -->
+      <div class="table-container">
+        <table class="table-plan">
+  
+          <!-- 테이블 헤드 일자/오전,오후 -->
+          <thead>
+            <tr>
+              <th rowspan="2">설비명</th>
+              <th colspan="24"> {{ day }}</th>
+              <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+1), 'yyyy-MM-dd') }}</th>
+              <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+2), 'yyyy-MM-dd') }}</th>
+              <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+3), 'yyyy-MM-dd') }}</th>
+              <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+4), 'yyyy-MM-dd') }}</th>
+              <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+5), 'yyyy-MM-dd') }}</th>
+              <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+6), 'yyyy-MM-dd') }}</th>
+            </tr>
+            <tr>
+              <th colspan="12">오전</th>
+              <th colspan="12">오후</th>
+              <th colspan="12">오전</th>
+              <th colspan="12">오후</th>
+              <th colspan="12">오전</th>
+              <th colspan="12">오후</th>
+              <th colspan="12">오전</th>
+              <th colspan="12">오후</th>
+              <th colspan="12">오전</th>
+              <th colspan="12">오후</th>
+              <th colspan="12">오전</th>
+              <th colspan="12">오후</th>
+              <th colspan="12">오전</th>
+              <th colspan="12">오후</th>
+            </tr>
+          </thead>
+  
+          <!-- 테이블 바디 일정 표시할 목록 -->
+          <tbody>
+  
+            <!-- 설비명 만큼 행 반복 -->
+            <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
+              <th>{{ eqp.model_nm }}</th>
+  
+              <!-- 일정만큼 열 반복 -->
+              <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+  
+              <!-- 데이터 없으면 표시할 데이터 -->
+              <td v-if="drctlist.length == 0" colspan="168">No Data Found</td>
+            </tr>
+          </tbody>
+          
+          </table>
+        </div>
+    </v-card-text>
 
       <!-- 검색없을시 표시창 생산 불가능 제품 및 자재 목록 -->
       <ImpossibleProduction v-if="!issrc"/>
@@ -80,7 +120,7 @@
       <SelfProduction v-if="!issrc"/>
 
       <!-- 검색 있을시 표시창 공정실적조회 -->
-      <StateList v-if="issrc" />
+      <StateList v-if="issrc"/>
 
     </div>
 </template>
@@ -121,7 +161,7 @@
   const getdrct = async (prd_code, day_str) => {
 
    // let result = await axios.get(`${ajaxUrl}/prod/drctlist`)
-   let result = await axios.get(`${ajaxUrl}/prod/drctlist`, {params: {"prd_code":prd_code, "day_str":day_str}})
+   let result = await axios.get(`${ajaxUrl}/prod/drctlist`, { params: {"prd_code":prd_code, "day_str":day_str} })
                            .catch(err => console.log(err));
     // console.log(result);
     if(result == undefined){
@@ -163,7 +203,6 @@
   // 생산일정 불러올 함수 실행
   getdrct(prd.value, day.value);
 
-  
   // 검색을 했는지 안했는지 담을 변수
   let issrc = false;
 
@@ -172,9 +211,12 @@
 
   // 제품 키워드로 검색할 함수
   const getprdlist = async () => {
-    let result = await axios.get(`${ajaxUrl}/prod/prdlist/${prd.value}`)
+    let result = await axios.get(`${ajaxUrl}/prod/prdlist`, { params : { "name" : prd.value } })
                             .catch(err => console.log(err));
-    prdlist.value = result.data;
+    console.log(result);
+    if(result != undefined){
+      prdlist.value = result.data;
+    }
   };
 
   // 검색 클릭시 실행할 함수
@@ -183,17 +225,50 @@
     prdlist.value = [];
   };
 
-  // 검색 클릭시 실행할 함수
+  // 공정현황 조회 버튼 클릭시 실행할 함수
   const getanotherlist = async (prd_code, day_str) => {
-    getdrct(prd_code, day_str);
     issrc = true;
+    console.log(issrc);
+    getdrct(prd_code, day_str);
   };
+
+  // 초기화 버튼 클릭 함수
+  const resetvalue = () => {
+    issrc = false;
+    prd.value = '';
+    day.value = useDates.dateFormat(new Date(), 'yyyy-MM-dd');
+    getdrct(prd.value, day.value);
+  };
+
+  // 단순 조회 버튼 클릭 함수
+  const getlist = () => {
+    getdrct(prd.value, day.value);
+  };
+
 </script>
 
 <style scoped>
   .table-plan th, .table-plan td {
     border: 2px, solid, black;
     width: 0.5%;
+    background-color: white;
+  }
+  .table-plan {
+    border: 2px, solid, black !important;
+    border-radius: 30px !important;
+  }
+  .search-prd-box ul{
+    position: relative;
+  }
+  .search-prd-box ul {
+    position: li;
+    top: 100%;
+    right: 0;
+    width: 45%;
+  }
+  .search-prd-box li {
+    background-color: white !important;
+    border: 1px, solid, rgb(179, 179, 179);
   }
 
 </style>

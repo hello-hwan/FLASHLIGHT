@@ -45,8 +45,8 @@ router.get('/prod/eqplist', async (req, res) => {
 });
 
 // 제품명 조회(검색시 필요)
-router.get('/prod/prdlist/:name', async (req, res) => {
-  let name = req.params.name;
+router.get('/prod/prdlist', async (req, res) => {
+  let name = req.query.name;
   prodService
   .prdlist(name)
   .then(list => {
@@ -229,6 +229,20 @@ router.get('/prod/statelist', async (req, res) => {
     res.status(500).send('Fail Process');
   })
 
+});
+
+router.get('/prod/shiftlist', async (req, res) => {
+  let array = [];
+  array.push(req.query.prd_code);
+  array.push(req.query.order_no);
+  prodService
+  .shiftlist(array)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
 });
 
 module.exports = router;

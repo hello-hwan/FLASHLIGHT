@@ -41,8 +41,8 @@
             </div>
             
             <div class="modal-btn">
-              <button @click="modalOpen"class="btn btn-secondary">닫기</button>
-              <button @click="numOk" class="btn btn-primary">확인</button>
+              <button @click="numOk" class="kiosk-btn back-blue display-6 font-weight-black">확인</button>
+              <button @click="modalOpen"class="kiosk-btn back-red display-6 font-weight-black">닫기</button>
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@ z-index: 3;
 
 .modal-btn button {
   line-height: 1.1;
-  margin: 10px 0;
+  margin: 5%;
 }
 .align-left{
   margin: 10px 0;
@@ -148,5 +148,15 @@ z-index: 3;
   width: 30%;
   height: 150px;
   font-size: 50px;
+}
+.kiosk-btn {
+    width: 25%;
+    height: 100px;
+}
+.back-blue{
+  background-color: rgb(166, 202, 243);
+}
+.back-red{
+background-color: rgb(252, 196, 196);
 }
 </style>
