@@ -52,11 +52,20 @@ const searchCompanyModal = async(key)=>{
     return result;
 }
 
+// 제품 검색
+const searchProductModal = async(key)=>{
+    let searchKey = [key.product_code, key.product_name];
+    let result = await mariaDB.query('bs_searchProduct', searchKey)
+                              .catch(err=>console.log(err));
+    return result;
+}
+
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
     deleteOrderRequestByOrderNo,
     findOrderRequestByNo,
     searchCompanyModal,
-    findOrderArray
+    findOrderArray,
+    searchProductModal
 };
