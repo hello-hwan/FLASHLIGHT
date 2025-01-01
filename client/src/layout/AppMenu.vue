@@ -113,12 +113,8 @@ const model = ref([
                 label: '물류',
                 items: [
                     {
-                        label: '출고 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 출고 등록',
-                        to: '/'
+                        label: '제품 출고 조회',
+                        to: '/logistics/prductDlivyList'
                     },
                     {
                         label: '제품 출고 관리',

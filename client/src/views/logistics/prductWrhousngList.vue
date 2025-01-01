@@ -7,32 +7,12 @@
             </template>
         </v-card>
     </v-col>
-    <v-col cols="6">
-        <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
-            <template v-slot:title>
-                <span class="font-weight-black">반환 제품 리스트</span>
-            </template>
-            <v-card-text class="bg-surface-light pt-4">
-                <AgGridVue
-                    style="height: 500px; margin: 0 auto;"
-                    @grid-ready="onGridReady"
-                    :rowData="filteredRowData"
-                    :columnDefs="colDefs"
-                    :rowSelection="rowSelection"
-                    @cellClicked="onCellClicked"
-                    :gridOptions="gridOptionsReturn"
-                    class="ag-theme-alpine"
-                    id="grid-one">
-                </AgGridVue>
-            </v-card-text>
-        </v-card>
-    </v-col>
 
         <!-- BOM 상세조회 -->
-        <v-col cols="6">
+        <v-col cols="12">
             <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-                <span class="font-weight-black">일반 완제품</span>
+                <span class="font-weight-black">완제품</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
                 <AgGridVue style="height: 500px; margin: 0 auto;"
@@ -64,9 +44,6 @@ import { ajaxUrl } from '@/utils/commons.js';
 export default {
 data() {
     return {
-        prductReturnList: [],    // 반환반제품
-        rowData: '',
-        colDefs: '',
 
         prductList: [],    // 일반반제품
         rowDataSelect: '',
@@ -74,33 +51,13 @@ data() {
     };
 },
 created() {
-    this.getprductReturnList();
-    this.colDefs = ([
-        { field: "bom_code", headerName:"제품명" },         // 반제품 반환 리스트로 변경해야됨
-        { field: "prdlst_code", headerName:"제품코드" },    // 반제품 반환 리스트로 변경해야됨
-        { field: "prdist_name", headerName:"재입고량" },    // 반제품 반환 리스트로 변경해야됨
-        { field: "prdctn_qy", headerName:"재입고날짜" },    // 반제품 반환 리스트로 변경해야됨
-        { field: "입고", headerName:"입고", cellRenderer: () => {return "입고"}}
-    ])
-    this.gridOptionsReturn = {
-        columnDefs: this.returnColDefs,
-        pagination: true,
-        paginationPageSize: 10,
-        paginationPageSizeSelector: [10, 20, 50, 100],
-        paginateChildRows: true,
-        animateRows: false,
-        defaultColDef: {
-            filter: true,
-            flex: 1,
-            minWidth: 10
-        }
-    };
+    
     this.getprductList();
     this.colDefsSelect = ([
         { field: "prd_code", headerName:"제품명" },
-        { field: "mtril_name", headerName:"제품코드" },
-        { field: "pass_amount", headerName:"검사합격수량" },
-        { field: "test_date", headerName:"검사완료일",
+        { field: "prd_nm", headerName:"제품코드" },
+        { field: "nrmlt", headerName:"생산수량" },
+        { field: "end_time", headerName:"생산완료일",
             valueFormatter: this.customDateFormat },
         { field: "입고", headerName: "입고", cellRenderer: () => {return "입고"}}
     ])
@@ -134,11 +91,11 @@ async onCellClicked(event) {
     this.getprductList(this.selectedPrd_code); 
 
     let obj = [
-        event.data.mtril_name, 
+        event.data.prd_nm, 
         event.data.prd_code,
-        event.data.mtril_check_code,
-        event.data.pass_amount,
-        event.data.pass_amount
+        event.data.prdctn_code,
+        event.data.nrmlt,
+        event.data.nrmlt
     ]
     console.log('obj',obj);
 
@@ -150,17 +107,9 @@ async onCellClicked(event) {
         this.rowDataSelect = this.prductList;
 
 },
-    // 반제품 반환제품 리스트로 select 변경해야됨
-    async getprductReturnList() {
-        let result = await axios.get(`${ajaxUrl}/bom`)
-            .catch(err => console.log(err));
-        this.prductReturnList = result.data;
-        this.rowData = this.prductReturnList;
-    },
     async getprductList() {
         let result = await axios.get(`${ajaxUrl}/prductList`)
-            .catch(err => console.log(err));
-            console.log('페이지',result.data);
+                                .catch(err => console.log(err));
         this.prductList = result.data;
         console.log(this.prductList);
         this.rowDataSelect = this.prductList;
