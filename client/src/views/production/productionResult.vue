@@ -90,7 +90,7 @@ const ColDefs = [
 
 // 공정 현황 리스트 불러오기
 const getlist = async () => {
-  let result = await axios.get(`${ajaxUrl}/prod/statelist`, {params: { "procs_code": pcode.value, "empl_no": eno.value, "end_date": edate.value }})
+  let result = await axios.get(`${ajaxUrl}/prod/statelist`, { params : { "procs_code": pcode.value, "empl_no": eno.value, "end_date": edate.value }})
                           .catch(err => console.log(err));
   for(let i = 0; i < result.data.length; i++){
     result.data[i].begin_time = useDates.dateFormat(result.data[i].begin_time, 'yyyy-MM-dd') + ' ' +  useDates.timeFormat(result.data[i].begin_time, 'hh:mm:ss');
