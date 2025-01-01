@@ -23,11 +23,11 @@
         <span>담당자 </span>
         <InputText type="text" v-model="chargerName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
         <span>입고일 </span>
-        <InputText type="date" v-model="wrhDateStart" class="emp_info"> <p>{{ wrhDateStart }}</p></InputText>
+        <InputText type="date" v-model="wrhDateStart" class="emp_info"> <p>{{ wrhDateStart }}</p></InputText>-
         <InputText type="date" v-model="wrhDateEnd" class="emp_info"> <p>{{ wrhDateEnd }}</p></InputText>
         <div>
-          <button @click="getList"class="btn btn-primary search-btn" >조회</button>
           <button @click="remove"class="btn btn-secondary search-btn" >초기화</button>
+          <button @click="getList"class="btn btn-primary search-btn" >조회</button>
         </div>
       </v-card-text>
     </div>
@@ -38,8 +38,10 @@
         :rowData="rowData"
         :gridOptions="GridOptions"
         class="ag-theme-alpine"
-        style="height: 516px">
+        style="height: 516px"
+        @grid-ready="onGridReady">
         </AgGridVue>
+        <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
       </v-card-text>
     </div>
   </div>
@@ -110,7 +112,7 @@ const getList = async() => {
     let result = await axios.post(`${ajaxUrl}/mtril/wrhousingList`, obj)
                             .catch(err=> console.log(err));
 
-    //console.log(result.data);
+    console.log(result.data);
     //행 데이터 담기
     rowData.value = result.data;
 };
@@ -127,6 +129,19 @@ const remove = () => {
   //조회
   getList();
 };
+
+//gridapi를 저장할 변수
+const gridApi = ref(null);
+
+//gridapi저장
+const onGridReady = (params) => {
+    gridApi.value = params.api;
+};
+//엑셀 내보내기
+const onBtnExportDataAsCsv = () => {
+    gridApi.value.exportDataAsCsv();
+};
+
 </script>
 
 <style scoped>
@@ -142,5 +157,9 @@ select {
   height: 42px;
   text-align: center;
   margin-right: 20px;
+}
+input[type="date"] {
+  width: 150px;
+  margin-right: 2px;
 }
 </style>

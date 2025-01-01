@@ -57,17 +57,29 @@ watch(() => orderCode.value, async(newVal) => {
   };
   orderInfoFromDB = {order_date: result.data[1][0].order_date, 
                      dedt: result.data[1][0].dedt,
-                     price: totalPrice,
+                     price: totalPrice.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","),
                      empl_name: result.data[1][0].empl_name};
 
   //자재 리스트
   for(let i=0; i<result.data[1].length; i++) {
     mtrilListFromDB.push({
       mtril_name: result.data[1][i].mtril_name,
-      mtril_qy: result.data[1][i].order_qy,
+      mtril_qy: result.data[1][i].order_qy.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","),
       unit: result.data[1][i].unit,
-      price: result.data[1][i].order_price
+      price: (result.data[1][i].order_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+"원")
     });
+  };
+
+  //기본 10행을 출력하기 위해서 빈 문자열 넣어주기
+  if(result.data[1].length < 10) {
+    for(let i=0; i<(10-result.data[1].length); i++) {
+      mtrilListFromDB.push({
+        mtril_name: "",
+        mtril_qy: "",
+        unit: "",
+        price: ""
+      });
+    };
   };
   
   generatePDF();
@@ -87,6 +99,11 @@ const generatePDF = () => {
   doc.setFontSize(30);  //다음 문자열 글씨 크기 설정
   doc.text(90, 30, '발주서'); // 글씨입력(시작x, 시작y, 내용)
 
+  doc.setFontSize(13);
+  doc.text(15, 140, '아래 내용으로 발주를 신청합니다');
+  doc.line(85, 140, 135, 140);
+  doc.setFontSize(15);
+  doc.text(140, 140, '담당자 (인)');
   //거래처 정보
   companyInfo(doc);
 

@@ -239,7 +239,7 @@ searchOrder();
 }
 .search-bar>:nth-of-type(2){
     position: relative;
-top: -47px;
+    top: -41px;
 }
 input[type="date"] {
     height: 40px; /* 높이를 명시적으로 지정 */
