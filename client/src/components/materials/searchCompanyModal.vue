@@ -139,7 +139,7 @@ const rowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "bcnc_code", headerName: "거래처 코드", flex: 1},
+  { field: "bcnc_code", headerName: "거래처 코드", flex: 0.5},
   { field: "mtlty_name", headerName: "거래처 명", flex: 1},
   { field: "charger_name", headerName: "거래처 담당자", flex: 0.7},
   { headerName : "선택",  checkboxSelection: true, flex:0.3}

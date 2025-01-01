@@ -2,10 +2,10 @@
     <span style="margin-left:20px">
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;" v-if="props.state = 'pdf'">PDF 내보내기</button>
+        style="line-height: 1px; color: #fff;" v-if="state == 'pdf'">PDF 내보내기</button>
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;" v-else>발주건 조회</button>
+        style="line-height: 1px; color: #fff;" v-else-if="state == 'order'">발주건 조회</button>
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
@@ -16,7 +16,7 @@
                     <span>거래처명 </span>
                     <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText><br>
                     <span>담당자</span>
-                    <InputText type="text" v-model="empId" v-on:keyup.enter="searchOrder"> <p>{{ empId }}</p></InputText>
+                    <InputText type="text" v-model="empName" v-on:keyup.enter="searchOrder"> <p>{{ empName }}</p></InputText>
                 </div>
                 <div>
                     <span>발주일 </span>
@@ -61,7 +61,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
 const props = defineProps(['state']);
-
+let state = ref(props.state);
 //부모 행 삭제를 위해서 사용하는 emit
 const emit = defineEmits(["selectedData"]);
 
@@ -72,7 +72,7 @@ let startOrderDate = null;
 let endOrderDate = null;
 let startDedt = null;
 let endDedt = null;
-let empId = null;
+let empName = null;
 
 //날짜 포멧
 const customDateFormat = (params) => {
@@ -117,7 +117,7 @@ const modalOpen = () => {
     endOrderDate = null;
     startDedt = null;
     endDedt = null;
-    empId = null;
+    empName = null;
 }
 
 //모달 발주건을 선택하고 확인버튼 클릭
@@ -160,17 +160,23 @@ const searchOrder = async() => {
                end_order: endOrderDate,
                start_dedt: startDedt,
                end_dedt: endDedt,
-               emp_id: parseInt(empId) 
+               emp_name: empName
                 };
     console.log("새로만든 객체: ",obj);
-    let result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
+    let result = [];
+    if(state.value == "order") {
+        result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
                             .catch(err=>console.log(err));
+    } else if(state.value == "pdf") {
+        result = await axios.post(`${ajaxUrl}/mtril/allOrderListForPDF`, obj)
+                            .catch(err=>console.log(err));
+    };
+
 
     //console.log("통신결과: ",result);
     //행 데이터 담기
     orderRowData.value = result.data;   
 };
-searchOrder();
 </script>
 
 <style scoped>
@@ -190,7 +196,7 @@ searchOrder();
     top: 53%;
     left: 61%;
     transform: translate(-50%, -50%);
-    width: 60%;
+    width: 50%;
     background: #fff;
     border-radius: 10px;
     padding: 20px;
@@ -226,6 +232,10 @@ searchOrder();
 }
 .search-bar :first-child {
     text-align: left;
+}
+.search-bar>:first-child{
+    position: relative;
+    left: -50px;
 }
 .search-bar :first-child span {
     display: inline-block;

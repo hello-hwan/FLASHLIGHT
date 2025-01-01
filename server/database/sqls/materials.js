@@ -101,7 +101,9 @@ WHERE   m.order_name LIKE CONCAT('%', IFNULL(?, m.order_name), '%')
 AND     m.mtlty_name LIKE CONCAT('%', IFNULL(?, m.mtlty_name), '%')
 AND     m.order_date BETWEEN IFNULL(?, m.order_date) AND IFNULL(?, m.order_date)
 AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
-AND     s.empl_name = IFNULL(?, s.empl_name)
+AND     s.empl_no IN (SELECT t.empl_no
+                      FROM   empl t
+                      WHERE  t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%'))
 AND     m.order_no NOT IN (SELECT t.order_no
 			   FROM   inspection_check t)
 GROUP BY m.order_code
@@ -152,10 +154,28 @@ AND     m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name), '%')
 AND     m.mtlty_name LIKE CONCAT('%', IFNULL(?, m.mtlty_name), '%')
 AND     m.order_date BETWEEN IFNULL(?, m.order_date) AND IFNULL(?, m.order_date)
 AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
-AND     t.empl_name = IFNULL(?, t.empl_name)
+AND     t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
 ORDER BY m.order_date desc
 `;
-
+//자재 발주 조회 pdf출력용 - mt005
+const mt_selectOrderListForPDF = 
+`
+SELECT  m.order_name AS order_name,
+        m.mtlty_name AS mtlty_name,
+        m.order_date AS order_date,
+        m.dedt AS dedt,
+        s.empl_name AS empl_name
+FROM    mtril_order m JOIN empl s
+                        ON (m.empl_no = s.empl_no)
+WHERE   m.order_name LIKE CONCAT('%', IFNULL(?, m.order_name), '%')
+AND     m.mtlty_name LIKE CONCAT('%', IFNULL(?, m.mtlty_name), '%')
+AND     m.order_date BETWEEN IFNULL(?, m.order_date) AND IFNULL(?, m.order_date)
+AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
+AND     s.empl_no IN (SELECT t.empl_no
+                      FROM   empl t
+                      WHERE  t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%'))
+ORDER BY m.order_no DESC
+`;
 //발주서 양식에 들어가는 정보 
 /*상호, 사업자번호, 대표자, 주소, 
 발주일, 납기일, 합계금액, 발주담당자
@@ -459,5 +479,6 @@ module.exports = {
         mt_wrhousngList,
         mt_dlivyList,
         mt_orderFormCompanyInfo,
-        mt_orderFormMtList
+        mt_orderFormMtList,
+        mt_selectOrderListForPDF
 };

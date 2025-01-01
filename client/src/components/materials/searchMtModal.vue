@@ -31,7 +31,7 @@
                 
                 <div class="modal-btn">
                 <button @click="modalOpen"class="btn btn-secondary">닫기</button>
-                <button @click="selectOrder" class="btn btn-primary">확인</button>
+                <button @click="selectMt" class="btn btn-primary">확인</button>
                 </div>
             </div>
         </div>
@@ -84,13 +84,13 @@ const modalOpen = () => {
     mtrilCode = null;
 }
 
-//모달 발주건을 선택하고 확인버튼 클릭
-const selectOrder = () => {
+//모달 자재를 선택하고 확인버튼 클릭
+const selectMt = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
     const mtSelectedData = selectedNodes.map((node) => node.data);
 
-    console.log('모달에서 선택된 행 데이터:', mtSelectedData);
+    //console.log('모달에서 선택된 행 데이터:', mtSelectedData);
 
     emit("mtSelectedData", mtSelectedData);
 };

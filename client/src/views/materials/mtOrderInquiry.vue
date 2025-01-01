@@ -27,10 +27,6 @@
                 </div>
                 <div>
                     <div>
-                        <span>발주 담당자</span>
-                        <InputText type="text" v-model="chargerName" v-on:keyup.enter="searchOrderList"> <p>{{ chargerName }}</p></InputText>
-                    </div>       
-                    <div>
                         <span>발주일</span>
                         <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
                         <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
@@ -40,6 +36,10 @@
                         <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
                         <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
                     </div>
+                    <div>
+                        <span>발주 담당자</span>
+                        <InputText type="text" v-model="chargerName" v-on:keyup.enter="searchOrderList"> <p>{{ chargerName }}</p></InputText>
+                    </div>       
                 </div>
                 <div style="text-align: center;">
                     <button @click="searchOrderList" class="btn btn-primary search-btn" >조회</button>

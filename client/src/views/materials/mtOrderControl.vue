@@ -14,7 +14,7 @@
                 <button type="button" class="btn btn-primary"
                 style="color: #fff;" @click="openReq" v-else>요청 자재 목록 보기</button>
                 <!--발주건 조회-->
-                <orderSearchModal @selectedData="getOrderDetails"/> 
+                <orderSearchModal v-bind:state="forSearchOrder" @selectedData="getOrderDetails"/> 
                 <button type="button" class="btn btn-danger"
                 style="color: #fff; margin-left: 30px" v-show="delBtn" @click="delOrder">발주삭제</button>
             </span>
@@ -63,7 +63,7 @@
                         <mtSearchModal @mtSelectedData="addRow"/>
                             
                         <button type="button" @click="removeRow"
-                        class="btn btn-warning" style="color: #fff;">행 삭제</button>
+                        class="btn btn-warning" style="color: #fff;"> 선택 행 삭제</button>
                         
                         <button type="button" @click="removeAllRow"
                         class="btn btn-secondary" style="color: #fff;">초기화</button>
@@ -105,6 +105,7 @@ import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import { useToast } from 'primevue/usetoast';
 
+
 //발주건 검색 모달
 import orderSearchModal from '@/components/materials/orderControlModal.vue';
 
@@ -113,6 +114,9 @@ import companySearchModal from '@/components/materials/searchCompanyModal.vue';
 
 //자재 검색 모달
 import mtSearchModal from '@/components/materials/searchMtModal.vue';
+
+//search order modal을 위해서 상태값 넘기기
+let forSearchOrder = 'order';
 
 const toast = useToast();
 
@@ -195,7 +199,7 @@ const reqColDefs = [
 const mtListColDefs = [
     { field: "order_no", headerName: "발주번호", hide: true, suppressToolPanel: true, flex:1},
     { field: "req_code", headerName:"요청 코드", hide: true, suppressToolPanel: true, flex:1},
-    { field: "mt_name", headerName: "*자재명", editable: true, flex:1},
+    { field: "mt_name", headerName: "*자재명", editable: true,  checkboxSelection: true, flex:1},
     { field: "mt_code", headerName: "*자재코드", editable: true, flex:1},
     { field: "price", headerName: "입고단가(원)", editable: true, flex:1},
     { field: "order_qy", headerName: "*수량", editable: true, flex:1},
@@ -264,6 +268,7 @@ const addRow = (info) => {
 
 //행 삭제
 const removeRow = () => {
+    /*
     //전체 행 데이터를 저장할 (객체)배열 선언
     let allData = [];
 
@@ -286,7 +291,21 @@ const removeRow = () => {
         orderCode.value = '';
         //삭제버튼 비활성화
         delBtn.value = false;
-    }
+    };
+    */
+   //선택된 행 노드 가져오기
+    const delNodes = mtListGridApi.value.getSelectedNodes();
+
+    if(delNodes <= 0) {
+        toast.add({ severity: 'warn', summary: '행 삭제', detail: '삭제할 행을 선택해주세요', life: 3000 });
+        return;
+    };
+
+    //선택된 행 삭제하기
+    delNodes.map((node) => {
+        mtListGridApi.value.applyTransaction({ remove: [node.data] });
+    });
+
 };
 
 //행 전체 삭제
@@ -582,9 +601,6 @@ const removeAllInfo = () => {
     line-height: 1px; 
     color: #fff;
 }
-.font-weight-black>button {
-    text-align: right;
-}
 .select-req-mt {
     margin-bottom: 10px; 
     margin-left: 87%;
@@ -599,8 +615,10 @@ const removeAllInfo = () => {
     margin-bottom: 10px;
 }
 .top-btn {
-    text-align: right;
+    display: inline-block;
     margin-top: 10px;
+    position:relative;
+    right: -40%;
 }
 
 </style>
