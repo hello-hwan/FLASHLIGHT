@@ -134,4 +134,18 @@ router.post('/mtril/dlivyList', async(req, res) => {
     res.send(result);
 });
 
+//발주서
+router.get('/mtril/orderForm/:orderCode', async(req, res) => {
+    let orderCode = req.params.orderCode;
+    let result = await mtrilService.orderForm(orderCode);
+    res.send(result);
+});
+
+//발주서 뽑을때 필요한 모든 발주목록
+router.post('/mtril/allOrderListForPDF', async(req, res) => {
+    let searchKey = req.body;
+    let result = await mtrilService.allOrderListForPDF(searchKey);
+    res.send(result);
+});
+router.post
 module.exports = router;
