@@ -12,6 +12,7 @@ FROM bom`;
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
+       ,bc.bom_code
        ,bc.cmpds_prdlst_code
 	,bc.cmpds_prdlst_name
        ,bc.stndrd_x
@@ -32,9 +33,24 @@ where bom_code = ?`;
 
 // BOM 등록 쿼리
 const bomInsert =  
-`INSERT INTO bom_cmpds 
-SET ?`;
-
+`INSERT INTO bom_cmpds (cmpds_no,
+                        bom_code,
+                        cmpds_prdlst_code,
+                        cmpds_prdlst_name,
+                        stndrd_x,
+                        stndrd_y,
+                        stndrd_z,
+                        unit,
+                        cnsum_count)
+VALUES (CONCAT('M-SL', nextval(bom_cmpds_seq)), 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?)`;
 // BOM 소모품 조회
 const bomManage = 
 `SELECT c.cmpds_no
@@ -108,7 +124,6 @@ set ?
 WHERE mtril_code = ?`;
 
 // 반제품 조회
-                                                  // 공정흐름도 테이블이랑 품목코드 동일해지면 join으로 변경해야됨
 const infoprductNList = 
 `SELECT p.prdlst_code
       ,p.prdlst_name
@@ -186,6 +201,27 @@ const bcncList =
        ,charger_phone
        ,regist_day
 FROM bcnc`;
+
+// 거래처 등록
+const bcncAdd = 
+`INSERT INTO bcnb (bcnb_code
+                  ,bizrno
+                  ,mtlty_name
+                  ,bizcnd
+                  ,item
+                  ,dvyfg_adres
+                  ,charger_name
+                  ,charger_phone
+                  ,regist_day)
+VALUES (CONCAT('M-SL', nextval(bcnc_seq))
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?)`;
 
 // 품질검사항목관리
 const qiList =

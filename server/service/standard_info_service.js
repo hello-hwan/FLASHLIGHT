@@ -16,6 +16,7 @@ const bomtest = async () => {
 // BOM 상세보기 
 const bomInfo = async (bomCode) => {
   let list = await mariaDB.query('bomInfo', bomCode);
+  console.log('service',list)
   return list;
 }
 
@@ -28,12 +29,17 @@ const bomMtilList = async () => {
 // BOM 등록  
 const bomInsert = async (bomInfo) => {
   let result = await mariaDB.query('bomInsert', bomInfo);
-
-  if (result.insertId != null) {
-    return { message: '데이터 삽입 성공' };
-  } else {
-    return { message: '데이터 삽입 실패' };
+  console.log('service',bomInfo)
+  try{
+    if (result.insertId != null) {
+      return { message: '데이터 삽입 성공' };
+    } else {
+      return { message: '데이터 삽입 실패' };
+    }
+  }catch(err){
+    console.log(err);
   }
+
 }
 
 // BOM 관리 select

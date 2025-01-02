@@ -138,7 +138,7 @@ export default {
       mtrilName: "",
 
       //input 입력값
-      mtrilCodeAdd: "",
+      mtrilCodeAdd: "M-",
       mtrilNameAdd: "",
       unitAdd: "",
       sfinvcAdd: "",
@@ -189,6 +189,10 @@ export default {
     },
 
     async addData(){
+      if (!this.mtrilCodeAdd.startsWith("M-")) {
+        alert('자재코드는 "M-"로 시작해야 합니다.');
+      return;
+      }
       let obj = {
         mtril_code: this.mtrilCodeAdd,
         mtril_name: this.mtrilNameAdd,
