@@ -294,6 +294,18 @@ const prd_code_bom_search =
         prdist_name
  FROM bom`;
 
+ //로그인을 위한 select
+ const loginSelect =
+ `
+ SELECT empl_no,
+        password,
+        empl_name,
+        dept_se
+ FROM   empl
+ WHERE  empl_no = ?
+ AND    password = ?
+ `;
+
 module.exports = {
   bom,
   bomInfo,
@@ -328,5 +340,6 @@ module.exports = {
   ProcsCodeToDeleteFlowchart, 
   prd_code_search, 
   prd_code_bom_search, 
-  prd_code_bom_all_search
+  prd_code_bom_all_search,
+  loginSelect
 };

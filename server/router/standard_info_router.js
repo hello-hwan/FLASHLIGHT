@@ -251,4 +251,10 @@ router.get('/prd_code_bom_all_search', async (req, res) => {
   res.send(list);
 });
 
+//로그인 
+router.post('/login', async(req, res) => {
+  let loginInfo = req.body;
+  let result = await standard_info_service.loginService(loginInfo);
+  res.send(result);
+});
 module.exports = router;     

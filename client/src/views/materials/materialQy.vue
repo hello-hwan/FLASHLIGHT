@@ -8,7 +8,7 @@
                     border-bottom-left-radius: 13px;"
             >
             <template v-slot:title>
-            <span class="font-weight-black">재고조회</span>
+            <span class="font-weight-black text-align-center">재고조회</span>
             </template>
         
             <v-card-text class="bg-surface-light pt-4">
@@ -280,6 +280,10 @@ const removeKey = () => {
 .btn-primary{
     line-height: 1;
 }
+.modal-btn {
+    display: flex;
+    justify-content: center;
+}
 .modal-btn button {
     margin: 10px 10px
 }
@@ -311,5 +315,9 @@ const removeKey = () => {
 }
 .search-key div:last-child span {
     margin-left: 79%;
+}
+.text-align-center {
+    display: flex;
+    justify-content: center;
 }
 </style>

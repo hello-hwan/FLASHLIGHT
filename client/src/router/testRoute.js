@@ -1,4 +1,4 @@
-import BoardList from '@/views/vuetifyTest.vue';
+import BoardList from '@/views/login.vue';
 
 
 const boardRoutes = [

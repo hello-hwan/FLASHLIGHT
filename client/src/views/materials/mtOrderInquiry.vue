@@ -1,6 +1,6 @@
 <template>
     <div class="content-section">
-        <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
             <template v-slot:title>
                 <span class="font-weight-black">
                     자재 발주조회
@@ -41,7 +41,7 @@
                         <InputText type="text" v-model="chargerName" v-on:keyup.enter="searchOrderList"> <p>{{ chargerName }}</p></InputText>
                     </div>       
                 </div>
-                <div style="text-align: center;">
+                <div style="text-align: center; width: 100%;">
                     <button @click="searchOrderList" class="btn btn-primary search-btn" >조회</button>
                     <button @click="resetSearchKey" class="btn btn-secondary search-btn" >초기화</button>
                 </div>
@@ -59,7 +59,7 @@
             rowSelection="multiple"
             class="ag-theme-alpine"
             @grid-ready="onGridReady"
-            style="height: 516px">
+            style="height: 476px">
             </AgGridVue>
             <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
             <!--pdf내보내기-->

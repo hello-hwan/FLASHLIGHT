@@ -31,10 +31,11 @@ let mtrilListFromDB = [];
 
 //자식 컴포넌트로부터 받은(선택한) 데이터 (발주건)
 const getOrderDetails = (info) => {
+  console.log(info);
   orderCode.value = info[0].order_code;
   console.log(orderCode.value);
-
 };
+
 watch(() => orderCode.value, async(newVal) => {
   //초기화
   companyInfoFromDB = [];
@@ -45,7 +46,7 @@ watch(() => orderCode.value, async(newVal) => {
   let result = await axios.get(`${ajaxUrl}/mtril/orderForm/${newVal}`)
   .catch(err=>console.log(err));
 
-  console.log(result);
+  console.log('확인 버튼 클릭 후 가져온 데이터', result);
   dataList = result.data;
   //거래처 정보 담기
   companyInfoFromDB = result.data[0];
@@ -54,6 +55,7 @@ watch(() => orderCode.value, async(newVal) => {
   let totalPrice = 0;
   for(let i=0; i<result.data[1].length; i++) {
     totalPrice += parseInt(result.data[1][i].order_price);
+    console.log(totalPrice);
   };
   orderInfoFromDB = {order_date: result.data[1][0].order_date, 
                      dedt: result.data[1][0].dedt,
