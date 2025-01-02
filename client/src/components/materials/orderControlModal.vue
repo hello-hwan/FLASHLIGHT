@@ -2,31 +2,35 @@
     <span style="margin-left:20px">
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;">발주건 조회</button>
+        style="line-height: 1px; color: #fff;" v-if="state == 'pdf'">PDF 내보내기</button>
+        <button type="button" @click="modalOpen"
+        class="btn btn-primary"
+        style="line-height: 1px; color: #fff;" v-else-if="state == 'order'">발주건 조회</button>
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
-            <div id="search-bar">
-                <div class="align-left">                
-                    <span>발주명</span>
-                    <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrder">> <p>{{ orderName }}</p></InputText>
-                    <span>발주일</span>
-                    <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
-                    <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
-    
-                </div>
-                <div class="align-left">
-                    <span>거래처명</span>
-                    <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText>
-                    <span>납기일</span>
-                    <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
-                    <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
+            <div class="search-bar">
+                <div>
+                    <span>발주명 </span>
+                    <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrder">> <p>{{ orderName }}</p></InputText><br>
+                    <span>거래처명 </span>
+                    <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText><br>
+                    <span>담당자</span>
+                    <InputText type="text" v-model="empName" v-on:keyup.enter="searchOrder"> <p>{{ empName }}</p></InputText>
                 </div>
                 <div>
-                    <span>사원번호</span>
-                    <InputText type="text" v-model="empId" v-on:keyup.enter="searchOrder"> <p>{{ empId }}</p></InputText>
+                    <span>발주일 </span>
+                    <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
+                    <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText><br>
+                    <div> 
+                        <span>납기일 </span>
+                        <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
+                        <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
+                    </div>
                 </div>
-                <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
+                <div>
+                    <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
+                </div>
             </div>
             
             <AgGridVue 
@@ -56,7 +60,8 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
-
+const props = defineProps(['state']);
+let state = ref(props.state);
 //부모 행 삭제를 위해서 사용하는 emit
 const emit = defineEmits(["selectedData"]);
 
@@ -67,7 +72,7 @@ let startOrderDate = null;
 let endOrderDate = null;
 let startDedt = null;
 let endDedt = null;
-let empId = null;
+let empName = null;
 
 //날짜 포멧
 const customDateFormat = (params) => {
@@ -112,7 +117,7 @@ const modalOpen = () => {
     endOrderDate = null;
     startDedt = null;
     endDedt = null;
-    empId = null;
+    empName = null;
 }
 
 //모달 발주건을 선택하고 확인버튼 클릭
@@ -128,14 +133,14 @@ const orderRowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "order_no", headerName: "발주번호"},
+  { field: "order_no", headerName: "발주번호", hide: true, suppressToolPanel: true},
   { field: "order_code", headerName: "발주코드", hide: true, suppressToolPanel: true},
   { field: "order_name", headerName: "발주명"},
   { field: "bcnc_code", headerName:"거래처 코드", hide: true, suppressToolPanel: true },
   { field: "mtlty_name", headerName:"거래처 명"},
   { field: "order_date", headerName: "발주일", valueFormatter:customDateFormat, flex:0.8},
   { field: "dedt", headerName: "납기일", valueFormatter: customDateFormat, flex:0.8},
-  { field: "empl_no", headerName:"담당자", flex:0.5},
+  { field: "empl_name", headerName:"담당자", flex:0.5},
   { headerName : "선택",  checkboxSelection: true, flex:0.3}
 ];
 
@@ -155,20 +160,26 @@ const searchOrder = async() => {
                end_order: endOrderDate,
                start_dedt: startDedt,
                end_dedt: endDedt,
-               emp_id: parseInt(empId) 
+               emp_name: empName
                 };
     console.log("새로만든 객체: ",obj);
-    let result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
+    let result = [];
+    if(state.value == "order") {
+        result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
                             .catch(err=>console.log(err));
+    } else if(state.value == "pdf") {
+        result = await axios.post(`${ajaxUrl}/mtril/allOrderListForPDF`, obj)
+                            .catch(err=>console.log(err));
+    };
+
 
     //console.log("통신결과: ",result);
     //행 데이터 담기
     orderRowData.value = result.data;   
 };
-
 </script>
 
-<style>
+<style scoped>
 /* dimmed */
 .modal-wrap {
   position: fixed;
@@ -185,7 +196,7 @@ const searchOrder = async() => {
     top: 53%;
     left: 61%;
     transform: translate(-50%, -50%);
-    width: 60%;
+    width: 50%;
     background: #fff;
     border-radius: 10px;
     padding: 20px;
@@ -194,7 +205,8 @@ const searchOrder = async() => {
 
 .modal-btn button {
     line-height: 1.1;
-    margin: 10px 0;
+    margin: 10px 10px;
+    text-align: center;
 }
 .align-left{
     margin: 10px 0;
@@ -206,12 +218,44 @@ const searchOrder = async() => {
     margin: 10px;
     line-height: 1.1;
 }
-#search-bar {
+.search-bar {
     padding: 27px;
     padding-bottom: 0px;
     background-color: #e3e3e3;
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
+    border: 1px solid #ccc;
 }
-
+.search-bar div{
+    display: inline-block;
+    width: 420px;
+}
+.search-bar :first-child {
+    text-align: left;
+}
+.search-bar>:first-child{
+    position: relative;
+    left: -50px;
+}
+.search-bar :first-child span {
+    display: inline-block;
+    width: 100px;
+}
+.search-bar span {
+    margin: 12px 0;
+}
+.search-bar :nth-of-type(2) input {
+    margin: 5px 0;
+}
+.search-bar>:nth-of-type(2){
+    position: relative;
+    top: -41px;
+}
+input[type="date"] {
+    height: 40px; /* 높이를 명시적으로 지정 */
+    padding: 5px; /* 내부 여백 추가 */
+    box-sizing: border-box; /* 패딩 포함 크기 조정 */
+    vertical-align: middle; /* 세로 정렬 */
+    line-height: normal; /* 줄 높이 초기화 */
+}
 </style>

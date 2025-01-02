@@ -37,7 +37,10 @@ const drctlist = async (prd_code, day_str) => {
   
   let result = [];
   let model = '';
-
+  
+  if(list.length == 0 ){
+    return result;
+  }
   // 공정의 시작시간
   let begin_time = new Date(list[0].pre_begin_time);
   begin_time.setHours(0, 0, 0, 0);
@@ -148,7 +151,6 @@ const addstate = async (array) => {
   let result = {};
   // 사원 검색
   let empl = await mariaDB.query('pr_selempl', array[6]);
-  console.log(empl);
 
   //  사원이 없을 경우 2 빠져나감
   if(empl.length == 0){
@@ -313,6 +315,11 @@ const statelist = async (array) => {
   return list;
 };
 
+// 공정이동표 조회
+const shiftlist = async (array) => {
+  let list = await mariaDB.query('pr_movetable', array);
+  return list;
+};
 
 
 
@@ -335,6 +342,7 @@ module.exports = {
   finnomt,
   finyesmt,
   statelist,
+  shiftlist,
 
   
 };

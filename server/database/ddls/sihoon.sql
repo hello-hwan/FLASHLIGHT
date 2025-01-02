@@ -985,3 +985,26 @@ WHERE ps.end_time IS NOT NULL
 AND pd.procs_code LIKE CONCAT('%', ?, '%')
 AND ps.empl_no LIKE CONCAT('%', ?, '%')
 AND ps.end_time LIKE CONCAT('%', ?, '%');
+
+
+SELECT ps.procs_nm, ps.prdctn_co, ps.empl_nm, ps.end_time
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+							 LEFT JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+WHERE ps.prd_code = 'aaa-1'
+AND   pp.order_no = 'test';
+
+SELECT * FROM prdctn_plan;
+SELECT * FROM prdctn_drct;
+SELECT * FROM product_state;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, pp.order_no
+FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+WHERE pd.prdctn_code = ?;
+
+DELETE FROM product_state
+WHERE prdctn_code = 'testbyshun-11';
+COMMIT;
+
+SELECT prdlst_code, prdlst_name
+FROM repduct
+WHERE prdlst_name LIKE CONCAT('%', '케이스', '%');

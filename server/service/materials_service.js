@@ -174,7 +174,7 @@ const dlivyMt = async(dlivyInfo) => {
         //console.log(result);
         resultSum += result;
     };
-
+    
     //성공한 수의 총합과 등록하는 데이터의 개수를 비교, 같으면 성공, 다르면 실패.
     if(resultSum = dlivyInfo.length) {
         return 'success';
@@ -191,19 +191,19 @@ const reqMtOrderList = async() => {
 };
 
 //발주관리 - 발주건 검색
-const mtOrderList = async(searchInfo) => {
+const mtOrderList = async(key) => {
     //발주명, 거래처명, 주문날짜1, 2, 납기일1, 2, 사원번호
-    let infoArr = [searchInfo.order_name,
-                    searchInfo.mtlty_name,
-                    searchInfo.start_order,
-                    searchInfo.end_order,
-                    searchInfo.start_dedt,
-                    searchInfo.end_dedt,
-                    searchInfo.emp_id];
-
+    let infoArr = [ key.order_name == "" ? null : key.order_name,
+                    key.mtlty_name == "" ? null : key.mtlty_name,
+                    key.start_order == "" ? null : key.start_order,
+                    key.end_order == "" ? null : key.end_order,
+                    key.start_dedt == "" ? null : key.start_dedt,
+                    key.end_dedt == "" ? null : key.end_dedt,
+                    key.emp_name == "" ? null : key.emp_name];
+    //console.log(infoArr);
     let result = await mariaDB.query('mt_searchOrderWithKey', infoArr)
                               .catch(err=>console.log(err));
-
+    //console.log(result);
     return result;
 };
 
@@ -415,6 +415,40 @@ const dlivyList = async(key) => {
     return result;
 };
 
+const orderForm = async(key) => {
+    //거래처 정보
+    let companyInfo = await mariaDB.query('mt_orderFormCompanyInfo', key)
+                              .catch(err=>console.log(err));
+
+    //주문 정보
+    let orderInfo = await mariaDB.query('mt_orderFormMtList', key)
+                                 .catch(err=>console.log(err));
+
+    console.log(companyInfo, '회사정보');
+    console.log(orderInfo, '주문정보');
+    let newArr = [...companyInfo, orderInfo];
+    return newArr;
+};
+
+//전체 주문 목록 조회 pdf용
+const allOrderListForPDF = async(key) => {
+    console.log(key);
+    //검색조건 배열
+    let searchKeyArr = [key.order_name == "" ? null : key.order_name,
+                        key.mtlty_name == "" ? null : key.mtlty_name,
+                        key.start_order == "" ? null : key.start_order,
+                        key.end_order == "" ? null : key.end_order,
+                        key.start_dedt == "" ? null : key.start_dedt,
+                        key.end_dedt == "" ? null : key.end_dedt,
+                        key.emp_name == "" ? null : key.emp_name];
+    console.log(searchKeyArr);
+    
+    let list = await mariaDB.query('mt_selectOrderListForPDF', searchKeyArr)
+        .catch(err=>console.log(err));
+    console.log('조회 결과: ', list);
+    return list;
+};
+
 module.exports = {
     returnMt,
     orderMt,
@@ -434,5 +468,7 @@ module.exports = {
     mtLotQy,
     allOrderList,
     wrhousingList,
-    dlivyList
+    dlivyList,
+    orderForm,
+    allOrderListForPDF
 };

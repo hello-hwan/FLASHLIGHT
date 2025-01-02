@@ -196,7 +196,7 @@ export default {
       }
       let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
                         .catch(err => console.log(err));
-                        this.rowData.push(obj); //등록시 그리드에 바로적용
+                        this.rowData.push(obj); //등록시 그리드에 바로적용   
     },
 
     async saveChanges(){
