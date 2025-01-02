@@ -136,7 +136,7 @@ export default {
     }, 
     created() { 
         this.getOrderListNo();
-        this.onAddRow(); 
+        // this.onAddRow(); 
         this.colDefs = ref([ 
             { field: "prd_code", headerName:"품목코드", checkboxSelection: true, onCellClicked:() => {
                 this.modalOpen2();
@@ -210,20 +210,25 @@ export default {
         },
         customDateFormat2(params){
             return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd');
-        },/*
-        getAllRows() {
-            console.log("DOM 객체");
-            console.log(this.gridApi.getRenderedNodes()); // 배열, [0].data.prd_code로 가져옴
-            console.log("0번 데이터");
-            console.log(this.gridApi.getRenderedNodes()[0].data);
-            //console.log("0번데이터 공급가액"+this.gridApi.getRenderedNodes()[0].data.splpc);
-            console.log("DOM 객체 길이"+this.gridApi.getRenderedNodes().length);
-            for ( let i = 0; i < this.gridApi.getRenderedNodes().length; i++){
-                this.rowData[i] = this.gridApi.getRenderedNodes()[i].data;
-                console.log(this.rowData[i]);
-            }
-        },*/
+        },
+        selectOrder2 () {
+            console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
+            this.modalOpen2();
+            console.log(this.gridApi.getSelectedNodes());
+            const selectedNodes = this.gridApi.getSelectedNodes();
+            const productSelectedData = selectedNodes.map((node) => console.log("모달에서 선택한 행", node.data));
+            // console.log('모달에서 선택된 행 데이터:', productSelectedData);
+            // console.log('선택된 행 데이터' );
+            this.productName = productSelectedData[0].prdlst_name;
+            this.productCode = productSelectedData[0].prdlst_code;
+
+            //console.log(this.productName, this.productCode);
+
+            // emit("productSelectedData", productSelectedData);
+            console.log(this.rowData);
+        },
         onAddRow(){
+            this.selectOrder2();
             let newData = {
                 order_list_no: "ORDER-00-0",
                 prd_code:"C-GS21P-1001", 
@@ -290,23 +295,6 @@ export default {
                 this.searchProductName = null;
         },
         //모달 발주건을 선택하고 확인버튼 클릭
-        selectOrder2 () {
-            console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
-            this.modalOpen2();
-            console.log(this.gridApi.getSelectedNodes());
-            const selectedNodes = this.gridApi.getSelectedNodes();
-            const productSelectedData = selectedNodes.map((node) => node.data);
-            console.log('모달에서 선택된 행 데이터:', productSelectedData);
-            console.log('선택된 행 데이터' );
-            this.productName = productSelectedData[0].prdlst_name;
-            this.productCode = productSelectedData[0].prdlst_code;
-
-            console.log(this.productName, this.productCode);
-
-            // emit("productSelectedData", productSelectedData);
-            console.log(this.rowData);.
-        },
-
         async searchProduct ()  {
             //서버로 보낼 검색 데이터
             let obj = {product_code: this.searchProductCode,
