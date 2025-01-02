@@ -52,9 +52,12 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+
 //부모 컴포넌트로 데이터 보내기
 const emit = defineEmits(["productSelectedData"]);
+const props = defineProps(['info']);
 
+console.log('출력확인!!!!!!!!!!!!!!!!!!!!',props.info);
 //화면에 보이는 데이터
 let productName = null;
 let productCode = null;

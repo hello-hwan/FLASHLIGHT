@@ -3,13 +3,13 @@
         <label for="orderFormMtltyName" class="col-form-label">거래처 명</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyName" class="form-control" placeholder="ex 예담" @click="modalOpen" v-model="companyName" readonly>
+        <input type="text" id="orderFormMtltyName" class="form-control"  @click="modalOpen" v-model="companyName" readonly>
     </div>
     <div class="col-2">
         <label for="orderFormMtltyCode" class="col-form-label">거래처 코드</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyCode" class="form-control" placeholder="ex bcnc-01" @click="modalOpen" v-model="companyCode" readonly>
+        <input type="text" id="orderFormMtltyCode" class="form-control"  @click="modalOpen" v-model="companyCode" readonly>
     </div>
     
     <!-- <span>거래처 명</span>
@@ -62,9 +62,18 @@ import { ajaxUrl } from '@/utils/commons.js';
 //부모 컴포넌트로 데이터 보내기
 const emit = defineEmits(["companySelectedData"]);
 
+const props = defineProps(['info']);
+//console.log(props);
+console.log('출력확인!!!!!!!!!!!!!!!!!!!!', props.info);
+
 //화면에 보이는 데이터
 let companyName = null;
 let companyCode = null;
+
+if (props.info != null){
+    companyName = props.info.mtltyName;
+    companyCode = props.info.pCode;
+}
 
 //검색조건
 let searchCompanyCode = null;
