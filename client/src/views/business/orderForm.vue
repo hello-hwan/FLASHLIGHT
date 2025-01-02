@@ -236,25 +236,7 @@ export default {
             } else{
                 alert('제품코드가 중복됩니다.');
             }
-        },/*
-        onAddRow(){
-            let newData = {
-                order_list_no:"ORDER-00-0",
-                prd_code:'', 
-                prd_name:'', 
-                untpc: 0, 
-                order_qy: 0,
-                wrter:"김기환"
-            };
-
-            this.selectOrder2();
-            
-            newData.prd_code = this.productCode;
-            newData.prd_name = this.productName;
-            this.rowData = [...this.rowData, newData];
-            // this.rowData.push(newData);
-            console.log(this.rowData);
-        },*/
+        },
         deleteBtn(){ 
             const selectedNodes = this.gridApi.getSelectedNodes(); 
             console.log(selectedNodes);

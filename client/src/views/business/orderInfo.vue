@@ -57,6 +57,10 @@
                         <button type="button" class="btn btn-danger" @click="delOrderInfo()" style="color:white;">주문삭제</button>
                         <button type="button" class="btn btn-danger orderRowInsert" @click="deleteBtn()" style="color:white;">선택행삭제</button>
                         <button type="button" class="btn btn-success orderRowInsert" @click="onAddRow()" style="color:white;">행추가</button>
+                        <button type="button" class="btn btn-success" @click="onBtnExportDataAsCsvLotList()" style="color:white;">EXCEL 내보내기</button>
+                    </div>
+                    <div style="margin-top:10px;" v-else>
+                        <button type="button" class="btn btn-success" @click="onBtnExportDataAsCsvLotList()" style="color:white;">EXCEL 내보내기</button>
                     </div>
             </v-card-text>
           </v-card>
@@ -229,7 +233,10 @@
                     } 
                     this.rowData=result_arr; 
                 } 
-            } 
+            }, 
+            onBtnExportDataAsCsvLotList(){
+                this.gridApi.exportDataAsCsv();
+            }
         } 
     } 
 </script>
