@@ -1018,3 +1018,11 @@ AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY)
 GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
 ORDER BY pd.model_nm, pd.pre_begin_time;
 
+COMMIT;
+
+SELECT * FROM prdctn_drct;
+
+SELECT procs_code, procs_nm
+FROM procs_flowchart
+WHERE procs_nm LIKE CONCAT('%', ?, '%')
+OR procs_code LIKE CONCAT('%', ?, '%') 
