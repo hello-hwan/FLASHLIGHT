@@ -22,7 +22,7 @@ const businessRoutes = [
     },
     {
         // 주문상세
-        path: 'orderList/:order_no',
+        path: 'orderList/:order_no/:mtlty_name/:p_code',
         name: 'orderInfo',
         component: orderInfo
     }

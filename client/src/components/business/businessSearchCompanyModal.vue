@@ -62,6 +62,10 @@ import { ajaxUrl } from '@/utils/commons.js';
 //부모 컴포넌트로 데이터 보내기
 const emit = defineEmits(["companySelectedData"]);
 
+const props = defineProps(['info']);
+console.log(props);
+//console.log('출력확인!!!!!!!!!!!!!!!!!!!!', props.info);
+
 //화면에 보이는 데이터
 let companyName = null;
 let companyCode = null;
