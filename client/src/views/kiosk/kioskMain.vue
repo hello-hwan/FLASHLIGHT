@@ -34,8 +34,8 @@
     </div>
   </template>
   
-  <script setup>
-  import { ref, watch, defineProps } from "vue";
+<script setup>
+  import { ref, onBeforeMount } from "vue";
   import axios from "axios";
   import { ajaxUrl } from '@/utils/commons.js';
   import { useRouter } from 'vue-router';
@@ -82,23 +82,24 @@
     pm.value = right;
 
   };
-  getlist();
+ 
 
   const gotoNext = (code, color) => {
     if(color == '#96cff5'){
         // 작업 완료
-        toast.add({ severity: 'warn', summary: '완료된 작업', detail: '이미 완료된 작업입니다.\n다시 실행할 수 없습니다.', life: 3000 });
-        // router.push({ name : 'kioskState' , query : { code : code } });
-        
+        toast.add({ severity: 'warn', summary: '완료된 작업', detail: '이미 완료된 작업입니다.\n다시 실행할 수 없습니다.',life: 3000 });
     } else if (color == '#fcde8d'){
-        // 작업 중
-        router.push({ name : 'kioskState' , query : { code : code } });
+      // 작업 중
+      router.push({ name : 'kioskState' , query : { code : code } });
     } else {
         // 작업 시작 X
         router.push({ name : 'kioskStart' , query : { code : code } });
     }
   };
   
+  onBeforeMount(()=> {
+    getlist();
+  })
 
 </script>
 <style scoped>

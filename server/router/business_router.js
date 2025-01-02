@@ -54,5 +54,12 @@ router.post('/business/searchCompany', async(req,res)=>{
     res.send(result);
 })
 
+// 제품 검색
+router.post('/business/searchProduct', async(req,res)=>{
+    let searchProductKey = req.body;
+    let result = await businessService.searchProductModal(searchProductKey);
+    res.send(result);
+})
+
 module.exports = router;
 

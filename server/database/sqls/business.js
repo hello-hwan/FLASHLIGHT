@@ -61,13 +61,20 @@ SELECT order_no
 FROM order_requst
 `
 
+const bs_searchProduct=`
+SELECT prdlst_code, prdlst_name
+FROM repduct
+WHERE prdlst_code LIKE CONCAT('%', IFNULL(?, prdlst_code), '%')
+AND prdlst_name LIKE CONCAT('%', IFNULL(?, prdlst_name), '%')`
+
 module.exports = {
     orderRequest,
     orderRequestInsert,
     orderRequestDetail,
     orderRequestDelete,
     bs_searchCompany,
-    bs_orderArray
+    bs_orderArray,
+    bs_searchProduct
 };
 
 

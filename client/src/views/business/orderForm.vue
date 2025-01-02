@@ -20,7 +20,7 @@
                     <div class="col-auto">
                         <bfSearchCompanyModal @companySelectedData="getBFCompanyInfo"  />
                     </div> -->
-                    <bfSearchCompanyModal @companySelectedData="getBFCompanyInfo"style="margin:0px; padding: 0px;" />
+                    <bfSearchCompanyModal @companySelectedData="getBFCompanyInfo" style="margin:0px; padding: 0px;" />
                 </div>
                 <div class="row g-3 align-items-center">
                     <div class="col-2">
@@ -129,8 +129,6 @@ export default {
             colDefs2:'', 
             requst:{}, 
             companyCode: '', 
-            productName:'', 
-            productCode:'', 
             searchProductCode:'', 
             searchProductName:'', 
             modalCheck2 : false
@@ -141,6 +139,10 @@ export default {
         this.onAddRow(); 
         this.colDefs = ref([ 
             { field: "prd_code", headerName:"품목코드", checkboxSelection: true, onCellClicked:() => {
+                this.modalOpen2();
+                //this.$refs.bsProduct.modalCheck=ref(true);
+            } }, 
+            { field: "prd_name", headerName:"품목이름", onCellClicked:() => {
                 this.modalOpen2();
                 //this.$refs.bsProduct.modalCheck=ref(true);
             } }, 
@@ -163,8 +165,8 @@ export default {
                 } 
         }; 
         this.colDefs2 = [
-            { field: "bcnc_code", headerName: "발주번호"},
-            { field: "mtlty_name", headerName: "발주코드"},
+            { field: "prdlst_code", headerName: "제품코드"},
+            { field: "prdlst_name", headerName: " 제품이름"},
             { headerName : "선택",  checkboxSelection: true, flex:0.3}];
         this.GridOptions2 = {
             columnDefs: this.colDefs2,
@@ -224,7 +226,8 @@ export default {
         onAddRow(){
             let newData = {
                 order_list_no: "ORDER-00-0",
-                prd_code:"PRD-01", 
+                prd_code:"C-GS21P-1001", 
+                prd_name:"갤럭시S21플러스 가죽케이스", 
                 untpc: 0, 
                 order_qy: 0,
                 wrter:"김기환"
@@ -280,24 +283,28 @@ export default {
             this.modalCheck2 = !this.modalCheck2;
             console.log(this.modalCheck2);
                 //행 데이터 초기화
-                this.rowData.value = [];
+                this.rowData2 = [];
     
                 //검색조건 초기화
                 this.searchProductCode = null;
                 this.searchProductName = null;
         },
         //모달 발주건을 선택하고 확인버튼 클릭
-        selectOrder2 ()  {
+        selectOrder2 () {
+            console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
             this.modalOpen2();
-            console.log(this.gridApi.getRenderedNodes());
-            const selectedNodes = this.gridApi.getRenderedNodes();
+            console.log(this.gridApi.getSelectedNodes());
+            const selectedNodes = this.gridApi.getSelectedNodes();
             const productSelectedData = selectedNodes.map((node) => node.data);
             console.log('모달에서 선택된 행 데이터:', productSelectedData);
-            //this.productName = productSelectedData[0].mtlty_name;
-            //this.productCode = productSelectedData[0].bcnc_code;
+            console.log('선택된 행 데이터' );
+            this.productName = productSelectedData[0].prdlst_name;
+            this.productCode = productSelectedData[0].prdlst_code;
 
             console.log(this.productName, this.productCode);
+
             // emit("productSelectedData", productSelectedData);
+            console.log(this.rowData);.
         },
 
         async searchProduct ()  {
@@ -306,7 +313,7 @@ export default {
                     product_name: this.searchProductName
             };
             //console.log("새로만든 객체: ",obj);
-            let result = await axios.post(`${ajaxUrl}/business/searchCompany`, obj)
+            let result = await axios.post(`${ajaxUrl}/business/searchProduct`, obj)
                                     .catch(err=>console.log(err));
 
             //console.log("통신결과: ",result);

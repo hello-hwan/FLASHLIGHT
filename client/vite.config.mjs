@@ -8,7 +8,8 @@ import { defineConfig } from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig({
     optimizeDeps: {
-        noDiscovery: true
+        noDiscovery: true,
+        include: ['jspdf', 'jspdf-autotable']   //pdf autotable생성을 위함
     },
     plugins: [
         vue(),

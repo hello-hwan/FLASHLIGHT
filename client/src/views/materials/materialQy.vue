@@ -16,8 +16,10 @@
                 <AgGridVue style=" height: 516px; margin: 0 auto;"
                     :rowData="mtRowData"
                     :gridOptions="gridOptions"
-                    class="ag-theme-alpine">
+                    class="ag-theme-alpine"
+                    @grid-ready="mtListQyOnGridReady">
                 </AgGridVue>
+                <button @click="onBtnExportDataAsCsvMtList" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
             </v-card-text>
         </v-card>
 
@@ -46,6 +48,7 @@
                             <span>
                                 <button @click="removeKey"class="btn btn-secondary search-btn" >초기화</button>
                                 <button @click="searchMt"class="btn btn-primary search-btn" >조회</button>  
+                                <button @click="onBtnExportDataAsCsvLotList" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
                             </span>
                         </div>
                     </div>
@@ -142,12 +145,30 @@ const wrhousingCharger = ref(null);    //입고담당자
 const wrhDateStart = ref(null);    //입고일 시작
 const wrhDateEnd = ref(null);  //일고일 끝
 
+//자재별 총 재고 수량 테이블 api를 담을 변수
+const mtListApi = ref(null);
+
+//자재별 총 재고 수량 테이블 grid api
+const mtListQyOnGridReady = (params) => {
+    mtListApi.value = params.api;
+};
+
+//자재 총 재고 수량 테이블 엑셀 내보내기
+const onBtnExportDataAsCsvMtList = () => {
+    mtListApi.value.exportDataAsCsv();
+};
+
 //그리드 api를 담을 변수
 const lotGridApi = ref(null);
 
 //grid가 생성될때 발생한 ag grid의 api를 변수에 담음
 const onGridReady = (params) => {
     lotGridApi.value = params.api;
+};
+
+//특정 자재 로트별 수량 내보내기
+const onBtnExportDataAsCsvLotList = () => {
+    lotGridApi.value.exportDataAsCsv();
 };
 
 //모달 열림 상태 담을 변수
@@ -256,9 +277,10 @@ const removeKey = () => {
     padding: 20px;
     box-sizing: border-box;
 }
-
+.btn-primary{
+    line-height: 1;
+}
 .modal-btn button {
-    line-height: 1.1;
     margin: 10px 10px
 }
 #search-bar {
