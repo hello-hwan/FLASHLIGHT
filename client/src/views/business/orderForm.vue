@@ -304,7 +304,7 @@ export default {
             console.log(this.productName, this.productCode);
 
             // emit("productSelectedData", productSelectedData);
-            console.log(this.rowData);.
+            console.log(this.rowData);
         },
 
         async searchProduct ()  {

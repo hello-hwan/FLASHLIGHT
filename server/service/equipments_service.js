@@ -77,6 +77,11 @@ const eqp_insert = async (list) => {
     await mariaDB.query('eqp_insert', list);
 }
 
+// 등록 기기 삭제
+const eqp_delete = async (eqp_code) => {
+    await mariaDB.query('eqp_delete', eqp_code);
+}
+
 // 미가동 등록
 const not_opr_insert = async (list) => {
     await mariaDB.query('not_opr_insert', list);
@@ -108,6 +113,7 @@ module.exports = {
     not_check_list, 
     eqp_all_list, 
     eqp_insert, 
+    eqp_delete, 
     not_opr_insert, 
     not_opr_list, 
     not_opr_update
