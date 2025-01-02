@@ -82,9 +82,9 @@
                 <div id="search-bar">
                     <div class="align-left"> 
                         <span>제품 코드</span>
-                        <InputText type="text" v-model="this.searchProductCode" v-on:keyup.enter="searchProduct"> <p>{{ this.searchProductCode }}</p></InputText>
+                        <InputText type="text"  v-on:keyup.enter="searchProduct"></InputText>
                         <span>제품 명</span>
-                        <InputText type="text" v-model="this.searchProductName" v-on:keyup.enter="searchProduct"> <p>{{ this.searchProductName }}</p></InputText>
+                        <InputText type="text"  v-on:keyup.enter="searchProduct"> </InputText>
                     </div>
                     <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
                 </div>

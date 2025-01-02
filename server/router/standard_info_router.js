@@ -26,6 +26,13 @@ router.get('/bom/:bomCode', async (req, res) => {
   res.send(info);
 });
 
+// BOM 자재 리스트
+router.get('/bomMtilList', async (req, res) => {
+  let searchs = req.query;
+  let bomMtilList = await standard_info_service.bomMtilList(searchs);
+  res.send(bomMtilList);
+})
+
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
   let Insert = req.body;

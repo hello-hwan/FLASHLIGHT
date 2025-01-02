@@ -88,7 +88,7 @@
                 :columnDefs="colDefsInfo"
                 :gridOptions="gridOptions"
                 @cellClicked="onCellClicked2"
-                @grid-ready="onGridReady"
+                @grid-ready="onGridReady2"
                 class="ag-theme-alpine"
               >
               </AgGridVue>
@@ -143,6 +143,37 @@
         <button class="btn btn-secondary" @click="closeModal">닫기</button>
       </div>
     </div> -->
+
+    <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
+        <div class="modal-wrap" @click="modalOpen2" v-show="modalCheck2" >
+            <div class="modal-container" @click.stop="">
+                <div id="search-bar">
+                    <div class="align-left"> 
+                        <span>제품 코드</span>
+                        <InputText type="text" ></InputText>
+                        <span>제품 명</span>
+                        <InputText type="text" > </InputText>
+                    </div>
+                    <AgGridVue
+                style="width: 100%; height: 460px; margin: 0 auto;"
+                :rowData="rowDataInfotest"
+                :columnDefs="colDefsInfotest"
+                :gridOptions="gridOptions"
+                @cellClicked="onCellClicked3"
+                @grid-ready="onGridReady"
+                class="ag-theme-alpine"
+              >
+              </AgGridVue>
+                    <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                </div>
+    
+                <div class="modal-btn">
+                    <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
+                    
+                </div>
+            </div>
+        </div>
+    </span>
   </div>
   
 </template>
@@ -151,6 +182,7 @@
   import { AgGridVue } from "ag-grid-vue3";
   import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
   ModuleRegistry.registerModules([AllCommunityModule]);
+  import bfSearchCompanyModal from '@/components/standardInfo/ModalTest.vue';
   
   import axios from "axios";
   import { ajaxUrl } from "@/utils/commons.js";
@@ -158,6 +190,7 @@
   export default {
     data() {
       return {
+        modalCheck2 : false,
         isModalVisible: false, // 모달 표시 여부
         selectedCmpdsCode: null, // 선택된 소모품 코드 데이터
         bomList: [], // BOM 리스트
@@ -169,6 +202,10 @@
         rowDataInfo: [], // 상세보기 데이터
         colDefsInfo: [], // 상세보기 컬럼 정의
   
+        bomInfoList: [],
+        rowDataInfotest: [],
+        colDefsInfotest: [],
+
         gridOptionsReturn: {}, // AgGrid 옵션
   
         searchCode: "", // 검색 입력값
@@ -176,7 +213,8 @@
         prdlstName: this.prdist_name, 
         productionQty: "",
         remarks: "", 
-        rowCount: 0
+        rowCount: 0,
+        trueRowCount: 0,
       };
     },
     created() {
@@ -195,13 +233,23 @@
       this.colDefsInfo = [
         { field: "cmpds_prdlst_code", headerName: "소모품목코드", editable: (params) => params.node.data.isNewRow },
         { field: "cmpds_prdlst_name", headerName: "소모품명", editable: (params) => params.node.data.isNewRow },
-        { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.isNewRow },
-        { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.isNewRow },
-        { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.isNewRow },
+        { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.stndrd_x == null },
+        { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
+        { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
         { field: "unit", headerName: "단위", editable: (params) => params.node.data.isNewRow },
         { field: "cnsum_count", headerName: "소모량", editable: true }, // 항상 수정 가능        
       ];
-  
+      
+      // 모달 컬럼저의
+      this.colDefsInfotest = [
+        { field: "mtril_code", headerName: "자재코드" },
+        { field: "mtril_name", headerName: "자재명" },
+        { field: "unit", headerName: "단위" },
+        { field: "untpc", headerName: "입고단가" },
+        { field: "sfinvc", headerName: "안전재고" },
+        { field: "선택", headerName: "선택", cellRenderer:() => '선택'}
+      ];
+    
       // AgGrid 기본 옵션 설정
       this.gridOptionsReturn = {
         pagination: true,
@@ -225,7 +273,24 @@
       rowSelection: "single", 
     }; 
     },
+    components: {
+      AgGridVue,
+      bfSearchCompanyModal
+    },
     methods: {
+      async modalOpen2 () {
+            this.modalCheck2 = !this.modalCheck2;
+            let result = await axios.get(`${ajaxUrl}/bomMtilList`)
+                              .catch(err => console.log(err));
+            this.bomInfoList = result.data
+                              this.rowDataInfotest = this.bomInfoList
+                // //행 데이터 초기화
+                // this.rowData2 = [];
+    
+                // //검색조건 초기화
+                // this.searchProductCode = null;
+                // this.searchProductName = null;
+        },
 
       //  // 모달 열기
       // openModal(cmpdsCode) {
@@ -274,6 +339,7 @@
           this.productionQty = result.data[0].prdctn_qy;
           this.rowData = result.data;
           this.rowCount = this.rowData.length;
+          this.trueRowCount = this.rowData.length;
         }
       },
 
@@ -305,13 +371,14 @@
         };
         this.rowDataInfo = [...this.rowDataInfo, newRow];
         // 데이터 반영을 위해 Vue 데이터 갱신
+        console.log('행추가시 길이',this.rowDataInfo.length);
         if (this.gridOptions.api) {
           this.gridOptions.api.setRowData(this.rowDataInfo);
         }
       },
       deleteRow() {
         const selectedNodes = this.gridOptions.api.getSelectedNodes();
-
+        console.log(selectedNodes);
         if (selectedNodes.length === 0) {
           alert("삭제할 행을 선택하세요.");
           return;
@@ -372,22 +439,99 @@
                                         .catch(err => console.log(err));
         }
       },
-      // onCellClicked2(event) {
-      //   if (event.colDef.field === "cmpds_prdlst_code") {
-      //     this.openModal(event.data.cmpds_prdlst_code); // 소모품 코드 클릭 시 모달 열기
-      //   }
-      // },
+      onCellClicked2(event) {
+        if (event.colDef.field === "cmpds_prdlst_code") {
+          this.modalOpen2(); // 소모품 코드 클릭 시 모달 열기
+        }
+      },
+
+      onCellClicked3(event){
+        console.log('event',event);
+        console.log('test',event.rowIndex);
+        console.log('rowDataInfo',this.rowDataInfo);
+        console.log('rowDataInfo length', this.rowDataInfo.length);
+        if(event.colDef.field === "선택"){
+          let obj = {
+            cmpds_prdlst_code:  event.data.mtril_code,
+            cmpds_prdlst_name:  event.data.mtril_name,
+            unit: event.data.unit
+          }
+          this.rowDataInfo.splice(event.rowIndex,this.rowDataInfo.length,obj);
+          // 값이 들어간 행 변경 방지
+          // if(this.rowDataInfo.length > this.rowCount){   
+          //   if(this.rowDataInfo.length == this.trueRowCount + 1 ){
+          //     this.rowDataInfo.pop();
+          //     this.rowDataInfo.push(obj);
+          //     this.rowCount = this.rowDataInfo.length; 
+          //   }else{
+          //     this.rowDataInfo.splice(this.trueRowCount + 1 , 0, obj);
+          //     this.trueRowCount + 1;
+          //   }     
+            
+          // }
+        }
+      },
+
       onGridReady(params) {
         this.gridOptions.api = params.api;
         this.gridOptions.columnApi = params.columnApi;
       },
+      onGridReady2(params) {
+        this.gridOptions.api = params.api;
+        this.gridOptions.columnApi = params.columnApi;
+      },
     },
-    components: {
-      AgGridVue,
-    },
+    
   };
 </script> 
 <style>
+.modal-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 3;
+}
+/* modal or popup */
+.modal-container {
+    position: relative;
+    top: 53%;
+    left: 61%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-btn button {
+    line-height: 1.1;
+    margin: 10px 0;
+}
+.align-left{
+    margin: 10px 0;
+}
+.align-left>span {
+    margin-left: 20px;
+}
+.search-btn {
+    margin: 10px;
+    line-height: 1.1;
+}
+#search-bar {
+    padding: 27px;
+    padding-bottom: 0px;
+    background-color: #e3e3e3;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+.orderRowInsert{
+     float: right;
+}
+
 /* 모달 스타일 */
 /* .modal-overlay {
   position: fixed;

@@ -59,6 +59,15 @@ const bom_cmpdsUpdate =
 SET ?
 WHERE cmpds_no = ?`;
 
+// BOM 자재 리스트
+const bomMtilList = 
+`SELECT mtril_code
+       ,mtril_name
+       ,unit
+       ,untpc
+       ,sfinvc
+FROM mtril`;
+
 // BOM소모품 삭제
 const bom_cmpdsDel = 
 `DELETE from
@@ -312,7 +321,8 @@ module.exports = {
   bomInsert,
   bomManage, 
   bom_cmpdsUpdate,
-  bom_cmpdsDel, 
+  bom_cmpdsDel,
+  bomMtilList,
   mtril,
   mtrilAdd,
   mtrilDelete,

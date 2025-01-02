@@ -19,6 +19,12 @@ const bomInfo = async (bomCode) => {
   return list;
 }
 
+// BOM 자재 리스트
+const bomMtilList = async () => {
+  let list = await mariaDB.query('bomMtilList');
+  return list;
+}
+
 // BOM 등록  
 const bomInsert = async (bomInfo) => {
   let result = await mariaDB.query('bomInsert', bomInfo);
@@ -240,6 +246,7 @@ module.exports = {
   bomInsert,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
+  bomMtilList, 
   mtril,
   mtrilAdd,
   mtrilDelete,

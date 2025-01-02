@@ -49,7 +49,7 @@
                   <label for="itemCode" class="col-form-label">자재코드</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilCodeAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="mtrilCodeAdd"  value = "M-"/>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">자재명</label>
@@ -114,6 +114,9 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
+// import { useToast } from 'primevue/usetoast';
+
+// const toast = useToast();
 
 export default {
   data() {
@@ -144,7 +147,6 @@ export default {
   },
   created() {
     this.getmtrilList();
-
     this.colDefs = [
       { field: "mtril_code", headerName: "자재코드" },
       { field: "mtril_name", headerName: "자재명" },
@@ -168,7 +170,6 @@ export default {
     };
   },
   methods: {
-
     // 셀 값 변경 이벤트 핸들러
     onCellValueChanged(params) {
       // params는 변경된 셀 정보를 담고 있음
@@ -194,9 +195,23 @@ export default {
         unit: this.unitAdd,
         sfinvc: this.sfinvcAdd
       }
-      let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
-                        .catch(err => console.log(err));
-                        this.rowData.push(obj); //등록시 그리드에 바로적용   
+      if(!this.mtrilCodeAdd){
+        alert('자재코드를 입력하세요')
+      }else if(!this.mtrilNameAdd){
+        alert('자재명을 입력하세요');
+      }else if(!this.unitAdd){
+        alert('단위를 입력하세요');
+      }else if(!this.sfinvcAdd){
+        alert('안전재고를 입력하세요')
+      }else{ 
+        let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
+                          .catch(err => console.log(err));
+                          this.rowData.push(obj); //등록시 그리드에 바로적용   
+        if(result){
+          alert('등록완료');
+        }
+      }
+
     },
 
     async saveChanges(){
