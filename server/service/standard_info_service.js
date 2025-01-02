@@ -69,7 +69,13 @@ const qiList = async (prd_code) => {
   let list = await mariaDB.query('qiList',prd_code);  
   return list;
 }
- 
+
+//품질검사항목관리 모달창
+const qiListModal = async (prd_code) => {
+let list = await mariaDB.query('qiListModal',prd_code) 
+                        .catch(err=>console.log(err));                     
+return list;
+}
 // 공정 흐름도 조회
 const procsFlowchartList = async () => {
     let list = await mariaDB.query('procsFlowchartList'); 
@@ -151,6 +157,7 @@ module.exports = {
   bom_cmpdsDel,
   mtril,
   qiList,
+  qiListModal,
   procsFlowchartList, 
   procsFlowchartDetail, 
   procsFlowchartDetailTop, 

@@ -72,6 +72,16 @@ const qiList =
         ,inspec_standard
 FROM inspection_detail 
 WHERE prd_code=?`; 
+
+// 품질검사항목관리 모달창
+const qiListModal=
+`SELECT prd_code
+       ,mtril_name
+       ,mtlty_name
+       ,empl_no
+FROM inspection_check
+WHERE prd_code LIKE CONCAT('%', ?, '%')`;
+
  
 // 공정 흐름도 조회
 const procsFlowchartList = 
@@ -191,6 +201,7 @@ module.exports = {
   bom_cmpdsDel,
   mtril,
   qiList,
+  qiListModal,
   procsFlowchartList, 
   procsFlowchartDetail, 
   procsFlowchartDetailTop, 

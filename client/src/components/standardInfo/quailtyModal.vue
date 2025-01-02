@@ -6,31 +6,17 @@
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
-            <div id="search-bar">
-                <div class="align-left">                
-                    <span>발주명</span>
-                    <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrder">> <p>{{ orderName }}</p></InputText>
-                    <span>발주일</span>
-                    <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
-                    <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
-    
-                </div>
-                <div class="align-left">
-                    <span>거래처명</span>
-                    <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText>
-                    <span>납기일</span>
-                    <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
-                    <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
-                </div>
+            <div id="search-bar">              
+               
                 <div>
-                    <span>사원번호</span>
-                    <InputText type="text" v-model="empId" v-on:keyup.enter="searchOrder"> <p>{{ empId }}</p></InputText>
+                    <span>품목코드</span>
+                    <InputText type="text" v-model="prd_code" v-on:keyup.enter="searchOrder"> <p>{{ prd_code }}</p></InputText>
                 </div>
                 <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
             </div>
             
             <AgGridVue 
-                :rowData="orderRowData"
+                :rowData="rowData"
                 :gridOptions="GridOptions"
                 class="ag-theme-alpine"
                 style="height: 500px"
@@ -58,30 +44,12 @@ import { ajaxUrl } from '@/utils/commons.js';
 
 
 //부모 행 삭제를 위해서 사용하는 emit
-const emit = defineEmits(["selectedData"]);
+const emit = defineEmits(["quailtyselectedData"]);
 
 //검색조건
-let orderName = null;
-let company = null;
-let startOrderDate = null;
-let endOrderDate = null;
-let startDedt = null;
-let endDedt = null;
-let empId = null;
+let prd_code = null;
 
-//날짜 포멧
-const customDateFormat = (params) => {
-    if (!params.value) {
-        return "";
-    }
-    if(typeof(params.value) != Date) {
-        params.value = new Date(params.value);
-    }
-    const month = params.value.getMonth() + 1;
-    const day = params.value.getDate();
-    return `${params.value.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
-};
-
+//그리드 api를 담을 변수
 const gridApi = ref(null);
 
 //grid가 생성될때 발생한 ag grid의 api를 변수에 담음
@@ -103,40 +71,33 @@ const modalOpen = () => {
         html.style.overflow = 'auto';
     };
     //행 데이터 초기화
-    orderRowData.value = [];
+    rowData.value = [];
     
     //검색조건 초기화
-    orderName = null;
-    company = null;
-    startOrderDate = null;
-    endOrderDate = null;
-    startDedt = null;
-    endDedt = null;
-    empId = null;
+    prd_code = null;  
 }
 
 //모달 발주건을 선택하고 확인버튼 클릭
 const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    console.log('선택된 행 데이터:', selectedData);
-    emit("selectedData", selectedData);
+    const quailtyselectedData = selectedNodes.map((node) => node.data);
+
+    console.log('선택된 행 데이터:', quailtyselectedData);
+    emit("quailtyselectedData", selectedData);
 };
 //행 데이터를 담을 변수
-const orderRowData = ref([]);
+const rowData = ref([]);
 
-//열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
+
 const ColDefs = [
-  { field: "order_no", headerName: "발주번호"},
-  { field: "order_code", headerName: "발주코드", hide: true, suppressToolPanel: true},
-  { field: "order_name", headerName: "발주명"},
-  { field: "bcnc_code", headerName:"거래처 코드", hide: true, suppressToolPanel: true },
-  { field: "mtlty_name", headerName:"거래처 명"},
-  { field: "order_date", headerName: "발주일", valueFormatter:customDateFormat, flex:0.8},
-  { field: "dedt", headerName: "납기일", valueFormatter: customDateFormat, flex:0.8},
-  { field: "empl_no", headerName:"담당자", flex:0.5},
-  { headerName : "선택",  checkboxSelection: true, flex:0.3}
+ 
+  { field: "prd_code", headerName: "품목코드"},  
+  { field: "mtril_name", headerName: "자재명"}, 
+  { field: "mtlty_name", headerName:"거래처명"},
+  { field: "empl_no", headerName:"사원번호"},
+ {headerName : "선택",  checkboxSelection: true, flex:0.3}
+ 
 ];
 
 const GridOptions = {
@@ -149,21 +110,13 @@ const GridOptions = {
 
 const searchOrder = async() => {
     //서버로 보낼 검색 데이터
-    let obj = {order_name: orderName, 
-               mtlty_name: company,
-               start_order: startOrderDate,
-               end_order: endOrderDate,
-               start_dedt: startDedt,
-               end_dedt: endDedt,
-               emp_id: parseInt(empId) 
-                };
-    console.log("새로만든 객체: ",obj);
-    let result = await axios.post(`${ajaxUrl}/mtril/orderList`, obj)
+    let result = await axios.get(`${ajaxUrl}/standardInfo/qiListModal`)
                             .catch(err=>console.log(err));
+   
 
     //console.log("통신결과: ",result);
     //행 데이터 담기
-    orderRowData.value = result.data;   
+    rowData.value = result.data;   
 };
 
 </script>

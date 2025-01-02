@@ -8,7 +8,15 @@
                 </tr>
             </thead>
         </table>  
+        
     <div class="container">
+        <v-container fluid>
+             <v-row>
+                <!-- 검색 필드 -->
+                    <v-col cols="12">
+                        <v-card class="mx-auto" style="border-radius: 13px;">
+                             <v-card-text class="bg-surface-light pt-4">
+
             <div class="row g-3 align-items-center">
                 <div class="col-1">
                     <label for="inputPassword6" class="col-form-label">발주번호</label>
@@ -19,28 +27,28 @@
                 <div class="col-auto">
                     <span class="form-text">
                         <search-modal @selectedData="getOrderDetails"/>        
-                    </span>
-                    
+                    </span>                    
                 </div>         
             </div>
+
             <div class="row g-3 align-items-center">
                 <div class="col-1">
                     <label for="inputPassword6" class="col-form-label">자재코드</label>
                 </div>
                 <div class="col-auto">
                     <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="mtr_code">
-                </div>
-              
+                </div>              
             </div>
+
             <div class="row g-3 align-items-center">
                 <div class="col-1">
                     <label for="inputPassword6" class="col-form-label">자재명</label>
                 </div>
                 <div class="col-auto">
                     <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="mtr_name">
-                </div>
-               
+                </div>               
             </div>
+
             <div class="row g-3 align-items-center">
                 <div class="col-1">
                     <label for="inputPassword6" class="col-form-label">거래처코드</label>
@@ -56,20 +64,17 @@
                 </div>
                 <div class="col-auto">
                     <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="bc_name">
-                </div>
-               
+                </div>               
             </div>
+
             <div class="row g-3 align-items-center">
                 <div class="col-1">
                     <label for="inputPassword6" class="col-form-label">발주량</label>
                 </div>
                 <div class="col-auto">
                     <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="ord_num">
-                </div>
-                
-            </div>      
-
-                 
+                </div>                
+            </div>                     
 
             <div class="row g-3 align-items-center">
                 <div class="col-1">
@@ -87,27 +92,29 @@
                 <div class="col-auto">
                     <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="pass_num">
                 </div>           
-            </div>       
-            
-            
-    </div>
-   
-   
-    
+           </div>          
     
     <div style="margin-top: 30px">
-        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
-                @grid-ready="onGridReady" class="ag-theme-alpine">
-            </ag-grid-vue>
-    </div>
+        <ag-grid-vue :rowData="rowData" 
+             :columnDefs="colDefs" 
+            :gridOptions="gridOptions" style="height: 500px"
+             @grid-ready="onGridReady" class="ag-theme-alpine">
+        </ag-grid-vue>            
+    </div>        
+
+                 </v-card-text>
+            </v-card>
+        </v-col>
+    </v-row>
+</v-container>
+</div>
     
     <div style="margin-top: 30px">    
         <button type="button" class="btn btn-primary" @click="quailtyInsert()">등록</button>
         <button type="button" class="btn btn-warning" @click="onInit">초기화</button>    
     </div>
+
     
-    
-      
     </template>
     
     <script>
@@ -115,8 +122,7 @@
     import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
     import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
     import SearchModal from '@/components/materials/orderControlModal.vue';
-    ModuleRegistry.registerModules([AllCommunityModule]);
-    
+    ModuleRegistry.registerModules([AllCommunityModule]);    
     import axios from 'axios';
     import { ajaxUrl } from '@/utils/commons.js';
     
@@ -203,8 +209,7 @@
                     this.empl_no,//사원번호
                     this.pass_num,//합격량                   
                     this.mt_no, //발주번호
-                    this.bc_code//거래처코드
-                                                      
+                    this.bc_code//거래처코드                                                      
                 ];
                 
                 let obj = {
@@ -224,7 +229,7 @@
                 this.mt_no = info[0].order_no;
                 this.getmt_no();
             },
-            onInit(){ 
+            onInit(){ //초기화기능
                 this.mt_no= "", // 발주번호
                 this.mtr_code="", //자재코드
                 this.mtr_name="", //자재명
