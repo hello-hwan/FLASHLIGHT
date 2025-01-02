@@ -138,14 +138,14 @@ export default {
         this.getOrderListNo();
         // this.onAddRow(); 
         this.colDefs = ref([ 
-            { field: "prd_code", headerName:"품목코드", checkboxSelection: true, onCellClicked:() => {
+            { field: "prd_code", headerName:"품목코드", checkboxSelection: true /*, onCellClicked:() => {
                 this.modalOpen2();
                 //this.$refs.bsProduct.modalCheck=ref(true);
-            } }, 
-            { field: "prd_name", headerName:"품목이름", onCellClicked:() => {
+            } */}, 
+            { field: "prd_name", headerName:"품목이름" /*, onCellClicked:() => {
                 this.modalOpen2();
                 //this.$refs.bsProduct.modalCheck=ref(true);
-            } }, 
+            } */}, 
             { field: "untpc", headerName:"주문단가", editable: true }, 
             { field: "order_qy", headerName:"주문수량", editable: true }, 
             { field: "wrter", headerName:"작성자", editable: true } 
@@ -216,23 +216,24 @@ export default {
             this.modalOpen2();
             console.log(this.gridApi.getSelectedNodes());
             const selectedNodes = this.gridApi.getSelectedNodes();
-            const productSelectedData = selectedNodes.map((node) => console.log("모달에서 선택한 행", node.data));
+            const productSelectedData = selectedNodes.map((node) => node.data);
             // console.log('모달에서 선택된 행 데이터:', productSelectedData);
             // console.log('선택된 행 데이터' );
-            this.productName = productSelectedData[0].prdlst_name;
-            this.productCode = productSelectedData[0].prdlst_code;
+            this.productName = productSelectedData.prdlst_name;
+            this.productCode = productSelectedData.prdlst_code;
 
             //console.log(this.productName, this.productCode);
 
             // emit("productSelectedData", productSelectedData);
             console.log(this.rowData);
         },
-        onAddRow(){
-            this.selectOrder2();
+        async onAddRow(){
+            await this.selectOrder2();
+
             let newData = {
                 order_list_no: "ORDER-00-0",
-                prd_code:"C-GS21P-1001", 
-                prd_name:"갤럭시S21플러스 가죽케이스", 
+                prd_code:this.productCode, 
+                prd_name:this.productName, 
                 untpc: 0, 
                 order_qy: 0,
                 wrter:"김기환"
