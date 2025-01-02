@@ -103,8 +103,8 @@ const modalOpen = () => {
 /* modal or popup */
 .modal-container {
   position: relative;
-  top: 53%;
-  left: 61%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   width: 80%;
   background: #fff;

@@ -1008,3 +1008,13 @@ COMMIT;
 SELECT prdlst_code, prdlst_name
 FROM repduct
 WHERE prdlst_name LIKE CONCAT('%', '케이스', '%');
+
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, pd.prd_nm, ps.prdctn_co, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn, tr.prd_code AS matril_code, tr.prd_nm AS matril_nm, tr.req_qy
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+							 JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
+WHERE ps.prd_code LIKE CONCAT('%', ?, '%')
+AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY) )
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time;
+

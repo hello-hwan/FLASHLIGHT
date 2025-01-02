@@ -50,6 +50,18 @@ GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
 ORDER BY pd.model_nm, pd.pre_begin_time
 `;
 
+const pr_selstate = // 공정 현황 - 당일 기준 검색
+`
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, pd.prd_nm, ps.prdctn_co, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn, tr.prd_code AS matril_code, tr.prd_nm AS matril_nm, tr.req_qy
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+							 JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
+WHERE ps.prd_code LIKE CONCAT('%', ?, '%')
+AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY) )
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time
+`;
+
 const pr_selcmmn = // 공통코드 목록 조회
 `
 SELECT cmmn_name
@@ -61,7 +73,8 @@ const pr_srcprd = // 제품명으로 조회시 코드랑 완전한 이름 뜨기
 `
 SELECT prdlst_code, prdlst_name
 FROM repduct
-WHERE prdlst_name LIKE CONCAT('%', ?, '%') 
+WHERE prdlst_name LIKE CONCAT('%', ?, '%')
+OR prdlst_code LIKE CONCAT('%', ? ,'%') 
 `;
 
 const pr_onedrct = // 생산지시 코드로 단건 조회
@@ -155,7 +168,14 @@ AND   pp.order_no = ?
 ORDER BY 4;
 `;
 
-
+const pr_selprocs = // 공정명이나 코드로 공정 코드 검색
+`
+SELECT procs_code, procs_nm, prd_nm, procs_ordr_no
+FROM procs_flowchart
+WHERE procs_nm LIKE CONCAT('%', ?, '%')
+OR procs_code LIKE CONCAT('%', ?, '%')
+OR prd_nm LIKE CONCAT('%', ?, '%')
+`;
 
 
 
@@ -242,6 +262,8 @@ module.exports = {
   pr_upprdn,
   pr_statelist,
   pr_movetable,
+  pr_selstate,
+  pr_selprocs,
 
 
 
