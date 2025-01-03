@@ -14,17 +14,17 @@
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
-        <button type="button" class="btn btn-primary" style="color: white; margin: 10px; padding: 2px;" @click="add_eqp_btn()">기기 추가
+        <button type="button" class="btn btn-primary" style="color: white; margin: 10px; padding: 2px; width: 150px;" @click="add_eqp_btn()">기기 추가
             등록</button>
-        <button type="button" class="btn btn-danger" style="color: white; margin: 10px; padding: 2px;" @click="delete_eqp_btn()">등록 기기
+        <button type="button" class="btn btn-danger" style="color: white; margin: 10px; padding: 2px; width: 150px;" @click="delete_eqp_btn()">등록 기기
             삭제</button>
     </div>
-    <div style="height: 60px; background-color: lightgray; margin-left: auto;" v-show="delete_div">
-        <p>아래에 설비코드를 입력하고 버튼을 누르면 삭제합니다.</p>
+    <div style="height: auto; background-color: lightgray; width: 50%;" v-show="delete_div">
+        <p style="margin: 2px; padding: 2px;">아래에 설비코드를 입력하고 버튼을 누르면 삭제합니다.</p>
         <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="delete_eqp_code" size="9">
-        <button type="button" class="btn btn-primary" style="color: white; margin: 2px;"
+        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;"
             @click="delete_cansle_button()">취소</button>
-        <button type="button" class="btn btn-danger" style="color: white; margin: 2px;"
+        <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;"
             @click="real_delete_btn()">삭제</button>
     </div>
     <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
@@ -135,8 +135,8 @@
                 </div>
 
                 <div class="modal-btn">
-                    <button @click="modal_close_btn()" class="btn btn-secondary" style="margin: 5px;">닫기</button>
-                    <button @click="modal_submit_btn()" class="btn btn-primary" style="margin: 5px;">등록</button>
+                    <button @click="modal_close_btn()" class="btn btn-secondary" style="margin: 5px; padding: 2px; width: 75px;">닫기</button>
+                    <button @click="modal_submit_btn()" class="btn btn-primary" style="margin: 5px; padding: 2px; width: 75px;">등록</button>
                 </div>
             </div>
         </div>
@@ -154,6 +154,7 @@ import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 
 import { useToast } from 'primevue/usetoast';
+import { useStore } from 'vuex';
 
 export default {
     name: 'App',
@@ -175,7 +176,8 @@ export default {
             modal_on_off: false,
             delete_div: false,
             delete_eqp_code: '', 
-            toast: ''
+            toast: '', 
+            store: ''
         };
     },
     created() {
@@ -207,6 +209,8 @@ export default {
         this.regsde = useDateUtils.dateFormat(now, "yyyy-MM-dd");
         this.mnfctur_de = useDateUtils.dateFormat(now, "yyyy-MM-dd");
         this.toast = useToast();
+        this.store = useStore();
+        this.charger = this.store.state.empInfo[this.store.state.empInfo.length-1].name;
     },
     components: {
         AgGridVue // Add Vue Data Grid component

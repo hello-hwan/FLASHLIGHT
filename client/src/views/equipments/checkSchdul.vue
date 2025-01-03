@@ -9,9 +9,9 @@
         </thead>
     </table>
     <div style="width: 49%; display: inline-block;">
-        <button type="button" class="btn btn-primary" style="color: white;" @click="now_btn()">현재
+        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="now_btn()">현재
         </button>
-        <button type="button" class="btn btn-primary" style="color: white;" @click="all_btn()">전체
+        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="all_btn()">전체
         </button>
         <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
             @grid-ready="onGridReady" class="ag-theme-alpine">
