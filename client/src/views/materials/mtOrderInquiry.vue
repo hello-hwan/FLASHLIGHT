@@ -42,8 +42,8 @@
                     </div>       
                 </div>
                 <div style="text-align: center; width: 100%;">
+                    <button @click="resetSearchKey" class="btn btn-secondary search -btn" style="line-height:1;">초기화</button>
                     <button @click="searchOrderList" class="btn btn-primary search-btn" >조회</button>
-                    <button @click="resetSearchKey" class="btn btn-secondary search-btn" >초기화</button>
                 </div>
             </div>
         </v-card-text>
