@@ -112,7 +112,7 @@
     import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue';
     ModuleRegistry.registerModules([AllCommunityModule]);
     
-
+    import { useToast } from 'primevue/usetoast';
 
     import axios from 'axios';
     import { ajaxUrl } from '@/utils/commons.js';
@@ -139,7 +139,8 @@
                 searchProductCode:'',
                 searchProductName:'',
                 modalCheck2:false,
-                index:0
+                index:0,
+                toast : useToast()
             }; 
         }, 
         created() { 
@@ -252,10 +253,10 @@
                     this.rowData = [...this.rowData, newData];
                     console.log(this.rowData);
                 } else {
-                    alert('제품코드가 중복됩니다.');
+                    this.toast.add({ severity: 'warn', summary: '실패', detail: '제품코드가 중복입니다.', life: 3000 });
                 }
             } else {
-                alert('제품이 선택되지 않았습니다.');
+                this.toast.add({ severity: 'warn', summary: '실패', detail: '제품이 선택되지 않았습니다.', life: 3000 });
             }
         },
             async orderListReplace() { 
@@ -266,12 +267,8 @@
                     console.log(orderRegister); 
                     let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
                                                  .catch(err=>console.log(err)); 
-                    console.log("결과는"); 
-                    console.log(result); 
-                    let addRes = result.data; 
-                    if(addRes.result){ 
-                        alert(`수정되었습니다.`); 
-                    } 
+                    console.log("결과는", result); 
+                    this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
                 } 
             }, 
             async delOrderInfo(){
@@ -307,6 +304,7 @@
                         result_arr = [...result_arr,this.rowData[j]]; 
                     } 
                     this.rowData=result_arr; 
+                    this.toast.add({ severity: 'success', summary: '삭제', detail: '삭제성공', life: 3000 });
                 } 
             }, 
             onBtnExportDataAsCsvLotList(){
@@ -388,7 +386,7 @@
 .orderRowInsert{
      float: right;
 }
-input[type="date"] {
+input/*[type="date"]*/ {
     width: 220px;
 }
 
