@@ -30,23 +30,16 @@
                 </div>
                 <div class="col-auto">
                   <input type="text" id="drct_prd_code" class="form-control" aria-describedby="passwordHelpInline" placeholder="제품명 입력시 검색 가능" v-model="prd" @keydown="getprdlist()">
+                  <!-- 검색값 있을 시 표시 -->
+                  <div class="search-prd-box">
+                    <select name="prd" id="prd_box" v-model="prd">
+                      <option selected :value="prd" hidden>제품을 선택해주세요</option>
+                      <!-- <option v-for="prdst in prdlist.filter((c) => c.prdlst_code == '')" :value="prd" selected hidden>{{ prdst.prdlst_name }}</option> -->
+                      <option v-for="prdst in prdlist" :value="prdst.prdlst_code">{{ prdst.prdlst_name }}</option>
+                    </select>
+                  </div>
                 </div>
-
-                <!-- 검색 목록 있을시 표시 -->
-                <!-- <div v-if="prdlist.length > 0">
-                  <datalist>
-                    <option v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</option>
-                  </datalist>
-                </div>
-                -->
-
-                <!-- 검색값 있을 시 표시 -->
-                <div v-if="prd" class="search-prd-box">
-                  <ul>
-                    <li v-for="prdst in prdlist" :key="prdst.prdlst_code" @click="getprdcode(prdst.prdlst_code)">{{ prdst.prdlst_code + ', ' + prdst.prdlst_name }}</li>
-                  </ul>
-                </div>
-
+                
               </div>
               <div style="margin-top:10px;">
                 <button type="button" class="btn btn-success" style="color:white;" @click="getlist">조회</button>
@@ -114,19 +107,19 @@
     </v-card-text>
 
       <!-- 검색없을시 표시창 생산 불가능 제품 및 자재 목록 -->
-      <ImpossibleProduction v-if="!issrc"/>
+      <ImpossibleProduction v-show="!issrc"/>
 
       <!-- 검색 없을시 표시창 자체 생산 지시 추가 -->
-      <SelfProduction v-if="!issrc"/>
+      <SelfProduction v-show="!issrc"/>
 
       <!-- 검색 있을시 표시창 공정실적조회 -->
-      <StateList v-if="issrc"/>
+      <StateList v-show="issrc" :date="day" :code="prd"/>
 
     </div>
 </template>
 
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onBeforeMount } from 'vue';
   import axios from 'axios';
   import { ajaxUrl } from '@/utils/commons.js';
   import useDates from '@/utils/useDates';
@@ -200,11 +193,14 @@
     drctlist.value = colorlist;
 
   };
-  // 생산일정 불러올 함수 실행
-  getdrct(prd.value, day.value);
+  onBeforeMount(() => {
+    // 생산일정 불러올 함수 실행
+    getdrct(prd.value, day.value);
+    getprdlist();
+  })
 
   // 검색을 했는지 안했는지 담을 변수
-  let issrc = false;
+  let issrc = ref(false);
 
   // 제품 키워드로 검색 내용 담을 변수
   const prdlist = ref([]);
@@ -213,11 +209,9 @@
   const getprdlist = async () => {
     let result = await axios.get(`${ajaxUrl}/prod/prdlist`, { params : { "name" : prd.value } })
                             .catch(err => console.log(err));
-    console.log(result);
-    if(result != undefined){
-      prdlist.value = result.data;
-    }
+    prdlist.value = result.data;
   };
+  
 
   // 검색 클릭시 실행할 함수
   const getprdcode = (code) => {
@@ -227,22 +221,23 @@
 
   // 공정현황 조회 버튼 클릭시 실행할 함수
   const getanotherlist = async (prd_code, day_str) => {
-    issrc = true;
-    console.log(issrc);
+    issrc.value = true;
     getdrct(prd_code, day_str);
   };
 
   // 초기화 버튼 클릭 함수
   const resetvalue = () => {
-    issrc = false;
+    issrc.value = false;
     prd.value = '';
     day.value = useDates.dateFormat(new Date(), 'yyyy-MM-dd');
     getdrct(prd.value, day.value);
+    getprdlist();
   };
 
   // 단순 조회 버튼 클릭 함수
   const getlist = () => {
     getdrct(prd.value, day.value);
+    issrc.value = false;
   };
 
 </script>
@@ -256,19 +251,19 @@
   .table-plan {
     border: 2px, solid, black !important;
     border-radius: 30px !important;
+    background-color: white;
   }
-  .search-prd-box ul{
+  .search-prd-box {
     position: relative;
+    z-index: 1;
   }
-  .search-prd-box ul {
-    position: li;
-    top: 100%;
-    right: 0;
-    width: 45%;
+  .search-prd-box select {
+    position: absolute;
+    top: -38px;
+    left: 101%;
+    background-color: white;
+    height: 38px;
+    width: 220px;
+    border-radius: 8px;
   }
-  .search-prd-box li {
-    background-color: white !important;
-    border: 1px, solid, rgb(179, 179, 179);
-  }
-
 </style>

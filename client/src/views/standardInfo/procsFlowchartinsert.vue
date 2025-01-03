@@ -25,7 +25,8 @@
                         총 소요시간
                     </th>
                     <th style="width: 25%;">
-                        <button type="button" class="btn btn-primary" style="color: white;"
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
                             @click="submit_btn()">저장</button>
                     </th>
                 </tr>
@@ -62,11 +63,13 @@
                     <th style="width: 65%;">
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-primary" style="color: white;" @click="add_btn()">행
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행
                             추가</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-danger" style="color: white;" @click="delete_btn()">행
+                        <button type="button" class="btn btn-danger"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행
                             삭제</button>
                     </th>
                 </tr>
@@ -277,7 +280,7 @@ export default {
         },
         async input_click() {
             let result = await axios.get(`${ajaxUrl}/prd_code_bom_all_search`)
-                    .catch(err => console.log(err));
+                .catch(err => console.log(err));
             this.rowData_search = result.data;
             this.input_div = true;
             if (this.prd_code != null) {

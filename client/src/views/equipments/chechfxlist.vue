@@ -87,19 +87,19 @@
             <tbody>
                 <tr>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-primary" style="color: white;" @click="add_btn()">행 추가</button>
+                        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행 추가</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-danger" style="color: white;" @click="delete_btn()">행 삭제</button>
+                        <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행 삭제</button>
                     </th>
                     <th style="width: 40%;">
                         <input style="background-color:lightsteelblue;" type="text" size="50" v-model="not_check">
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-warning" style="color: white;" @click="not_check_btn()">미점검</button>
+                        <button type="button" class="btn btn-warning" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_check_btn()">미점검</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-danger" style="color: white;" @click="not_opr_btn()">미가동</button>
+                        <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_opr_btn()">미가동</button>
                     </th>
                     <th style="width: 10%;">
                         최종 결과
@@ -115,7 +115,7 @@
                 </tr>
                 <tr>
                     <th style="width: 50%;" colspan="7">
-                        <button type="button" class="btn btn-success" style="color: white;" @click="chck_fx_insert()">등록</button>
+                        <button type="button" class="btn btn-success" style="color: white; margin: 2px 2px 2px 90%; padding: 2px; width: 75px;" @click="chck_fx_insert()">등록</button>
                     </th>
                 </tr>
             </tbody>
