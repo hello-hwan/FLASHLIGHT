@@ -148,6 +148,11 @@ const eqp_insert =
                  rm)
 VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
+// 등록 기기 삭제
+const eqp_delete = 
+`DELETE FROM eqp
+ WHERE eqp_code = ?`;
+
 // 미가동 등록
 const not_opr_insert = 
 `INSERT INTO not_opr(not_opr_code, 
@@ -190,6 +195,7 @@ module.exports = {
     not_check_list, 
     eqp_all_list, 
     eqp_insert, 
+    eqp_delete, 
     not_opr_insert, 
     not_opr_list, 
     not_opr_update

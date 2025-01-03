@@ -233,6 +233,40 @@ const prd_code_bom_all_search = async () => {
   return list;
 }
 
+// 전체 사원 조회
+const select_all_empl = async () => {
+  let list = await mariaDB.query('select_all_empl');
+  return list;
+}
+
+// 사원 검색
+const search_empl = async (search) => {
+  let list = await mariaDB.query('search_empl', search);
+  return list;
+}
+
+// 사원 등록
+const insert_empl = async (insert) => {
+  let list = await mariaDB.query('insert_empl', insert);
+  return list;
+}
+
+// 비밀번호 확인
+const search_pw = async (search) => {
+  let list = await mariaDB.query('search_pw', search);
+  return list[0];
+}
+
+// 사원 변경
+const update_empl = async (list) => {
+    await mariaDB.query('update_empl', list);
+}
+
+// 사원 퇴사
+const delete_empl = async (list) => {
+  await mariaDB.query('delete_empl', list);
+}
+
 //로그인 서비스
 const loginService = async (info) => {
   let infoArr = [info.empl_no,
@@ -279,6 +313,12 @@ module.exports = {
   bomManage,
   prd_code_search, 
   prd_code_bom_search, 
-  prd_code_bom_all_search,
+  prd_code_bom_all_search, 
+  select_all_empl, 
+  search_empl, 
+  insert_empl, 
+  search_pw, 
+  update_empl, 
+  delete_empl,
   loginService
 };

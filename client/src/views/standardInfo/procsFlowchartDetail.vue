@@ -190,7 +190,6 @@ export default {
             let result = await axios.get(`${ajaxUrl}/prd_code_search/${this.search_prd_code}`)
                 .catch(err => console.log(err));;
             this.rowData_search = result.data;
-            console.log(this.rowData_search);
         },
         goToDetail(prd_code) {
             if (this.prd_code == prd_code) {

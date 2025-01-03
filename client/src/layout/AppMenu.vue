@@ -168,11 +168,7 @@ const model = ref([
                 items: [
                     {
                         label: '사원 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '부서 관리',
-                        to: '/'
+                        to: '/standardInfo/emplManagement'
                     },
                     {
                         label: '거래처 관리',
