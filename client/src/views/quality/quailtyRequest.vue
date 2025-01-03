@@ -22,11 +22,11 @@
                    <label for="inputPassword6" class="col-form-label">발주번호</label>
                </div>
                <div class="col-auto">
-                   <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="mt_no">
+                   <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="mt_no">
                </div> 
                <div class="col-auto">
                    <span class="form-text">
-                       <search-modal @selectedData="getOrderDetails"/>        
+                       <search-modal v-bind:state="'order'" @selectedData="getOrderDetails"/>        
                    </span>                    
                </div>         
            </div>
