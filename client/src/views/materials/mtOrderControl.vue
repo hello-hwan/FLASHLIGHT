@@ -105,6 +105,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import { useToast } from 'primevue/usetoast';
+const toast = useToast();
 
 import { useStore } from 'vuex'; // Vuex 스토어 가져오기
 const store = useStore();
@@ -125,7 +126,7 @@ import mtSearchModal from '@/components/materials/searchMtModal.vue';
 //search order modal을 위해서 상태값 넘기기
 let forSearchOrder = 'order';
 
-const toast = useToast();
+
 
 //요청명리스트 담을 변수
 const reqRowData = ref([]);
