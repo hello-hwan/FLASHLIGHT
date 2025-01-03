@@ -26,5 +26,6 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(vuetify);
+app.use
 
 app.mount('#app');

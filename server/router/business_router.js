@@ -52,14 +52,21 @@ router.post('/business/searchCompany', async(req,res)=>{
     let searchCompanyKey = req.body;
     let result = await businessService.searchCompanyModal(searchCompanyKey);
     res.send(result);
-})
+});
 
 // 제품 검색
 router.post('/business/searchProduct', async(req,res)=>{
     let searchProductKey = req.body;
     let result = await businessService.searchProductModal(searchProductKey);
     res.send(result);
-})
+});
+
+// 수정가능 여부 체크
+router.get('/business/orderModify/:order_no',async(req,res)=>{
+    let orderNo = req.params.order_no;
+    let orderModify = await businessService.modifyOrderListByNo(orderNo);
+    res.send(orderModify);
+});
 
 module.exports = router;
 

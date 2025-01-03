@@ -25,7 +25,8 @@
                         총 소요시간
                     </th>
                     <th style="width: 25%;">
-                        <button type="button" class="btn btn-primary" style="color: white;"
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
                             @click="submit_btn()">저장</button>
                     </th>
                 </tr>
@@ -62,11 +63,13 @@
                     <th style="width: 65%;">
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-primary" style="color: white;" @click="add_btn()">행
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행
                             추가</button>
                     </th>
                     <th style="width: 10%;">
-                        <button type="button" class="btn btn-danger" style="color: white;" @click="delete_btn()">행
+                        <button type="button" class="btn btn-danger"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행
                             삭제</button>
                     </th>
                 </tr>
@@ -187,7 +190,6 @@ export default {
             const selectedNodes = this.gridApi.getSelectedNodes();
             for (let i = 0; i < selectedNodes.length; i++) {
                 let result_arr = [];
-                console.log(selectedNodes[i].data.index);
                 for (let j = 0; j < this.rowData.length; j++) {
                     if (this.rowData[j].index == selectedNodes[i].data.index) {
                         continue;
@@ -226,8 +228,6 @@ export default {
                     this.rowData[i].expect_reqre_time,
                     bom_code.data.bom_code
                 ];
-                console.log("1st");
-                console.log(procs_flowchart_insert);
                 let insert_row = 0;
                 for (let j = 0; j < check_code.length + 1; j++) {
                     if (this.rowData[i].procs_ordr_no == check_code[j]) {
@@ -238,7 +238,6 @@ export default {
                     let result_1 = await axios.post(`${ajaxUrl}/procsFlowchartInsert`, procs_flowchart_insert)
                         .catch(err => console.log(err));
                     check_code = [...check_code, this.rowData[i].procs_ordr_no];
-                    console.log(check_code);
                 }
 
                 let mtril_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchmtnm/${this.rowData[i].mtril_nm}`)
@@ -250,8 +249,6 @@ export default {
                     this.rowData[i].mtril_nm,
                     this.rowData[i].usgqty
                 ]
-                console.log("2ed");
-                console.log(procs_matrl_insert);
                 let result_2 = await axios.post(`${ajaxUrl}/procsMatrlInsert`, procs_matrl_insert)
                     .catch(err => console.log(err));
 
@@ -259,8 +256,6 @@ export default {
                     this.prd_code + '-' + this.rowData[i].procs_ordr_no,
                     this.rowData[i].eqp_code
                 ]
-                console.log("3rd");
-                console.log(procs_mchn_insert);
                 let result_3 = await axios.post(`${ajaxUrl}/procsMchnInsert`, procs_mchn_insert)
                     .catch(err => console.log(err));
             }
@@ -285,7 +280,7 @@ export default {
         },
         async input_click() {
             let result = await axios.get(`${ajaxUrl}/prd_code_bom_all_search`)
-                    .catch(err => console.log(err));
+                .catch(err => console.log(err));
             this.rowData_search = result.data;
             this.input_div = true;
             if (this.prd_code != null) {

@@ -8,8 +8,8 @@
                 border-bottom-left-radius: 13px;
                 margin-bottom: 30px;"
         >
-        <template v-slot:title>
-          <span class="font-weight-black">검사 통과 자재 리스트</span>
+        <template v-slot:title >
+          <span class="font-weight-black text-align-center" >검사 통과 자재 리스트</span>
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
@@ -29,7 +29,7 @@
                 border-bottom-left-radius: 13px;"
         >
         <template v-slot:title>
-          <span class="font-weight-black">반환 자재 리스트</span>
+          <span class="font-weight-black text-align-center">반환 자재 리스트</span>
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
@@ -150,11 +150,16 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .card-custom {
     border-top: 1px solid #9bb0be;
     border-bottom-right-radius: 13px;
     border-bottom-left-radius: 13px;
     margin-bottom: 30px;
 }
+.text-align-center {
+    display: flex;
+    justify-content: center;
+}
+
 </style>

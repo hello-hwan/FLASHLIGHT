@@ -17,7 +17,13 @@
                             <label for="state_procs_code" class="col-form-label">공정 코드</label>
                         </div>
                         <div class="col-auto">
-                            <input type="text" id="state_procs_code" class="form-control" aria-describedby="passwordHelpInline" placeholder="공정명 입력시 검색 가능" v-model="pcode">
+                            <input type="text" id="state_procs_code" class="form-control" aria-describedby="passwordHelpInline" placeholder="공정명, 제품명 입력시 검색 가능" v-model="pcode" @keydown="getprocs()">
+                            <div class="search-procs-box">
+                              <select name="pcode" id="pcode_box" v-model="pcode">
+                                <option selected :value="pcode" hidden>공정을 선택해주세요</option>
+                                <option v-for="procs in procslist" :value="procs.procs_code">{{ procs.prd_nm + '-' +  procs.procs_ordr_no + '-' + procs.procs_nm }}</option>
+                              </select>
+                            </div>
                         </div>
                     </div>
                     <div class="row g-3 align-items-center">
@@ -25,7 +31,7 @@
                         <label for="state_empl_no" class="col-form-label">사원 번호</label>
                       </div>
                       <div class="col-auto">
-                        <input type="text" id="state_empl_no" class="form-control" aria-describedby="passwordHelpInline" placeholder="사원명 입력시 검색 가능" v-model="eno">
+                        <input type="text" id="state_empl_no" class="form-control" aria-describedby="passwordHelpInline" placeholder="사원번호를 입력하세요." v-model="eno">
                       </div>
                     </div>
                     <div class="row g-3 align-items-center">
@@ -107,6 +113,16 @@ const resetvalue = async () => {
   getlist();
 };
 
+const procslist = ref([]);
+
+const getprocs = async () => {
+  let result = await axios.get(`${ajaxUrl}/prod/procslist`, { params : { "name" : pcode.value } })
+                          .catch(err => console.log(err));
+  if(result != undefined){
+    procslist.value = result.data;
+  }
+};
+
 //ag grid 옵션 설정
 const gridOptions = {
       columnDefs: ColDefs,
@@ -117,12 +133,51 @@ const gridOptions = {
       paginateChildRows: true,
       defaultColDef: {
           flex: 1,
-          minWidth: 10
+          minWidth: 10,
+          headerClass: "centered",
+          cellClass: "centered"
       },
 };
 onBeforeMount(() => {
   getlist();
+  getprocs();
 });
 
 
 </script>
+
+<style scoped>
+.centered {
+  .ag-header-cell-label {
+    justify-content: center !important;
+  }
+}
+.ag-row {
+  .centered {
+    justify-content: center !important;
+    text-align: center;
+  }
+}
+.ag-header-group-cell-label, .ag-header-cell-label {
+    justify-content: center !important;
+    text-align: center !important;
+}
+.ag-header-cell-text {
+    text-align: center !important;
+    margin: 0 auto !important;
+}
+.search-procs-box {
+    position: relative;
+    z-index: 1;
+}
+.search-procs-box select {
+  position: absolute;
+  top: -38px;
+  left: 101%;
+  background-color: white;
+  height: 38px;
+  width: 250px;
+  border-radius: 8px;
+}
+
+</style>

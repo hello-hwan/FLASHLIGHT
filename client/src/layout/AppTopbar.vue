@@ -1,9 +1,3 @@
-<script setup>
-import { useLayout } from '@/layout/composables/layout';
-import AppConfigurator from './AppConfigurator.vue';
-
-const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
-</script>
 
 <template>
     <div class="layout-topbar">
@@ -33,12 +27,37 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-user"></i>
-                        <span>Profile</span>
+                    <input v-model="empName" style="color:white; width:80px;"></input>
+                    <button type="button" class="layout-topbar-action" @click="logOut">
+                        <i class="pi pi-fw pi-sign-in"></i>
+                        <span>로그아웃</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 </template>
+
+<script setup>
+import { useLayout } from '@/layout/composables/layout';
+import { ref } from 'vue';
+import { useRouter} from 'vue-router';
+
+
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
+const router = useRouter();
+
+const { toggleMenu } = useLayout();
+
+let empName = ref(store.state.empInfo[store.state.empInfo.length-1].name + " 님");
+
+const logOut = () => {
+    if(store.state.empInfo[store.state.empInfo.length-1].name != null) {
+        store.dispatch('removeInfo');
+        router.push({path: '/login'});
+    };
+};
+
+
+</script>

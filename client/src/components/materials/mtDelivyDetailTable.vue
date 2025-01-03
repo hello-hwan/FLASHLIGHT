@@ -22,7 +22,7 @@
                   border-bottom-left-radius: 13px;
                   display: inline-block;">
           <template v-slot:title>
-            <span class="font-weight-black">요청 자재 상세목록</span>
+            <span class="font-weight-black text-align-center">요청 자재 상세목록</span>
           </template>
       
           <v-card-text class="bg-surface-light pt-4">
@@ -48,15 +48,17 @@ import { ref, watch } from "vue";
 import axios from "axios";
 import { ajaxUrl } from '@/utils/commons.js';
 import { useToast } from 'primevue/usetoast';
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
 
 const toast = useToast();
 
 //사원번호, 이름 나중에 로그인 세션이 생기면 받아와야 합니다.
-const emp_name = '최태백';  
-const emp_id = 100;
+const emp_name = store.state.empInfo[store.state.empInfo.length-1].name;  
+const emp_id = store.state.empInfo[store.state.empInfo.length-1].user_id;;
+//console.log(emp_id);
 
 //출고버튼 보여주는걸 결정하는 boolean타입변수
-
 let isdlivyBtn = ref(true);
 console.log(isdlivyBtn);
 
@@ -85,11 +87,12 @@ const ColDefs = [
 
 //요청명 리스트
 const getReqDetails = async (reqCode) => {
+    console.log('보내기 전 코드 확인', reqCode);
     //상세 자재 수량 가져오기
     let result = await axios.get(`${ajaxUrl}/mtril/mtRequestDetails/${reqCode}`)
                             .catch(err => console.log(err));
 
-    console.log('result: ', result);
+    console.log('되나?: ', result);
     if(result.data[(result.data.length-1)].state == 'fail') {
       //자재가 부족한 경우 처리
       //rowData.value = [{req_name : ''}]; //임의의 데이터를 한행 추가 보이진 않음. 이 작업이 없을경우 재고가 있는 행을 선택한 후 없는 행을 선택했을때 행이 비워지지 않음
@@ -182,5 +185,9 @@ const registData = async() => {
 .emp_info {
   width: 100px;
   margin-right: 20px;
+}
+.text-align-center {
+  display: flex;
+  justify-content: center;
 }
 </style>

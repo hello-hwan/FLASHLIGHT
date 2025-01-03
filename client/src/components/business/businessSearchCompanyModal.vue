@@ -3,13 +3,13 @@
         <label for="orderFormMtltyName" class="col-form-label">거래처 명</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyName" class="form-control" placeholder="ex 예담" @click="modalOpen" v-model="companyName" readonly>
+        <input type="text" id="orderFormMtltyName" class="form-control"  @click="modalOpen" v-model="companyName" readonly>
     </div>
     <div class="col-2">
         <label for="orderFormMtltyCode" class="col-form-label">거래처 코드</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyCode" class="form-control" placeholder="ex bcnc-01" @click="modalOpen" v-model="companyCode" readonly>
+        <input type="text" id="orderFormMtltyCode" class="form-control"  @click="modalOpen" v-model="companyCode" readonly>
     </div>
     
     <!-- <span>거래처 명</span>
@@ -59,12 +59,24 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
+
 //부모 컴포넌트로 데이터 보내기
 const emit = defineEmits(["companySelectedData"]);
+
+const props = defineProps(['info']);
+//console.log(props);
+console.log('출력확인!!!!!!!!!!!!!!!!!!!!', props.info);
 
 //화면에 보이는 데이터
 let companyName = null;
 let companyCode = null;
+
+if (props.info != null){
+    companyName = props.info.mtltyName;
+    companyCode = props.info.pCode;
+}
 
 //검색조건
 let searchCompanyCode = null;
@@ -106,12 +118,17 @@ const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
     const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log('모달에서 선택된 행 데이터:', companySelectedData);
-    companyName = companySelectedData[0].mtlty_name;
-    companyCode = companySelectedData[0].bcnc_code;
-
-    console.log(companyName, companyCode);
-    emit("companySelectedData", companySelectedData);
+    console.log(companySelectedData);
+    if (companySelectedData[0] != null){
+        console.log('모달에서 선택된 행 데이터:', companySelectedData);
+        companyName = companySelectedData[0].mtlty_name;
+        companyCode = companySelectedData[0].bcnc_code;
+        
+        console.log(companyName, companyCode);
+        emit("companySelectedData", companySelectedData);
+    } else {
+        toast.add({ severity: 'warn', summary: '실패', detail: '거래처가 선택되지 않았습니다.', life: 3000 });
+    }
 };
 //행 데이터를 담을 변수
 const rowData = ref([]);
@@ -194,5 +211,12 @@ const searchCompany = async() => {
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
-
+input {
+    width: 220px;
+}
+button{
+    margin-left : 5px;
+    margin-right: 5px;
+    line-height: 15px;
+}
 </style>

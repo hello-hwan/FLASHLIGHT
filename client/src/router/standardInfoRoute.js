@@ -5,9 +5,11 @@ import procsFlowchartList from "@/views/standardInfo/procsFlowchartList.vue";
 import procsFlowchartDetail from "@/views/standardInfo/procsFlowchartDetail.vue";
 import procsFlowchartinsert from "@/views/standardInfo/procsFlowchartinsert.vue";
 
+import emplManagement from "@/views/standardInfo/emplManagement.vue";
+
 import bomManage from "@/views/standardInfo/bomManage.vue";
 import qiList from "@/views/standardInfo/qiList.vue";
-import mtrilList from "@/views/standardInfo/mtrilList.vue"
+import mtrilList from "@/views/standardInfo/mtrilList.vue";
 import infoprductNList from "@/views/standardInfo/prductNList.vue";
 import infoprductList from "@/views/standardInfo/prductList.vue";
 import infobcncList from "@/views/standardInfo/bcncList.vue";
@@ -66,8 +68,12 @@ const standardInfoRoute = [
         path : 'infobcncList',
         name: 'infobcncList',
         component: infobcncList
+    }, 
+    {
+        path : 'emplManagement',
+        name: 'emplManagement',
+        component: emplManagement
     }
-
 ];
 
 export default standardInfoRoute;

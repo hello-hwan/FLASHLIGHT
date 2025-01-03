@@ -358,6 +358,87 @@ const prd_code_bom_search =
         prdist_name
  FROM bom`;
 
+// 전체 사원 조회
+const select_all_empl = 
+`SELECT empl.empl_no, 
+        empl.empl_name, 
+        empl.password,
+        empl.phone, 
+        empl.dept_se, 
+        cmmn.cmmn_name,
+        empl.encpn, 
+        empl.retire_day, 
+        empl.author
+ FROM empl
+ JOIN cmmn
+ ON empl.dept_se = cmmn.cmmn_code`;
+
+// 사원 검색
+const search_empl = 
+`SELECT empl.empl_no, 
+        empl.empl_name, 
+        empl.password,
+        empl.phone, 
+        empl.dept_se, 
+        cmmn.cmmn_name,
+        empl.encpn, 
+        empl.retire_day, 
+        empl.author
+ FROM empl
+ JOIN cmmn
+ ON empl.dept_se = cmmn.cmmn_code
+ WHERE empl.empl_no LIKE CONCAT('%', ?, '%')
+ AND empl.empl_name LIKE CONCAT('%', ?, '%')
+ AND empl.phone LIKE CONCAT('%', ?, '%')
+ AND empl.dept_se LIKE CONCAT('%', ?, '%')`;
+
+// 사원 등록
+const insert_empl = 
+`INSERT INTO empl (empl_no, 
+                   empl_name, 
+                   password,
+		     phone, 
+		     dept_se, 
+		     encpn, 
+		     author
+)
+VALUES (?, ?, ?, ?, ?, NOW(), ?)`;
+
+// 비밀번호 확인
+const search_pw = 
+`SELECT password
+ FROM empl
+ WHERE empl_no = ?`;
+
+// 사원 변경
+const update_empl = 
+`UPDATE empl
+ SET empl_no = ?, 
+     empl_name = ?, 
+     password = ?, 
+     phone = ?, 
+     dept_se = ?, 
+     author = ?
+ WHERE empl_no = ?`;
+
+// 사원 퇴사
+const delete_empl = 
+`UPDATE empl
+ SET retire_day = NOW()
+ WHERE empl_no = ?`;
+
+ //로그인을 위한 select
+ const loginSelect =
+ `
+ SELECT empl_no,
+        password,
+        empl_name,
+        dept_se
+ FROM   empl
+ WHERE  empl_no = ?
+ AND    password = ?
+ `;
+
 module.exports = {
   bom,
   bomInfo,
@@ -393,8 +474,15 @@ module.exports = {
   ProcsCodeToDeleteFlowchart, 
   prd_code_search, 
   prd_code_bom_search, 
-  prd_code_bom_all_search,
   bcncAdd,
   bcncDelete,
-  bomUpdate
+  bomUpdate,
+  prd_code_bom_all_search, 
+  select_all_empl, 
+  search_empl, 
+  insert_empl, 
+  search_pw, 
+  update_empl, 
+  delete_empl,
+  loginSelect
 };

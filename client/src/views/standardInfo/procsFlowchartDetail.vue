@@ -34,7 +34,8 @@
                         총 소요시간
                     </th>
                     <th style="width: 25%;">
-                        <button type="button" class="btn btn-primary" style="color: white;"
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
                             @click="edit_btn()">수정</button>
                     </th>
                 </tr>
@@ -51,18 +52,20 @@
                         {{ this.topTable.all_time }} 시간
                     </td>
                     <td>
-                        <button type="button" class="btn btn-danger" style="color: white;"
+                        <button type="button" class="btn btn-danger"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
                             @click="delete_btn()">삭제</button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div style="height: 60px; background-color: lightgray; width: 50%; margin-left: auto;" v-show="delete_div">
-            <p>아래에 품목코드를 입력하고 버튼을 누르면 삭제합니다.</p>
-            <input style="background-color: lightsteelblue;" type="text" v-model="delete_prd_code" size="9">
-            <button type="button" class="btn btn-primary" style="color: white;"
+        <div style="height: auto; background-color: lightgray; width: 50%; margin-left: auto;" v-show="delete_div">
+            <p style="margin: 2px; padding: 2px;">아래에 품목코드를 입력하고 버튼을 누르면 삭제합니다.</p>
+            <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="delete_prd_code" size="9">
+            <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;"
                 @click="delete_cansle_button()">취소</button>
-            <button type="button" class="btn btn-danger" style="color: white;" @click="real_delete_btn()">삭제</button>
+            <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                @click="real_delete_btn()">삭제</button>
         </div>
         <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
             @grid-ready="onGridReady" class="ag-theme-alpine">
@@ -184,13 +187,12 @@ export default {
             this.$router.push({ name: 'procsFlowchartinsert', query: { prd_code: this.prd_code } });
         },
         input_click() {
-            this.input_div = true;
+            this.input_div = !this.input_div;
         },
         async input_change() {
             let result = await axios.get(`${ajaxUrl}/prd_code_search/${this.search_prd_code}`)
                 .catch(err => console.log(err));;
             this.rowData_search = result.data;
-            console.log(this.rowData_search);
         },
         goToDetail(prd_code) {
             if (this.prd_code == prd_code) {

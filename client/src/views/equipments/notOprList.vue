@@ -20,8 +20,8 @@
                     <tr>
                         <th>
                             특이사항 : 
-                            <input style="background-color:lightsteelblue;" type="text" size="30" v-model="not_opr">
-                            <button type="button" class="btn btn-primary" style="color: white;" @click="submit_btn()">미가동 해제</button>
+                            <input style="background-color:lightsteelblue; margin: 2px; padding: 2px;" type="text" size="30" v-model="not_opr">
+                            <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 150px;" @click="submit_btn()">미가동 해제</button>
                         </th>
                     </tr>
                 </tbody>
@@ -108,7 +108,6 @@ export default {
                 '09:00 ~ 13:00',
                 now
             ];
-            console.log(index);
             let result_2 = await axios.post(`${ajaxUrl}/equip/chck_fc_insert`, index)
                 .catch(err => console.log(err));
 
