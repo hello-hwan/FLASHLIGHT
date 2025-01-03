@@ -93,6 +93,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+import { useToast } from 'primevue/usetoast';
+
 export default { 
     data() { 
         return { 
@@ -105,6 +107,7 @@ export default {
             filter_mtlty_name: '', 
             filter_order_date: '', 
             filter_dete: '', 
+            toast : useToast()
         }; 
     }, 
     created() { 
@@ -217,7 +220,7 @@ export default {
 </script>
 
 <style scoped>
-input[type="date"] {
+input {
     width: 220px;
 }
 </style>
