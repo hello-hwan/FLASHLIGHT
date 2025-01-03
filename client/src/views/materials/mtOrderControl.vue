@@ -38,7 +38,7 @@
                     rowSelection="multiple"
                     class="ag-theme-alpine"
                     @grid-ready="onGridReady"
-                    style="height: 308px;">
+                    style="height: 516px;">
                     </AgGridVue>
                 </v-card-text>
             </v-card>
@@ -59,7 +59,8 @@
                         <InputText type="text" v-model="orderName" class="emp_info" placeholder="   발주명을 입력해주세요"> <p>{{ orderName }}</p></InputText>
                         <companySearchModal v-bind:companyInfo="companyInfoForChildComponent" @companySelectedData="getCompanyInfo"/> 
                         <span>담당자 </span>
-                        <InputText style="width: 100px;" type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
+                        <InputText style="width: 100px;" type="text" v-model="empName" class="emp_info"readonly> <p>{{ empName }}</p></InputText>
+                        <InputText style="display: none;" type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
                         <mtSearchModal @mtSelectedData="addRow"/>
                             
                         <button type="button" @click="removeRow"
@@ -108,6 +109,9 @@ import { useToast } from 'primevue/usetoast';
 import { useStore } from 'vuex'; // Vuex 스토어 가져오기
 const store = useStore();
 
+import { useRouter } from 'vue-router'
+const router = useRouter();
+
 
 //발주건 검색 모달
 import orderSearchModal from '@/components/materials/orderControlModal.vue';
@@ -140,6 +144,8 @@ let companyName = "";
 let companyCode = "";
 //담당자
 let empId = store.state.empInfo[store.state.empInfo.length-1].user_id;
+
+let empName = store.state.empInfo[store.state.empInfo.length-1].name;
 //console.log(empId);
 //자식 컴포넌트로부터 받은 데이터 담을 변수
 const orderCode = ref("");
@@ -194,7 +200,15 @@ const reqColDefs = [
   { field: "mt_name", headerName:"자재 명",flex:3},
   { field: "order_qy", headerName:"요청 수량" ,flex:3},
   { field: "unit", headerName:"단위", flex:1},
-  { field: "date", headerName:"요청날짜", valueFormatter: customDateFormat,flex:3},
+  { field: "date", headerName:"요청날짜", valueFormatter: (params) => {
+          if (!params.value) {
+            return "";
+          }
+          params.value = new Date(params.value);
+          const month = params.value.getMonth() + 1;
+          const day = params.value.getDate();
+          return `${params.value.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
+        }, flex:3},
   { field: "check", headerName:"선택",  checkboxSelection: true, flex: 0.7}
 ];
 
@@ -226,8 +240,8 @@ const reqGridOptions = {
       columnDefs: reqColDefs,
       animateRows: false,
       pagination: true,
-      paginationPageSize: 5,
-      paginationPageSizeSelector: [5, 10, 20],
+      paginationPageSize: 10,
+      paginationPageSizeSelector: [10, 20],
       paginateChildRows: true
 };
 
@@ -317,6 +331,7 @@ const removeRow = () => {
 
 //행 전체 삭제
 const removeAllRow = () => {
+
     //전체 행 데이터를 저장할 (객체)배열 선언
     let allData = [];
 
@@ -332,6 +347,9 @@ const removeAllRow = () => {
     };
     //입력한 데이터 모두 화면에서 삭제
     removeAllInfo();
+    router.go(0);
+    //router.push({path : '/materials/mtOrder'})
+
 };
 
 //watch사용. 선택한 발주건 발주코드 값이 변할때마다 처리해야함.
@@ -594,6 +612,8 @@ const removeAllInfo = () => {
 
     //수정버튼 비활성화
     orderCode.value = false;
+
+
 };
 
 </script>

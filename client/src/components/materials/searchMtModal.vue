@@ -109,6 +109,7 @@ const GridOptions = {
       columnDefs: ColDefs,
       animateRows: false,
       pagination: true,
+      rowSelection: "single",
       paginationPageSize: 10,
       paginationPageSizeSelector: [10, 20, 50, 100],
 };

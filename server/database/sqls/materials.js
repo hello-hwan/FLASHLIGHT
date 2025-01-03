@@ -15,6 +15,7 @@ FROM    thng_req m JOIN mtril s
 WHERE   m.prdctn_code IS NULL
 AND     m.prd_se = 'PI01'
 AND     m.procs_at = 'RD02'
+ORDER BY m.req_de
 `;
 
 //자재 발주 관리 - mt001 / 발주서 등록
