@@ -138,6 +138,7 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
+import { useToast } from "primevue";
 
 export default {
   data() {
@@ -157,6 +158,7 @@ export default {
       // 검색 입력값
       prductCode: "", 
       prductName: "",
+      toast: useToast()
 
     };
   },
@@ -223,19 +225,19 @@ export default {
         sfinvc: this.sfinvcAdd
       }
       if(!this.prdlstCodeAdd){
-        alert('완제품코드를 입력하세요')
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '완제품코드를 입력하세요', life: 3000 });
       }else if(!this.prdlstNameAdd){
-        alert('완제품명을 입력하세요');
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '완제품명을 입력하세요', life: 3000 });
       }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
-        alert('규격를 입력하세요');
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '규격를 입력하세요', life: 3000 });
       }else if(!this.unitAdd){
-        alert('단위를 입력하세요')
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '단위를 입력하세요', life: 3000 });
       }else{ 
         let result = await axios.post(`${ajaxUrl}/prductInsert`, obj)
                         .catch(err => console.log(err));
                         this.rowData.push(obj); //등록시 그리드에 바로적용   
         if(result){
-          alert('등록완료');
+          this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다.', life: 3000 });
         }
       }
       
@@ -258,7 +260,7 @@ export default {
         const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
 
         if (selectedNodes.length === 0) {
-          alert("삭제할 행을 선택하세요.");
+          this.toast.add({ severity: 'warn', summary: '경고', detail: '삭제할 행을 선택하세요.', life: 3000 });
           return;
         }
 

@@ -109,8 +109,16 @@ GROUP BY m.mtril_code
 
 // 자재 등록
 const mtrilAdd =
-`INSERT INTO mtril
-SET ? `;
+`INSERT INTO mtril (mtril_code
+                   ,mtril_name
+                   ,unit
+                   ,untpc
+                   ,sfinvc)
+VALUES (CONCAT('M-'nextval(mtril_no_seq)),
+        ?,
+        ?,
+        0,
+        ?)`;
 
 // 자재 삭제
 const mtrilDelete = 
@@ -127,22 +135,38 @@ WHERE mtril_code = ?`;
 // 반제품 조회
 const infoprductNList = 
 `SELECT p.prdlst_code
-      ,p.prdlst_name
-      ,p.stndrd_x
-      ,p.stndrd_y
-      ,p.stndrd_z
-      ,p.unit
-      ,p.wrhousng_unite
-      ,p.dlivy_unit
-      ,p.sfinvc
-      ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
+       ,p.prdlst_name
+       ,p.stndrd_x
+       ,p.stndrd_y
+       ,p.stndrd_z
+       ,p.unit
+       ,p.wrhousng_unite
+       ,p.dlivy_unit
+       ,p.sfinvc
+       ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
 FROM prduct_n p LEFT JOIN procs_flowchart f                   
 ON prdlst_code = prd_code`;
 
 // 반제품 등록
 const prductNAdd = 
-`INSERT INTO prduct_n
-SET ?`;
+`INSERT INTO prduct_n(prdlst_code
+                     ,prdlst_name
+                     ,stndrd_x
+                     ,stndrd_y
+                     ,stndrd_z
+                     ,unit
+                     ,wrhousng_unite
+                     ,dlivy_unit
+                     ,sfinvc)
+VALUES (CONCAT('C-',nextval(prduct_n_no_seq))
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?)`;
 
 // 반제품 삭제
 const prductNDelete = 
@@ -181,8 +205,24 @@ GROUP BY r.prdlst_code
 
 // 완제품 등록
 const prductInsert = 
-`INSERT INTO repduct
-set ?`;
+`INSERT INTO repduct (prdlst_code
+                     ,prdlst_name
+                     ,stndrd_x
+                     ,stndrd_y
+                     ,stndrd_z
+                     ,unit
+                     ,wrhousng_untpc
+                     ,dlivy_untpc
+                     ,sfinvc)
+VALUES (CONCAT('C-',nextval(repduct_no_seq))
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?)`;
 
 // 완제품 삭제
 const prductDelete = 
@@ -202,7 +242,7 @@ const bcncList =
        ,charger_phone
        ,regist_day
 FROM bcnc`;
- 
+
 // 거래처 등록
 const bcncAdd = 
 `INSERT INTO bcnc (bcnc_code
@@ -294,7 +334,7 @@ const procsFlowchartInsert =
                              bom_code) 
  VALUES(?, ?, ?, ?, ?, ?, ?)
 `;
- 
+
 // 공정별 재료 소모 생성
 const procsMatrlInsert = 
 `INSERT INTO procs_matrl(procs_matrl_no, 

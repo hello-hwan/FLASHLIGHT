@@ -111,7 +111,7 @@
           <textarea id="remarks" class="form-control" rows="3" v-model="remarks" @change="changeTest" ></textarea>
         </div>
         <div class="col-12 mt-3">
-          <button class="btn btn-success" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
+          <button class="btn btn-primary search-btn" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
         </div>
       </div>
     </v-container>
@@ -121,13 +121,13 @@
             <div class="modal-container" @click.stop="">
                 <div id="search-bar">
                     <div class="align-left"> 
-                        <span>제품 코드</span>
+                        <span>자재 코드</span>
                         <InputText type="text" ></InputText>
-                        <span>제품 명</span>
+                        <span>자재 명</span>
                         <InputText type="text" > </InputText>
+                        <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
                     </div>
-                    <AgGridVue
-                      style="width: 100%; height: 460px; margin: 0 auto;"
+                    <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="rowDataInfotest"
                       :columnDefs="colDefsInfotest"
                       :gridOptions="gridOptions"
@@ -135,7 +135,6 @@
                       @grid-ready="onGridReady"
                       class="ag-theme-alpine">
                     </AgGridVue>
-                    <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
                 </div>
     
                 <div class="modal-btn">
@@ -157,7 +156,7 @@ import bfSearchCompanyModal from '@/components/standardInfo/ModalTest.vue';
   
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-
+import { useToast } from 'primevue/usetoast';
 
   export default {
     data() {
@@ -190,6 +189,7 @@ import { ajaxUrl } from "@/utils/commons.js";
         remarks: "", 
         rowCount: 0,
         isNewRow: true,
+        toast : useToast()
       };
 
     },
@@ -344,7 +344,7 @@ import { ajaxUrl } from "@/utils/commons.js";
         // 첫 번째 선택된 행 가져오기
         let selectedNodes = this.gridOptions.api.getSelectedNodes();
         if (selectedNodes.length === 0) {
-          alert('행을선택하세요');
+          this.toast.add({ severity: 'warn', summary: '경고', detail: '행을 선택하세요', life: 3000 });
           return;
         }
 
@@ -385,9 +385,9 @@ import { ajaxUrl } from "@/utils/commons.js";
             row.unit,
             row.cnsum_count,
           ]
-          console.log(obj);
+          
           if(this.rowDataInfo[i].stndrd_x == null && this.rowDataInfo[i].stndrd_y == null && this.rowDataInfo[i].stndrd_z == null && this.rowDataInfo[i].cnsum_count == null){
-            alert('값을입력해주세요');
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '값을입력해주세요', life: 3000 });
           }else{
             let result = await axios.post(`${ajaxUrl}/bom`, obj)
                                     .catch(err => console.log(err));
@@ -408,7 +408,7 @@ import { ajaxUrl } from "@/utils/commons.js";
           sumry: this.remarks
         }
         let result = axios.put(`${ajaxUrl}/bomUpdate/${this.rowData[0].bom_code}`, info)
-                             .catch(err => console.log(err)); 
+                            .catch(err => console.log(err)); 
         if(result){
           
         }
@@ -449,7 +449,7 @@ import { ajaxUrl } from "@/utils/commons.js";
           } else {
             // 저장버튼 비활성화
             this.isButtonDisabled = true;
-            alert("이미 추가된 항목입니다.");
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '이미추가된 항목 입니다.', life: 3000 });
           }
         }
       },
@@ -519,33 +519,4 @@ import { ajaxUrl } from "@/utils/commons.js";
     float: right;
 }
 
-/* 모달 스타일 */
-/* .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  width: 80%;
-  max-width: 800px; 
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  height: auto;
-}
-
-
-.ag-theme-alpine {
-  height: 400px; 
-  width: 100%; 
-} */
 </style>

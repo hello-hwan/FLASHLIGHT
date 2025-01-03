@@ -35,7 +35,6 @@ router.get('/bomMtilList', async (req, res) => {
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
   let Insert = req.body;
-  console.log('router',Insert);
   try{
     let result = await standard_info_service.bomInsert(Insert); 
   res.send(result);
@@ -56,8 +55,6 @@ router.get('/bomManage/:bomCode', async (req, res) => {
 router.put('/bomUpdate/:code', async (req, res) => {
   let code = req.params.code;
   let info = req.body;
-  console.log('router code',code);
-  console.log('router info',info);
   let result = await standard_info_service.bomUpdate(info, code);
   res.send(result);
 })

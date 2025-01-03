@@ -111,6 +111,7 @@ import userDateUtils from '@/utils/useDates.js';
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
 
+
 export default {
   data() {
     return {
@@ -130,7 +131,7 @@ export default {
       prdlstName: "",
       seCode: "",
       startDate: "",
-      endDate: ""
+      endDate: "",
     };
   },
   created() {
@@ -203,14 +204,12 @@ export default {
     // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.prduct_n_wrhousng_day;
+        let prductNDate = row.dlivy_day;
         let startDate = !this.startDate || prductNDate >= this.startDate;
         let endDate = !this.endDate || prductNDate <= this.endDate;
         return (
-          (!this.LOTCode || row.prduct_n_lot.includes(this.LOTCode)) &&
-          (!this.prdlstCode || row.prdlst_code.includes(this.prdlstCode)) &&
-          (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
-          (!this.seCode || row.se === this.seCode) &&
+          (!this.prductNReqName || row.order_no.includes(this.prductNReqName)) &&
+          (!this.prdlstCode || row.prd_name.includes(this.prdlstCode)) &&
           startDate && endDate
         );
       });

@@ -204,13 +204,12 @@ export default {
     // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.prduct_n_wrhousng_day;
+        let prductNDate = row.requst_date;
         let startDate = !this.startDate || prductNDate >= this.startDate;
         let endDate = !this.endDate || prductNDate <= this.endDate;
         return (
-          (!this.LOTCode || row.prduct_n_lot.includes(this.LOTCode)) &&
-          (!this.prdlstCode || row.prdlst_code.includes(this.prdlstCode)) &&
-          (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
+          (!this.prductNReqName || row.prduct_n_req_name.includes(this.prductNReqName)) &&
+          (!this.prdlstCode || row.prduct_n_name.includes(this.prdlstCode)) &&
           (!this.seCode || row.se === this.seCode) &&
           startDate && endDate
         );
@@ -218,10 +217,8 @@ export default {
     },
     
     resetFilter() {
-      this.LOTCode = "";
-      this.prdlstCode = "";
+      this.prductNReqName = "";
       this.prdlstName = "";
-      this.seCode = "";
       this.startDate = "";
       this.endDate = "";
       this.filteredRowData = this.rowData;

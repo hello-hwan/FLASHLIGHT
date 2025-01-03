@@ -105,7 +105,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-
+import { useToast } from "primevue";
 
 export default {
   data() {
@@ -131,6 +131,8 @@ export default {
       prductNName: "",
       startDate:"",
       endDate: "",
+      toast: useToast()
+
     };
   },
   created() {
@@ -218,14 +220,14 @@ export default {
         sendPrductNList.push(newObj);
       }
       console.log(sendPrductNList);
-      // let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
-      //                         .catch(err => console.log(err));
+      let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
+                              .catch(err => console.log(err));
 
-      // if(result){
-      //   alert('출고완료');
-      //   this.getprductNDlivyList();
-      //   this.getprductNdlivyPossible();
-      // }
+      if(result){
+        this.toast.add({ severity: 'success', summary: '성공', detail: '출고가 완료되었습니다.', life: 3000 });
+        this.getprductNDlivyList();
+        this.getprductNdlivyPossible();
+      }
 
     },
 

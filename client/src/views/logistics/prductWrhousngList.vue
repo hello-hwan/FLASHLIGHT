@@ -39,6 +39,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
+import { useToast } from "primevue";
 
 
 export default {
@@ -48,6 +49,7 @@ data() {
         prductList: [],    // 일반반제품
         rowDataSelect: '',
         colDefsSelect: '',
+        toast: useToast()
     };
 },
 created() {
@@ -97,10 +99,10 @@ async onCellClicked(event) {
         event.data.nrmlt,
         event.data.nrmlt
     ]
-    console.log('obj',obj);
 
     let result = await axios.post(`${ajaxUrl}/prductWrhousng`, obj)
                     .catch(err => console.log(err));
+        this.toast.add({ severity: 'success', summary: '성공', detail: '입고가 완료되었습니다.', life: 3000 });
     let result2 = await axios.get(`${ajaxUrl}/prductList`)
             .catch(err => console.log(err));
         this.prductList = result2.data;

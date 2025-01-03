@@ -61,7 +61,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
-
+import { useToast } from "primevue";
 
 export default {
 data() {
@@ -75,6 +75,7 @@ data() {
         prductNList: [],    // 일반반제품
         rowDataSelect: '',
         colDefsSelect: '',
+        toast: useToast()
     };
 },
 created() {
@@ -134,7 +135,6 @@ methods: {
         if(event.colDef.field !== "입고"){
             return;
         }
-        console.log('클릭테스트');
         this.select_code = event.data.prduct_n_code;
         
         let obj = [
@@ -144,12 +144,14 @@ methods: {
             event.data.nusgqty,
             event.data.nusgqty
         ]
-        console.log('클릭',obj);
         let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousngReturn`, obj)
                                 .catch(err => console.log(err));
         if(result){
             let result2 = await axios.put(`${ajaxUrl}/prduct_n_dlivyReturn/${event.data.prduct_n_dlivy_no}`)
                                         .catch(err => console.log(err));
+            if(result2){
+                this.toast.add({ severity: 'success', summary: '성공', detail: '입고가 완료되었습니다.', life: 3000 });
+            }
             let result = await axios.get(`${ajaxUrl}/prdctn_n_return_list`)
                                         .catch(err => console.log(err));
                         this.prductNReturnList = result.data;

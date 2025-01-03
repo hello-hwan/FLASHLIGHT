@@ -55,7 +55,7 @@ const bomUpdate = async (code,info) => {
   }catch(err){
     console.log(err);
   }
-   
+
 }
 
 // BOM소모품 업데이트
@@ -114,9 +114,8 @@ const prductNList = async() => {
 
 // 반제품 등록
 const prductNAdd = async (info) => {
-  let result = await mariaDB.query('prductNAdd', info);
-
   try{
+    let result = await mariaDB.query('prductNAdd', info);
     if (result.insertId != null) {
       return { message: '데이터 삽입 성공' };
     } else {
@@ -126,7 +125,7 @@ const prductNAdd = async (info) => {
       console.log(err);
     }
 }
- 
+
 // 반제품 삭제
 const prductNDelete = async (code) => {
   let result = await mariaDB.query('prductNDelete', code);

@@ -163,6 +163,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
 import userDateUtils from '@/utils/useDates.js';
+import { useToast } from "primevue";
 
 export default {
   data() {
@@ -196,6 +197,8 @@ export default {
       dvyfgAdresAdd  : "",    // 납품주소
       chargerNameAdd  : "",   // 담당자 명
       chargerPhoneAdd  : "",  // 담당자 전화번호
+
+      toast: useToast()
       
     };
   },
@@ -261,15 +264,15 @@ export default {
       console.log(obj);
       let result = await axios.post(`${ajaxUrl}/bcncAdd`, obj)
                         .catch(err => console.log(err));
-     if(result != null){
-      let resul2 = await axios.get(`${ajaxUrl}/bcncList`)
-        .catch(err => console.log(err));
-        this.bcncList = result.data;
-        this.rowData = this.bcncList;
-        this.filteredRowData = this.rowData;
-     }else{
-       alert('등록실패');
-     }
+      if(result != null){
+        let resul2 = await axios.get(`${ajaxUrl}/bcncList`)
+          .catch(err => console.log(err));
+          this.bcncList = result.data;
+          this.rowData = this.bcncList;
+          this.filteredRowData = this.rowData;
+      }else{
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '등록실패.', life: 3000 });
+      }
                         
     },
 
@@ -291,7 +294,7 @@ export default {
         const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
 
         if (selectedNodes.length === 0) {
-          alert("삭제할 행을 선택하세요.");
+          this.toast.add({ severity: 'warn', summary: '경고', detail: '삭제할 행을 선택하세요.', life: 3000 });
           return;
         }
 

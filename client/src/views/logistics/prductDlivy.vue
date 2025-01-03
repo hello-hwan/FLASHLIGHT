@@ -55,7 +55,7 @@
               <AgGridVue
                 style="height: 500px; margin: 0 auto;"
                 @grid-ready="onGridReady"
-                :rowData="rowData"
+                :rowData="filteredRowData"
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
                 @cellClicked="onCellClicked"
@@ -105,7 +105,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-
+import { useToast } from "primevue";
 
 export default {
   data() {
@@ -122,15 +122,14 @@ export default {
       req_de: "",
       prdctn_code: "",
       req_name: "",
-      obj: {},
       // 사원이름, 사원코드 임의값 
       emp_name: "이주현",
       emp_id: 200,
       // 검색 입력값
       prductNReqName: "",
-      prductNName: "",
       startDate:"",
       endDate: "",
+      toast: useToast()
     };
   },
   created() {
@@ -208,7 +207,6 @@ export default {
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
-      //console.log(this.obj);
     },
 
     // 출고완료처리
@@ -224,7 +222,7 @@ export default {
                               .catch(err => console.log(err));
 
       if(result){
-        alert('출고완료');
+        this.toast.add({ severity: 'success', summary: '성공', detail: '출고되었습니다.', life: 3000 });
         this.getprductNDlivyList();
         this.getprductNdlivyPossible();
       }
@@ -234,11 +232,11 @@ export default {
      // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
-        let reqDe = row.req_de;
-        let startDate = !this.startDate || reqDe >= this.startDate;
-        let endDate = !this.endDate || reqDe <= this.endDate;
+        let prductNDate = row.order_date;
+        let startDate = !this.startDate || prductNDate >= this.startDate;
+        let endDate = !this.endDate || prductNDate <= this.endDate;
         return (
-          (!this.prductNReqName || row.req_name.includes(this.prductNReqName)) &&
+          (!this.prductNReqName || row.order_no.includes(this.prductNReqName)) &&
           startDate && endDate
         );
       });

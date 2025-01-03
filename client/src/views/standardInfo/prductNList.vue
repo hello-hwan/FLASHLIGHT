@@ -46,12 +46,6 @@
             <v-card-text class="bg-surface-light pt-4">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">반제품 코드</label>
-              </div>
-              <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="prductNCodeAdd" />
-              </div>
-              <div class="col-auto">
                   <label for="itemCode" class="col-form-label">반제품 명</label>
               </div>
               <div class="col-auto">
@@ -134,6 +128,7 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
+import { useToast } from "primevue";
 
 export default {
   data() {
@@ -153,6 +148,7 @@ export default {
       // input 박스값
       prductNCodeAdd: "",
       prductNNameAdd: "",
+      toast: useToast()
 
     };
   },
@@ -207,37 +203,34 @@ export default {
 
     async addData(){
 
-      let obj = {
-        prdlst_code: this.prductNCodeAdd,
-        prdlst_name: this.prductNNameAdd,
-        stndrd_x: this.stndrdX,
-        stndrd_y: this.stndrdY,
-        stndrd_z: this.stndrdZ,
-        unit: this.unitAdd,
-        wrhousng_unite: this.wrhousngUniteAdd,
-        dlivy_unit: this.dlivyUnitAdd,
-        sfinvc: this.sfinvcAdd,
-      }
+      let obj = [
+        this.prductNNameAdd,
+        this.stndrdX,
+        this.stndrdY,
+        this.stndrdZ,
+        this.unitAdd,
+        this.wrhousngUniteAdd,
+        this.dlivyUnitAdd,
+        this.sfinvcAdd,
+      ]
       console.log(obj);
-      if(!this.prductNCodeAdd){
-        alert('반제품코드를 입력하세요')
-      }else if(!this.prductNNameAdd){
-        alert('반제품명을 입력하세요');
+      if(!this.prductNNameAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '반제품명을 입력하세요.', life: 3000 });
       }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
-        alert('규격를 입력하세요');
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '규격를 입력하세요.', life: 3000 });
       }else if(!this.unitAdd){
-        alert('단위를 입력하세요')
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '단위를 입력하세요.', life: 3000 });
       }else{ 
         let result = await axios.post(`${ajaxUrl}/prductNAdd`, obj)
                         .catch(err => console.log(err));
                         this.rowData.push(obj); //등록시 그리드에 바로적용   
         if(result){
-          alert('등록완료');
+          this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다..', life: 3000 });
         }
       }
       
     },
- 
+
     async saveChanges(){
       for(let i = 0; i < this.rowData.length; i++){
         let row = this.rowData[i];
@@ -256,12 +249,12 @@ export default {
                                   .catch(err => console.log(err));
       }
     }, 
- 
+
     deleteRow() {
         const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
 
         if (selectedNodes.length === 0) {
-          alert("삭제할 행을 선택하세요.");
+          this.toast.add({ severity: 'warn', summary: '경고', detail: '삭제할 행을 선택하세요.', life: 3000 });
           return;
         }
 
