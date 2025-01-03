@@ -59,7 +59,9 @@ const drctlist = async (prd_code, day_str) => {
 
   for(let i = 0; i < list.length; i++){
     if(model != list[i].model_nm){
-      // result.push({})
+      if(colspan < 168 && colspan > 0){
+        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168-colspan, "order_no" : "" });
+      }
 
       colspan = 0;
 
