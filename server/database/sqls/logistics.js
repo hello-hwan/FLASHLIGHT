@@ -199,7 +199,19 @@ FROM order_lists l JOIN order_requst r
 ON l.order_no = r.order_no
 WHERE process_status = 'OD01'
 AND l.prd_code LIKE 'C%'
-GROUP BY l.order_no, l.order_list_no, l.process_status, r.order_date`;
+GROUP BY l.order_no, l.prd_code`;
+
+// 수정전
+// `SELECT l.order_no
+//        ,l.order_list_no
+//        ,l.process_status
+//        ,r.order_date
+//        ,count(l.prd_code) AS prd_code
+// FROM order_lists l JOIN order_requst r
+// ON l.order_no = r.order_no
+// WHERE process_status = 'OD01'
+// AND l.prd_code LIKE 'C%'
+// GROUP BY l.order_no, l.order_list_no, l.process_status, r.order_date`;
 
 
 // 완제품 출고 나가야될 제품 리스트
