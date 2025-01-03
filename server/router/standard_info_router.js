@@ -73,7 +73,7 @@ router.get('/standardInfo/qiList', async (req, res) => {
 });
 
 // 품질검사항목관리 모달창
-router.get('/standardInfo/qiListModal', async (req, res) => {
+router.post('/standardInfo/qiListModal', async (req, res) => {
   let qiNo = req.body;    
   let result = await standard_info_service.qiListModal(qiNo)                                          
   res.send(result);

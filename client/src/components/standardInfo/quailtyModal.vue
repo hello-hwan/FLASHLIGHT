@@ -81,7 +81,7 @@ const modalOpen = () => {
 const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
-    const quailtyselectedData = selectedNodes.map((node) => node.data);
+    const selectedData = selectedNodes.map((node) => node.data);
 
     console.log('선택된 행 데이터:', quailtyselectedData);
     emit("quailtyselectedData", selectedData);
@@ -110,7 +110,7 @@ const GridOptions = {
 
 const searchOrder = async() => {
     //서버로 보낼 검색 데이터
-    let result = await axios.get(`${ajaxUrl}/standardInfo/qiListModal`)
+    let result = await axios.post(`${ajaxUrl}/standardInfo/qiListModal`)
                             .catch(err=>console.log(err));
    
 
