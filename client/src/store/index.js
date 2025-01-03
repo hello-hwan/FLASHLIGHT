@@ -21,7 +21,7 @@ const store = createStore({
         //state에 정의되어있는 데이터를 변경가능
         //여기에서 선언하는 이유는 정해진 방식으로만 가능하게 만들기 위해서임(접근을 막기 위해)
         addInfo(state, info) {   //state를 받음, info는 매개변수, 두번째, 세번째...도 가능
-            state.empInfo.push(info);
+          state.empInfo.push(info);
         },
         getInfo(state) {
           return state.empInfo;
