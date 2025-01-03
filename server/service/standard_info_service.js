@@ -16,7 +16,6 @@ const bomtest = async () => {
 // BOM 상세보기 
 const bomInfo = async (bomCode) => {
   let list = await mariaDB.query('bomInfo', bomCode);
-  console.log('service',list)
   return list;
 }
 
@@ -29,7 +28,6 @@ const bomMtilList = async () => {
 // BOM 등록  
 const bomInsert = async (bomInfo) => {
   let result = await mariaDB.query('bomInsert', bomInfo);
-  console.log('service',bomInfo)
   try{
     if (result.insertId != null) {
       return { message: '데이터 삽입 성공' };
@@ -48,19 +46,29 @@ const bomManage = async (bomCode) => {
   return list;
 }
 
+// BOM 업데이트
+const bomUpdate = async (code,info) => {
+  let data = [code,info];
+  try{
+    let result = await mariaDB.query('bomUpdate', data);
+  return result;
+  }catch(err){
+    console.log(err);
+  }
+   
+}
+
 // BOM소모품 업데이트
 const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
     let datas = [updateInfo, cmpdsNo];
-    console.log(datas);
     let result = await mariaDB.query('bom_cmpdsUpdate', datas)
                           .catch(err => console.log(err));
-    console.log(result);  
+    return result; 
 }
 
 // BOM소모품 삭제
 const bom_cmpdsDel = async (cmpdsNo) => {
   let result = await mariaDB.query('bom_cmpdsDel', cmpdsNo);
-  console.log(result);
   return result;
 }
 
@@ -154,6 +162,22 @@ const prductDelete = async (code) => {
 const bcncList = async () => {
   let list = await mariaDB.query('bcncList');
   return list;
+}
+
+// 거래처 등록
+const bcncAdd = async (info) => {
+  try{
+    let result = await mariaDB.query('bcncAdd', info);
+    return result;
+  }catch(err){
+    console.log(err);
+  }
+}
+
+// 거래처 삭제
+const bcncDelete = async(code) =>{
+  let result = await mariaDB.query('bcncDelete', code);
+  return result;
 }
 
 //품질검사항목관리
@@ -281,5 +305,8 @@ module.exports = {
   bomManage,
   prd_code_search, 
   prd_code_bom_search, 
-  prd_code_bom_all_search
+  prd_code_bom_all_search,
+  bcncAdd,
+  bcncDelete,
+  bomUpdate
 };

@@ -51,6 +51,7 @@ VALUES (CONCAT('M-SL', nextval(bom_cmpds_seq)),
         ?, 
         ?, 
         ?)`;
+
 // BOM 소모품 조회
 const bomManage = 
 `SELECT c.cmpds_no
@@ -201,10 +202,10 @@ const bcncList =
        ,charger_phone
        ,regist_day
 FROM bcnc`;
-
+ 
 // 거래처 등록
 const bcncAdd = 
-`INSERT INTO bcnb (bcnb_code
+`INSERT INTO bcnc (bcnc_code
                   ,bizrno
                   ,mtlty_name
                   ,bizcnd
@@ -213,7 +214,7 @@ const bcncAdd =
                   ,charger_name
                   ,charger_phone
                   ,regist_day)
-VALUES (CONCAT('M-SL', nextval(bcnc_seq))
+VALUES (CONCAT('bcnc-', nextval(bcnc_seq))
        ,?
        ,?
        ,?
@@ -221,7 +222,13 @@ VALUES (CONCAT('M-SL', nextval(bcnc_seq))
        ,?
        ,?
        ,?
-       ,?)`;
+       ,now())`;
+
+// 거래처 삭제
+const bcncDelete = 
+`DELETE FROM
+bcnc
+WHERE bcnc_code = ?`;
 
 // 품질검사항목관리
 const qiList =
@@ -386,5 +393,8 @@ module.exports = {
   ProcsCodeToDeleteFlowchart, 
   prd_code_search, 
   prd_code_bom_search, 
-  prd_code_bom_all_search
+  prd_code_bom_all_search,
+  bcncAdd,
+  bcncDelete,
+  bomUpdate
 };

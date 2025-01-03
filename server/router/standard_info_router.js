@@ -51,6 +51,16 @@ router.get('/bomManage/:bomCode', async (req, res) => {
   let info = await standard_info_service.bomManage(bomCode);
   res.send(info);  
 })
+  
+// BOM 업데이트
+router.put('/bomUpdate/:code', async (req, res) => {
+  let code = req.params.code;
+  let info = req.body;
+  console.log('router code',code);
+  console.log('router info',info);
+  let result = await standard_info_service.bomUpdate(info, code);
+  res.send(result);
+})
 
 // BOM 소모품 update
 router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
@@ -156,6 +166,20 @@ router.get('/bcncList', async (req, res) => {
   res.send(list);
 })
 
+// 거래처 등록
+router.post('/bcncAdd', async (req, res) => {
+  let info = req.body;
+  let result = await standard_info_service.bcncAdd(info);
+  res.send(result);
+})
+
+// 거래처 삭제
+router.delete('/bcnc_code/:code', async (req,res) => {
+  let code = req.params.code
+  let result = await standard_info_service.bcncDelete(code);
+  res.send(result);
+});
+ 
 // 품질검사항목관리
 router.get('/standardInfo/qiList', async (req, res) => {
   let qiNo = req.query.qi_info; // key=value => req.query.key;

@@ -25,7 +25,7 @@
         </v-col>
 
         <!-- 입력 폼 (품목명, 기본 생산수량) -->
-        <v-col cols="12" sm="6" class="mb-4">
+        <v-col cols="12" sm="6" class="mb-4" >
           <v-card class="mx-auto" style="border-radius: 13px;">
             <v-card-text class="bg-surface-light pt-4">
               <div class="row g-3 align-items-center">
@@ -33,7 +33,7 @@
                   <label for="prdlstCode" class="col-form-label">품목코드</label>
                 </div>
                 <div class="col-2">
-                  <input type="text" id="prdlstCode" class="form-control" v-model="prdlstCode" @change="fetchItemData" readonly />
+                  <input type="text" id="prdlstCode" class="form-control" v-model="prdlstCode" @change="fetchItemData" readonly  />
                 </div>
                 <div class="col-auto">
                   <label for="prdlstName" class="col-form-label">품목명</label>
@@ -44,8 +44,8 @@
                 <div class="col-auto">
                   <label for="productionQty" class="col-form-label">생산수량</label>
                 </div>
-                <div class="col-2">
-                  <input type="text" id="productionQty" class="form-control" v-model="productionQty" />
+                <div class="col-2" v-if="istest">
+                  <input type="text" id="productionQty" class="form-control" v-model="productionQty" @change="changeTest"/>
                 </div>
               </div>
             </v-card-text>
@@ -79,7 +79,7 @@
         <v-col cols="12" sm="6" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">소모품 데이터</span>
+              <span class="font-weight-black">BOM 소모품</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
@@ -106,12 +106,12 @@
 
       <!-- 적요 입력 폼 -->
       <div class="row mt-4">
-        <div class="col-12">
+        <div class="col-12" v-if="istest">
           <label for="remarks" class="form-label">적요</label>
-          <textarea id="remarks" class="form-control" rows="3" v-model="remarks" placeholder="적요를 입력하세요"></textarea>
+          <textarea id="remarks" class="form-control" rows="3" v-model="remarks" @change="changeTest" ></textarea>
         </div>
         <div class="col-12 mt-3">
-          <button class="btn btn-success" @click="saveData">저장</button>
+          <button class="btn btn-success" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
         </div>
       </div>
     </v-container>
@@ -157,10 +157,13 @@ import bfSearchCompanyModal from '@/components/standardInfo/ModalTest.vue';
   
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
+import { useToast } from 'primevue/usetoast';
 
   export default {
     data() {
       return {
+        istest: false,
+        isButtonDisabled : true,
         isModified: false, // 수정 상태 추적 변수
         modalCheck2 : false,
         isModalVisible: false, // 모달 표시 여부
@@ -186,7 +189,8 @@ import { ajaxUrl } from "@/utils/commons.js";
         productionQty: "",
         remarks: "", 
         rowCount: 0,
-        isNewRow: true
+        isNewRow: true,
+        toast: useToast()
       };
 
     },
@@ -251,20 +255,24 @@ import { ajaxUrl } from "@/utils/commons.js";
       bfSearchCompanyModal
     },
     methods: {
-      
+      // 생산수량, 적요 변경에따른 버튼 활성화
+      changeTest(){
+        this.isButtonDisabled = false;
+      },
+
       onCellValueChanged(params) {
         // 추가된 행인지 확인
         if (params.data.isNewRow) {
-          console.log("추가된 행의 값 변화는 감지하지 않습니다:", params.data);
+          //console.log("추가된 행의 값 변화는 감지하지 않습니다:", params.data);
           return;
         }
         
         // 기존 행의 값 변경 처리
-        console.log("값 변경됨: ", params.data);
+        //console.log("값 변경됨: ", params.data);
         this.isModified = true;
       },
 
-      async modalOpen2 (event) {
+      async modalOpen2 () {
             this.modalCheck2 = !this.modalCheck2;
             let result = await axios.get(`${ajaxUrl}/bomMtilList`)
                               .catch(err => console.log(err));
@@ -281,6 +289,7 @@ import { ajaxUrl } from "@/utils/commons.js";
 
       onCellClicked(event) {
         if (event.colDef.field === "상세보기") {
+          this.istest = true;
           this.selectedBomCode = event.data.prdlst_code; // 상세보기를 위한 데이터 추츨
           this.getbomListInfo(this.selectedBomCode); // 상세 정보 조회
           this.remarks = event.data.sumry;
@@ -299,9 +308,9 @@ import { ajaxUrl } from "@/utils/commons.js";
       async getbomListInfo(bomCode) {
         let result = await axios.get(`${ajaxUrl}/bomManage/${bomCode}`)
                                   .catch(err => console.log(err));
-        console.log(result.data);
+        //console.log(result.data);
         this.bomListInfo = result.data;
-        console.log(this.bomListInfo);
+       // console.log(this.bomListInfo);
         this.rowDataInfo = this.bomListInfo;
         if (result) {
           this.prdlstCode = result.data[0].prdlst_code;
@@ -311,6 +320,7 @@ import { ajaxUrl } from "@/utils/commons.js";
           this.rowCount = this.rowData.length;
           this.trueRowCount = this.rowData.length;
         }
+        //console.log(this.productionQty);
       },
 
       // 검색조건값에 따른 필터링
@@ -354,10 +364,17 @@ import { ajaxUrl } from "@/utils/commons.js";
         );
 
         // AgGrid 데이터 갱신
-        this.gridOptions.api.setRowData(this.rowDataInfo);
+        //this.gridOptions.api.setRowData(this.rowDataInfo);
+
+        if(this.rowDataInfo.length == this.rowCount){
+          this.isButtonDisabled = true;
+        }
       },
+
+
       async saveData() { 
-        for(let i = this.rowCount; i < this.rowDataInfo.length; i ++) {
+        if(this.rowCount < this.rowDataInfo.length){
+          for(let i = this.rowCount; i < this.rowDataInfo.length; i ++) {
           let row = this.rowDataInfo[i];
           let obj = [
             this.rowData[0].bom_code,
@@ -368,22 +385,38 @@ import { ajaxUrl } from "@/utils/commons.js";
             row.stndrd_z,
             row.unit,
             row.cnsum_count,
-        ]
+          ]
           console.log(obj);
-          let result = await axios.post(`${ajaxUrl}/bom`, obj)
-                                  .catch(err => console.log(err));           
+          if(this.rowDataInfo[i].stndrd_x == null && this.rowDataInfo[i].stndrd_y == null && this.rowDataInfo[i].stndrd_z == null && this.rowDataInfo[i].cnsum_count == null){
+            alert('값을입력해주세요');
+          }else{
+            let result = await axios.post(`${ajaxUrl}/bom`, obj)
+                                    .catch(err => console.log(err));
+                // 데이터 저장 로직
+                this.rowDataInfo = this.rowDataInfo.map((row) => {
+                    if (row.isNewRow) delete row.isNewRow; // 플래그 제거
+                    return row;
+                });
+                // 저장 후 AgGrid 데이터 갱신
+                // if (this.gridOptions.api) {
+                //   this.gridOptions.api.setRowData(this.rowDataInfo);
+                // }
+            }
+          }
         }
-        // 데이터 저장 로직
-        this.rowDataInfo = this.rowDataInfo.map((row) => {
-          if (row.isNewRow) delete row.isNewRow; // 플래그 제거
-          return row;
-        });
+        let info = {
+          prdctn_qy: this.productionQty,
+          sumry: this.remarks
+        }
+        let result = axios.put(`${ajaxUrl}/bomUpdate/${this.rowData[0].bom_code}`, info)
+                             .catch(err => console.log(err)); 
+        if(result){
+          //toast.add({ severity: 'success', summary: '등록', detail: '등록성공', life: 3000 });
+        }
         
-        // 저장 후 AgGrid 데이터 갱신
-        if (this.gridOptions.api) {
-          this.gridOptions.api.setRowData(this.rowDataInfo);
-        }
       },
+      
+
       async update() {
         for(let i = 0; i < this.rowData.length; i ++) {
           let row = this.rowData[i];
@@ -395,6 +428,7 @@ import { ajaxUrl } from "@/utils/commons.js";
         }
       },
 
+      // 모달값 rowDataInfo그리드로 데이터 넘기기
       onCellClicked3(event){
         if(event.colDef.field === "선택"){
           let obj = {
@@ -408,15 +442,20 @@ import { ajaxUrl } from "@/utils/commons.js";
           );
           if (!isDuplicate) {
             this.rowDataInfo = [...this.rowDataInfo, obj];
-            if (this.gridOptions.api) {
-              this.gridOptions.api.setRowData(this.rowDataInfo);
-            }
+            // 저장버튼 활성화
+            this.isButtonDisabled = false;
+            // if (this.gridOptions.api) {
+            //   this.gridOptions.api.setRowData(this.rowDataInfo);
+            // }
           } else {
+            // 저장버튼 비활성화
+            this.isButtonDisabled = true;
             alert("이미 추가된 항목입니다.");
           }
         }
       },
 
+      // 그리드 초기화
       onGridReady(params) {
         this.gridOptionsReturn.api = params.api;
         this.gridOptionsReturn.columnApi = params.columnApi;
