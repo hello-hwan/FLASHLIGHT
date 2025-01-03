@@ -61,7 +61,7 @@ export default {
 <style>
 button {
     height: 30px;
-    line-height: 0.3;
+    line-height: 1;
 }
 .btn-primary {
     --bs-btn-color: #fff;

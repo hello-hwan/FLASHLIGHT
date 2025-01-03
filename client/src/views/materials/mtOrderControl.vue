@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
             <template v-slot:title>
                 <span class="font-weight-black">
                     발주 관리
@@ -38,7 +38,7 @@
                     rowSelection="multiple"
                     class="ag-theme-alpine"
                     @grid-ready="onGridReady"
-                    style="height: 285px;">
+                    style="height: 308px;">
                     </AgGridVue>
                 </v-card-text>
             </v-card>
@@ -105,6 +105,9 @@ import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import { useToast } from 'primevue/usetoast';
 
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
+
 
 //발주건 검색 모달
 import orderSearchModal from '@/components/materials/orderControlModal.vue';
@@ -136,8 +139,8 @@ let companyName = "";
 //거래처 코드
 let companyCode = "";
 //담당자
-let empId = 100;
-
+let empId = store.state.empInfo[store.state.empInfo.length-1].user_id;
+//console.log(empId);
 //자식 컴포넌트로부터 받은 데이터 담을 변수
 const orderCode = ref("");
 
@@ -221,7 +224,11 @@ const mtListColDefs = [
 //ag grid 요청테이블 옵션 설정
 const reqGridOptions = {
       columnDefs: reqColDefs,
-      animateRows: false
+      animateRows: false,
+      pagination: true,
+      paginationPageSize: 5,
+      paginationPageSizeSelector: [5, 10, 20],
+      paginateChildRows: true
 };
 
 //자재 목록 테이블 옵션 설정
@@ -376,6 +383,12 @@ const insertMtOrderList = async() => {
     //유효성 검사
     for(let i=0; i<rowData.length; i++) {
 
+        try{
+            if(rowData[i].dedt.length>0);
+        } catch {
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
+            return;
+        }
         //주문날짜 오늘날짜로 설정
         rowData[i].order_date = customDateToday();
 
@@ -392,8 +405,8 @@ const insertMtOrderList = async() => {
             //발주명, 거래처명 이 비어있으면 오류
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명, 거래처 명을 확인해주세요.', life: 3000 });
             return;
-        } else if (rowData[i].dedt.length == 0 ) {
-            //주문수량이 비어 있으면 오류 메세지 출력
+        } else if (rowData[i].dedt.length == 0 || rowData[i].dedt == undefined) {
+            //납기일이 비어 있으면 오류 메세지 출력
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
             return;
         } else if (orderName.length > 20) {
@@ -427,7 +440,8 @@ const insertMtOrderList = async() => {
         //입력 데이터 보내기
         let result = await axios.post(`${ajaxUrl}/mtril/insertMtOrderList`, rowData)
                                  .catch(err=>console.log(err));
-        
+                                
+        console.log('등록 작동');
         console.log('결과 ', result);
         if(result.data == 'success') {
             toast.add({ severity: 'success', summary: '발주 등록 완료', detail: '처리가 완료되었습니다.', life: 3000 });
@@ -618,7 +632,7 @@ const removeAllInfo = () => {
     display: inline-block;
     margin-top: 10px;
     position:relative;
-    right: -40%;
+    right: -78%;
 }
 
 </style>

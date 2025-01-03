@@ -2,6 +2,7 @@
 
 const orderRequest = `
 SELECT r.order_no,
+       r.p_code,
        b.mtlty_name,
        r.order_date,
        r.dete,
@@ -54,18 +55,24 @@ SELECT bcnc_code,
 FROM bcnc
 WHERE bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
 AND mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
-AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')`
+AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')`;
 
 const bs_orderArray = `
 SELECT order_no
 FROM order_requst
-`
+`;
 
 const bs_searchProduct=`
 SELECT prdlst_code, prdlst_name
 FROM repduct
 WHERE prdlst_code LIKE CONCAT('%', IFNULL(?, prdlst_code), '%')
-AND prdlst_name LIKE CONCAT('%', IFNULL(?, prdlst_name), '%')`
+AND prdlst_name LIKE CONCAT('%', IFNULL(?, prdlst_name), '%')`;
+
+const bs_modifyCheck = `
+SELECT IFNULL( count(p.mnfct_no), 0) as count
+FROM order_lists o JOIN prdctn_plan p
+                    ON o.order_list_no = p.order_list_no
+WHERE UPPER( o.order_no ) = UPPER( ? )`;
 
 module.exports = {
     orderRequest,
@@ -74,7 +81,8 @@ module.exports = {
     orderRequestDelete,
     bs_searchCompany,
     bs_orderArray,
-    bs_searchProduct
+    bs_searchProduct,
+    bs_modifyCheck
 };
 
 

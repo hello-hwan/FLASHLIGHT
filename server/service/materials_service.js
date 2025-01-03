@@ -56,6 +56,8 @@ const requestList = async() => {
 const requestMt = async(reqCode) => {
     //요청 리스트 가져오기
     let reqMtList = await mariaDB.query('mt_requestDetails', reqCode);
+    console.log('작동');
+    console.log(reqMtList);
 
     //새로운 데이터를 담을 배열 선언(객체들의 배열이 됨)
     let dataList = [];
@@ -69,7 +71,7 @@ const requestMt = async(reqCode) => {
 
         let lotListEachMt = await mariaDB.query('mt_lotInvenList', reqMtList[i].mt_code) 
                                          .catch(err=>console.log(err));
-
+        console.log(lotListEachMt);
         //반복 획수, 검색 결과가 0일때를 위한 임시변수 선언
         let roopCnt = lotListEachMt.length == 0 ? 1 : lotListEachMt.length;
         // if(lotListEachMt.length == 0) {
@@ -236,7 +238,7 @@ const insertMtToOrder = async(orderMtList) => {
             orderMtList[i].company_code,
             orderMtList[i].order_name,
             orderMtList[i].company_name,
-            orderMtList[i].price,
+            orderMtList[i].price == null ? 0 : orderMtList[i].price,
             key == '' ? 'none': key
         ];
 
@@ -302,7 +304,7 @@ const mtOrderModify = async(modifyInfo) => {
             modifyInfo[i].order_date,
             modifyInfo[i].order_name,
             modifyInfo[i].order_qy,
-            modifyInfo[i].price,
+            modifyInfo[i].price == null ? 0 : modifyInfo[i].price,
             modifyInfo[i].state,
             modifyInfo[i].unit,
             modifyInfo[i].order_code

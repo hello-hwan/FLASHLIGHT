@@ -155,12 +155,13 @@ AND     m.mtlty_name LIKE CONCAT('%', IFNULL(?, m.mtlty_name), '%')
 AND     m.order_date BETWEEN IFNULL(?, m.order_date) AND IFNULL(?, m.order_date)
 AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
 AND     t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
-ORDER BY m.order_date desc
+ORDER BY m.order_no desc
 `;
 //자재 발주 조회 pdf출력용 - mt005
 const mt_selectOrderListForPDF = 
 `
-SELECT  m.order_name AS order_name,
+SELECT  m.order_code AS order_code,
+        m.order_name AS order_name,
         m.mtlty_name AS mtlty_name,
         m.order_date AS order_date,
         m.dedt AS dedt,
@@ -174,6 +175,7 @@ AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
 AND     s.empl_no IN (SELECT t.empl_no
                       FROM   empl t
                       WHERE  t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%'))
+GROUP BY m.order_code
 ORDER BY m.order_no DESC
 `;
 //발주서 양식에 들어가는 정보 
@@ -279,7 +281,7 @@ WHERE    m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name) ,'%')
 AND      m.wrhousng_se LIKE CONCAT('%', IFNULL(?, m.wrhousng_se), '%')
 AND      t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
 AND      m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
-ORDER BY m.wrhousng_date desc
+ORDER BY m.wrhousng_date DESC, m.mtril_lot DESC;
 `;
 
 //자재 출고 관리 - mt009 요청가져오기

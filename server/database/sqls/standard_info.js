@@ -375,6 +375,17 @@ const delete_empl =
  SET retire_day = NOW()
  WHERE empl_no = ?`;
 
+ //로그인을 위한 select
+ const loginSelect =
+ `
+ SELECT empl_no,
+        password,
+        empl_name,
+        dept_se
+ FROM   empl
+ WHERE  empl_no = ?
+ AND    password = ?
+ `;
 
 module.exports = {
   bom,
@@ -416,5 +427,6 @@ module.exports = {
   insert_empl, 
   search_pw, 
   update_empl, 
-  delete_empl
+  delete_empl,
+  loginSelect
 };

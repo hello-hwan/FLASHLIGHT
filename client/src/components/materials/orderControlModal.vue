@@ -28,7 +28,7 @@
                         <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
                     </div>
                 </div>
-                <div>
+                <div style="width: 100%; text-align: center;">
                     <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                 >
             </AgGridVue>
             
-            <div class="modal-btn">
+            <div class="modal-btn" style="text-align: center;">
             <button @click="modalOpen"class="btn btn-secondary">닫기</button>
             <button @click="selectOrder" class="btn btn-primary">확인</button>
             </div>
@@ -62,6 +62,7 @@ import { ajaxUrl } from '@/utils/commons.js';
 
 const props = defineProps(['state']);
 let state = ref(props.state);
+
 //부모 행 삭제를 위해서 사용하는 emit
 const emit = defineEmits(["selectedData"]);
 
@@ -235,7 +236,7 @@ const searchOrder = async() => {
 }
 .search-bar>:first-child{
     position: relative;
-    left: -50px;
+    left: 1%;
 }
 .search-bar :first-child span {
     display: inline-block;

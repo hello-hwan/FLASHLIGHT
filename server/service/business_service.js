@@ -39,6 +39,7 @@ const findOrderRequestByNo = async (keywords)=>{
     return orderInfo;
 };
 
+
 // 삭제
 const deleteOrderRequestByOrderNo = async (keywords)=>{
     await mariaDB.query('orderRequestDelete',keywords);
@@ -60,6 +61,12 @@ const searchProductModal = async(key)=>{
     return result;
 }
 
+// 주문 수정 가능여부 체크
+const modifyOrderListByNo = async (keywords)=>{
+    let orderModify = await mariaDB.query('bs_modifyCheck',keywords);
+    return orderModify;
+}
+
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
@@ -67,5 +74,6 @@ module.exports = {
     findOrderRequestByNo,
     searchCompanyModal,
     findOrderArray,
-    searchProductModal
+    searchProductModal,
+    modifyOrderListByNo
 };

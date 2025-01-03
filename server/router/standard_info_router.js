@@ -319,4 +319,11 @@ router.put('/delete_empl/:empl_no', async (req, res) => {
   res.send(result);
 });
 
+//로그인 
+router.post('/login', async(req, res) => {
+  let loginInfo = req.body;
+  let result = await standard_info_service.loginService(loginInfo);
+  res.send(result);
+});
+
 module.exports = router;     

@@ -267,6 +267,17 @@ const delete_empl = async (list) => {
   await mariaDB.query('delete_empl', list);
 }
 
+//로그인 서비스
+const loginService = async (info) => {
+  let infoArr = [info.empl_no,
+                 info.password]; 
+                 console.log(infoArr);
+  let result = await mariaDB.query('loginSelect', infoArr)
+                            .catch(err=>console.log(err));
+  console.log(result);
+  return result;
+};
+
 module.exports = {
   cmmntest,
   bomtest,
@@ -308,5 +319,6 @@ module.exports = {
   insert_empl, 
   search_pw, 
   update_empl, 
-  delete_empl
+  delete_empl,
+  loginService
 };
