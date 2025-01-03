@@ -1,5 +1,5 @@
 <template>
-    <Button @click="onButtonClicked" label="입고" severity="success" />
+    <button @click="onButtonClicked" class="btn btn-primary" style="line-height: 0;" >입고</button>
 </template>
 
 <script setup>
