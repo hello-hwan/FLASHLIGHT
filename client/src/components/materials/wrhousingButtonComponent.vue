@@ -65,19 +65,19 @@ button {
 }
 .btn-primary {
     --bs-btn-color: #fff;
-    --bs-btn-bg: #1bc95b;
-    --bs-btn-border-color: #1bc95b;
+    --bs-btn-bg: #2c4f91;
+    --bs-btn-border-color: #2c4f91;
     --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #11813a;
-    --bs-btn-hover-border-color: #11813a;
+    --bs-btn-hover-bg: #607D8B;
+    --bs-btn-hover-border-color: #607D8B;
     --bs-btn-focus-shadow-rgb: 49, 132, 253;
     --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #11813a;
-    --bs-btn-active-border-color: #11813a;
+    --bs-btn-active-bg: #607D8B;
+    --bs-btn-active-border-color: #607D8B;
     --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
     --bs-btn-disabled-color: #fff;
-    --bs-btn-disabled-bg: #11813a;
-    --bs-btn-disabled-border-color: #11813a;
+    --bs-btn-disabled-bg: #607D8B;
+    --bs-btn-disabled-border-color: #607D8B;
 }
 
 </style>

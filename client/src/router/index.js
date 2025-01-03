@@ -36,6 +36,9 @@ import kioskRoutes from './kioskRoute';
 */
 
 const router = createRouter({
+    scrollBehavior() {
+      return {top: 0};
+    },
     history: createWebHistory(),
     routes: [
         {
