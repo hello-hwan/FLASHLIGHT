@@ -78,7 +78,7 @@
                         </th>
                         <th>
                             <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                type="text" v-model="phone" size="10">
+                                type="text" v-model="phone" size="15">
                         </th>
                     </tr>
                     <tr>
@@ -111,32 +111,32 @@
                     </tr>
                 </thead>
             </table>
-            <div>
-                <button type="button" class="btn btn-primary" style="color: white; width: 75px; margin: 10px;"
+            <div style="text-align: center;">
+                <button type="button" class="btn btn-primary" style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
                     @click="add_btn()">등록</button>
-                <button type="button" class="btn btn-info" style="color: black; width: 75px; margin: 10px;"
+                <button type="button" class="btn btn-info" style="color: black; margin: 2px 5%; padding: 2px; width: 75px;"
                     @click="reset_btn()">초기화</button>
             </div>
-            <div>
-                <button type="button" class="btn btn-warning" style="color: black; width: 75px; margin: 10px;"
+            <div style="text-align: center;">
+                <button type="button" class="btn btn-warning" style="color: black; margin: 2px 5%; padding: 2px; width: 75px;"
                     @click="edit_btn()">수정</button>
-                <button type="button" class="btn btn-danger" style="color: white; width: 75px; margin: 10px;"
+                <button type="button" class="btn btn-danger" style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
                     @click="delete_btn()">삭제</button>
             </div>
-            <div style="height: 60px; background-color: lightgray; margin-left: auto;" v-show="edit_div">
-                <p>아래에 현재 비밀번호를 입력하고 버튼을 누르면 변경됩니다.</p>
-                <input style="background-color: lightsteelblue;" type="text" v-model="edit_input" size="9">
-                <button type="button" class="btn btn-primary" style="color: white; margin: 2px;"
+            <div style="height: auto; background-color: lightgray; margin-left: auto;" v-show="edit_div">
+                <p style="margin: 2px; padding: 2px;">아래에 현재 비밀번호를 입력하고 버튼을 누르면 변경됩니다.</p>
+                <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="edit_input" size="9">
+                <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;"
                     @click="edit_cansle_button()">취소</button>
-                <button type="button" class="btn btn-danger" style="color: white; margin: 2px;"
+                <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;"
                     @click="real_edit_btn()">변경</button>
             </div>
-            <div style="height: 60px; background-color: lightgray; margin-left: auto;" v-show="delete_div">
-                <p>아래에 퇴사할 사원번호를 입력하고 버튼을 누르면 퇴사합니다.</p>
-                <input style="background-color: lightsteelblue;" type="text" v-model="delete_input" size="9">
-                <button type="button" class="btn btn-primary" style="color: white; margin: 2px;"
+            <div style="height: auto; background-color: lightgray; margin-left: auto;" v-show="delete_div">
+                <p style="margin: 2px; padding: 2px;">아래에 퇴사할 사원번호를 입력하고 버튼을 누르면 퇴사합니다.</p>
+                <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="delete_input" size="9">
+                <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;"
                     @click="delete_cansle_button()">취소</button>
-                <button type="button" class="btn btn-danger" style="color: white; margin: 2px;"
+                <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;"
                     @click="real_delete_btn()">퇴사</button>
             </div>
         </div>
@@ -176,7 +176,7 @@
                             </th>
                             <th>
                                 <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                    type="text" v-model="phone_search" size="10">
+                                    type="text" v-model="phone_search" size="15">
                             </th>
                             <th>
                                 <select class="form-select" aria-label="Default select example" v-model="dept_se_search"
@@ -301,6 +301,8 @@ export default {
                     this.author = this.rowData[i].author;
                 }
             }
+            this.edit_div = false;
+            this.delete_div = false;
         },
         async input_change() {
             let result = await axios.get(`${ajaxUrl}/search_empl/?empl_no_search=${this.empl_no_search}&empl_name_search=${this.empl_name_search}&phone_search=${this.phone_search}&author_selected=${this.dept_se_search}`)
@@ -348,7 +350,8 @@ export default {
             this.author = '';
         },
         edit_btn() {
-            this.edit_div = true;
+            this.edit_div = !this.edit_div;
+            this.delete_div = false;
         },
         edit_cansle_button() {
             this.edit_input = '';
@@ -375,7 +378,8 @@ export default {
             }
         },
         delete_btn() {
-            this.delete_div = true;
+            this.delete_div = !this.delete_div;
+            this.edit_div = false;
         },
         delete_cansle_button() {
             this.delete_input = '';
