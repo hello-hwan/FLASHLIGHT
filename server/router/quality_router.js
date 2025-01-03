@@ -4,38 +4,37 @@ const express = require('express');
 const router = express.Router();
 const qualityService = require('../service/quality_service.js')
 
-//발주요청
-router.get('/quality/order_request', async(req, res) =>{
-    let reNo = req.query.mt_info;    
-    let result = await qualityService.order_request(reNo).catch(err => console.log(err));
+/*태백 작업 */
+
+//자재 발주 목록 가져오기(검사 완료 항목 제외)
+router.post('/quality/mtrilOrderList', async(req, res) =>{
+    let orderInfo = req.body;    
+    let result = await qualityService.mtrilOrderList(orderInfo)
+                                     .catch(err => console.log(err));
     res.send(result);
 });
 
-//검사항목
-router.get('/quality/inspec_item', async(req, res) =>{
-    let reNo = req.query.in_info;    
-    let result = await qualityService.inspec_item(reNo);
+//발주건 자재 목록 가져오기
+router.get('/quality/mtrilList/:orderCode', async(req, res) =>{
+    let ordercode = req.params.orderCode;    
+    let result = await qualityService.mtrilList(ordercode)
+                                     .catch(err => console.log(err));
     res.send(result);
 });
 
-//등록
-router.post(`/quality/quailtyInsert`, async(req, res) =>{
-    let order_request=req.body;
-    let result = await qualityService.quailtyInsert(order_request);
+//입고 검사 결과 등록하기
+router.post('/quality/insertQiList', async(req, res) => {
+    let insInfo = req.body;
+    let result = await qualityService.insertResult(insInfo)
+                                     .catch(err => console.log(err));
     res.send(result);
 });
 
 //검사결과조회
-router.get('/quality/qiResult', async(req, res) =>{
-    let reNo = req.query.re_info;    
-    let result = await qualityService.qiResult(reNo).catch(err => console.log(err));
-    res.send(result);
-});
-
-//검사결과조회2
-router.get('/quality/qiResult2', async(req, res) =>{
-    let reNo = req.query.re_info;    
-    let result = await qualityService.qiResult2(reNo).catch(err => console.log(err));
+router.post('/quality/qiResult', async(req, res) =>{
+    let searchKey = req.body;    
+    let result = await qualityService.qiResultList(searchKey)
+                                     .catch(err => console.log(err));
     res.send(result);
 });
 

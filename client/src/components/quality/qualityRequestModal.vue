@@ -1,53 +1,54 @@
 <template>
-    <span style="margin-left:20px">
+    <span style="margin-left:20px;">
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;" v-if="state == 'pdf'">PDF 내보내기</button>
-        <button type="button" @click="modalOpen"
-        class="btn btn-primary"
-        style="line-height: 1px; color: #fff;" v-else-if="state == 'order'">발주건 조회</button>
+        style="line-height: 1px; color: #fff;">발주건 조회</button>
 
-        <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
-        <div class="modal-container" @click.stop="">
-            <div class="search-bar">
-                <div>
-                    <span>발주명 </span>
-                    <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrder">> <p>{{ orderName }}</p></InputText><br>
-                    <span>거래처명 </span>
-                    <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText><br>
-                    <span>담당자</span>
-                    <InputText type="text" v-model="empName" v-on:keyup.enter="searchOrder"> <p>{{ empName }}</p></InputText>
-                </div>
-                <div>
-                    <span>발주일 </span>
-                    <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
-                    <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText><br>
-                    <div> 
-                        <span>납기일 </span>
-                        <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
-                        <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
+        <!--z-index가 작동이 안되어 부모의 ag grid테이블이 모달을 가리는 상황이었으나 teleport를 사용하여 부모 컴포넌트의 바디에 바로 열어주었다.-->
+        <teleport to="body">
+            <div class="modal-wrap" @click="modalOpen" v-if="modalCheck">
+            <div class="modal-container" @click.stop="">
+                <div class="search-bar">
+                    <div>
+                        <span>발주명 </span>
+                        <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrder">> <p>{{ orderName }}</p></InputText><br>
+                        <span>거래처명 </span>
+                        <InputText type="text" v-model="company" v-on:keyup.enter="searchOrder"> <p>{{ company }}</p></InputText><br>
+                        <span>담당자</span>
+                        <InputText type="text" v-model="empName" v-on:keyup.enter="searchOrder"> <p>{{ empName }}</p></InputText>
+                    </div>
+                    <div>
+                        <span>발주일 </span>
+                        <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
+                        <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText><br>
+                        <div> 
+                            <span>납기일 </span>
+                            <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
+                            <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
+                        </div>
+                    </div>
+                    <div style="width: 100%; text-align: center;">
+                        <button @click="removeSearchKey"class="btn btn-secondary search-btn" >초기화</button>
+                        <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
                     </div>
                 </div>
-                <div style="width: 100%; text-align: center;">
-                    <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
+                
+                <AgGridVue 
+                    :rowData="orderRowData"
+                    :gridOptions="GridOptions"
+                    class="ag-theme-alpine"
+                    style="height: 500px"
+                    @grid-ready="onGridReady"
+                    >
+                </AgGridVue>
+                
+                <div class="modal-btn" style="text-align: center;">
+                <button @click="modalOpen"class="btn btn-secondary">닫기</button>
+                <button @click="selectOrder" class="btn btn-primary">확인</button>
                 </div>
             </div>
-            
-            <AgGridVue 
-                :rowData="orderRowData"
-                :gridOptions="GridOptions"
-                class="ag-theme-alpine"
-                style="height: 500px"
-                @grid-ready="onGridReady"
-                >
-            </AgGridVue>
-            
-            <div class="modal-btn" style="text-align: center;">
-            <button @click="modalOpen"class="btn btn-secondary">닫기</button>
-            <button @click="selectOrder" class="btn btn-primary">확인</button>
             </div>
-        </div>
-        </div>
+        </teleport>
     </span>
 </template>
 
@@ -61,19 +62,18 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
 const props = defineProps(['state']);
-let state = ref(props.state);
 
 //부모 행 삭제를 위해서 사용하는 emit
 const emit = defineEmits(["selectedData"]);
 
 //검색조건
-let orderName = null;
-let company = null;
-let startOrderDate = null;
-let endOrderDate = null;
-let startDedt = null;
-let endDedt = null;
-let empName = null;
+let orderName = ref(null);
+let company = ref(null);
+let startOrderDate = ref(null);
+let endOrderDate = ref(null);
+let startDedt = ref(null);
+let endDedt = ref(null);
+let empName = ref(null);
 
 //날짜 포멧
 const customDateFormat = (params) => {
@@ -112,21 +112,21 @@ const modalOpen = () => {
     orderRowData.value = [];
     
     //검색조건 초기화
-    orderName = null;
-    company = null;
-    startOrderDate = null;
-    endOrderDate = null;
-    startDedt = null;
-    endDedt = null;
-    empName = null;
-}
+    orderName.value = "";
+    company.value = "";
+    startOrderDate.value = "";
+    endOrderDate.value = "";
+    startDedt.value = "";
+    endDedt.value = "";
+    empName.value = "";
+};
 
 //모달 발주건을 선택하고 확인버튼 클릭
 const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
     const selectedData = selectedNodes.map((node) => node.data);
-    console.log('선택된 행 데이터:', selectedData);
+    //console.log('선택한 발주 코드:', selectedData[0]);
     emit("selectedData", selectedData);
 };
 //행 데이터를 담을 변수
@@ -134,13 +134,15 @@ const orderRowData = ref([]);
 
 //열 정보: 번호, 자재코드, 자재명, 거래처명, 선택
 const ColDefs = [
-  { field: "order_no", headerName: "발주번호",  suppressToolPanel: true},
-  { field: "order_code", headerName: "자재코드", suppressToolPanel: true},
-  { field: "order_name", headerName: "자재명"},
-  { field: "bcnc_code", headerName:"거래처 코드", suppressToolPanel: true },
-  { field: "mtlty_name", headerName:"거래처 명"},
-  { field: "order_qy", headerName: "발주량", valueFormatter:customDateFormat, flex:0.8},
-  {headerName : "선택",  checkboxSelection: true, flex:0.3} 
+  { field: "order_no", headerName: "발주번호", flex:1, hide: true},
+  { field: "order_code", headerName: "발주코드", flex:1, hide: true},
+  { field: "order_name", headerName: "발주명", flex:1},
+  { field: "bcnc_code", headerName:"거래처 코드", flex:1 },
+  { field: "mtlty_name", headerName:"거래처 명", flex:1},
+  { field: "order_date", headerName: "발주일", valueFormatter: customDateFormat, flex:1},
+  { field: "dedt", headerName: "납기일", valueFormatter: customDateFormat, flex:1},
+  { field: "empl_name", headerName: "담당자", flex:1},
+  {headerName : "선택",  checkboxSelection: true, flex:0.5} 
 ];
 
 const GridOptions = {
@@ -153,25 +155,37 @@ const GridOptions = {
 
 const searchOrder = async() => {
     //서버로 보낼 검색 데이터
-    let obj = {order_name: orderName, 
-               mtlty_name: company,
-               start_order: startOrderDate,
-               end_order: endOrderDate,
-               start_dedt: startDedt,
-               end_dedt: endDedt,
-               emp_name: empName
+    let obj = {order_name: orderName.value, 
+               mtlty_name: company.value,
+               start_order: startOrderDate.value,
+               end_order: endOrderDate.value,
+               start_dedt: startDedt.value,
+               end_dedt: endDedt.value,
+               emp_name: empName.value
                 };
     console.log("새로만든 객체: ",obj);
-    let result = [];
-     {
-        result = await axios.get(`${ajaxUrl}/quality/order_request`, obj)
+    let result = await axios.post(`${ajaxUrl}/quality/mtrilOrderList`, obj)
                             .catch(err=>console.log(err));   
-    };
 
 
-    //console.log("통신결과: ",result);
+
+    console.log("통신결과: ",result);
     //행 데이터 담기
     orderRowData.value = result.data;   
+};
+
+//검색 데이터 삭제
+const removeSearchKey = () => {
+    orderRowData.value = []
+    orderName.value = "";
+    company.value = "";
+    startOrderDate.value = "";
+    endOrderDate.value = "";
+    startDedt.value = "";
+    endDedt.value = "";
+    empName.value = "";
+    //화면에 데이터 삭제 후 전체검색
+    searchOrder();
 };
 </script>
 
@@ -184,7 +198,7 @@ const searchOrder = async() => {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 3;
+  z-index: 9999;
 }
 /* modal or popup */
 .modal-container {
