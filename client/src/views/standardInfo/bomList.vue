@@ -157,7 +157,7 @@ import bfSearchCompanyModal from '@/components/standardInfo/ModalTest.vue';
   
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-import { useToast } from 'primevue/usetoast';
+
 
   export default {
     data() {
@@ -190,7 +190,6 @@ import { useToast } from 'primevue/usetoast';
         remarks: "", 
         rowCount: 0,
         isNewRow: true,
-        toast: useToast()
       };
 
     },
@@ -411,7 +410,7 @@ import { useToast } from 'primevue/usetoast';
         let result = axios.put(`${ajaxUrl}/bomUpdate/${this.rowData[0].bom_code}`, info)
                              .catch(err => console.log(err)); 
         if(result){
-          //toast.add({ severity: 'success', summary: '등록', detail: '등록성공', life: 3000 });
+          
         }
         
       },
