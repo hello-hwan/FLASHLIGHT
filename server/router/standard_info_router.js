@@ -22,6 +22,7 @@ router.get('/bom', async (req, res) => {
 router.get('/bom/:bomCode', async (req, res) => {
   let bomCode = req.params.bomCode;
   let info = await standard_info_service.bomInfo(bomCode);  
+  console.log(info);
   res.send(info);
 });
 

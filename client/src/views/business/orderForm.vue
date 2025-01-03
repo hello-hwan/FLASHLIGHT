@@ -20,7 +20,7 @@
                     <div class="col-auto">
                         <bfSearchCompanyModal @companySelectedData="getBFCompanyInfo"  />
                     </div> -->
-                    <bfSearchCompanyModal @companySelectedData="getBFCompanyInfo"style="margin:0px; padding: 0px;" />
+                    <bfSearchCompanyModal @companySelectedData="getBFCompanyInfo" style="margin:0px; padding: 0px;" />
                 </div>
                 <div class="row g-3 align-items-center">
                     <div class="col-2">
@@ -60,7 +60,7 @@
                     <button type="button" class="btn btn-success" @click="orderInsert()" style="color:white;">주문등록</button>
                     <button type="button" class="btn btn-warning" @click="onInsertInit()" >초기화</button>
                     <button type="button" class="btn btn-danger orderRowInsert" @click="deleteBtn()" style="color:white;">선택행삭제</button>
-                    <button type="button" class="btn btn-success orderRowInsert" @click="onAddRow()" style="color:white;">행추가</button>
+                    <button type="button" class="btn btn-success orderRowInsert" @click="modalOpen2()" style="color:white;">행추가</button>
                 </div>
             </v-card-text>
           </v-card>
@@ -95,6 +95,7 @@
                     class="ag-theme-alpine"
                     style="height: 500px"
                     @grid-ready="onGridReady2"
+                    rowSelection="multiple"
                 >
                 </AgGridVue>
     
@@ -129,21 +130,25 @@ export default {
             colDefs2:'', 
             requst:{}, 
             companyCode: '', 
-            productName:'', 
-            productCode:'', 
             searchProductCode:'', 
             searchProductName:'', 
-            modalCheck2 : false
+            modalCheck2 : false, 
+            index : 0,
         }; 
     }, 
     created() { 
         this.getOrderListNo();
-        this.onAddRow(); 
+        // this.onAddRow(); 
         this.colDefs = ref([ 
-            { field: "prd_code", headerName:"품목코드", checkboxSelection: true, onCellClicked:() => {
+            { field: "index", hide: true, suppressToolPanel: true},
+            { field: "prd_code", headerName:"품목코드", checkboxSelection: true /*, onCellClicked:() => {
                 this.modalOpen2();
                 //this.$refs.bsProduct.modalCheck=ref(true);
-            } }, 
+            } */}, 
+            { field: "prd_name", headerName:"품목이름" /*, onCellClicked:() => {
+                this.modalOpen2();
+                //this.$refs.bsProduct.modalCheck=ref(true);
+            } */}, 
             { field: "untpc", headerName:"주문단가", editable: true }, 
             { field: "order_qy", headerName:"주문수량", editable: true }, 
             { field: "wrter", headerName:"작성자", editable: true } 
@@ -163,8 +168,8 @@ export default {
                 } 
         }; 
         this.colDefs2 = [
-            { field: "bcnc_code", headerName: "발주번호"},
-            { field: "mtlty_name", headerName: "발주코드"},
+            { field: "prdlst_code", headerName: "제품코드"},
+            { field: "prdlst_name", headerName: " 제품이름"},
             { headerName : "선택",  checkboxSelection: true, flex:0.3}];
         this.GridOptions2 = {
             columnDefs: this.colDefs2,
@@ -185,8 +190,8 @@ export default {
             this.columnApi = params.columnApi; 
         }, 
         onGridReady2(params) { 
-            this.gridApi = params.api; 
-            this.columnApi = params.columnApi; 
+            this.gridApi2 = params.api; 
+            this.columnApi2 = params.columnApi; 
         }, 
         async orderInsert() { 
             for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
@@ -195,73 +200,65 @@ export default {
                 console.log(orderRegister); 
                 let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
                                              .catch(err=>console.log(err)); 
-                console.log("결과는"); 
-                console.log(result); 
-                let addRes = result.data; 
-                if(addRes.result){ 
-                    alert(`등록되었습니다.`); 
-                } 
+                console.log("결과는", result); 
             } 
+            alert(`등록되었습니다.`); 
+            //this.$router.push({path : 'orderForm'});
+            
         }, 
         customDateFormat1(params){
             return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd');
         },
         customDateFormat2(params){
             return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd');
-        },/*
-        getAllRows() {
-            console.log("DOM 객체");
-            console.log(this.gridApi.getRenderedNodes()); // 배열, [0].data.prd_code로 가져옴
-            console.log("0번 데이터");
-            console.log(this.gridApi.getRenderedNodes()[0].data);
-            //console.log("0번데이터 공급가액"+this.gridApi.getRenderedNodes()[0].data.splpc);
-            console.log("DOM 객체 길이"+this.gridApi.getRenderedNodes().length);
-            for ( let i = 0; i < this.gridApi.getRenderedNodes().length; i++){
-                this.rowData[i] = this.gridApi.getRenderedNodes()[i].data;
-                console.log(this.rowData[i]);
+        },
+        selectOrder2 () {
+            console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
+            this.modalOpen2();
+            console.log('선택된 제품 값',this.gridApi2.getSelectedNodes());
+            const selectedNodes = this.gridApi2.getSelectedNodes();
+            const productSelectedData = selectedNodes.map((node) => node.data);
+            console.log('모달에서 선택된 행 데이터:', productSelectedData[0].prdlst_code);
+            let rowCount = this.rowData.find(data => data.prd_code == productSelectedData[0].prdlst_code);
+            if(rowCount == null){
+                let newData = {
+                    index: this.index,
+                    prd_code:productSelectedData[0].prdlst_code, 
+                    prd_name:productSelectedData[0].prdlst_name, 
+                    untpc: 0, 
+                    order_qy: 0,
+                    wrter:"김기환"
+                };
+                this.index = this.index + 1;
+                console.log('뉴데이터값은',newData);
+                this.rowData = [...this.rowData, newData];
+                console.log(this.rowData);
+            } else{
+                alert('제품코드가 중복됩니다.');
             }
-        },*/
-        onAddRow(){
-            let newData = {
-                order_list_no: "ORDER-00-0",
-                prd_code:"PRD-01", 
-                untpc: 0, 
-                order_qy: 0,
-                wrter:"김기환"
-            };
-            this.rowData = [...this.rowData, newData];
-            // this.rowData.push(newData);
-            console.log(this.rowData);
         },
         deleteBtn(){ 
             const selectedNodes = this.gridApi.getSelectedNodes(); 
-            console.log(selectedNodes); 
+            console.log(selectedNodes);
             for (let i = 0 ; i < selectedNodes.length ; i ++){ 
                 let result_arr = []; 
-                console.log(selectedNodes[i].data.order_list_no); 
+                console.log(selectedNodes[i].data.index); 
                 for(let j = 0 ; j < this.rowData.length; j++){ 
-                    if(this.rowData[j].order_list_no == selectedNodes[i].data.order_list_no){ 
+                    if(this.rowData[j].index == selectedNodes[i].data.index){ 
                         continue; 
                     } 
                     result_arr = [...result_arr,this.rowData[j]]; 
                 } 
                 this.rowData=result_arr; 
             } 
-        } ,
+        },
         onInsertInit(){
             this.requst = {
-                p_code : "BCNC-01", 
+                p_code : "", 
                 order_date :"2024-12-28", 
                 dete : "2025-08-17", 
-                order_no : "ORDER-00"
-            },
-            this.rowData = [{
-                order_list_no: "ORDER-00-0",
-                prd_code:"PRD-01", 
-                untpc: 0, 
-                order_qy: 0,
-                wrter:"김기환"
-            }]; 
+                order_no : this.requst.order_no
+            };
         }, 
         getBFCompanyInfo(info){
             this.requst.p_code = info[0].bcnc_code;
@@ -274,39 +271,25 @@ export default {
             orderNoArray.sort((a,b) => b-a);
             this.requst.order_no = 'ORDER-' + ( orderNoArray[0] - 1 + 2 );
             console.log(this.requst.order_no);
-
         },
         modalOpen2 () {
             this.modalCheck2 = !this.modalCheck2;
             console.log(this.modalCheck2);
                 //행 데이터 초기화
-                this.rowData.value = [];
+                this.rowData2 = [];
     
                 //검색조건 초기화
                 this.searchProductCode = null;
                 this.searchProductName = null;
         },
         //모달 발주건을 선택하고 확인버튼 클릭
-        selectOrder2 ()  {
-            this.modalOpen2();
-            console.log(this.gridApi.getRenderedNodes());
-            const selectedNodes = this.gridApi.getRenderedNodes();
-            const productSelectedData = selectedNodes.map((node) => node.data);
-            console.log('모달에서 선택된 행 데이터:', productSelectedData);
-            //this.productName = productSelectedData[0].mtlty_name;
-            //this.productCode = productSelectedData[0].bcnc_code;
-
-            console.log(this.productName, this.productCode);
-            // emit("productSelectedData", productSelectedData);
-        },
-
         async searchProduct ()  {
             //서버로 보낼 검색 데이터
             let obj = {product_code: this.searchProductCode,
                     product_name: this.searchProductName
             };
             //console.log("새로만든 객체: ",obj);
-            let result = await axios.post(`${ajaxUrl}/business/searchCompany`, obj)
+            let result = await axios.post(`${ajaxUrl}/business/searchProduct`, obj)
                                     .catch(err=>console.log(err));
 
             //console.log("통신결과: ",result);

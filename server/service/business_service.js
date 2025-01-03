@@ -39,6 +39,7 @@ const findOrderRequestByNo = async (keywords)=>{
     return orderInfo;
 };
 
+
 // 삭제
 const deleteOrderRequestByOrderNo = async (keywords)=>{
     await mariaDB.query('orderRequestDelete',keywords);
@@ -52,11 +53,27 @@ const searchCompanyModal = async(key)=>{
     return result;
 }
 
+// 제품 검색
+const searchProductModal = async(key)=>{
+    let searchKey = [key.product_code, key.product_name];
+    let result = await mariaDB.query('bs_searchProduct', searchKey)
+                              .catch(err=>console.log(err));
+    return result;
+}
+
+// 주문 수정 가능여부 체크
+const modifyOrderListByNo = async (keywords)=>{
+    let orderModify = await mariaDB.query('bs_modifyCheck',keywords);
+    return orderModify;
+}
+
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
     deleteOrderRequestByOrderNo,
     findOrderRequestByNo,
     searchCompanyModal,
-    findOrderArray
+    findOrderArray,
+    searchProductModal,
+    modifyOrderListByNo
 };

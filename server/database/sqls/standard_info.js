@@ -12,13 +12,23 @@ FROM bom`;
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
+       ,bc.cmpds_prdlst_code
 	,bc.cmpds_prdlst_name
+       ,bc.stndrd_x
 	,bc.stndrd_y
+       ,bc.stndrd_z
        ,bc.unit 
        ,bc.cnsum_count
+       ,b.sumry
 FROM bom b JOIN bom_cmpds bc  
 on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
+
+// BOM 업데이트
+const bomUpdate = 
+`UPDATE bom
+set ?
+where bom_code = ?`;
 
 // BOM 등록 쿼리
 const bomInsert =  
@@ -34,7 +44,9 @@ const bomManage =
        ,b.prdctn_qy
 	,c.cmpds_prdlst_code
 	,c.cmpds_prdlst_name
+       ,c.stndrd_x
        ,c.stndrd_y
+       ,c.stndrd_z
 	,c.unit
 	,c.cnsum_count
 FROM bom b JOIN bom_cmpds c 

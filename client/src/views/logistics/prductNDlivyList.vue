@@ -52,7 +52,7 @@
 
       <!-- 그리드 영역 -->
       <v-row>
-        <v-col cols="12">
+        <v-col cols="6">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
               <span class="font-weight-black">반제품 출고 리스트</span>
@@ -66,6 +66,29 @@
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
+                @cellClicked="onCellClicked"
+                class="ag-theme-alpine"
+                id="grid-one"
+              >
+              </AgGridVue>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="6">
+          <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+            <template v-slot:title>
+              <span class="font-weight-black">반제품 출고 리스트상세</span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4">
+              <!-- AgGrid -->
+              <AgGridVue
+                style="height: 400px; margin: 0 auto;"
+                @grid-ready="onGridReady"
+                :rowData="rowDataInfo"
+                :columnDefs="colDefsInfo"
+                :rowSelection="rowSelection"
+                :gridOptions="gridOptions"
                 class="ag-theme-alpine"
                 id="grid-one"
               >
@@ -74,6 +97,8 @@
           </v-card>
         </v-col>
       </v-row>
+
+      
     </v-container>
   </div>
 </template>
@@ -94,6 +119,10 @@ export default {
       filteredRowData: [],
       colDefs: [],
 
+      prductNDlivyListInfo: [],
+      rowDataInfo: [],
+      colDefsInfo: [],
+
       gridOptionsReturn: {}, // AgGrid 옵션
 
       prductNReqName: "", // 검색 입력값
@@ -108,7 +137,7 @@ export default {
     this.getprductNDlivyList();
 
     this.colDefs = [
-      { field: "prduct_n_req_name", headerName: "반제품요철명" },
+      { field: "prduct_n_req_name", headerName: "반제품요청명" },
       { field: "requst_date", headerName: "요청일자", valueFormatter: this.customDateFormat },
       { field: "prduct_n_name", headerName: "반제품명" },
       { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
@@ -124,9 +153,47 @@ export default {
         flex: 1,
         minWidth: 10,
       },
-    };
+    }
+    this.colDefsInfo = [
+      { field: "prduct_n_lot", headerName: "LOT" },
+      { field: "prduct_n_name", headerName: "반제품명" },
+      { field: "prduct_n_code", headerName: "반제품코드"},
+      { field: "requst_qy", headerName: "재고량" },
+      { field: "usgqty", headerName: "사용량" },
+      { field: "requst_date", headerName: "출고일자", valueFormatter: this.customDateFormat  },
+    ];
+
+    this.gridOptions = {
+      pagination: true,
+      paginationPageSize: 10,
+      paginationPageSizeSelector: [10, 20, 50, 100],
+      animateRows: false,
+      defaultColDef: {
+        filter: true,
+        flex: 1,
+        minWidth: 10,
+      },
+    }
   },
+
   methods: {
+    onCellClicked(event) {
+        if (event.colDef.field === "상세보기") {
+          this.selectedReqCode = event.data.req_code; // 상세보기를 위한 데이터 추츨
+          this.getprductNDlivyListInfo(this.selectedReqCode); // 상세 정보 조회
+        }
+    },
+
+    async getprductNDlivyListInfo(ReqCode) {
+        console.log(ReqCode);
+        let result = await axios.get(`${ajaxUrl}/prductNDlivyListInfo/${ReqCode}`)
+                                  .catch(err => console.log(err));
+        this.prductNDlivyListInfo = result.data;
+        console.log(result.data);
+        this.rowDataInfo = this.prductNDlivyListInfo;
+    },
+
+
     async getprductNDlivyList() {
       let result = await axios.get(`${ajaxUrl}/prduct_n_dlivyList`)
         .catch(err => console.log(err));
@@ -166,7 +233,7 @@ export default {
     },
 
     customDateFormat(params) {
-      return userDateUtils.dateFormat(params.data.prduct_n_wrhousng_day, 'yyyy-MM-dd');
+      return userDateUtils.dateFormat(params.data.requst_date, 'yyyy-MM-dd');
     }
   },
   components: {

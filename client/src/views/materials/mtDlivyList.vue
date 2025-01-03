@@ -1,25 +1,42 @@
 <template>
-    <div>
-        <span>요청명</span>
-        <InputText type="text" v-model="reqName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ reqName }}</p></InputText>
-        <span>자재명</span>
-        <InputText type="text" v-model="mtrilName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
-        <span>담당자</span>
-        <InputText type="text" v-model="chargerName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
-        <span>요청날짜</span>
-        <InputText type="date" v-model="reqDateStart" class="emp_info"> <p>{{ reqDateStart }}</p></InputText>
-        <InputText type="date" v-model="reqDateEnd" class="emp_info"> <p>{{ reqDateEnd }}</p></InputText>
+  <div>
+    <div class="content-section">
+      <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+          <template v-slot:title>
+              <span class="font-weight-black">
+                출고조회
+              </span>
+          </template>
+      </v-card>
     </div>
-    <button @click="getList"class="btn btn-primary search-btn" >조회</button>
-    <button @click="remove"class="btn btn-primary search-btn" >초기화</button>
-
-    <h1>출고조회</h1>
-    <AgGridVue 
-    :rowData="rowData"
-    :gridOptions="GridOptions"
-    class="ag-theme-alpine"
-    style="height: 516px">
-    </AgGridVue>
+    <div class="search-condition">
+      <v-card-text class="bg-surface-light pt-4">
+        <span>요청명 </span>
+        <InputText type="text" v-model="reqName"  v-on:keyup.enter="getList"> <p>{{ reqName }}</p></InputText>
+        <span>자재명 </span>
+        <InputText type="text" v-model="mtrilName"  v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
+        <span>담당자 </span>
+        <InputText type="text" v-model="chargerName"  v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
+        <span>요청날짜 </span>
+        <InputText type="date" v-model="reqDateStart" > <p>{{ reqDateStart }}</p></InputText> -
+        <InputText type="date" v-model="reqDateEnd" > <p>{{ reqDateEnd }}</p></InputText>
+        <div>
+          <button @click="remove"class="btn btn-secondary search-btn" >초기화</button>
+          <button @click="getList"class="btn btn-primary search-btn" >조회</button>
+        </div>
+      </v-card-text>
+    </div>
+    <v-card-text class="bg-surface-light pt-4">
+      <AgGridVue 
+      :rowData="rowData"
+      :gridOptions="GridOptions"
+      class="ag-theme-alpine"
+      @grid-ready="onGridReady"
+      style="height: 516px">
+      </AgGridVue>
+      <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
+    </v-card-text>
+  </div>
 </template>
 
 <script setup>
@@ -97,4 +114,25 @@ const GridOptions = {
       paginationPageSize: 10,
       paginationPageSizeSelector: [10, 20, 50, 100],
 };
+//gridapi를 저장할 변수
+const gridApi = ref(null);
+
+//gridapi저장
+const onGridReady = (params) => {
+    gridApi.value = params.api;
+};
+//엑셀 내보내기
+const onBtnExportDataAsCsv = () => {
+    gridApi.value.exportDataAsCsv();
+};
 </script>
+
+<style scoped>
+.search-condition{
+  margin: 30px 0;
+}
+input[type="text"] {
+  width: 140px;
+  margin-right: 20px;
+}
+</style>

@@ -200,9 +200,9 @@ export default {
       }
     },
     async getprductNdlivyPossible(prdCode) {
-      console.log(prdCode)
+      //console.log(prdCode)
       let result = await axios.get(`${ajaxUrl}/prduct_n_possible/${prdCode}`)
-                                             .catch(err => console.log(err));
+                                            .catch(err => console.log(err));
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
@@ -218,14 +218,14 @@ export default {
         sendPrductNList.push(newObj);
       }
       console.log(sendPrductNList);
-      let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
-                              .catch(err => console.log(err));
+      // let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
+      //                         .catch(err => console.log(err));
 
-      if(result){
-        alert('출고완료');
-        this.getprductNDlivyList();
-        this.getprductNdlivyPossible();
-      }
+      // if(result){
+      //   alert('출고완료');
+      //   this.getprductNDlivyList();
+      //   this.getprductNdlivyPossible();
+      // }
 
     },
 
