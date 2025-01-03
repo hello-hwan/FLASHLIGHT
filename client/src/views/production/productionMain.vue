@@ -237,6 +237,7 @@
   // 단순 조회 버튼 클릭 함수
   const getlist = () => {
     getdrct(prd.value, day.value);
+    issrc.value = false;
   };
 
 </script>
@@ -250,6 +251,7 @@
   .table-plan {
     border: 2px, solid, black !important;
     border-radius: 30px !important;
+    background-color: white;
   }
   .search-prd-box {
     position: relative;

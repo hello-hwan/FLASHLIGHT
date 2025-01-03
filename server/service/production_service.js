@@ -59,6 +59,8 @@ const drctlist = async (prd_code, day_str) => {
 
   for(let i = 0; i < list.length; i++){
     if(model != list[i].model_nm){
+      // result.push({})
+
       colspan = 0;
 
       begin_time = list[i].pre_begin_time;
