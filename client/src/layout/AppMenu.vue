@@ -75,7 +75,7 @@ const model = ref([
                 label: '품질',
                 items: [
                     {
-                        label: '품질 검사 요청',
+                        label: '품질 입고 검사',
                         to: '/quality/qualityRequest'
                     },                   
                     {

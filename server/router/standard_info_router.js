@@ -188,6 +188,13 @@ router.get('/standardInfo/qiList', async (req, res) => {
   res.send(result);
 });
 
+// 품질검사항목관리 모달창
+router.post('/standardInfo/qiListModal', async (req, res) => {
+  let qiNo = req.body;    
+  let result = await standard_info_service.qiListModal(qiNo)                                          
+  res.send(result);
+});
+
 // 공정 흐름도 조회
 router.get('/procsFlowchartList', async (req, res) => {
     let list = await standard_info_service.procsFlowchartList();
