@@ -27,12 +27,7 @@
                         <label for="orderFormOrderDate" class="col-form-label">주문일자</label>
                     </div>
                     <div class="col-auto">
-                        <input type="text" id="orderFormOrderDate" class="form-control" v-model="this.requst.order_date" placeholder="2024-12-28">
-                    </div>
-                    <div class="col-auto">
-                        <span class="form-text">
-                        2024-00-00
-                        </span>
+                        <input type="date" id="orderFormOrderDate" class="form-control" v-model="this.requst.order_date" placeholder="2024-12-28">
                     </div>
                 </div>
                 <div class="row g-3 align-items-center">
@@ -40,7 +35,7 @@
                         <label for="orderFormDete" class="col-form-label">납품일자</label>
                     </div>
                     <div class="col-auto">
-                        <input type="text" id="orderFormDete" class="form-control" v-model="this.requst.dete" placeholder="2025-08-17">
+                        <input type="date" id="orderFormDete" class="form-control" v-model="this.requst.dete" placeholder="2025-08-17">
                     </div>
                     <div class="col-auto">
                         <span class="form-text">
@@ -218,23 +213,27 @@ export default {
             console.log('선택된 제품 값',this.gridApi2.getSelectedNodes());
             const selectedNodes = this.gridApi2.getSelectedNodes();
             const productSelectedData = selectedNodes.map((node) => node.data);
-            console.log('모달에서 선택된 행 데이터:', productSelectedData[0].prdlst_code);
-            let rowCount = this.rowData.find(data => data.prd_code == productSelectedData[0].prdlst_code);
-            if(rowCount == null){
-                let newData = {
-                    index: this.index,
-                    prd_code:productSelectedData[0].prdlst_code, 
-                    prd_name:productSelectedData[0].prdlst_name, 
-                    untpc: 0, 
-                    order_qy: 0,
-                    wrter:"김기환"
-                };
-                this.index = this.index + 1;
-                console.log('뉴데이터값은',newData);
-                this.rowData = [...this.rowData, newData];
-                console.log(this.rowData);
-            } else{
-                alert('제품코드가 중복됩니다.');
+            if(productSelectedData[0] != null){
+                console.log('모달에서 선택된 행 데이터:', productSelectedData[0].prdlst_code);
+                let rowCount = this.rowData.find(data => data.prd_code == productSelectedData[0].prdlst_code);
+                if(rowCount == null && productSelectedData[0].prdlst_code != null){
+                    let newData = {
+                        index: this.index,
+                        prd_code:productSelectedData[0].prdlst_code, 
+                        prd_name:productSelectedData[0].prdlst_name, 
+                        untpc: 0, 
+                        order_qy: 0,
+                        wrter:"김기환"
+                    };
+                    this.index = this.index + 1;
+                    console.log('뉴데이터값은',newData);
+                    this.rowData = [...this.rowData, newData];
+                    console.log(this.rowData);
+                } else {
+                    alert('제품코드가 중복됩니다.');
+                }
+            } else {
+                alert('제품이 선택되지 않았습니다.');
             }
         },
         deleteBtn(){ 
@@ -348,6 +347,8 @@ export default {
 .orderRowInsert{
      float: right;
 }
-
+input[type="date"] {
+    width: 220px;
+}
 
 </style>
