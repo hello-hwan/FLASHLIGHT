@@ -171,15 +171,7 @@ const model = ref([
                         to: '/'
                     },
                     {
-                        label: '부서 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '거래처 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '거래처 조회',
+                        label: '거래처 관리 / 거래처 조회',
                         to: '/standardInfo/infobcncList'
                     },
                     {

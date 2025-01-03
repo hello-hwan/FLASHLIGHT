@@ -150,6 +150,10 @@ export default {
       prductNCode: "", 
       prductNName: "",
 
+      // input 박스값
+      prductNCodeAdd: "",
+      prductNNameAdd: "",
+
     };
   },
   created() {
@@ -215,9 +219,23 @@ export default {
         sfinvc: this.sfinvcAdd,
       }
       console.log(obj);
-      let result = await axios.post(`${ajaxUrl}/prductNAdd`, obj)
+      if(!this.prductNCodeAdd){
+        alert('반제품코드를 입력하세요')
+      }else if(!this.prductNNameAdd){
+        alert('반제품명을 입력하세요');
+      }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
+        alert('규격를 입력하세요');
+      }else if(!this.unitAdd){
+        alert('단위를 입력하세요')
+      }else{ 
+        let result = await axios.post(`${ajaxUrl}/prductNAdd`, obj)
                         .catch(err => console.log(err));
-                        this.rowData.push(obj); //등록시 그리드에 바로적용
+                        this.rowData.push(obj); //등록시 그리드에 바로적용   
+        if(result){
+          alert('등록완료');
+        }
+      }
+      
     },
  
     async saveChanges(){
