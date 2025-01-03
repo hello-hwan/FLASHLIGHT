@@ -7,7 +7,8 @@
                 border-bottom-right-radius: 13px;
                 border-bottom-left-radius: 13px;
                 display: inline-block;
-                margin-bottom: 27px;"
+                margin-bottom: 27px;
+                text-align: center;"
       >
         <template v-slot:title>
           <span class="font-weight-black">자재 요청 리스트</span>

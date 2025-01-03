@@ -233,6 +233,17 @@ const prd_code_bom_all_search = async () => {
   return list;
 }
 
+//로그인 서비스
+const loginService = async (info) => {
+  let infoArr = [info.empl_no,
+                 info.password]; 
+                 console.log(infoArr);
+  let result = await mariaDB.query('loginSelect', infoArr)
+                            .catch(err=>console.log(err));
+  console.log(result);
+  return result;
+};
+
 module.exports = {
   cmmntest,
   bomtest,
@@ -268,5 +279,6 @@ module.exports = {
   bomManage,
   prd_code_search, 
   prd_code_bom_search, 
-  prd_code_bom_all_search
+  prd_code_bom_all_search,
+  loginService
 };

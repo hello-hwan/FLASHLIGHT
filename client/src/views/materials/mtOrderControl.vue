@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
             <template v-slot:title>
                 <span class="font-weight-black">
                     발주 관리
@@ -38,7 +38,7 @@
                     rowSelection="multiple"
                     class="ag-theme-alpine"
                     @grid-ready="onGridReady"
-                    style="height: 285px;">
+                    style="height: 308px;">
                     </AgGridVue>
                 </v-card-text>
             </v-card>
@@ -105,6 +105,9 @@ import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import { useToast } from 'primevue/usetoast';
 
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
+
 
 //발주건 검색 모달
 import orderSearchModal from '@/components/materials/orderControlModal.vue';
@@ -136,8 +139,8 @@ let companyName = "";
 //거래처 코드
 let companyCode = "";
 //담당자
-let empId = 100;
-
+let empId = store.state.empInfo[store.state.empInfo.length-1].user_id;
+//console.log(empId);
 //자식 컴포넌트로부터 받은 데이터 담을 변수
 const orderCode = ref("");
 
@@ -221,7 +224,11 @@ const mtListColDefs = [
 //ag grid 요청테이블 옵션 설정
 const reqGridOptions = {
       columnDefs: reqColDefs,
-      animateRows: false
+      animateRows: false,
+      pagination: true,
+      paginationPageSize: 5,
+      paginationPageSizeSelector: [5, 10, 20],
+      paginateChildRows: true
 };
 
 //자재 목록 테이블 옵션 설정
@@ -618,7 +625,7 @@ const removeAllInfo = () => {
     display: inline-block;
     margin-top: 10px;
     position:relative;
-    right: -40%;
+    right: -78%;
 }
 
 </style>

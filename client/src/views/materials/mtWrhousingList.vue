@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="content-section">
-      <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+      <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
           <template v-slot:title>
               <span class="font-weight-black">
                 입고 조회
@@ -10,7 +10,7 @@
       </v-card>
     </div>
 
-    <div class="content-section">
+    <div class="content-section text-align-center">
       <v-card-text class="bg-surface-light pt-4">
         <span>구분 </span>
         <select v-model="selected">
@@ -25,7 +25,7 @@
         <span>입고일 </span>
         <InputText type="date" v-model="wrhDateStart" class="emp_info"> <p>{{ wrhDateStart }}</p></InputText>-
         <InputText type="date" v-model="wrhDateEnd" class="emp_info"> <p>{{ wrhDateEnd }}</p></InputText>
-        <div>
+        <div style="width: 100%;">
           <button @click="remove"class="btn btn-secondary search-btn" >초기화</button>
           <button @click="getList"class="btn btn-primary search-btn" >조회</button>
         </div>
@@ -161,5 +161,8 @@ select {
 input[type="date"] {
   width: 150px;
   margin-right: 2px;
+}
+.text-align-center {
+  text-align: center;
 }
 </style>
