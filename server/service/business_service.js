@@ -7,6 +7,12 @@ const findAllOrderRequest = async ()=>{
     return list;
 };
 
+// 주문번호정렬
+const findOrderArray = async ()=>{
+    let list = await mariaDB.query('bs_orderArray');
+    return list;
+};
+
 // 등록
 // 주문요청과 리스트 처리하는 프로시저로 연결
 const createNewOrderRequest = async (orderRequestInfo)=>{
@@ -16,7 +22,6 @@ const createNewOrderRequest = async (orderRequestInfo)=>{
         orderRequestInfo.dete, 
         orderRequestInfo.p_code, 
         orderRequestInfo.wrter,
-        orderRequestInfo.order_list_no,
         orderRequestInfo.prd_code, 
         orderRequestInfo.untpc, 
         orderRequestInfo.order_qy 
@@ -34,6 +39,7 @@ const findOrderRequestByNo = async (keywords)=>{
     return orderInfo;
 };
 
+
 // 삭제
 const deleteOrderRequestByOrderNo = async (keywords)=>{
     await mariaDB.query('orderRequestDelete',keywords);
@@ -47,10 +53,27 @@ const searchCompanyModal = async(key)=>{
     return result;
 }
 
+// 제품 검색
+const searchProductModal = async(key)=>{
+    let searchKey = [key.product_code, key.product_name];
+    let result = await mariaDB.query('bs_searchProduct', searchKey)
+                              .catch(err=>console.log(err));
+    return result;
+}
+
+// 주문 수정 가능여부 체크
+const modifyOrderListByNo = async (keywords)=>{
+    let orderModify = await mariaDB.query('bs_modifyCheck',keywords);
+    return orderModify;
+}
+
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
     deleteOrderRequestByOrderNo,
     findOrderRequestByNo,
-    searchCompanyModal
+    searchCompanyModal,
+    findOrderArray,
+    searchProductModal,
+    modifyOrderListByNo
 };

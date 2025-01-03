@@ -6,7 +6,7 @@
         <v-col cols="12" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
             <template v-slot:title>
-              <span class="font-weight-black">자재조회</span>
+              <span class="font-weight-black">자재 조회</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- 필터 검색 필드 -->
@@ -41,19 +41,9 @@
         <v-col cols="4">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">완제품 입고 리스트</span>
+              <span class="font-weight-black">자재 등록</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
-              <!-- AgGrid -->
-              <!-- <AgGridVue
-                style="height: 400px; margin: 0 auto;"
-                @grid-ready="onGridReady"
-                :rowData="rowDataInsert"
-                :columnDefs="colDefsInsert"
-                :gridOptions="gridOptions"
-                class="ag-theme-alpine"
-                id="grid-one">
-              </AgGridVue> -->
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">자재코드</label>
@@ -91,13 +81,14 @@
         <v-col cols="8">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-              <span class="font-weight-black">완제품 입고 리스트</span>
+              <span class="font-weight-black">자재 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
                 style="height: 400px; margin: 0 auto;"
                 @grid-ready="onGridReady"
+                @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
@@ -105,6 +96,10 @@
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
+              <div class="mt-3">
+                <button class="btn btn-warning" v-if="isModified" @click="saveChanges">수정</button>
+                <button class="btn btn-danger" @click="deleteRow">삭제</button>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -123,6 +118,7 @@ import { ajaxUrl } from "@/utils/commons.js";
 export default {
   data() {
     return {
+      isModified: false, // 수정 상태 추적 변수
       mtrilList: [], // 자재 리스트
       rowData: [], // 자재 데이터
       filteredRowData: [], // 검색된 데이터
@@ -143,6 +139,7 @@ export default {
       mtrilNameAdd: "",
       unitAdd: "",
       sfinvcAdd: "",
+
     };
   },
   created() {
@@ -152,8 +149,9 @@ export default {
       { field: "mtril_code", headerName: "자재코드" },
       { field: "mtril_name", headerName: "자재명" },
       { field: "unit", headerName: "단위" },
-      { field: "untpc", headerName: "입고단가" },
-      { field: "sfinvc", headerName: "안전재고" },
+      { field: "mtril_qy", headerName: "총수량"},
+      { field: "untpc", headerName: "입고단가", editable: true },
+      { field: "sfinvc", headerName: "안전재고" , editable: true}
     ];
 
     this.gridOptionsReturn = {
@@ -164,33 +162,22 @@ export default {
       defaultColDef: {
         filter: true,
         flex: 1,
-        minWidth: 10
-      },
-    };
-
-    this.colDefsInsert = [
-      { field: "자재코드", headerName: "자재코드" },
-      { field: "자재명", headerName: "자재명" },
-      { field: "단위", headerName: "단위" },
-      { field: "입고단가", headerName: "입고단가" },
-      { field: "안전재고", headerName: "안전재고" },
-    ];
-    this.gridOptions = {
-      pagination: true,
-      paginationPageSize: 10,
-      paginationPageSizeSelector: [10, 20, 50, 100],
-      animateRows: false,
-      defaultColDef: {
-        filter: true,
-        flex: 1,
         minWidth: 10,
-        editable: true,
       },
       rowSelection: "single",
     };
-    
   },
   methods: {
+
+    // 셀 값 변경 이벤트 핸들러
+    onCellValueChanged(params) {
+      // params는 변경된 셀 정보를 담고 있음
+      //console.log("값 변경됨: ", params.data); // 변경된 데이터 로그 출력
+
+      // 값이 변경되었음을 기록
+      this.isModified = true;
+    },
+
     // 그리드 초기값 불러오기
     async getmtrilList() {
       let result = await axios.get(`${ajaxUrl}/mtril`)
@@ -200,13 +187,54 @@ export default {
       this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
 
-    addData(){
+    async addData(){
       let obj = {
-        mtrilCode: this.mtrilCodeAdd,
-        mtrilName: this.mtrilNameAdd,
+        mtril_code: this.mtrilCodeAdd,
+        mtril_name: this.mtrilNameAdd,
         unit: this.unitAdd,
         sfinvc: this.sfinvcAdd
       }
+      let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
+                        .catch(err => console.log(err));
+                        this.rowData.push(obj); //등록시 그리드에 바로적용   
+    },
+
+    async saveChanges(){
+      for(let i = 0; i < this.rowData.length; i++){
+        let row = this.rowData[i];
+        let obj = {
+          untpc: row.untpc,
+          sfinvc: row.sfinvc
+        }
+        //console.log(obj);
+        let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
+                                .catch(err => console.log(err));
+      }
+    },
+
+    deleteRow() {
+        const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
+
+        if (selectedNodes.length === 0) {
+          alert("삭제할 행을 선택하세요.");
+          return;
+        }
+
+        const selectedData = selectedNodes.map((node) => node.data);
+
+        this.rowData = this.rowData.filter(
+          (row) => !selectedData.some((selected) => selected.mtril_code === row.mtril_code)
+        );
+
+        this.gridOptionsReturn.api.applyTransaction({ remove: selectedData });
+
+        selectedData.forEach((data) => {
+          if (data.mtril_code) {
+            axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
+              .then(() => console.log(`행 삭제 완료: ${data.mtril_code}`))
+              .catch((err) => console.error(`행 삭제 실패: ${data.mtril_code}`, err));
+          }
+        });
     },
 
     // 검색값에 따른 필터링
@@ -227,8 +255,8 @@ export default {
     },
 
     onGridReady(params) {
-      this.gridOptions.api = params.api;
-      this.gridOptions.columnApi = params.columnApi;
+      this.gridOptionsReturn.api = params.api;
+      this.gridOptionsReturn.columnApi = params.columnApi;
     },
 
   },

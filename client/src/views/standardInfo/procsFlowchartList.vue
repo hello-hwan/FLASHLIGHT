@@ -17,12 +17,12 @@
             </thead>
         </table>
         <div style="height: 300px;" v-show="input_div">
-            <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions"
-                style="height: 250px; width: 50%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
+            <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
+                style="height: 250px; width: 30%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
+            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
@@ -38,8 +38,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
-import { useToast } from 'primevue/usetoast';
-
 export default {
     name: 'App',
     data() {
@@ -48,7 +46,6 @@ export default {
             rowData: [],
             colDefs: [],
             search_prd_code: '',
-            toast: '',
             input_div: false,
             rowData_search: [],
             colDefs_search: []
@@ -60,7 +57,6 @@ export default {
             { field: "prd_code", headerName: "품목코드" },
             { field: "prd_nm", headerName: "품목명" },
             { field: "all_time", headerName: "총 소요시간" },
-            { field: "details", headerName: "상세보기" }
         ];
         this.gridOptions = {
             columnDefs: this.orderColDefs,
@@ -76,11 +72,13 @@ export default {
             },
             onCellClicked: (CellClickedEvent) => this.goToDetail(CellClickedEvent.data.prd_code)
         };
-        this.toast = useToast();
         this.colDefs_search = [
             { field: "prd_code", headerName: "품목코드" },
             { field: "prd_nm", headerName: "품목명" }
         ];
+        this.gridOptions_search = {
+            onCellClicked: (CellClickedEvent) => this.goToDetail(CellClickedEvent.data.prd_code)
+        };
     },
     components: {
         AgGridVue // Add Vue Data Grid component
@@ -96,36 +94,19 @@ export default {
             this.eqpList = result.data;
             for (let i = 0; i < this.eqpList.length; i++) {
                 this.eqpList[i].all_time = this.eqpList[i].all_time + " 시간";
-                this.eqpList[i].details = "클릭";
             }
             this.rowData = this.eqpList;
         },
         goToDetail(prd_code) {
             this.$router.push({ name: 'procsFlowchartDetail', params: { prd_code: prd_code } });
         },
-        async search_btn() {
-            if (this.search_prd_code.length < 1) {
-                this.toast.add({ severity: 'error', summary: '실패', detail: '검색어를 입력해주세요.', life: 3000 });
-            } else {
-                let result = await axios.get(`${ajaxUrl}/procsFlowchartDetailTop/${this.search_prd_code}`)
-                    .catch(err => console.log(err));
-                if (result.data != "") {
-                    this.toast.add({ severity: 'success', summary: '성공', detail: '검색에 성공했습니다.', life: 3000 });
-                    this.$router.push({ name: 'procsFlowchartDetail', params: { prd_code: this.search_prd_code } });
-                } else {
-                    this.toast.add({ severity: 'error', summary: '실패', detail: '검색 결과가 없습니다.', life: 3000 });
-                }
-            }
-        },
         input_click() {
-            console.log("click");
             this.input_div = true;
         },
         async input_change() {
             let result = await axios.get(`${ajaxUrl}/prd_code_search/${this.search_prd_code}`)
                 .catch(err => console.log(err));;
             this.rowData_search = result.data;
-            console.log(this.rowData_search);
         }
     },
     watch: {

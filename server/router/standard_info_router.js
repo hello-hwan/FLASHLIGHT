@@ -10,7 +10,7 @@ router.get('/cmmn', async (req, res)=>{
   let cmmnList = await standard_info_service.cmmntest(searchs);  
   res.send(cmmnList);
 }); 
- 
+
 // BOM 조회
 router.get('/bom', async (req, res) => { 
   let searchs = req.query;
@@ -22,13 +22,13 @@ router.get('/bom', async (req, res) => {
 router.get('/bom/:bomCode', async (req, res) => {
   let bomCode = req.params.bomCode;
   let info = await standard_info_service.bomInfo(bomCode);  
+  console.log(info);
   res.send(info);
 });
- 
+
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
   let Insert = req.body;
-  console.log('router',Insert); 
   let result = await standard_info_service.bomInsert(Insert); 
   res.send(result);
 });
@@ -44,16 +44,15 @@ router.get('/bomManage/:bomCode', async (req, res) => {
 router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
   let cmpdsNo = req.params.no;  
   let info = req.body;  
-
   let result = await standard_info_service.bom_cmpdsUpdate(cmpdsNo, info);
   res.send(result);
 });
 
 // BOM 소모품 삭제
-router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {
-  let cmpdsNo = req.params.cmpdsNo;
+router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {  
+  let cmpdsNo = req.params.cmpdsNo; 
   let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
-  res.send(result);
+  res.send(result); 
 });
 
 // 자재 조회
@@ -63,6 +62,87 @@ router.get('/mtril', async (req, res) => {
   res.send(list);
 })
 
+// 자재 등록
+router.post('/mtrilAdd', async (req, res) => {
+  let info = req.body;
+  let result = await standard_info_service.mtrilAdd(info);
+  res.send(result);
+})
+
+// 자재 삭제
+router.delete('/mtrilDelete/:code', async (req, res) => {
+  let code = req.params.code;
+  let result = await standard_info_service.mtrilDelete(code);
+  res.send(result);
+})
+
+// 자재 수정
+router.put('/mtrilUpdate/:code', async (req, res) => {
+  let code = req.params.code
+  let info = req.body;
+  let result = await standard_info_service.mtrilUpdate(info,code);
+  res.send(result);
+})
+
+// 반제품 조회
+router.get('/infoprductNList', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.prductNList(searchs);
+  res.send(list);
+})
+
+// 반제품 등록
+router.post('/prductNAdd', async (req, res) => {
+  let info = req.body;
+  let result = await standard_info_service.prductNAdd(info);
+  res.send(result);
+})
+
+// 반제품 삭제
+router.delete('/prductNDelete/:code', async (req, res) => {
+  let code = req.params.code
+  let result = await standard_info_service.prductNDelete(code);
+  res.send(result);
+})
+
+// 반제품 수정
+router.put('/prductNUpdate/:code', async (req, res) => {
+  let code = req.params.code
+  let info = req.body;
+  console.log('router code =>', code);
+  console.log('router info =>', info);
+  let result = await standard_info_service.prductNUpdate(code,info);
+  res.send(result);
+})
+
+// 완제품 조회
+router.get('/infoprductList', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.prductList(searchs);
+  res.send(list);
+})
+
+// 완제품 등록
+router.post('/prductInsert', async (req, res) => {
+  let info = req.body;
+  console.log('router => ', info);
+  let result = await standard_info_service.prductInsert(info);
+  res.send(result);
+})
+
+// 완제품 삭제
+router.delete('/prductDelete/:code', async (req, res) => {
+  let code = req.params.code;
+  let result = await standard_info_service.prductDelete(code);
+  res.send(result);
+})
+
+// 거래처 조회
+router.get('/bcncList', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.bcncList(searchs);
+  res.send(list);
+})
 
 // 품질검사항목관리
 router.get('/standardInfo/qiList', async (req, res) => {
@@ -91,7 +171,7 @@ router.get('/procsFlowchartDetail/:prd_code', async (req, res) => {
   let list = await standard_info_service.procsFlowchartDetail(prd_code);
   res.send(list);
 });
- 
+
 // 공정 흐름도 상세 조회 상단
 router.get('/procsFlowchartDetailTop/:prd_code', async (req, res) => {
   let prd_code = req.params.prd_code;
@@ -167,5 +247,90 @@ router.get('/prd_code_search/:prd_code', async (req, res) => {
   res.send(list);
 });
 
+// BOM에 등록되어있는 품목코드, 품목이름 검색
+router.get('/prd_code_bom_search/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.prd_code_bom_search(prd_code);
+  res.send(list);
+});
+
+router.get('/prd_code_bom_all_search', async (req, res) => {
+  let list = await standard_info_service.prd_code_bom_all_search();
+  res.send(list);
+});
+
+// 전체 사원 조회
+router.get('/select_all_empl', async (req, res) => {
+  let list = await standard_info_service.select_all_empl();
+  res.send(list);
+});
+
+// 사원 검색
+router.get('/search_empl', async (req, res) => {
+  if (req.query.empl_no_search == undefined) {
+    empl_no_search = '';
+  } else {
+    empl_no_search = req.query.empl_no_search;
+  }
+  if (req.query.empl_name_search == undefined) {
+    empl_name_search = '';
+  } else {
+    empl_name_search = req.query.empl_name_search
+  }
+  if (req.query.phone_search == undefined) {
+    phone_search = '';
+  } else {
+    phone_search = req.query.phone_search;
+  }
+  if (req.query.author_selected == undefined) {
+    author_selected = '';
+  } else {
+    author_selected = req.query.author_selected;
+  }
+  let search = [
+    empl_no_search, 
+    empl_name_search, 
+    phone_search, 
+    author_selected
+  ];
+  let list = await standard_info_service.search_empl(search);
+  res.send(list);
+});
+
+// 사원 등록
+router.post('/insert_empl', async(req, res)=>{
+  let insert = req.body;
+  let result = await standard_info_service.insert_empl(insert);
+  console.log(result)
+  res.send(result);
+});
+
+// 비밀번호 확인
+router.get('/search_pw/:search', async (req, res) => {
+  let search = req.params.search;
+  let list = await standard_info_service.search_pw(search);
+  res.send(list);
+});
+
+// 사원 변경
+router.put('/update_empl', async (req, res) => {
+    let list = req.body;
+    let result = await standard_info_service.update_empl(list);
+    res.send(result);
+});
+
+// 사원 퇴사
+router.put('/delete_empl/:empl_no', async (req, res) => {
+  let empl_no = req.params.empl_no;
+  let result = await standard_info_service.delete_empl(empl_no);
+  res.send(result);
+});
+
+//로그인 
+router.post('/login', async(req, res) => {
+  let loginInfo = req.body;
+  let result = await standard_info_service.loginService(loginInfo);
+  res.send(result);
+});
 
 module.exports = router;     

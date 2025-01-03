@@ -2,7 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 //view
-import testVuetify from '@/views/vuetifyTest.vue';
+import login from '@/views/login.vue';
 import businessApp from '@/views/business/businessApp.vue';
 import equipmentsApp from '@/views/equipments/equipmentsApp.vue';
 import logisticsApp from '@/views/logistics/logisticsApp.vue';
@@ -40,12 +40,12 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect : {name: 'testVuetify'}
+            redirect : {name: 'login'}
           },
           {
-            path: '/test',
-            name: 'testVuetify',
-            component: testVuetify
+            path: '/login',
+            name: 'login',
+            component: login
           },
           {
             path: '/business',

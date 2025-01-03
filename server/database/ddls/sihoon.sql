@@ -31,9 +31,9 @@ DROP sequence req_seq;
 CREATE sequence req_seq START WITH 1 increment BY 1;
 SELECT NEXTVAL(req_seq);
 
-DROP sequence badn_seq;
-CREATE sequence badn_seq START WITH 1 increment BY 1;
-SELECT NEXTVAL(badn_seq);
+DROP sequence use_seq;
+CREATE sequence use_seq START WITH 1 increment BY 1;
+SELECT NEXTVAL(use_seq);
 -- 계획 순서 
 -- 주문리스트에서 처리중, 생산인 품목이랑 수량, 주문번호, 주문일자, 납품기한, 우선순위 조회
 -- 공정흐름도에서 품목별 공정 조회
@@ -756,94 +756,255 @@ CALL play_drct();
 
 -- 523행 물품 요청 삽입 프로시저
 
-SELECT * FROM empl;
 
-SELECT * FROM cmmn
-WHERE cmmn_name LIKE CONCAT('%', '생산사원', '%');
-
-SELECT * FROM cmmn
-WHERE cmmn_name LIKE CONCAT('%', '관리자', '%');
-
-INSERT INTO empl(empl_no, empl_name, PASSWORD, phone, dept_se, encpn, author)
-VALUES (200, '최시훈', '0000', '010-4024-9325', 'DP05', NOW(), 'AZ01');
-COMMIT;
-
-SELECT * FROM thng_req;
-INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
-VALUES ('testbyshun-4', '자재 발주 요청 테스트-4', 1, NULL, 'M-LEATHER', '가죽', 100, 'PI01', 'RD03', NOW());
-COMMIT;
-
-SELECT tr.req_code, tr.prd_code AS mtril_code, tr.prd_nm AS mtril_nm, tr.req_qy, pp.prd_code, pp.prd_nm
-FROM thng_req tr JOIN prdctn_plan pp ON (tr.mnfct_no = pp.mnfct_no)
-WHERE tr.prdctn_code IS NULL
-AND prd_se = 'PI01'
-AND tr.procs_at = 'RD03';
-
-SELECT * FROM prdctn_drct;
-SELECT * FROM product_state;
-
-SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
-FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
-WHERE pd.pre_begin_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY )
-AND pd.pre_end_time > CURDATE();
-
-SELECT DATE_ADD(CURDATE(), INTERVAL 1 DAY );
-
-INSERT INTO prdctn_drct(prdctn_code, mnfct_no, procs_code, procs_nm, eqp_code, model_nm, prd_code, prd_nm, prdctn_co, pre_begin_time, pre_end_time)
-VALUES ('testbyshun-11', 1, 'testbyshun11', 'testbyshun11', 'testbyshun11', 'mchn-001', 'testbyshun11', 'testbyshun11', 777, '2024-12-25', '2024-12-30');
-COMMIT;
-
-SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time
-FROM prdctn_drct pd
-WHERE pd.prdctn_code = ?;
-
-SELECT * FROM product_state;
-
-SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, ps.prdctn_co, ps.eqp_code, ps.empl_no
-FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
-WHERE ps.prdctn_code = 'testbyshun-11';
-
-SELECT * FROM procs_matrl;
-
-DELETE FROM product_state;
-
-COMMIT;
-
-SELECT * FROM badn_info;
-
-INSERT INTO badn_info(badn_code, badn_qy, badn_ty, prdctn_code)
-VALUES (CONCAT('testbyshun-11', '-', (SELECT COUNT(*)+1 
-								FROM badn_info 
-								WHERE prdctn_code = 'testbyshun-11')), 8, '기계결함', 'testbyshun-11');
-
-SELECT CONCAT('testbyshun-11', '-', COUNT(badn_code)+1) as badn_code, sum(badn_qy) total_qy
-FROM badn_info
-WHERE prdctn_code = 'testbyshun-11';
-
-
+-- 생산 완료 보고로 일어나는 프로시저(물품당) -> 출고 테이블에서 수정, 공정별 사용재료 삽입(동시에 일어나야함)
 DELIMITER //
 DROP PROCEDURE IF EXISTS play_state //
 CREATE PROCEDURE play_state
 (
-  
+ IN c_prdctn_code VARCHAR(100),
+ IN c_matril_code VARCHAR(100),
+ IN c_matril_qy INT,
+ OUT c_result INT
 )
 BEGIN
+	DECLARE done INT DEFAULT FALSE;
+	
+	-- 자재, 반제품 구분 변수
+	DECLARE v_prd_se VARCHAR(20);
+	-- 사용량 처리 변수
+	DECLARE v_matril_qy INT;
+	-- 실제 처리 되는 내용
+	DECLARE v_real_co INT DEFAULT 0;
+	DECLARE v_up_co INT;
+	DECLARE v_ins_co INT;
+	-- 비교 값
+	DECLARE v_up_cnt INT DEFAULT 0;
+	DECLARE v_ins_cnt INT DEFAULT 0;
+	
+	-- 커서에 넣을 변수 선언
+	DECLARE v_dlivy_no INT;
+	DECLARE v_lot VARCHAR(100);
+	DECLARE v_name VARCHAR(20);
+	DECLARE v_requst_qy INT;
+	DECLARE v_usgqty INT;
+	DECLARE v_nusgqty INT;
+	DECLARE v_usgstt VARCHAR(20);
+
+	-- 생산지시로 일어난 자재  출고 lot
+	DECLARE cursor_matrl CURSOR FOR
+		SELECT md.dlivy_no, md.mtril_lot, md.mtril_name, md.requst_qy, md.usgqty, md.nusgqty, md.usgstt
+		FROM mtril_dlivy md JOIN thng_req tr ON (md.req_code = tr.req_code)
+								  LEFT JOIN mtril_wrhousing mw ON (md.mtril_lot = mw.mtril_lot)
+		WHERE tr.prdctn_code = c_prdctn_code
+		AND tr.prd_code = c_matril_code
+		ORDER BY mw.wrhousng_date;
+		
+	-- 생산지시로 일어난 반제품 출고 lot
+	DECLARE cursor_prdn CURSOR FOR 
+		SELECT pnd.prduct_n_dlivy_no, pnd.prduct_n_lot, pnd.prduct_n_name, pnd.requst_qy, pnd.usgqty, pnd.nusgqty, pnd.usgstt
+		FROM prduct_n_dlivy pnd JOIN thng_req tr ON (pnd.req_code = tr.req_code)
+										LEFT JOIN prduct_n_wrhousng pnw ON (pnd.prduct_n_lot = pnw.prduct_n_lot)
+		WHERE tr.prdctn_code = c_prdctn_code
+		AND tr.prd_code = c_matril_code
+		ORDER BY pnw.prduct_n_wrhousng_day;
+		
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+	
+	SELECT prd_se
+	INTO v_prd_se
+	FROM thng_req
+	WHERE prdctn_code = c_prdctn_code
+	AND prd_code = c_matril_code;
+	
+	-- 내가 넣은 사용량 초기화
+	SET v_matril_qy = c_matril_qy;
+	
+	START TRANSACTION;
+	
+	IF v_prd_se = 'PI01' THEN
+	-- 자재 일때
+		OPEN cursor_matrl;
+		mt_loop : LOOP
+			FETCH cursor_matrl INTO v_dlivy_no, v_lot, v_name, v_requst_qy, v_usgqty, v_nusgqty, v_usgstt;
+			IF done THEN
+				LEAVE mt_loop;
+			END IF;
+			
+			IF v_matril_qy = 0 THEN
+			-- 내가 넣은 사용량 = 0 이면 루프문 빠져 나가기
+				LEAVE mt_loop;
+			END IF;
+			
+			SET v_real_co = v_real_co + 1;
+			
+			IF v_matril_qy >= v_requst_qy THEN
+			-- 내가 넣은 사용량 >= 요청수량 이면 
+			
+			-- 사용재료 테이블에 사용량 = 요청수량 으로 삽입
+				INSERT INTO use_mtril(mtril_no, thng_lot, mtril_code,	mtril_nm, mtril_se, qy, prdctn_code, dlivy_no)
+				VALUES (NEXTVAL(use_seq), v_lot, c_matril_code, v_name, v_prd_se, v_requst_qy, c_prdctn_code, v_dlivy_no);
+				
+				SELECT ROW_COUNT()
+				INTO v_ins_co;
+				
+			
+			-- 출고 테이블에 사용량 = 요청수량, 미사용량 = 0 으로 수정 
+				UPDATE mtril_dlivy
+				SET usgstt = 'MU01', usgqty = v_requst_qy, nusgqty = 0
+				WHERE dlivy_no = v_dlivy_no;
+				
+				SELECT ROW_COUNT()
+				INTO v_up_co;
+			
+			-- 내가 넣은 사용량 = 사용량 - 요청수량				
+				SET v_matril_qy = v_matril_qy - v_requst_qy;
+				
+			ELSE
+			-- 내가 넣은 사용량 < 요청수량 이면 
+				
+			-- 사용재료 테이블에 사용량 = 내가 넣은 사용량 으로 삽입
+				INSERT INTO use_mtril(mtril_no, thng_lot, mtril_code,	mtril_nm, mtril_se, qy, prdctn_code, dlivy_no)
+				VALUES (NEXTVAL(use_seq), v_lot, c_matril_code, v_name, v_prd_se, v_matril_qy, c_prdctn_code, v_dlivy_no);
+				
+				SELECT ROW_COUNT()
+				INTO v_ins_co;
+				
+			-- 출고 테이블에 사용량 = 내가 넣은 사용량 , 미사용량 = 요청수량 - 내가 넣은 사용량  으로 수정 
+				UPDATE mtril_dlivy
+				SET usgstt = 'MU01', usgqty = v_matril_qy, nusgqty = v_requst_qy - v_matril_qy
+				WHERE dlivy_no = v_dlivy_no;
+				
+				SELECT ROW_COUNT()
+				INTO v_up_co;
+				
+			-- 내가 넣은 사용량 = 0
+				SET v_matril_qy = 0;
+				
+			END IF;
+			
+			SET v_ins_cnt = v_ins_cnt + v_ins_co;
+			SET v_up_cnt = v_up_cnt + v_up_co;
+			
+		END LOOP mt_loop;
+		CLOSE cursor_matrl;
+		
+	ELSE
+	-- 반제품 일때
+		OPEN cursor_prdn;
+		prdn_loop : LOOP
+			FETCH cursor_prdn INTO v_dlivy_no, v_lot, v_name, v_requst_qy, v_usgqty, v_nusgqty, v_usgstt;
+			IF done THEN
+				LEAVE prdn_loop;
+			END IF;
+			
+			IF v_matril_qy = 0 THEN
+			-- 내가 넣은 사용량 = 0 이면 루프문 빠져 나가기
+				LEAVE prdn_loop;	
+			END IF;
+			
+			SET v_real_co = v_real_co + 1;
+			
+			IF v_matril_qy >= v_requst_qy THEN
+			-- 내가 넣은 사용량 >= 요청수량 이면 
+			
+			-- 사용재료 테이블에 사용량 = 요청수량 으로 삽입
+				INSERT INTO use_mtril(mtril_no, thng_lot, mtril_code,	mtril_nm, mtril_se, qy, prdctn_code, dlivy_no)
+				VALUES (NEXTVAL(use_seq), v_lot, c_matril_code, v_name, v_prd_se, v_requst_qy, c_prdctn_code, v_dlivy_no);
+				
+				SELECT ROW_COUNT()
+				INTO v_ins_co;	
+			
+			-- 출고 테이블에 사용량 = 요청수량, 미사용량 = 0 으로 수정 
+				UPDATE prduct_n_dlivy
+				SET usgstt = 'MU01', usgqty = v_requst_qy, nusgqty = 0
+				WHERE prduct_n_dlivy_no = v_dlivy_no;
+				
+				SELECT ROW_COUNT()
+				INTO v_up_co;
+				
+			-- 내가 넣은 사용량 = 사용량 - 요청수량				
+				SET v_matril_qy = v_matril_qy - v_requst_qy;
+			
+			ELSE
+			-- 내가 넣은 사용량 < 요청수량 이면 
+				
+			-- 사용재료 테이블에 사용량 = 내가 넣은 사용량 으로 삽입
+				INSERT INTO use_mtril(mtril_no, thng_lot, mtril_code,	mtril_nm, mtril_se, qy, prdctn_code, dlivy_no)
+				VALUES (NEXTVAL(use_seq), v_lot, c_matril_code, v_name, v_prd_se, v_matril_qy, c_prdctn_code, v_dlivy_no);
+				
+				SELECT ROW_COUNT()
+				INTO v_ins_co;	
+				
+			-- 출고 테이블에 사용량 = 내가 넣은 사용량 , 미사용량 = 요청수량 - 내가 넣은 사용량  으로 수정 
+				UPDATE prduct_n_dlivy
+				SET usgstt = 'MU01', usgqty = v_matril_qy, nusgqty = v_requst_qy - v_matril_qy
+				WHERE prduct_n_dlivy_no = v_dlivy_no;
+				
+				SELECT ROW_COUNT()
+				INTO v_up_co;
+				
+			-- 내가 넣은 사용량 = 0
+				SET v_matril_qy = 0;
+				
+			END IF;
+			
+			SET v_ins_cnt = v_ins_cnt + v_ins_co;
+			SET v_up_cnt = v_up_cnt + v_up_co;
+		
+		END LOOP prdn_loop;
+		CLOSE cursor_prdn;
+			
+	END IF;
+	
+	IF v_real_co = v_ins_cnt AND v_real_co = v_up_cnt THEN
+		COMMIT;
+		SELECT 1 AS result;
+	ELSE
+		ROLLBACK;
+		SELECT 0 AS result;
+	END IF;
 	
 END //
 DELIMITER ;
 
-SELECT *
-FROM thng_req
-WHERE procs_at = 'RD01'
-AND prdctn_code IS NOT NULL; 
+CALL play_state('testbyshun-11', 'M-LEATHER', 1000, @c_result);
+SELECT @c_result;
 
-SELECT *
-FROM badn_info;
+SELECT * FROM prdctn_drct;
 
-SELECT SUM(badn_qy)
-FROM badn_info
-WHERE prdctn_code = ?
+COMMIT;
+SELECT * FROM thng_req;
+INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
+VALUES ('testbyshun-6', '자재 출고 요청 테스트', 1, 'testbyshun-11', 'M-LEATER', '가죽', 900, 'PI01','RD02', NOW());
+COMMIT;      
 
-UPDATE product_state
-SET end_time = ?, nrmlt = ?, badn = ?
-WHERE prdctn_code = ?
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn
+FROM product_state ps LEFT JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+WHERE ps.end_time IS NOT NULL
+AND pd.procs_code LIKE CONCAT('%', ?, '%')
+AND ps.empl_no LIKE CONCAT('%', ?, '%')
+AND ps.end_time LIKE CONCAT('%', ?, '%');
+
+
+SELECT ps.procs_nm, ps.prdctn_co, ps.empl_nm, ps.end_time
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+							 LEFT JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+WHERE ps.prd_code = 'aaa-1'
+AND   pp.order_no = 'test';
+
+SELECT * FROM prdctn_plan;
+SELECT * FROM prdctn_drct;
+SELECT * FROM product_state;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, pp.order_no
+FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+WHERE pd.prdctn_code = ?;
+
+DELETE FROM product_state
+WHERE prdctn_code = 'testbyshun-11';
+COMMIT;
+
+SELECT prdlst_code, prdlst_name
+FROM repduct
+WHERE prdlst_name LIKE CONCAT('%', '케이스', '%');

@@ -138,19 +138,20 @@ export default {
 
     // 출고리스트 컬럼 정의
     this.colDefs = [
-      { field: "req_name", headerName: "요청명" },
-      { field: "req_de", headerName: "요청일",
+      { field: "order_no", headerName: "요청명" },
+      { field: "order_date", headerName: "요청일",
         valueFormatter: this.customDateFormat, // valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
       },
+      { field: "prd_code", headerName: "출고제품종류수" },
       { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
     ];
 
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
-      { field: "prd_nm", headerName: "반제품제품명" },
+      { field: "prd_name", headerName: "반제품제품명" },
       { field: "prd_code", headerName: "반제품제품코드" },
       { field: "lot", headerName: "반제품LOT" },
-      { field: "req_qy", headerName: "요청수량" },
+      { field: "order_qy", headerName: "요청수량" },
       { field: "lot_qy", headerName: "출고가능수량" },
     ];
 
@@ -182,7 +183,7 @@ export default {
     // 셀 클릭 시 호출되는 이벤트
     onCellClicked(event) {
       if (event.colDef.field === "상세보기") {
-        const selectedprdCode = event.data.prdctn_code; 
+        const selectedprdCode = event.data.order_no; 
         this.getprductNdlivyPossible(selectedprdCode); 
         console.log(selectedprdCode);
       }
@@ -191,18 +192,19 @@ export default {
     // 제품 리스트 가져오기
     async getprductNDlivyList() {
       try {
-        let result = await axios.get(`${ajaxUrl}/prduct_n_dlivy`);
+        let result = await axios.get(`${ajaxUrl}/prduct_possible`);
         this.prductNDlivyList = result.data;
         this.rowData = this.prductNDlivyList; // 받아온 데이터를 rowData에 할당
         this.filteredRowData = this.rowData;  // 필터링된 데이터로 초기 설정
+        console.log(this.prductNDlivyList);
       } catch (err) {
         console.log("데이터 로딩 실패:", err);  
       }
     },
     async getprductNdlivyPossible(prdCode) {
       console.log(prdCode)
-      let result = await axios.get(`${ajaxUrl}/prduct_n_possible/${prdCode}`)
-                                             .catch(err => console.log(err));
+      let result = await axios.get(`${ajaxUrl}/prduct_possible_dlivy/${prdCode}`)
+                              .catch(err => console.log(err));
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
@@ -214,11 +216,11 @@ export default {
 
       let sendPrductNList = [];
       for(let i = 0; i < this.rowDataInfo.length; i++){
-        let newObj = {...this.rowDataInfo[i], empl_no : this.emp_id};
+        let newObj = {...this.rowDataInfo[i], dlivy_charger : this.emp_id};
         sendPrductNList.push(newObj);
       }
       console.log(sendPrductNList);
-      let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
+      let result = await axios.post(`${ajaxUrl}/prduct_dliy_process`,sendPrductNList)
                               .catch(err => console.log(err));
 
       if(result){

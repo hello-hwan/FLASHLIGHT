@@ -1,9 +1,6 @@
 <template>
-    
-    <span style="margin-left:20px">
-        <button @click="sendCodeToParent" class="btn  btn-primary" >상세수량</button>
-
-        
+    <span >
+        <button @click="sendCodeToParent" class="btn  btn-primary"style="margin-left:20px; line-height: 1;" >상세수량</button>        
     </span>
 </template>
 

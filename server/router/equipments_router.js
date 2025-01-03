@@ -89,6 +89,13 @@ router.post('/equip/eqp_insert', async(req, res)=>{
     res.send(result);
 });
 
+// 등록 기기 삭제
+router.delete('/equip/eqp_delete/:eqp_code', async(req, res)=>{
+  let eqp_code = req.params.eqp_code;
+  let result = await equipmentsService.eqp_delete(eqp_code);
+  res.send(result);
+});
+
 // 미가동 등록
 router.post('/equip/not_opr_insert', async(req, res)=>{
     let list = req.body;

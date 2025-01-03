@@ -7,6 +7,9 @@ import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import userDateUtils from '@/utils/useDates.js';
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
+let empId = store.state.empInfo[store.state.empInfo.length-1].user_id;
 
 const toast = useToast();
 const props = defineProps(['params']);
@@ -23,7 +26,7 @@ async function onButtonClicked() {
         mtril_code : data.code,
         mtril_qy : data.qy,
         wrhousng_se : data.checkCode == null ? 'MW02' : 'MW01',
-        empl_no: 100,   //로그인 정보 바탕으로 사원번호 가져오기 아직 구현되지 않음
+        empl_no: empId,
         wrhousng_date: userDateUtils.dateFormat(data.wrdate, 'yyyy-MM-dd'),
         mtril_lot: data.lot == null ? 'none' : data.lot
     };
@@ -39,13 +42,11 @@ async function onButtonClicked() {
         //처리 완료 안내
         toast.add({ severity: 'success', summary: '성공', detail: '처리가 완료되었습니다.', life: 3000 });
         //화면에서 삭제
-        props.params.api.applyTransaction({
-        remove: [props.params.node.data]
-    });
+        props.params.api.applyTransaction({remove: [props.params.node.data]});
     } else {
         //처리 실패 안내
         toast.add({ severity: 'warn', summary: '실패', detail: '문제가 생겼습니다.\n관리자에게 문의해주세요.', life: 3000 });
-    }
+    };
    
 
 }

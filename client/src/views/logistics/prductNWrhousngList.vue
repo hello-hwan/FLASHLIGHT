@@ -6,20 +6,22 @@
                         <span class="font-weight-black">반제품 입고 관리</span>
             </template>
         </v-card>
+        <button class="btn btn-primary mx-2" @click="prductNReturnListisModified">반환제품리스트</button>
+        <button class="btn btn-primary mx-2" @click="prductNListisModified">일반제품리스트</button>
     </v-col>
-    <v-col cols="6">
+    <v-col cols="12" v-if="isModified">
         <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
                 <span class="font-weight-black">반환반제품리스트</span>
             </template>
-            <v-card-text class="bg-surface-light pt-4">
+            <v-card-text  class="bg-surface-light pt-4">
                 <AgGridVue
                     style="height: 500px; margin: 0 auto;"
                     @grid-ready="onGridReady"
-                    :rowData="filteredRowData"
+                    :rowData="rowData"
                     :columnDefs="colDefs"
                     :rowSelection="rowSelection"
-                    @cellClicked="onCellClicked"
+                    @cellClicked="onCellClickedreturn"
                     :gridOptions="gridOptionsReturn"
                     class="ag-theme-alpine"
                     id="grid-one">
@@ -29,7 +31,7 @@
     </v-col>
 
         <!-- BOM 상세조회 -->
-        <v-col cols="6">
+        <v-col cols="12" v-if="isModified2">
             <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
                 <span class="font-weight-black">일반반제품</span>
@@ -64,6 +66,8 @@ import { ajaxUrl } from '@/utils/commons.js';
 export default {
 data() {
     return {
+        isModified: true,
+        isModified2: false,
         prductNReturnList: [],    // 반환반제품
         rowData: '',
         colDefs: '',
@@ -76,10 +80,12 @@ data() {
 created() {
     this.getprductNReturnList();
     this.colDefs = ([
-        { field: "bom_code", headerName:"제품명" },         // 반제품 반환 리스트로 변경해야됨
-        { field: "prdlst_code", headerName:"제품코드" },    // 반제품 반환 리스트로 변경해야됨
-        { field: "prdist_name", headerName:"재입고량" },    // 반제품 반환 리스트로 변경해야됨
-        { field: "prdctn_qy", headerName:"재입고날짜" },    // 반제품 반환 리스트로 변경해야됨
+        { field: "prduct_n_name", headerName:"제품명" },         // 반제품 반환 리스트로 변경해야됨
+        { field: "prduct_n_code", headerName:"제품코드" },    // 반제품 반환 리스트로 변경해야됨
+        { field: "nusgqty", headerName:"재입고량" },    // 반제품 반환 리스트로 변경해야됨
+        { field: "prduct_n_wrhousng_day", headerName:"재입고날짜",
+            valueFormatter: (params) => { return userDateUtils.dateFormat(params.value, 'yyyy-MM-dd'); }
+        },
         { field: "입고", headerName:"입고", cellRenderer: () => {return "입고"}}
     ])
     this.gridOptionsReturn = {
@@ -97,10 +103,10 @@ created() {
     };
     this.getprductNList();
     this.colDefsSelect = ([
-        { field: "mtril_name", headerName:"제품명" },
+        { field: "prd_nm", headerName:"제품명" },
         { field: "prd_code", headerName:"제품코드" },
-        { field: "pass_amount", headerName:"검사합격수량" },
-        { field: "test_date", headerName:"검사완료일",
+        { field: "nrmlt", headerName:"생산수량" },
+        { field: "end_time", headerName:"생산완료일",
             valueFormatter: this.customDateFormat },
         { field: "입고", headerName: "입고", cellRenderer: () => {return "입고"}}
     ])
@@ -123,38 +129,69 @@ components: {
     AgGridVue, // Add Vue Data Grid component
 },
 methods: {
-async onCellClicked(event) {
-    // '입고' 열이 아닌 경우 클릭 무시
-    if (event.colDef.field !== "입고") {
-        return;
-    }
 
-    // '입고' 열 클릭 동작
-    this.selectedPrd_code = event.data.prd_code;
-    this.getprductNList(this.selectedPrd_code); 
+    async onCellClickedreturn(event) {
+        if(event.colDef.field !== "입고"){
+            return;
+        }
+        console.log('클릭테스트');
+        this.select_code = event.data.prduct_n_code;
+        
+        let obj = [
+            event.data.prduct_n_code,
+            event.data.prduct_n_name,
+            event.data.prdctn_code,
+            event.data.nusgqty,
+            event.data.nusgqty
+        ]
+        console.log('클릭',obj);
+        let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousngReturn`, obj)
+                                .catch(err => console.log(err));
+        if(result){
+            let result2 = await axios.put(`${ajaxUrl}/prduct_n_dlivyReturn/${event.data.prduct_n_dlivy_no}`)
+                                        .catch(err => console.log(err));
+            let result = await axios.get(`${ajaxUrl}/prdctn_n_return_list`)
+                                        .catch(err => console.log(err));
+                        this.prductNReturnList = result.data;
+                        console.log(this.prductNReturnList);
+                        this.rowData = this.prductNReturnList;
+        }
 
-    let obj = [
-        event.data.mtril_name, 
-        event.data.prd_code,
-        event.data.mtril_check_code,
-        event.data.pass_amount,
-        event.data.pass_amount
-    ]
-    console.log('obj',obj);
+    },
 
-    let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousng`, obj)
-                    .catch(err => console.log(err));
-    let result2 = await axios.get(`${ajaxUrl}/prdctn_n_list`)
-            .catch(err => console.log(err));
-        this.prductNList = result2.data;
-        this.rowDataSelect = this.prductNList;
+    async onCellClicked(event) {
+        // '입고' 열이 아닌 경우 클릭 무시
+        if (event.colDef.field !== "입고") {
+            return;
+        }
 
-},
+        // '입고' 열 클릭 동작
+        this.selectedPrd_code = event.data.prd_code;
+        this.getprductNList(this.selectedPrd_code); 
+
+        let obj = [
+            event.data.prd_nm, 
+            event.data.prd_code,
+            event.data.prdctn_code,
+            event.data.nrmlt,
+            event.data.nrmlt
+        ]
+        console.log('obj',obj);
+
+        let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousng`, obj)
+                        .catch(err => console.log(err));
+        let result2 = await axios.get(`${ajaxUrl}/prdctn_n_list`)
+                .catch(err => console.log(err));
+            this.prductNList = result2.data;
+            this.rowDataSelect = this.prductNList;
+
+    },
     // 반제품 반환제품 리스트로 select 변경해야됨
     async getprductNReturnList() {
-        let result = await axios.get(`${ajaxUrl}/bom`)
+        let result = await axios.get(`${ajaxUrl}/prdctn_n_return_list`)
             .catch(err => console.log(err));
         this.prductNReturnList = result.data;
+        console.log(this.prductNReturnList);
         this.rowData = this.prductNReturnList;
     },
     async getprductNList() {
@@ -165,10 +202,18 @@ async onCellClicked(event) {
     },
     //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
     customDateFormat(params) {
-            return userDateUtils.dateFormat(params.data.test_date, 'yyyy-MM-dd');  // test_date는 알레아스 이름
+            return userDateUtils.dateFormat(params.data.end_time, 'yyyy-MM-dd');  // test_date는 알레아스 이름
     },
-    moder(){
-        this.moder();
+    // 반환 리스트 출력
+    prductNReturnListisModified(){
+        this.isModified = true;
+        this.isModified2 = false;
+    },
+
+    // 일반 리스트 출력
+    prductNListisModified(){
+        this.isModified2 = true;
+        this.isModified = false;
     }
 
 }

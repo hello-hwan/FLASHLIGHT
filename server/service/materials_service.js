@@ -56,6 +56,8 @@ const requestList = async() => {
 const requestMt = async(reqCode) => {
     //요청 리스트 가져오기
     let reqMtList = await mariaDB.query('mt_requestDetails', reqCode);
+    console.log('작동');
+    console.log(reqMtList);
 
     //새로운 데이터를 담을 배열 선언(객체들의 배열이 됨)
     let dataList = [];
@@ -69,7 +71,7 @@ const requestMt = async(reqCode) => {
 
         let lotListEachMt = await mariaDB.query('mt_lotInvenList', reqMtList[i].mt_code) 
                                          .catch(err=>console.log(err));
-
+        console.log(lotListEachMt);
         //반복 획수, 검색 결과가 0일때를 위한 임시변수 선언
         let roopCnt = lotListEachMt.length == 0 ? 1 : lotListEachMt.length;
         // if(lotListEachMt.length == 0) {
@@ -174,7 +176,7 @@ const dlivyMt = async(dlivyInfo) => {
         //console.log(result);
         resultSum += result;
     };
-
+    
     //성공한 수의 총합과 등록하는 데이터의 개수를 비교, 같으면 성공, 다르면 실패.
     if(resultSum = dlivyInfo.length) {
         return 'success';
@@ -191,19 +193,19 @@ const reqMtOrderList = async() => {
 };
 
 //발주관리 - 발주건 검색
-const mtOrderList = async(searchInfo) => {
+const mtOrderList = async(key) => {
     //발주명, 거래처명, 주문날짜1, 2, 납기일1, 2, 사원번호
-    let infoArr = [searchInfo.order_name,
-                    searchInfo.mtlty_name,
-                    searchInfo.start_order,
-                    searchInfo.end_order,
-                    searchInfo.start_dedt,
-                    searchInfo.end_dedt,
-                    searchInfo.emp_id];
-
+    let infoArr = [ key.order_name == "" ? null : key.order_name,
+                    key.mtlty_name == "" ? null : key.mtlty_name,
+                    key.start_order == "" ? null : key.start_order,
+                    key.end_order == "" ? null : key.end_order,
+                    key.start_dedt == "" ? null : key.start_dedt,
+                    key.end_dedt == "" ? null : key.end_dedt,
+                    key.emp_name == "" ? null : key.emp_name];
+    //console.log(infoArr);
     let result = await mariaDB.query('mt_searchOrderWithKey', infoArr)
                               .catch(err=>console.log(err));
-
+    //console.log(result);
     return result;
 };
 
@@ -236,7 +238,7 @@ const insertMtToOrder = async(orderMtList) => {
             orderMtList[i].company_code,
             orderMtList[i].order_name,
             orderMtList[i].company_name,
-            orderMtList[i].price,
+            orderMtList[i].price == null ? 0 : orderMtList[i].price,
             key == '' ? 'none': key
         ];
 
@@ -302,7 +304,7 @@ const mtOrderModify = async(modifyInfo) => {
             modifyInfo[i].order_date,
             modifyInfo[i].order_name,
             modifyInfo[i].order_qy,
-            modifyInfo[i].price,
+            modifyInfo[i].price == null ? 0 : modifyInfo[i].price,
             modifyInfo[i].state,
             modifyInfo[i].unit,
             modifyInfo[i].order_code
@@ -389,11 +391,11 @@ const allOrderList = async(key) => {
 
 //자재 입고조회
 const wrhousingList = async(key) => {
-    let searchKeyArr = [key.mtrilName,
-                        key.selected,
-                        key.charger_name,
-                        key.start_date,
-                        key.end_date
+    let searchKeyArr = [key.mtrilName == "" ? null : key.mtril_name,
+                        key.selected == "" ? null : key.selected,
+                        key.charger_name == "" ? null : key.charger_name,
+                        key.start_date == "" ? null : key.start_date,
+                        key.end_date == "" ? null : key.end_date
     ];
     let result = await mariaDB.query('mt_wrhousngList', searchKeyArr)
                               .catch(err => console.log(err));
@@ -403,16 +405,50 @@ const wrhousingList = async(key) => {
 
 //자재 출고 조회
 const dlivyList = async(key) => {
-    let searchKeyArr = [key.req_name,
-                        key.mtril_name,
-                        key.charger_name,
-                        key.start_date,
-                        key.end_date
+    let searchKeyArr = [key.req_name == "" ? null : key.req_name,
+                        key.mtril_name == "" ? null : key.mtril_name,
+                        key.charger_name == "" ? null : key.charger_name,
+                        key.start_date == "" ? null : key.start_date,
+                        key.end_date == "" ? null : key.end_date
     ];
     let result = await mariaDB.query('mt_dlivyList', searchKeyArr)
                               .catch(err => console.log(err));
 
     return result;
+};
+
+const orderForm = async(key) => {
+    //거래처 정보
+    let companyInfo = await mariaDB.query('mt_orderFormCompanyInfo', key)
+                              .catch(err=>console.log(err));
+
+    //주문 정보
+    let orderInfo = await mariaDB.query('mt_orderFormMtList', key)
+                                 .catch(err=>console.log(err));
+
+    console.log(companyInfo, '회사정보');
+    console.log(orderInfo, '주문정보');
+    let newArr = [...companyInfo, orderInfo];
+    return newArr;
+};
+
+//전체 주문 목록 조회 pdf용
+const allOrderListForPDF = async(key) => {
+    console.log(key);
+    //검색조건 배열
+    let searchKeyArr = [key.order_name == "" ? null : key.order_name,
+                        key.mtlty_name == "" ? null : key.mtlty_name,
+                        key.start_order == "" ? null : key.start_order,
+                        key.end_order == "" ? null : key.end_order,
+                        key.start_dedt == "" ? null : key.start_dedt,
+                        key.end_dedt == "" ? null : key.end_dedt,
+                        key.emp_name == "" ? null : key.emp_name];
+    console.log(searchKeyArr);
+    
+    let list = await mariaDB.query('mt_selectOrderListForPDF', searchKeyArr)
+        .catch(err=>console.log(err));
+    console.log('조회 결과: ', list);
+    return list;
 };
 
 module.exports = {
@@ -434,5 +470,7 @@ module.exports = {
     mtLotQy,
     allOrderList,
     wrhousingList,
-    dlivyList
+    dlivyList,
+    orderForm,
+    allOrderListForPDF
 };

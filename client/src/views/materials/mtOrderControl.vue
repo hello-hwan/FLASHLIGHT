@@ -1,61 +1,94 @@
 <template>
     <div>
-        <span>발주 요청</span>
-        <AgGridVue 
-        :rowData="reqRowData"
-        :gridOptions="reqGridOptions"
-        rowSelection="multiple"
-        class="ag-theme-alpine"
-        @grid-ready="onGridReady"
-        style="height: 300px">
-        </AgGridVue>
-
-        <div style="margin: 20px; text-align: right">
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    발주 관리
+                </span>
+            </template>
+        </v-card>
+        <div class="top-btn">            
             <span>
-                <span>발주명</span>
-                <InputText type="text" v-model="orderName" class="emp_info"> <p>{{ orderName }}</p></InputText>
-                <companySearchModal v-bind:companyInfo="companyInfoForChildComponent" @companySelectedData="getCompanyInfo"/> 
-                <span>담당자</span>
-                <InputText type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
+                <button type="button" class="btn btn-primary"
+                style="color: #fff;" @click="openReq" v-if="checkForReqMt">요청 자재 목록 닫기</button>
+                <button type="button" class="btn btn-primary"
+                style="color: #fff;" @click="openReq" v-else>요청 자재 목록 보기</button>
+                <!--발주건 조회-->
+                <orderSearchModal v-bind:state="forSearchOrder" @selectedData="getOrderDetails"/> 
+                <button type="button" class="btn btn-danger"
+                style="color: #fff; margin-left: 30px" v-show="delBtn" @click="delOrder">발주삭제</button>
             </span>
-     
-            <div class="align-left">
-                 <button type="button" class="btn btn-primary"
-                 @click="getOrderRowData"
-                 style="color: #fff;">
-                 선택항목 발주서 작성 </button>
-                 
-                 <!--검색 모달 열기-->
-                 <orderSearchModal @selectedData="getOrderDetails"/> 
-            </div>
-            <button type="button" class="btn btn-danger"
-                 style="color: #fff; margin-left: 30px" v-show="delBtn" @click="delOrder">발주삭제</button>
         </div>
-
-       <div>발주 자재 목록</div>
-       <AgGridVue 
-        :rowData="orderRowData"
-        :gridOptions="mtListGridOptions"
-        rowSelection="multiple"
-        class="ag-theme-alpine"
-        @grid-ready="mtListonGridReady"
-        style="height: 600px"
-        >
-        </AgGridVue>
-        <div class="btnGroup"style="">
-            <mtSearchModal @mtSelectedData="addRow"/>
+        <!--요청 자재 목록-->
+        <div v-show="checkForReqMt">
+    
+            <v-card
+                class="mx-auto"
+                style="margin-top: 30px; border-radius:13px;">
             
-           <button type="button" @click="removeRow"
-            class="btn btn-warning">행 삭제</button>
-           
-           <button type="button" @click="removeAllRow"
-            class="btn btn-secondary">초기화</button>
-
-           <button type="button" @click="insertMtOrderList"
-            class="btn btn-primary" v-if="orderCode == ''">등록</button>
-           <button type="button" @click="insertMtOrderList"
-            class="btn btn-primary" v-else>수정</button>
+                <v-card-text class="bg-surface-light pt-4">
+                    <button type="button" class="btn btn-primary select-req-mt"
+                         @click="getOrderRowData"
+                         style="color: #fff">
+                         선택항목 발주서 작성 </button>
+                    <!--ag grid영역-->
+                    <AgGridVue 
+                    :rowData="reqRowData"
+                    :gridOptions="reqGridOptions"
+                    rowSelection="multiple"
+                    class="ag-theme-alpine"
+                    @grid-ready="onGridReady"
+                    style="height: 308px;">
+                    </AgGridVue>
+                </v-card-text>
+            </v-card>
         </div>
+
+        <v-card style="margin-top: 30px; border: 1px solid #ccc;">
+            
+            <div style="margin: 20px; text-align: right;">
+
+        
+                <div class="align-left">
+                    <!--검색 모달 열기-->
+                    <div class="search-order-modal-Btn">
+                        
+                    </div>
+                    <span>
+                        <span>발주명 </span>
+                        <InputText type="text" v-model="orderName" class="emp_info" placeholder="   발주명을 입력해주세요"> <p>{{ orderName }}</p></InputText>
+                        <companySearchModal v-bind:companyInfo="companyInfoForChildComponent" @companySelectedData="getCompanyInfo"/> 
+                        <span>담당자 </span>
+                        <InputText style="width: 100px;" type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
+                        <mtSearchModal @mtSelectedData="addRow"/>
+                            
+                        <button type="button" @click="removeRow"
+                        class="btn btn-warning" style="color: #fff;"> 선택 행 삭제</button>
+                        
+                        <button type="button" @click="removeAllRow"
+                        class="btn btn-secondary" style="color: #fff;">초기화</button>
+
+                        <button type="button" @click="insertMtOrderList"
+                        class="btn btn-primary" style="color: #fff;" v-if="orderCode == ''">등록</button>
+                        <button type="button" @click="insertMtOrderList"
+                        class="btn btn-primary" style="color: #fff;" v-else>수정</button>
+                    </span>
+                </div>
+
+            </div>
+            <v-card-text class="bg-surface-light pt-4">
+                <AgGridVue 
+                    :rowData="orderRowData"
+                    :gridOptions="mtListGridOptions"
+                    rowSelection="multiple"
+                    class="ag-theme-alpine"
+                    @grid-ready="mtListonGridReady"
+                    style="height: 520px"
+                    >
+                    </AgGridVue>
+            </v-card-text>
+
+        </v-card>
     </div>
 
 </template>
@@ -72,6 +105,10 @@ import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import { useToast } from 'primevue/usetoast';
 
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
+
+
 //발주건 검색 모달
 import orderSearchModal from '@/components/materials/orderControlModal.vue';
 
@@ -80,6 +117,9 @@ import companySearchModal from '@/components/materials/searchCompanyModal.vue';
 
 //자재 검색 모달
 import mtSearchModal from '@/components/materials/searchMtModal.vue';
+
+//search order modal을 위해서 상태값 넘기기
+let forSearchOrder = 'order';
 
 const toast = useToast();
 
@@ -99,12 +139,19 @@ let companyName = "";
 //거래처 코드
 let companyCode = "";
 //담당자
-let empId = 100;
-
+let empId = store.state.empInfo[store.state.empInfo.length-1].user_id;
+//console.log(empId);
 //자식 컴포넌트로부터 받은 데이터 담을 변수
-let orderCode = ref("");
+const orderCode = ref("");
 
-let delBtn = ref(false);
+const delBtn = ref(false);
+
+//발주 요청목록 확인을 위한 변수
+const checkForReqMt = ref(false);
+
+const openReq = () => {
+    checkForReqMt.value = !checkForReqMt.value;
+};
 
 //자식 컴포넌트로부터 받은(선택한) 데이터 (발주건)
 const getOrderDetails = (info) => {
@@ -153,14 +200,14 @@ const reqColDefs = [
 
 //자재 리스트 열 정보
 const mtListColDefs = [
-    { field: "order_no", headerName: "발주번호", hide: true, suppressToolPanel: true, flex:3},
-    { field: "req_code", headerName:"요청 코드", hide: true, suppressToolPanel: true, flex:3},
-    { field: "mt_name", headerName: "*자재명", editable: true},
-    { field: "mt_code", headerName: "*자재코드", editable: true},
-    { field: "price", headerName: "입고단가(원)", editable: true},
-    { field: "order_qy", headerName: "*수량", editable: true},
-    { field: "unit", headerName: "*단위", editable: true},
-    { field: "order_date", headerName: "*발주일", valueFormatter: customDateToday, cellDataType: "date"},
+    { field: "order_no", headerName: "발주번호", hide: true, suppressToolPanel: true, flex:1},
+    { field: "req_code", headerName:"요청 코드", hide: true, suppressToolPanel: true, flex:1},
+    { field: "mt_name", headerName: "*자재명", editable: true,  checkboxSelection: true, flex:1},
+    { field: "mt_code", headerName: "*자재코드", editable: true, flex:1},
+    { field: "price", headerName: "입고단가(원)", editable: true, flex:1},
+    { field: "order_qy", headerName: "*수량", editable: true, flex:1},
+    { field: "unit", headerName: "*단위", editable: true, flex:1},
+    { field: "order_date", headerName: "*발주일", valueFormatter: customDateToday, cellDataType: "date", flex:1},
     { field: "dedt", headerName: "*납기일", valueFormatter: (params) => {
         //cusomDateFormat으로 해결이 안되어 직접 작성
           if (!params.value) {
@@ -171,13 +218,17 @@ const mtListColDefs = [
           const day = params.value.getDate();
           return `${params.value.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
         },
-        cellEditor: "agDateCellEditor", cellDataType: "date", editable: true }
+        cellEditor: "agDateCellEditor", cellDataType: "date", editable: true, flex:1 }
 ];
 
 //ag grid 요청테이블 옵션 설정
 const reqGridOptions = {
       columnDefs: reqColDefs,
-      animateRows: false
+      animateRows: false,
+      pagination: true,
+      paginationPageSize: 5,
+      paginationPageSizeSelector: [5, 10, 20],
+      paginateChildRows: true
 };
 
 //자재 목록 테이블 옵션 설정
@@ -224,6 +275,7 @@ const addRow = (info) => {
 
 //행 삭제
 const removeRow = () => {
+    /*
     //전체 행 데이터를 저장할 (객체)배열 선언
     let allData = [];
 
@@ -244,9 +296,23 @@ const removeRow = () => {
     if(allData.length-1 == 0) {
         //수정버튼 상태 변경 
         orderCode.value = '';
-    }
-    //삭제버튼 비활성화
-    delBtn.value = false;
+        //삭제버튼 비활성화
+        delBtn.value = false;
+    };
+    */
+   //선택된 행 노드 가져오기
+    const delNodes = mtListGridApi.value.getSelectedNodes();
+
+    if(delNodes <= 0) {
+        toast.add({ severity: 'warn', summary: '행 삭제', detail: '삭제할 행을 선택해주세요', life: 3000 });
+        return;
+    };
+
+    //선택된 행 삭제하기
+    delNodes.map((node) => {
+        mtListGridApi.value.applyTransaction({ remove: [node.data] });
+    });
+
 };
 
 //행 전체 삭제
@@ -317,6 +383,12 @@ const insertMtOrderList = async() => {
     //유효성 검사
     for(let i=0; i<rowData.length; i++) {
 
+        try{
+            if(rowData[i].dedt.length>0);
+        } catch {
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
+            return;
+        }
         //주문날짜 오늘날짜로 설정
         rowData[i].order_date = customDateToday();
 
@@ -333,8 +405,8 @@ const insertMtOrderList = async() => {
             //발주명, 거래처명 이 비어있으면 오류
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명, 거래처 명을 확인해주세요.', life: 3000 });
             return;
-        } else if (rowData[i].dedt.length == 0 ) {
-            //주문수량이 비어 있으면 오류 메세지 출력
+        } else if (rowData[i].dedt.length == 0 || rowData[i].dedt == undefined) {
+            //납기일이 비어 있으면 오류 메세지 출력
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
             return;
         } else if (orderName.length > 20) {
@@ -368,7 +440,8 @@ const insertMtOrderList = async() => {
         //입력 데이터 보내기
         let result = await axios.post(`${ajaxUrl}/mtril/insertMtOrderList`, rowData)
                                  .catch(err=>console.log(err));
-        
+                                
+        console.log('등록 작동');
         console.log('결과 ', result);
         if(result.data == 'success') {
             toast.add({ severity: 'success', summary: '발주 등록 완료', detail: '처리가 완료되었습니다.', life: 3000 });
@@ -525,7 +598,7 @@ const removeAllInfo = () => {
 
 </script>
 
-<style>
+<style scoped>
 .emp_info {
   width: 100px;
   margin-right: 20px;
@@ -533,7 +606,7 @@ const removeAllInfo = () => {
 
 .btn {
     margin-left: 10px;
-    --bs-btn-line-height: 1;
+    --bs-btn-line-height: 1.5px;
 }
 .btnGroup{
     margin: 10px;
@@ -542,4 +615,24 @@ const removeAllInfo = () => {
     line-height: 1px; 
     color: #fff;
 }
+.select-req-mt {
+    margin-bottom: 10px; 
+    margin-left: 87%;
+}
+.p-inputtext {
+    width: 310px;
+    height: 37px;
+    padding: 0!important;
+}
+
+.search-order-modal-Btn {
+    margin-bottom: 10px;
+}
+.top-btn {
+    display: inline-block;
+    margin-top: 10px;
+    position:relative;
+    right: -78%;
+}
+
 </style>

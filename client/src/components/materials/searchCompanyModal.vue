@@ -1,20 +1,28 @@
 <template>
     <span style="margin-left:20px">
-        <span>거래처 명</span>
-        <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
-        <span>거래처 코드</span>
-        <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText>
+        <span>거래처 명 </span>
+        <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName" style="height:38px;">{{ companyName }}</InputText>
+        <div style="display: none;">
+            <span>거래처 코드</span>
+            <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText>
+        </div>
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
-            <div id="search-bar">
-                <div class="align-left">                
-                    <span>거래처 코드</span>
-                    <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
-                    <span>상호명</span>
-                    <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
-                    <span>담당자 명</span>
-                    <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
+            <div class="search-bar">
+                <div>         
+                    <div>
+                        <span>거래처 코드 </span>
+                        <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
+                    </div> 
+                    <div>
+                        <span>상호명 </span>
+                        <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
+                    </div>
+                    <div>
+                        <span>담당자 명 </span>
+                        <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
+                    </div>
                 </div>
                 <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
             </div>
@@ -131,9 +139,9 @@ const rowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "bcnc_code", headerName: "발주번호"},
-  { field: "mtlty_name", headerName: "발주코드"},
-  { field: "charger_name", headerName: "발주명"},
+  { field: "bcnc_code", headerName: "거래처 코드", flex: 0.5},
+  { field: "mtlty_name", headerName: "거래처 명", flex: 1},
+  { field: "charger_name", headerName: "거래처 담당자", flex: 0.7},
   { headerName : "선택",  checkboxSelection: true, flex:0.3}
 ];
 
@@ -162,7 +170,7 @@ const searchCompany = async() => {
 
 </script>
 
-<style>
+<style scoped>
 /* dimmed */
 .modal-wrap {
   position: fixed;
@@ -179,7 +187,7 @@ const searchCompany = async() => {
     top: 53%;
     left: 61%;
     transform: translate(-50%, -50%);
-    width: 60%;
+    width: 40%;
     background: #fff;
     border-radius: 10px;
     padding: 20px;
@@ -200,12 +208,31 @@ const searchCompany = async() => {
     margin: 10px;
     line-height: 1.1;
 }
-#search-bar {
+.search-bar {
     padding: 27px;
     padding-bottom: 0px;
     background-color: #e3e3e3;
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
+    border: 1px solid #ccc;
 }
-
+.search-bar>div div{
+    text-align: left;
+}
+.search-bar>div div span {
+    display:inline-block;
+    margin: 15px 0;
+    width: 100px;
+}
+input{
+    width: 310px;
+}
+.modal-btn{
+    text-align: center;
+    margin: 0 10px;
+}
+.modal-btn button[data-v-043d30f2] {
+    line-height: 1.1;
+    margin: 10px 10px;
+}
 </style>

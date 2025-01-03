@@ -1,9 +1,22 @@
 <template>
-    <span style="margin-left:20px; ">
-        <span>거래처 명</span>
-        <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
-        <span>거래처 코드</span>
-        <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText>
+    <div class="col-2">
+        <label for="orderFormMtltyName" class="col-form-label">거래처 명</label>
+    </div>
+    <div class="col-auto">
+        <input type="text" id="orderFormMtltyName" class="form-control"  @click="modalOpen" v-model="companyName" readonly>
+    </div>
+    <div class="col-2">
+        <label for="orderFormMtltyCode" class="col-form-label">거래처 코드</label>
+    </div>
+    <div class="col-auto">
+        <input type="text" id="orderFormMtltyCode" class="form-control"  @click="modalOpen" v-model="companyCode" readonly>
+    </div>
+    
+    <!-- <span>거래처 명</span>
+    <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
+    <span>거래처 코드</span>
+    <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText> -->
+    <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck" >
         <div class="modal-container" @click.stop="">
@@ -49,9 +62,18 @@ import { ajaxUrl } from '@/utils/commons.js';
 //부모 컴포넌트로 데이터 보내기
 const emit = defineEmits(["companySelectedData"]);
 
+const props = defineProps(['info']);
+//console.log(props);
+console.log('출력확인!!!!!!!!!!!!!!!!!!!!', props.info);
+
 //화면에 보이는 데이터
 let companyName = null;
 let companyCode = null;
+
+if (props.info != null){
+    companyName = props.info.mtltyName;
+    companyCode = props.info.pCode;
+}
 
 //검색조건
 let searchCompanyCode = null;
@@ -70,8 +92,8 @@ const onGridReady = (params) => {
 let modalCheck = ref(false);
 
 //모달이 열리면 true로 변경, 스크롤 막기
-const modalOpen = () => {
-    const html = document.querySelector('html');
+let modalOpen = () => {
+    let html = document.querySelector('html');
     if(modalCheck.value == false) {
         modalCheck.value = !modalCheck.value;
         html.style.overflow = 'hidden';

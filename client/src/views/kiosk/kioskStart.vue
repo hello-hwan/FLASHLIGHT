@@ -27,21 +27,26 @@
             <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;"></div>
-            <p v-for="mt in matril" :key="mt.mtril_code">{{ mt.mtril_nm + ' ' + (mt.usgqty * info.prdctn_co) + '개 사용 예정' }}</p>
+            <p v-for="mt in matril" :key="mt.mtril_code" class="font-weight-black display-6">{{ mt.mtril_nm + ' ' + (mt.usgqty * info.prdctn_co) + '개 사용 예정' }}</p>
             <p v-if="matril.length == 0" class="font-weight-black display-6">재료 미사용</p>
             <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;"></div>
+            <div style="width: 50%; margin: 0 auto;">
             <label for="empl_no" class="display-6 font-weight-black">생산자</label>
+            <br>
+            <br>
             <Number v-model="empl"></Number>
+
+            </div>
             <div style="margin-bottom: 10px;
                 text-align: right;
                 height: 38px;"></div>
 
-            <button type="button" class="kiosk-btn back-blue display-6 font-weight-black" @click="gotostart(empl)">시작</button>
+            <button type="button" class="kiosk-btn back-blue display-6 font-weight-black" @click="gotostart()">시작</button>
             <button type="button" class="kiosk-btn back-red display-6 font-weight-black" @click="gotoback()">뒤로가기</button>
             <br>
-            <button type="button" class="kiosk-btn back-green display-6 font-weight-black" @click="gotoshift(empl)">공정이동표</button>
+            <Shift :prd="info.prd_code" :order="info.order_no" ></Shift>
 
           </v-card-text>
         </v-card>
@@ -59,6 +64,7 @@ import { useRoute, useRouter } from 'vue-router';
 import useDates from "@/utils/useDates";
 import { useToast } from 'primevue/usetoast';
 import Number from "@/components/kiosk/Number.vue";
+import Shift from "@/components/kiosk/Shift.vue";
 
 // 알림창
 const toast = useToast();
@@ -89,9 +95,7 @@ const getinfo = async (code) => {
   let result = await axios.get(`${ajaxUrl}/prod/onedrct/${code}`)
                           .catch(err => console.log(err));
   info.value = result.data;
-  console.log(info.value.prdctn_code);
   getmatril(result.data.procs_code);
-
 };
 
 // 공정흐름도에서 소모자재 조회
@@ -102,17 +106,19 @@ const getmatril = async (code) => {
 };
 
 // 시작 함수
-const gotostart = async (emplno) => {
-  if(empl.length == 0){
+const gotostart = async () => {
+  if(empl.value.length == 0){
     toast.add({ severity: 'warn', summary: '생산자 미입력', detail: '사원번호를 입력해주세요.', life: 3000 });
     return;
   }
 
-
-  let result = await axios.post(`${ajaxUrl}/prod/addstate`, { "prdctn_code" : info.value.prdctn_code, "procs_nm": info.value.procs_nm, "prd_code": info.value.prd_code, "prdctn_co": info.value.prdctn_co, "eqp_code": info.value.eqp_code, "begin_time": datetime.value, "empl_no": emplno })
+  let result = await axios.post(`${ajaxUrl}/prod/addstate`, { "prdctn_code" : info.value.prdctn_code, "procs_nm": info.value.procs_nm, "prd_code": info.value.prd_code, "prdctn_co": info.value.prdctn_co, "eqp_code": info.value.eqp_code, "begin_time": datetime.value, "empl_no": empl.value })
                           .catch(err => console.log(err));
-  console.log(result);
-  if(result == undefined) return;
+                          
+  if(result == undefined) {
+    toast.add({ severity: 'error', summary: '처리 실패', detail: '시작 보고에 실패되었습니다.\n다시 시도해주세요.', life: 3000 });
+    return;
+  }
 
   // 해당 사원이 없을때
   if(result.data.retCode == 2){
@@ -133,12 +139,6 @@ const gotostart = async (emplno) => {
 const gotoback = async () => {
   router.push({ name : 'kioskMain' });
 };
-
-// 공정이동표 함수
-const gotoshift = async (empl) => {
-  console.log(empl);
-};
-
 
 onBeforeMount(() => {
   let selcode = route.query.code;

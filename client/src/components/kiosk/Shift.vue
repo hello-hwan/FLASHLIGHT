@@ -1,48 +1,20 @@
 <template>
   <span style="margin-left:20px">
-      <input type="text" id="empl_no" v-model="inputValue" class="display-6 text-lg-right" style="background-color: white; margin-left: 5%;" @click="modalOpen">
+      <button type="button" class="kiosk-btn back-green display-6 font-weight-black" @click="modalOpen">공정이동표</button>
       <!-- 모달창 열기 -->
       <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
         <div class="modal-container" @click.stop="">
           <div id="search-bar">
-            <!-- 입력값 확인 -->
-            <div class="check-num">
-              <input type="text" id="check_no" v-model="check" class="display-3 text-lg-right" style="background-color: white; width: 80%;">
+            <div>
+              <AgGridVue style=" height: 700px; margin: 0 auto;"
+                  :defaultColDef="defaultColDef"
+                  :rowData="rowData"
+                  :gridOptions="gridOptions"
+                  class="ag-theme-alpine">
+              </AgGridVue>
             </div>
-            <!-- 공백 -->
-            <div style="margin-bottom: 10px;
-                text-align: right;
-                height: 50px;">
-            </div>
-            <!-- 숫자 입력 -->
-            <div class="click-num">
-              <table class="table-kiosk">
-                <tr>
-                  <th @click="typing">1</th>
-                  <th @click="typing">2</th>
-                  <th @click="typing">3</th>
-                </tr>
-                <tr>
-                  <th @click="typing">4</th>
-                  <th @click="typing">5</th>
-                  <th @click="typing">6</th>
-                </tr>
-                <tr>
-                  <th @click="typing">7</th>
-                  <th @click="typing">8</th>
-                  <th @click="typing">9</th>
-                </tr>
-                <tr>
-                  <th @click="typing">-</th>
-                  <th @click="typing">0</th>
-                  <th @click="typing">←</th>
-                </tr>
-              </table>
-            </div>
-            
             <div class="modal-btn">
-              <button @click="modalOpen"class="btn btn-secondary">닫기</button>
-              <button @click="numOk" class="btn btn-primary">확인</button>
+              <button @click="modalOpen"class="kiosk-btn back-red display-6 font-weight-black">닫기</button>
             </div>
           </div>
         </div>
@@ -51,28 +23,52 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { AgGridVue } from "ag-grid-vue3";
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+ModuleRegistry.registerModules([AllCommunityModule]);
+import { ref, defineProps  } from 'vue';
+import axios from 'axios';
+import { ajaxUrl } from '@/utils/commons';
+import useDates from "@/utils/useDates";
 
-// input값 넣을 변수
-let inputValue = ref('');
-let check = ref('');
+// 받아와야하는 값 정의
+const props = defineProps(["prd", "order"]);
 
-// 버튼클릭시 함수
-const typing = (event) => {
-  let newText = check.value;
-  if(event.target.innerHTML == '←'){
-    newText = newText.slice(0, newText.length-1);
-  } else {
-    newText += event.target.innerHTML;
+// 행 정보
+const rowData = ref([]);
+
+// 컬럼명 정의
+// field : 배열안 객체의 필드명, headerName : 우리가 표시할 컬럼 이름, flex: 열 크기, hide: 숨길건지(검색시 필요할수도 있으니 표시할거만 표시), suppressToolPanel: hide 쓰면 같이 써야하는거
+const ColDefs = [
+  { field: "procs_nm", headerName:"공정명", flex:1.5},
+  { field: "prdctn_co", headerName:"생산량"},
+  { field: "empl_nm", headerName:"작업자"},
+  { field: "end_time", headerName:"종료일자", flex:2},
+];
+
+// 정보 담을 함수
+const getlist = async (prd, order) => {
+  let result = await axios.get(`${ajaxUrl}/prod/shiftlist`, { params : { "prd_code" : prd, "order_no" : order} })
+  .catch(err => console.log(err));
+  for(let i = 0; i < result.data.length; i++){
+    let date = result.data[i].end_time;
+    let day_str = useDates.dateFormat(date, 'yyyy-MM-dd') + ' ' + useDates.timeFormat(date, 'hh:mm:ss');
+    result.data[i].end_time = day_str;
   }
-  check.value = newText;
+  rowData.value = result.data;
 };
 
-// 확인시 실행 함수
-const numOk = () => {
-  inputValue.value = check.value;
-  modalOpen();
-}
+//ag grid 옵션 설정
+const gridOptions = {
+  columnDefs: ColDefs,
+  animateRows: false,
+  defaultColDef: {
+    flex: 1,
+    minWidth: 10
+  },
+  rowHeight: 80,
+  headerHeight: 100,
+};
 
 //모달 열림 상태 담을 변수
 let modalCheck = ref(false);
@@ -81,25 +77,28 @@ let modalCheck = ref(false);
 const modalOpen = () => {
   const html = document.querySelector('html');
   if(modalCheck.value == false) {
-      modalCheck.value = !modalCheck.value;
-      html.style.overflow = 'hidden';
+    modalCheck.value = !modalCheck.value;
+    html.style.overflow = 'hidden';
+    getlist(props.prd, props.order);
   } else {
-      modalCheck.value = !modalCheck.value;
-      html.style.overflow = 'auto';
+    modalCheck.value = !modalCheck.value;
+    html.style.overflow = 'auto';
   }
 };
+
+
 </script>
 
 <style scoped>
 /* dimmed */
 .modal-wrap {
-position: fixed;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-background: rgba(0, 0, 0, 0.4);
-z-index: 3;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 3;
 }
 /* modal or popup */
 .modal-container {
@@ -145,5 +144,26 @@ z-index: 3;
   width: 30%;
   height: 150px;
   font-size: 50px;
+}
+.kiosk-btn {
+    width: 25%;
+    height: 100px;
+    margin: 5%;
+}
+.back-green {
+  background-color: rgb(205, 240, 205);
+}
+.back-red {
+  background-color: rgb(252, 196, 196);
+}
+.ag-theme-alpine, .ag-theme-alpine-dark, .ag-theme-alpine-auto-dark {
+  --ag-font-size: 29px;
+  --ag-grid-size: 8px;
+}
+.ag-cell, .ag-full-width-row .ag-cell-wrapper.ag-row-group {
+  --ag-internal-calculated-line-height: 30px;
+}
+[class*=ag-theme-] {
+  font-size: 30px !important;
 }
 </style>

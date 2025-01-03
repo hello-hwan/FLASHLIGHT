@@ -12,20 +12,29 @@ FROM bom`;
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
+       ,bc.cmpds_prdlst_code
 	,bc.cmpds_prdlst_name
+       ,bc.stndrd_x
 	,bc.stndrd_y
+       ,bc.stndrd_z
        ,bc.unit 
        ,bc.cnsum_count
+       ,b.sumry
 FROM bom b JOIN bom_cmpds bc  
 on b.bom_code = bc.bom_code
 WHERE b.bom_code = ?`;
 
-// BOM 등록 쿼리
- const bomInsert =  
-`INSERT INTO bom_cmpds 
- SET ?`;
+// BOM 업데이트
+const bomUpdate = 
+`UPDATE bom
+set ?
+where bom_code = ?`;
 
- 
+// BOM 등록 쿼리
+const bomInsert =  
+`INSERT INTO bom_cmpds 
+SET ?`;
+
 // BOM 소모품 조회
 const bomManage = 
 `SELECT c.cmpds_no
@@ -35,20 +44,20 @@ const bomManage =
        ,b.prdctn_qy
 	,c.cmpds_prdlst_code
 	,c.cmpds_prdlst_name
+       ,c.stndrd_x
        ,c.stndrd_y
+       ,c.stndrd_z
 	,c.unit
 	,c.cnsum_count
 FROM bom b JOIN bom_cmpds c 
 ON b.bom_code = c.bom_code
 WHERE b.prdlst_code = ?`;
 
-
 // BOM 소모품 업데이트
 const bom_cmpdsUpdate = 
 `UPDATE bom_cmpds
- SET ?
- WHERE cmpds_no = ?`;
-
+SET ?
+WHERE cmpds_no = ?`;
 
 // BOM소모품 삭제
 const bom_cmpdsDel = 
@@ -58,18 +67,121 @@ WHERE cmpds_no = ?`;
 
 // 자재 조회
 const mtril =
-`SELECT mtril_code
-       ,mtril_name
-       ,unit
-       ,untpc
-       ,sfinvc
-FROM mtril`;
+`SELECT m.mtril_code
+       ,m.mtril_name
+       ,m.unit
+       ,m.untpc
+       ,m.sfinvc
+       ,sum(w.mtril_qy) AS mtril_qy
+FROM mtril m LEFT JOIN mtril_wrhousing w
+ON m.mtril_code = w.mtril_code
+GROUP BY m.mtril_code
+        ,m.mtril_name
+	 ,m.unit
+	 ,m.untpc
+	 ,m.sfinvc`;
 
+// 자재 등록
+const mtrilAdd =
+`INSERT INTO mtril
+SET ? `;
+
+// 자재 삭제
+const mtrilDelete = 
+`DELETE FROM
+mtril
+WHERE mtril_code = ? `
+
+// 자재 수정
+const mtrilUpdate =
+`UPDATE mtril
+set ? 
+WHERE mtril_code = ?`;
+
+// 반제품 조회
+                                                  // 공정흐름도 테이블이랑 품목코드 동일해지면 join으로 변경해야됨
+const infoprductNList = 
+`SELECT p.prdlst_code
+      ,p.prdlst_name
+      ,p.stndrd_x
+      ,p.stndrd_y
+      ,p.stndrd_z
+      ,p.unit
+      ,p.wrhousng_unite
+      ,p.dlivy_unit
+      ,p.sfinvc
+      ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
+FROM prduct_n p LEFT JOIN procs_flowchart f                   
+ON prdlst_code = prd_code`;
+
+// 반제품 등록
+const prductNAdd = 
+`INSERT INTO prduct_n
+SET ?`;
+
+// 반제품 삭제
+const prductNDelete = 
+`DELETE FROM
+prduct_n
+WHERE prdlst_code = ?`
+
+// 반제품 수정
+const prductNUpdate = 
+`UPDATE prduct_n
+set ?
+WHERE prdlst_code = ?`;
+
+// 완제품 조회
+const infoprductList = 
+`SELECT r.prdlst_code
+       ,r.prdlst_name
+       ,r.stndrd_x
+       ,r.stndrd_y
+       ,r.stndrd_z
+       ,r.unit
+       ,IFNULL(SUM(p.prduct_invntry_qy),0) AS prduct_invntry_qy
+       ,r.wrhousng_untpc
+       ,r.dlivy_untpc
+       ,r.sfinvc
+FROM repduct r LEFT JOIN prduct_wrhousng p
+ON r.prdlst_code = p.prdlst_c_code
+GROUP BY r.prdlst_code
+        ,r.prdlst_name
+	 ,r.stndrd_X
+	 ,r.stndrd_y
+	 ,r.stndrd_z
+	 ,r.unit
+	 ,r.wrhousng_untpc
+	 ,r.sfinvc`;
+
+// 완제품 등록
+const prductInsert = 
+`INSERT INTO repduct
+set ?`;
+
+// 완제품 삭제
+const prductDelete = 
+`DELETE FROM
+repduct
+WHERE prdlst_code = ?`
+
+// 거래처 조회
+const bcncList = 
+`SELECT bcnc_code
+       ,bizrno
+       ,mtlty_name
+       ,bizcnd
+       ,item
+       ,dvyfg_adres
+       ,charger_name
+       ,charger_phone
+       ,regist_day
+FROM bcnc`;
 
 // 품질검사항목관리
 const qiList =
 `SELECT inspec_item  
-        ,inspec_standard
+       ,inspec_standard
 FROM inspection_detail 
 WHERE prd_code=?`; 
 
@@ -86,8 +198,8 @@ WHERE prd_code LIKE CONCAT('%', ?, '%')`;
 // 공정 흐름도 조회
 const procsFlowchartList = 
 `SELECT prd_code, prd_nm, sum(expect_reqre_time) as all_time
- FROM procs_flowchart
- GROUP BY prd_code, prd_nm
+FROM procs_flowchart
+GROUP BY prd_code, prd_nm
 `;
 
 // 공정 흐름도 상세 조회
@@ -192,14 +304,118 @@ const prd_code_search =
  FROM procs_flowchart
  WHERE prd_code LIKE CONCAT('%', ?, '%')`;
 
+// BOM에 등록되어있는 품목코드, 품목이름 검색
+const prd_code_bom_search = 
+`SELECT prdlst_code, 
+        prdist_name
+ FROM bom
+ WHERE prdlst_code LIKE CONCAT('%', ?, '%')`;
+
+ const prd_code_bom_all_search = 
+`SELECT prdlst_code, 
+        prdist_name
+ FROM bom`;
+
+// 전체 사원 조회
+const select_all_empl = 
+`SELECT empl.empl_no, 
+        empl.empl_name, 
+        empl.password,
+        empl.phone, 
+        empl.dept_se, 
+        cmmn.cmmn_name,
+        empl.encpn, 
+        empl.retire_day, 
+        empl.author
+ FROM empl
+ JOIN cmmn
+ ON empl.dept_se = cmmn.cmmn_code`;
+
+// 사원 검색
+const search_empl = 
+`SELECT empl.empl_no, 
+        empl.empl_name, 
+        empl.password,
+        empl.phone, 
+        empl.dept_se, 
+        cmmn.cmmn_name,
+        empl.encpn, 
+        empl.retire_day, 
+        empl.author
+ FROM empl
+ JOIN cmmn
+ ON empl.dept_se = cmmn.cmmn_code
+ WHERE empl.empl_no LIKE CONCAT('%', ?, '%')
+ AND empl.empl_name LIKE CONCAT('%', ?, '%')
+ AND empl.phone LIKE CONCAT('%', ?, '%')
+ AND empl.dept_se LIKE CONCAT('%', ?, '%')`;
+
+// 사원 등록
+const insert_empl = 
+`INSERT INTO empl (empl_no, 
+                   empl_name, 
+                   password,
+		     phone, 
+		     dept_se, 
+		     encpn, 
+		     author
+)
+VALUES (?, ?, ?, ?, ?, NOW(), ?)`;
+
+// 비밀번호 확인
+const search_pw = 
+`SELECT password
+ FROM empl
+ WHERE empl_no = ?`;
+
+// 사원 변경
+const update_empl = 
+`UPDATE empl
+ SET empl_no = ?, 
+     empl_name = ?, 
+     password = ?, 
+     phone = ?, 
+     dept_se = ?, 
+     author = ?
+ WHERE empl_no = ?`;
+
+// 사원 퇴사
+const delete_empl = 
+`UPDATE empl
+ SET retire_day = NOW()
+ WHERE empl_no = ?`;
+
+ //로그인을 위한 select
+ const loginSelect =
+ `
+ SELECT empl_no,
+        password,
+        empl_name,
+        dept_se
+ FROM   empl
+ WHERE  empl_no = ?
+ AND    password = ?
+ `;
+
 module.exports = {
   bom,
   bomInfo,
   bomInsert,
-  bomManage,
+  bomManage, 
   bom_cmpdsUpdate,
-  bom_cmpdsDel,
+  bom_cmpdsDel, 
   mtril,
+  mtrilAdd,
+  mtrilDelete,
+  mtrilUpdate,
+  infoprductNList,
+  prductNAdd,
+  prductNDelete,
+  prductNUpdate, 
+  infoprductList,
+  prductInsert,
+  prductDelete,
+  bcncList,
   qiList,
   qiListModal,
   procsFlowchartList, 
@@ -214,5 +430,14 @@ module.exports = {
   ProcsCodeToDeleteMchn, 
   ProcsCodeToDeleteMatrl, 
   ProcsCodeToDeleteFlowchart, 
-  prd_code_search
+  prd_code_search, 
+  prd_code_bom_search, 
+  prd_code_bom_all_search, 
+  select_all_empl, 
+  search_empl, 
+  insert_empl, 
+  search_pw, 
+  update_empl, 
+  delete_empl,
+  loginSelect
 };

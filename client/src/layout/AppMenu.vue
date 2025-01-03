@@ -18,27 +18,7 @@ const model = ref([
                     {
                         label: '주문 요청 조회',
                         to: '/business/orderList'
-                    },
-                    {
-                        label: '반품 리스트 등록',
-                        to: '/'
-                    },
-                    {
-                        label: '반품 리스트 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 재고 조정 등록',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 재고 조정 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 재고 조정 수량',
-                        to: '/'
-                    },
+                    }
                 ]
             },
             {
@@ -133,12 +113,8 @@ const model = ref([
                 label: '물류',
                 items: [
                     {
-                        label: '출고 조회',
-                        to: '/'
-                    },
-                    {
-                        label: '제품 출고 등록',
-                        to: '/'
+                        label: '제품 출고 조회',
+                        to: '/logistics/prductDlivyList'
                     },
                     {
                         label: '제품 출고 관리',
@@ -192,11 +168,7 @@ const model = ref([
                 items: [
                     {
                         label: '사원 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '부서 관리',
-                        to: '/'
+                        to: '/standardInfo/emplManagement'
                     },
                     {
                         label: '거래처 관리',
@@ -204,34 +176,22 @@ const model = ref([
                     },
                     {
                         label: '거래처 조회',
-                        to: '/'
+                        to: '/standardInfo/infobcncList'
                     },
                     {
-                        label: '제품 관리',
-                        to: '/'
+                        label: '제품 관리 / 제품 조회',
+                        to: '/standardInfo/infoprductList'
                     },
                     {
-                        label: '제품 조회',
-                        to: '/'
+                        label: '반제품 관리 / 반제품 조회',
+                        to: '/standardInfo/infoprductNList'
                     },
                     {
-                        label: '반제품 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '반제품 조회',
-                        to: '/standardInfo/prductNDlivyModar'
-                    },
-                    {
-                        label: '자재 관리',
-                        to: '/'
-                    },
-                    {
-                        label: '자재 조회',
+                        label: '자재 관리 / 자재 조회',
                         to: '/standardInfo/mtrilList'
                     }, 
                     {
-                        label: 'BOM 관리/BOM 조회',
+                        label: 'BOM 관리 / BOM 조회',
                         to: '/standardInfo/bomList'
                     },
                     {

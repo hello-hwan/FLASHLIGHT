@@ -2,6 +2,7 @@
 
 const orderRequest = `
 SELECT r.order_no,
+       r.p_code,
        b.mtlty_name,
        r.order_date,
        r.dete,
@@ -19,7 +20,7 @@ FROM order_requst r LEFT OUTER JOIN order_lists l ON r.order_no = l.order_no LEF
 ORDER BY 1 DESC`;
 
 const orderRequestInsert = `
-CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?)`;
 /*
 const orderRequestInsert = 
 `INSERT INTO order_requst ( order_no, order_date, dete, p_code, wrter)
@@ -54,14 +55,34 @@ SELECT bcnc_code,
 FROM bcnc
 WHERE bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
 AND mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
-AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')`
+AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')`;
+
+const bs_orderArray = `
+SELECT order_no
+FROM order_requst
+`;
+
+const bs_searchProduct=`
+SELECT prdlst_code, prdlst_name
+FROM repduct
+WHERE prdlst_code LIKE CONCAT('%', IFNULL(?, prdlst_code), '%')
+AND prdlst_name LIKE CONCAT('%', IFNULL(?, prdlst_name), '%')`;
+
+const bs_modifyCheck = `
+SELECT IFNULL( count(p.mnfct_no), 0) as count
+FROM order_lists o JOIN prdctn_plan p
+                    ON o.order_list_no = p.order_list_no
+WHERE UPPER( o.order_no ) = UPPER( ? )`;
 
 module.exports = {
     orderRequest,
     orderRequestInsert,
     orderRequestDetail,
     orderRequestDelete,
-    bs_searchCompany
+    bs_searchCompany,
+    bs_orderArray,
+    bs_searchProduct,
+    bs_modifyCheck
 };
 
 
