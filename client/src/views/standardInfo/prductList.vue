@@ -110,7 +110,7 @@
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
-                style="height: 500px; margin: 0 auto;"
+                style="height: 520px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"
@@ -222,9 +222,23 @@ export default {
         dlivy_untpc: this.dlivyUntpcAdd,
         sfinvc: this.sfinvcAdd
       }
-      let result = await axios.post(`${ajaxUrl}/prductInsert`, obj)
+      if(!this.prdlstCodeAdd){
+        alert('완제품코드를 입력하세요')
+      }else if(!this.prdlstNameAdd){
+        alert('완제품명을 입력하세요');
+      }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
+        alert('규격를 입력하세요');
+      }else if(!this.unitAdd){
+        alert('단위를 입력하세요')
+      }else{ 
+        let result = await axios.post(`${ajaxUrl}/prductInsert`, obj)
                         .catch(err => console.log(err));
-                        this.rowData.push(obj); //등록시 그리드에 바로적용
+                        this.rowData.push(obj); //등록시 그리드에 바로적용   
+        if(result){
+          alert('등록완료');
+        }
+      }
+      
     },
 
     async saveChanges(){

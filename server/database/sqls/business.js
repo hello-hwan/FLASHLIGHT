@@ -39,6 +39,7 @@ SELECT r.order_no,
        r.wrter, 
        l.order_list_no, 
        l.prd_code, 
+       l.prd_name,
        l.untpc, 
        l.order_qy 
 FROM order_requst r LEFT OUTER JOIN order_lists l

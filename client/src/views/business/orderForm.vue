@@ -81,7 +81,9 @@
                         <span>제품 명</span>
                         <InputText type="text" v-model="this.searchProductName" v-on:keyup.enter="searchProduct"> <p>{{ this.searchProductName }}</p></InputText>
                     </div>
-                    <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                    <div style="display:flex; justify-content: center;">
+                        <button @click="searchProduct"class="btn btn-primary search-btn">조회</button>
+                    </div>
                 </div>
     
                 <AgGridVue 
@@ -94,7 +96,7 @@
                 >
                 </AgGridVue>
     
-                <div class="modal-btn">
+                <div class="modal-btn" style="display:flex; justify-content: center;">
                     <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
                     <button @click="selectOrder2" class="btn btn-primary">확인</button>
                 </div>
@@ -116,11 +118,10 @@ import { ajaxUrl } from '@/utils/commons.js';
 import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue';
 
 import store from '@/store'
-import { useStore } from 'vuex';
 
 import { useToast } from 'primevue/usetoast';
 
-export default {
+export default { 
     data() { 
         return { 
             orderList: [], 
@@ -139,8 +140,6 @@ export default {
         }; 
     }, 
     created() { 
-        
-        console.log('------------', useStore());
         this.getOrderListNo();
         // this.onAddRow(); 
         this.colDefs = ref([ 
@@ -156,7 +155,7 @@ export default {
             { field: "untpc", headerName:"주문단가", editable: true }, 
             { field: "order_qy", headerName:"주문수량", editable: true }, 
             { field: "wrter", headerName:"작성자", editable: true } 
-        ]);
+        ]); 
         this.gridOptionsOrder = { 
                 columnDefs: this.colDefs, 
                 pagination: true, 
@@ -198,15 +197,25 @@ export default {
             this.columnApi2 = params.columnApi; 
         }, 
         async orderInsert() { 
-            for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
-                let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
-                console.log("합친결과는"); 
-                console.log(orderRegister); 
-                let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
-                                             .catch(err=>console.log(err)); 
-                console.log("결과는", result); 
-            } 
-            this.toast.add({ severity: 'success', summary: '등록', detail: '등록성공', life: 3000 });
+            let numCheck = 1;
+            for(let i = 0; i < this.gridApi.getRenderedNodes().length; i++){
+                if ( this.gridApi.getRenderedNodes()[i].data.order_qy <= 0){
+                    numCheck = 0;
+                }
+            }
+            if(numCheck = 1){
+                for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
+                    let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
+                    console.log("합친결과는"); 
+                    console.log(orderRegister); 
+                    let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
+                                                 .catch(err=>console.log(err)); 
+                    console.log("결과는", result); 
+                } 
+                this.toast.add({ severity: 'success', summary: '등록', detail: '등록성공', life: 3000 });
+            } else {
+                this.toast.add({ severity: 'warn', summary: '실패', detail: '주문수량은 양수로 입력하세요.', life: 3000 });
+            }
         }, 
         customDateFormat1(params){
             return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd');
@@ -230,9 +239,9 @@ export default {
                         prd_code:productSelectedData[0].prdlst_code, 
                         prd_name:productSelectedData[0].prdlst_name, 
                         untpc: 0, 
-                        order_qy: 0,
-                        wrter: this.empName
-                    };
+                        order_qy: 0, 
+                        wrter: this.empName 
+                    }; 
                     this.index = this.index + 1;
                     console.log('뉴데이터값은',newData);
                     this.rowData = [...this.rowData, newData];

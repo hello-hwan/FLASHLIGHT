@@ -3,13 +3,13 @@
         <label for="orderFormMtltyName" class="col-form-label">거래처 명</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyName" class="form-control"  @click="modalOpen" v-model="companyName" readonly>
+        <input type="text" id="orderFormMtltyName" class="form-control" placeholder="ex 예담" @click="modalOpen" v-model="companyName" readonly>
     </div>
     <div class="col-2">
         <label for="orderFormMtltyCode" class="col-form-label">거래처 코드</label>
     </div>
     <div class="col-auto">
-        <input type="text" id="orderFormMtltyCode" class="form-control"  @click="modalOpen" v-model="companyCode" readonly>
+        <input type="text" id="orderFormMtltyCode" class="form-control" placeholder="ex bcnc-01" @click="modalOpen" v-model="companyCode" readonly>
     </div>
     
     <!-- <span>거래처 명</span>
@@ -24,14 +24,12 @@
                 <div class="align-left"> 
                     <span>거래처 코드</span>
                     <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
-                    <span>거래처 명</span>
+                    <span>상호명</span>
                     <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
                     <span>담당자 명</span>
                     <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
                 </div>
-                <div style="display:flex; justify-content: center;">
-                    <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
-                </div>
+                <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
             </div>
             
             <AgGridVue 
@@ -43,7 +41,7 @@
                 >
             </AgGridVue>
             
-            <div class="modal-btn" style="display:flex; justify-content: center;">
+            <div class="modal-btn">
             <button @click="modalOpen"class="btn btn-secondary">닫기</button>
             <button @click="selectOrder" class="btn btn-primary">확인</button>
             </div>
@@ -61,24 +59,12 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
-import { useToast } from 'primevue/usetoast';
-const toast = useToast();
-
 //부모 컴포넌트로 데이터 보내기
 const emit = defineEmits(["companySelectedData"]);
-
-const props = defineProps(['info']);
-//console.log(props);
-console.log('출력확인!!!!!!!!!!!!!!!!!!!!', props.info);
 
 //화면에 보이는 데이터
 let companyName = null;
 let companyCode = null;
-
-if (props.info != null){
-    companyName = props.info.mtltyName;
-    companyCode = props.info.pCode;
-}
 
 //검색조건
 let searchCompanyCode = null;
@@ -120,26 +106,21 @@ const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
     const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log(companySelectedData);
-    if (companySelectedData[0] != null){
-        console.log('모달에서 선택된 행 데이터:', companySelectedData);
-        companyName = companySelectedData[0].mtlty_name;
-        companyCode = companySelectedData[0].bcnc_code;
-        
-        console.log(companyName, companyCode);
-        emit("companySelectedData", companySelectedData);
-    } else {
-        toast.add({ severity: 'warn', summary: '실패', detail: '거래처가 선택되지 않았습니다.', life: 3000 });
-    }
+    console.log('모달에서 선택된 행 데이터:', companySelectedData);
+    companyName = companySelectedData[0].mtlty_name;
+    companyCode = companySelectedData[0].bcnc_code;
+
+    console.log(companyName, companyCode);
+    emit("companySelectedData", companySelectedData);
 };
 //행 데이터를 담을 변수
 const rowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "bcnc_code", headerName: "거래처 코드", flex:1},
-  { field: "mtlty_name", headerName: "거래처 명", flex:1},
-  { field: "charger_name", headerName: "담당자 명", flex:1},
+  { field: "bcnc_code", headerName: "발주번호"},
+  { field: "mtlty_name", headerName: "발주코드"},
+  { field: "charger_name", headerName: "발주명"},
   { headerName : "선택",  checkboxSelection: true, flex:0.3}
 ];
 
@@ -183,9 +164,9 @@ const searchCompany = async() => {
 .modal-container {
     position: relative;
     top: 53%;
-    left: 50%;
+    left: 61%;
     transform: translate(-50%, -50%);
-    width: 50%;
+    width: 60%;
     background: #fff;
     border-radius: 10px;
     padding: 20px;
@@ -213,12 +194,5 @@ const searchCompany = async() => {
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
-input {
-    width: 220px;
-}
-button{
-    margin-left : 5px;
-    margin-right: 5px;
-    line-height: 15px;
-}
+
 </style>

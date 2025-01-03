@@ -76,28 +76,46 @@
             <v-card-text class="bg-surface-light pt-4">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">거래처 코드</label>
+                  <label for="itemCode" class="col-form-label">사업자등록번호</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilCodeAdd" />
+                <input type="text" id="bizrnoAdd" class="form-control" v-model="bizrnoAdd" />
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">거래처 명</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilNameAdd" />
+                <input type="text" id="mtrilNameAdd" class="form-control" v-model="bcncNameAdd" />
               </div>
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">단위</label>
+                  <label for="itemCode" class="col-form-label">업태</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" />
+                <input type="text" id="mtrilNameAdd" class="form-control" v-model="bizcnDAdd" />
               </div>
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">안전재고</label>
+                  <label for="itemCode" class="col-form-label">종목</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
+                <input type="text" id="itemAdd" class="form-control" v-model="itemAdd" />
+              </div>
+              <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">납품주소</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" id="dvyfgAdresAdd" class="form-control" v-model="dvyfgAdresAdd" />
+              </div>
+              <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">담당자명</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" id="chargerNameAdd" class="form-control" v-model="chargerNameAdd" />
+              </div>
+              <div class="col-auto">
+                  <label for="itemCode" class="col-form-label">담당자전화번호</label>
+              </div>
+              <div class="col-auto">
+                <input type="text" id="chargerPhoneAdd" class="form-control" v-model="chargerPhoneAdd" />
               </div>
               <div class="col-12 mt-3">
                 <button class="btn btn-success" @click="addData">등록</button>
@@ -116,7 +134,7 @@
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
-                style="height: 400px; margin: 0 auto;"
+                style="height: 520px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"
@@ -144,6 +162,7 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
+import userDateUtils from '@/utils/useDates.js';
 
 export default {
   data() {
@@ -170,10 +189,13 @@ export default {
       endDate: "",
 
       //input 입력값
-      mtrilCodeAdd: "",
-      mtrilNameAdd: "",
-      unitAdd: "",
-      sfinvcAdd: "",
+      bizrnoAdd : "",         // 사업자등록번호
+      bcncNameAdd : "",       // 상호명
+      bizcnDAdd : "",         // 업태
+      itemAdd  : "",          // 종목
+      dvyfgAdresAdd  : "",    // 납품주소
+      chargerNameAdd  : "",   // 담당자 명
+      chargerPhoneAdd  : "",  // 담당자 전화번호
       
     };
   },
@@ -189,7 +211,9 @@ export default {
       { field: "dvyfg_adres", headerName: "납품 주소" , editable: true},
       { field: "charger_name", headerName: "담당자 명" , editable: true},
       { field: "charger_phone", headerName: "담당자 번호" , editable: true},
-      { field: "regist_day", headerName: "등록 날짜" , editable: true},
+      { field: "regist_day", headerName: "등록 날짜" ,
+          valueFormatter: this.customDateFormat
+      },
     ];
 
     this.gridOptionsReturn = {
@@ -209,10 +233,7 @@ export default {
   methods: {
 
     // 셀 값 변경 이벤트 핸들러
-    onCellValueChanged(params) {
-      // params는 변경된 셀 정보를 담고 있음
-      //console.log("값 변경됨: ", params.data); // 변경된 데이터 로그 출력
-
+    onCellValueChanged() {
       // 값이 변경되었음을 기록
       this.isModified = true;
     },
@@ -226,16 +247,30 @@ export default {
       this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
 
+    // 거래처 등록
     async addData(){
-      let obj = {
-        mtril_code: this.mtrilCodeAdd,
-        mtril_name: this.mtrilNameAdd,
-        unit: this.unitAdd,
-        sfinvc: this.sfinvcAdd
-      }
-      let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
+      let obj = [
+        this.bizrnoAdd,
+        this.bcncNameAdd,
+        this.bizcnDAdd,
+        this.itemAdd,
+        this.dvyfgAdresAdd,
+        this.chargerNameAdd,
+        this.chargerPhoneAdd
+      ]
+      console.log(obj);
+      let result = await axios.post(`${ajaxUrl}/bcncAdd`, obj)
                         .catch(err => console.log(err));
-                        this.rowData.push(obj); //등록시 그리드에 바로적용
+     if(result != null){
+      let resul2 = await axios.get(`${ajaxUrl}/bcncList`)
+        .catch(err => console.log(err));
+        this.bcncList = result.data;
+        this.rowData = this.bcncList;
+        this.filteredRowData = this.rowData;
+     }else{
+       alert('등록실패');
+     }
+                        
     },
 
     async saveChanges(){
@@ -251,6 +286,7 @@ export default {
       }
     },
 
+    // 거래처 삭제
     deleteRow() {
         const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
 
@@ -262,16 +298,17 @@ export default {
         const selectedData = selectedNodes.map((node) => node.data);
 
         this.rowData = this.rowData.filter(
-          (row) => !selectedData.some((selected) => selected.mtril_code === row.mtril_code)
+          (row) => !selectedData.some((selected) => selected.bcnc_code === row.bcnc_code)
         );
 
         this.gridOptionsReturn.api.applyTransaction({ remove: selectedData });
 
         selectedData.forEach((data) => {
-          if (data.mtril_code) {
-            axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
-              .then(() => console.log(`행 삭제 완료: ${data.mtril_code}`))
-              .catch((err) => console.error(`행 삭제 실패: ${data.mtril_code}`, err));
+          console.log(data.bcnc_code);
+          if (data.bcnc_code) {
+            axios.delete(`${ajaxUrl}/bcnc_code/${data.bcnc_code}`)
+              .then(() => console.log(`행 삭제 완료: ${data.bcnc_code}`))
+              .catch((err) => console.error(`행 삭제 실패: ${data.bcnc_code}`, err));
           }
         });
     },
@@ -304,6 +341,10 @@ export default {
     onGridReady(params) {
       this.gridOptionsReturn.api = params.api;
       this.gridOptionsReturn.columnApi = params.columnApi;
+    },
+    //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
+    customDateFormat(params) {
+            return userDateUtils.dateFormat(params.data.regist_day, 'yyyy-MM-dd');  // test_date는 알레아스 이름
     },
 
   },

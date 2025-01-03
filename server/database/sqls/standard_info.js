@@ -12,6 +12,7 @@ FROM bom`;
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
+       ,bc.bom_code
        ,bc.cmpds_prdlst_code
 	,bc.cmpds_prdlst_name
        ,bc.stndrd_x
@@ -32,8 +33,24 @@ where bom_code = ?`;
 
 // BOM 등록 쿼리
 const bomInsert =  
-`INSERT INTO bom_cmpds 
-SET ?`;
+`INSERT INTO bom_cmpds (cmpds_no,
+                        bom_code,
+                        cmpds_prdlst_code,
+                        cmpds_prdlst_name,
+                        stndrd_x,
+                        stndrd_y,
+                        stndrd_z,
+                        unit,
+                        cnsum_count)
+VALUES (CONCAT('M-SL', nextval(bom_cmpds_seq)), 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?, 
+        ?)`;
 
 // BOM 소모품 조회
 const bomManage = 
@@ -58,6 +75,15 @@ const bom_cmpdsUpdate =
 `UPDATE bom_cmpds
 SET ?
 WHERE cmpds_no = ?`;
+
+// BOM 자재 리스트
+const bomMtilList = 
+`SELECT mtril_code
+       ,mtril_name
+       ,unit
+       ,untpc
+       ,sfinvc
+FROM mtril`;
 
 // BOM소모품 삭제
 const bom_cmpdsDel = 
@@ -99,7 +125,6 @@ set ?
 WHERE mtril_code = ?`;
 
 // 반제품 조회
-                                                  // 공정흐름도 테이블이랑 품목코드 동일해지면 join으로 변경해야됨
 const infoprductNList = 
 `SELECT p.prdlst_code
       ,p.prdlst_name
@@ -177,6 +202,33 @@ const bcncList =
        ,charger_phone
        ,regist_day
 FROM bcnc`;
+ 
+// 거래처 등록
+const bcncAdd = 
+`INSERT INTO bcnc (bcnc_code
+                  ,bizrno
+                  ,mtlty_name
+                  ,bizcnd
+                  ,item
+                  ,dvyfg_adres
+                  ,charger_name
+                  ,charger_phone
+                  ,regist_day)
+VALUES (CONCAT('bcnc-', nextval(bcnc_seq))
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,now())`;
+
+// 거래처 삭제
+const bcncDelete = 
+`DELETE FROM
+bcnc
+WHERE bcnc_code = ?`;
 
 // 품질검사항목관리
 const qiList =
@@ -393,7 +445,8 @@ module.exports = {
   bomInsert,
   bomManage, 
   bom_cmpdsUpdate,
-  bom_cmpdsDel, 
+  bom_cmpdsDel,
+  bomMtilList,
   mtril,
   mtrilAdd,
   mtrilDelete,
@@ -421,6 +474,9 @@ module.exports = {
   ProcsCodeToDeleteFlowchart, 
   prd_code_search, 
   prd_code_bom_search, 
+  bcncAdd,
+  bcncDelete,
+  bomUpdate,
   prd_code_bom_all_search, 
   select_all_empl, 
   search_empl, 
