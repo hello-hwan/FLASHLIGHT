@@ -59,6 +59,8 @@ const drctlist = async (prd_code, day_str) => {
 
   for(let i = 0; i < list.length; i++){
     if(model != list[i].model_nm){
+      // result.push({})
+
       colspan = 0;
 
       begin_time = list[i].pre_begin_time;
@@ -99,7 +101,7 @@ return result;
 
 // 제품리스트 검색 기능
 const prdlist = async (name) => {
-  let list = await mariaDB.query('pr_srcprd', name);
+  let list = await mariaDB.query('pr_srcprd', [name, name]);
   return list;
 };
 
@@ -321,6 +323,17 @@ const shiftlist = async (array) => {
   return list;
 };
 
+// 공정현황 조회
+const drcttable = async (array) => {
+  let list = await mariaDB.query('pr_selstate', array);
+  return list;
+};
+
+const procslist = async (name) => {
+  let list = await mariaDB.query('pr_selprocs', [name, name, name]);
+  return list;
+}
+
 
 
 
@@ -343,6 +356,6 @@ module.exports = {
   finyesmt,
   statelist,
   shiftlist,
-
-  
+  drcttable,
+  procslist
 };

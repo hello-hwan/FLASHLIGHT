@@ -215,6 +215,7 @@ router.put('/prod/updstate/yes', async (req, res) => {
   })
 });
 
+// 공장 실적 조회
 router.get('/prod/statelist', async (req, res) => {
   let array = [];
   array.push(req.query.procs_code);
@@ -231,12 +232,43 @@ router.get('/prod/statelist', async (req, res) => {
 
 });
 
+// 공정이동표 조회 - 키오스크
 router.get('/prod/shiftlist', async (req, res) => {
   let array = [];
   array.push(req.query.prd_code);
   array.push(req.query.order_no);
   prodService
   .shiftlist(array)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+// 공정현황 조회 - 메인페이지
+router.get('/prod/drcttable', async (req, res) => {
+  let array = [];
+  array.push(req.query.code);
+  array.push(req.query.day);
+  array.push(req.query.day);
+  array.push(req.query.day);
+  array.push(req.query.day);
+  prodService
+  .drcttable(array)
+  .then(list => {
+    res.send(list);
+  })
+  .catch(err => {
+    res.status(500).send('Fail Process');
+  })
+});
+
+router.get('/prod/procslist', async (req, res) => {
+  let name = req.query.name;
+  prodService
+  .procslist(name)
   .then(list => {
     res.send(list);
   })

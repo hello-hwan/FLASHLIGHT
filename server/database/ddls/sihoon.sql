@@ -1,5 +1,5 @@
 devUSE dev;
--- 페이징
+-- 페이징 -----------------------------------------------------
 SELECT b.*
 FROM (SELECT rownum() as rn, a.*
       FROM ( SELECT *
@@ -14,15 +14,52 @@ WHERE cmmn_name = '미처리'
 ORDER BY cmmn_code ASC
 LIMIT 10 OFFSET 0;
 
-SELECT * FROM cmmn
-WHERE cmmn_code = 'RD02';
+-- 이벤트 스케줄러 ---------------------------------------------
+SHOW VARIABLES LIKE 'event%';
+SET GLOBAL event_scheduler = ON;
+SELECT * FROM information_schema.events;
 
-SELECT * FROM cmmn;
-INSERT INTO cmmn(cmmn_code, upper_cmmn_code, cmmn_name)
-VALUES ('RD03', 'RD', '요청전');
-COMMIT;
+-- 생산 계획 인서트 하루단위
+CREATE EVENT plan_insert
+ON SCHEDULE EVERY 1 DAY
+STARTS '2025-01-03 07:00:00'
+COMMENT '생산 계획 삽입'
+DO
+CALL insert_plan(); 
 
--- 시퀀스 생성
+DROP EVENT plan_insert;
+
+-- 생산 계획 수정 시간 단위
+CREATE EVENT plan_update
+ON SCHEDULE EVERY 1 HOUR
+STARTS '2025-01-03 11:55:00'
+COMMENT '생산 계획 수정 한시간 마다 우선순위-1 '
+DO
+CALL update_plan();
+
+DROP EVENT plan_update;
+
+-- 생산 지시 삽입 하루 단위
+CREATE EVENT drct_insert
+ON SCHEDULE EVERY 1 DAY
+STARTS '2025-01-03 08:00:00'
+COMMENT '생산 지시 삽입'
+DO
+CALL play_drct();
+
+DROP EVENT drct_insert;
+
+-- 물품 요청 삽입 하루 단위
+CREATE EVENT req_insert
+ON SCHEDULE EVERY 1 DAY
+STARTS '2025-01-03 09:00:00'
+COMMENT '물품 요청 삽입'
+DO
+CALL insert_req();
+
+DROP EVENT req_insert;
+
+-- 시퀀스 생성 ---------------------------------------------
 DROP sequence plan_seq;
 CREATE sequence plan_seq START WITH 1 increment BY 1;
 select NEXTVAL(plan_seq);
@@ -34,34 +71,14 @@ SELECT NEXTVAL(req_seq);
 DROP sequence use_seq;
 CREATE sequence use_seq START WITH 1 increment BY 1;
 SELECT NEXTVAL(use_seq);
--- 계획 순서 
+
+
+
+-- 생산 계획 순서 -------------------------------------------
 -- 주문리스트에서 처리중, 생산인 품목이랑 수량, 주문번호, 주문일자, 납품기한, 우선순위 조회
 -- 공정흐름도에서 품목별 공정 조회
 -- 반복문 생산계획 삽입
 -- 주문리스트 (주문번호, 품목번호, 품목명, 주문수량, 주문일자, 납품일자, 총 소요시간, 우선순위)
-SELECT olist.order_list_no, 
-		 olist.order_no, 
-		 olist.prd_code, 
-		 olist.prd_name, 
-		 olist.order_qy, 
-		 oreq.order_date, 
-		 oreq.dete,
-		 ROUND((TIMESTAMPDIFF(MINUTE, SYSDATE(), dete) - (SELECT IFNULL( SUM( expect_reqre_time ), 0) * olist.order_qy
-       																  FROM procs_flowchart
-       																  WHERE prd_code = olist.prd_code))/60) AS priort
-FROM order_lists olist JOIN order_requst oreq ON (olist.order_no = oreq.order_no)
-							  LEFT JOIN prdctn_plan pp ON (olist.order_list_no = pp.order_list_no)
-WHERE prdctn_at = 'OP01'
-AND process_status = 'OD01'
-AND pp.mnfct_no IS NULL
-ORDER BY 7;
-
--- 공정흐름도 조회
-SELECT procs_code, procs_nm
-FROM procs_flowchart
-WHERE prd_code = 'aaa1'
-ORDER BY procs_ordr_no;
-
 
 -- 공정흐름도 조회해서 생산계획 삽입 프로시저
 DELIMITER //
@@ -240,95 +257,13 @@ BEGIN
 END //
 DELIMITER ;
 
--- 이벤트 스케줄러
-SHOW VARIABLES LIKE 'event%';
-SET GLOBAL event_scheduler = ON;
-SELECT * FROM information_schema.events;
-
--- 계획 인서트 하루단위
-CREATE EVENT plan_insert
-ON SCHEDULE EVERY 1 DAY
-STARTS '2024-12-17 09:00:00'
-COMMENT '생산 계획 삽입'
-DO
-CALL insert_plan; 
-
-DROP EVENT plan_insert;
-
--- 계획 수정 시간 단위
-CREATE EVENT plan_update
-ON SCHEDULE EVERY 1 HOUR
-STARTS '2024-12-17 10:55:00'
-COMMENT '생산 계획 수정 한시간 마다 우선순위-1 '
-DO
-CALL update_plan;
-
--- 순서 
+-- 생산 지시 순서 ------------------------------------------------
 -- 지시 안들어간 생산 계획 조회
 -- 품목코드랑 주문 수량 가져와서 bom 조회 후 자재량 조회(아니면 공정 흐름도에서 가져와서 예상시간도 함께 조회)
 -- 자재 우리가 가지고 있는 총 재고 > bom 자재량* (생산 개수) + 요청물품(미처리)(합)  이면 
 -- 공정별 설비 가동 미가동 조회
 -- 미가동 상태 아닌 설비 중 첫번째 설비에 생산 지시 하도록
 -- 예측 시작 시간 => 
-
--- 생산 계획에서 주문별 물품별 수량 조회
-SELECT pp.order_list_no, pp.order_no, pp.prd_code, pp.prd_nm, pp.prdctn_co
-FROM prdctn_plan pp LEFT JOIN prdctn_drct pd ON (pp.mnfct_no = pd.mnfct_no)
-WHERE prdctn_code IS NULL
-GROUP BY order_list_no, order_no, prd_code
-ORDER BY pp.priort;
-
--- 생산 계획에서 생산 지시가 안들어간 계획만 조회
-SELECT pp.mnfct_no, pp.procs_code, pp.procs_nm, pp.prd_code, pp.prd_nm, pp.prdctn_co, pp.priort
-FROM prdctn_plan pp LEFT JOIN prdctn_drct pd ON (pp.mnfct_no = pd.mnfct_no)
-WHERE prdctn_code IS NULL
-AND pp.order_list_no = '' ;
-
--- 소모재료 (자재코드, 자재명, 소모수량)
-SELECT mtril_code, mtril_nm, sum(usgqty)
-FROM procs_flowchart fc JOIN procs_matrl mt ON (fc.procs_code = mt.procs_code)
-WHERE prd_code = ?
-GROUP BY mtril_code
-ORDER BY 1;
-
--- 요청 중에서 미처리인 물품별 수량 조회
-SELECT SUM(req_qy)
-FROM thng_req
-WHERE prd_code = ?
-AND procs_at = 'RD01'
-AND prdctn_code IS NULL;
-
--- 자재별 재고수량
-SELECT mtril_code, mtril_name, SUM(mtril_qy)
-FROM mtril_wrhousing
-WHERE mtril_code = ?
-GROUP BY mtril_code;
-
--- 반제품별 재고수량
-SELECT prdlst_code, prduct_name, SUM(prduct_n_wrhousng_qy)
-FROM prduct_n_wrhousng
-WHERE prdlst_code = ?
-GROUP BY prdlst_code;
-
--- 설비 코드, 설비명 조회
-SELECT pm.eqp_code, eqp.model_nm
-FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)			 
-WHERE procs_code = ?;
-
-SELECT pm.eqp_code, eqp.model_nm
-FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)	
-						 LEFT JOIN not_opr nopr ON (eqp.eqp_code = nopr.eqp_code)
-WHERE procs_code = ''
-AND (process_step = 'FS02'
-OR not_opr_code IS NULL);
-
--- 공정별 소요시간
-SELECT expect_reqre_time * pp.order_qy
-FROM procs_flowchart pf JOIN prdctn_plan pp ON (pf.procs_code = pp.procs_code)
-WHERE pp.mnfct_no = ?;
-
--- 분단위로 날짜 더하기
-SELECT DATE_ADD(NOW(), INTERVAL 240 MINUTE);
 
 -- 생산지시 실행할 프로시저
 DELIMITER //
@@ -388,6 +323,7 @@ BEGIN
 	DECLARE v_mtril_qy INT;
 	DECLARE v_sfinvc INT;
 	DECLARE v_real_qy INT;
+	DECLARE v_mnfct_no INT;
 	
 	-- 생산 계획 커서
 	DECLARE cursor_plan CURSOR FOR 
@@ -427,16 +363,14 @@ BEGIN
 		 		IF done THEN
 		 			LEAVE useqy_loop;
 		 		END IF;
-		 		
--- --------------------------------------------------------------------------------------------------------------------
-				
-				-- 물품 요청 수량 조회 - 현재 발주 처리건만 되어있음
+		 				
+				-- 물품 요청 수량 조회 - 출고 요청만
 				SELECT IFNULL( SUM(req_qy), 0 )
 				INTO v_req_qy
 				FROM thng_req
 				WHERE prd_code = v_mtril_code
 				AND procs_at = 'RD01'
-				AND prdctn_code IS NULL; 
+				AND prdctn_code IS NOT NULL; 
 				
 				-- 자재 조회
 				SELECT COUNT( mtril_code )
@@ -460,6 +394,7 @@ BEGIN
 					FROM mtril_wrhousing 
 					WHERE mtril_code = v_mtril_code;
 					
+					-- 안전재고 조회
 					SELECT sfinvc
 					INTO v_sfinvc
 					FROM mtril
@@ -475,6 +410,7 @@ BEGIN
 					FROM prduct_n_wrhousng 
 					WHERE pprdlst_code = v_mtril_code;
 					
+					-- 안전재고 조회
 					SELECT sfinvc
 					INTO v_sfinvc
 					FROM prduct_n
@@ -482,8 +418,8 @@ BEGIN
 						
 				END IF;			-- 자재/ 반제품 구분
 				
-				-- 재고수량 < (소모수량*주문량) + 요청수량
-				IF v_mtril_qy < (v_sum_qy * v_prdctn_co) + v_req_qy THEN
+				-- 재고수량 < (소모수량*주문량) + 요청수량 + 안전재고
+				IF v_mtril_qy < (v_sum_qy * v_prdctn_co) + v_req_qy + v_sfinvc THEN
 					
 					-- 제작이나 발주요청 해야하는 수량 = 0 - (재고 - (소모수량 * 주문량) - 요청수량 - 안전재고)
 					SET v_real_qy = 0 - ( v_mtril_qy - ( v_sum_qy * v_prdctn_co ) - v_req_qy - v_sfinvc);
@@ -522,7 +458,7 @@ BEGIN
 					
 					-- 물품 요청 테이블에 삽입
 					INSERT INTO thng_req (req_code, req_name, mnfct_no, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
-					VALUES ( NEXTVAL(req_seq), '', v_mnfct_no, )
+					VALUES ( CONCAT('req-', NEXTVAL(req_seq)), CONCAT(v_mtril_nm, '-', v_real_qy,'-발주요청'), v_mnfct_no, v_mtril_code, v_mtril_nm, v_real_qy, v_prd_se, 'RD03', NOW());
 							
 				END IF;
 				
@@ -530,6 +466,7 @@ BEGIN
 				LEAVE out_loop;
 				
 			ELSE 
+				START TRANSACTION;
 				CALL insert_in_drct(v_order_list_no);
 				COMMIT;
 			END IF;
@@ -547,7 +484,7 @@ DROP PROCEDURE IF EXISTS insert_in_drct //
 
 CREATE PROCEDURE insert_in_drct
 ( 
-	OUT c_order_list_no VARCHAR(100)
+	IN c_order_list_no VARCHAR(100)
 )
 BEGIN
 	DECLARE done INT DEFAULT FALSE;
@@ -586,7 +523,7 @@ BEGIN
 	DECLARE v_null INT;
 	DECLARE v_chck_null INT;
 	
-	DECLARE v_before DATETIME DEFAULT NOW();
+	DECLARE v_before DATETIME DEFAULT DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 9 HOUR), INTERVAL 1 DAY);
 	
 	-- 실제로 삽입할 변수 선언
 	DECLARE v_real_begin DATETIME;
@@ -661,8 +598,6 @@ BEGIN
 			SET v_null = 0 ;
 			SET v_chck_null = 0;
 			
-
-			
 			-- 생산 지시 커서
 			OPEN cursor_drct;
 			drct_loop : LOOP
@@ -694,14 +629,14 @@ BEGIN
 			END LOOP chck_loop;
 			CLOSE cursor_chck;
 			
-			-- 생산 지시 조회 결과가 있을때
+			-- 생산 지시 조회 결과가 있을때 => 바로 뒤 타임 + 1 시간(장비 교체나 뒷정리 시간)
 			IF v_null = 1 THEN
-				SET v_begin_time = v_pre_end_time;
+				SET v_begin_time = DATE_ADD(v_pre_end_time, INTERVAL 1 HOUR);
 												
-			-- 생산 지시 결과가 없을 때
+			-- 생산 지시 결과가 없을 때 => 내일 9시
 			ELSE 
 			
-				SET v_begin_time = DATE_ADD(NOW(), INTERVAL 10 MINUTE);
+				SET v_begin_time = DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 9 HOUR), INTERVAL 1 DAY);
 												
 			END IF;
 			
@@ -753,9 +688,6 @@ END //
 DELIMITER ;
 
 CALL play_drct();
-
--- 523행 물품 요청 삽입 프로시저
-
 
 -- 생산 완료 보고로 일어나는 프로시저(물품당) -> 출고 테이블에서 수정, 공정별 사용재료 삽입(동시에 일어나야함)
 DELIMITER //
@@ -971,9 +903,223 @@ DELIMITER ;
 CALL play_state('testbyshun-11', 'M-LEATHER', 1000, @c_result);
 SELECT @c_result;
 
+-- 물품 요청 프로시저
+DELIMITER //
+DROP PROCEDURE IF EXISTS insert_req //
+CREATE PROCEDURE insert_req()
+BEGIN
+
+	-- 커서 종료 변수 선언
+	DECLARE done INT DEFAULT FALSE;
+	
+	-- 생산지시에 넣을 커서 선언
+	DECLARE v_prdctn_code VARCHAR(100);
+	DECLARE v_mnfct_no INT;
+	DECLARE v_procs_code VARCHAR(100);
+	DECLARE v_prd_code VARCHAR(100);
+	DECLARE v_prd_nm VARCHAR(20);
+	DECLARE v_prdctn_co INT;
+	DECLARE v_rate DOUBLE;
+	
+	-- 공정별 재료 커서에 넣을 변수 선언
+	DECLARE v_mtril_code VARCHAR(100);
+	DECLARE v_mtril_nm VARCHAR(20);
+	DECLARE v_usgqty INT;
+	
+	-- 추가 조회문 담을 변수 선언
+	DECLARE v_prdn INT;
+	DECLARE v_matrl INT;
+	DECLARE v_se VARCHAR(20);
+	DECLARE v_real_qy INT;
+	DECLARE v_row INT;
+	DECLARE v_real INT DEFAULT 0;
+	DECLARE v_total INT DEFAULT 0;
+	
+	-- 생산 지시 커서(내일 9시 부터 모레 9시 까지, 생산지시가 안일어났고, 물품 요청이 없는 거)
+	DECLARE cursor_drct CURSOR FOR 
+		SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.prd_code, pd.prd_nm, pd.prdctn_co, 1 + ps.badn / (ps.nrmlt + ps.badn) AS rate
+		FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+						  		  LEFT JOIN thng_req tr ON (pd.prdctn_code = tr.prdctn_code)
+		WHERE ps.prdctn_code IS NULL
+		AND tr.req_code IS NULL
+		AND pd.pre_begin_time BETWEEN DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 9 HOUR), INTERVAL 1 DAY) AND DATE_ADD(DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 9 HOUR), INTERVAL 1 DAY), INTERVAL 1 DAY);
+	
+	-- 공정별 재료 커서	
+	DECLARE cursor_mtril CURSOR FOR
+		SELECT pm.mtril_code, pm.mtril_nm, pm.usgqty
+		FROM procs_matrl pm
+		WHERE pm.procs_code = v_procs_code;
+	
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+	
+	START TRANSACTION;
+	-- 생산지시 커서 오픈
+	OPEN cursor_drct;
+	loop_drct: LOOP
+		FETCH cursor_drct INTO v_prdctn_code, v_mnfct_no, v_procs_code, v_prd_code, v_prd_nm, v_prdctn_co, v_rate;
+		IF done THEN
+			leave loop_drct;
+		END IF;
+		
+		-- 공정별 재료 커서 오픈
+		OPEN cursor_mtril;
+		loop_mtril: LOOP
+			FETCH cursor_mtril INTO v_mtril_code, v_mtril_nm, v_usgqty;
+			IF done THEN
+				leave loop_mtril;
+			END IF;
+			
+			-- 자재 인지 검색
+			SELECT COUNT(mt.mtril_code)
+			INTO v_matrl
+			FROM mtril mt
+			WHERE mt.mtril_code = v_mtril_code;
+			
+			-- 반제품 인지 검색
+			SELECT COUNT(pn.prdlst_code)
+			INTO v_prdn
+			FROM prduct_n pn
+			WHERE pn.prdlst_code = v_mtril_code;
+			
+			-- 자재일때
+			IF v_matrl > 0 AND v_prdn = 0 THEN
+				SET v_se = 'PI01';
+					
+			-- 반제품일때			
+			ELSEIF v_matrl = 0 AND v_prdn > 0 THEN
+				SET v_se = 'PI02';
+				
+			END IF;
+			
+			-- 불량률이 1이거나 null일때 1.1로 설정
+			IF v_rate = 1.0 OR v_rate IS NULL THEN
+				SET v_rate = 1.1;
+				
+			END IF;
+			
+			-- 실제로 출고 요청할 수량 = 소모수량 * 생산수량 * 불량률
+			SET v_real_qy = CEIL(v_usgqty * v_prdctn_co * v_rate);
+			
+			-- 물품 요청 삽입
+			INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
+			VALUES (CONCAT('req-', NEXTVAL(req_seq)), CONCAT(v_mtril_code, '-출고요청'), v_mnfct_no, v_prdctn_code, v_mtril_code, v_mtril_nm, v_real_qy, v_se, 'RD02', NOW());
+			
+			SELECT ROW_COUNT()
+			INTO v_row;
+			
+			SET v_real = v_real + v_row;
+			SET v_total = v_total + 1;
+				
+		-- 공정별 재료 커서 클로즈		
+		END LOOP loop_mtril;
+		CLOSE cursor_mtril;	
+		
+	-- 생산지시 커서 클로즈
+	END LOOP loop_drct;
+	CLOSE cursor_drct;
+	
+	IF v_real = v_total THEN
+		COMMIT;
+	ELSE 
+		ROLLBACK;
+	END IF;
+		
+END //
+DELIMITER ;
+
+
+-- 실행문 -------------------------------------------------------------------------------------
+
+-- 생산 계획 ----------------------------------------
+SELECT olist.order_list_no, 
+		 olist.order_no, 
+		 olist.prd_code, 
+		 olist.prd_name, 
+		 olist.order_qy, 
+		 oreq.order_date, 
+		 oreq.dete,
+		 ROUND((TIMESTAMPDIFF(MINUTE, SYSDATE(), dete) - (SELECT IFNULL( SUM( expect_reqre_time ), 0) * olist.order_qy
+       																  FROM procs_flowchart
+       																  WHERE prd_code = olist.prd_code))/60) AS priort
+FROM order_lists olist JOIN order_requst oreq ON (olist.order_no = oreq.order_no)
+							  LEFT JOIN prdctn_plan pp ON (olist.order_list_no = pp.order_list_no)
+WHERE prdctn_at = 'OP01'
+AND process_status = 'OD01'
+AND pp.mnfct_no IS NULL
+ORDER BY 7;
+
+-- 공정흐름도 조회
+SELECT procs_code, procs_nm
+FROM procs_flowchart
+WHERE prd_code = 'aaa1'
+ORDER BY procs_ordr_no;
+
+
+-- 생산 지시 ----------------------------------------
+-- 생산 계획에서 주문별 물품별 수량 조회
+SELECT pp.order_list_no, pp.order_no, pp.prd_code, pp.prd_nm, pp.prdctn_co
+FROM prdctn_plan pp LEFT JOIN prdctn_drct pd ON (pp.mnfct_no = pd.mnfct_no)
+WHERE prdctn_code IS NULL
+GROUP BY order_list_no, order_no, prd_code
+ORDER BY pp.priort;
+
+-- 생산 계획에서 생산 지시가 안들어간 계획만 조회
+SELECT pp.mnfct_no, pp.procs_code, pp.procs_nm, pp.prd_code, pp.prd_nm, pp.prdctn_co, pp.priort
+FROM prdctn_plan pp LEFT JOIN prdctn_drct pd ON (pp.mnfct_no = pd.mnfct_no)
+WHERE prdctn_code IS NULL
+AND pp.order_list_no = '' ;
+
+-- 소모재료 (자재코드, 자재명, 소모수량)
+SELECT mtril_code, mtril_nm, sum(usgqty)
+FROM procs_flowchart fc JOIN procs_matrl mt ON (fc.procs_code = mt.procs_code)
+WHERE prd_code = ?
+GROUP BY mtril_code
+ORDER BY 1;
+
+-- 요청 중에서 미처리인 물품별 수량 조회
+SELECT SUM(req_qy)
+FROM thng_req
+WHERE prd_code = ?
+AND procs_at = 'RD01'
+AND prdctn_code IS NULL;
+
+-- 자재별 재고수량
+SELECT mtril_code, mtril_name, SUM(mtril_qy)
+FROM mtril_wrhousing
+WHERE mtril_code = ?
+GROUP BY mtril_code;
+
+-- 반제품별 재고수량
+SELECT prdlst_code, prduct_name, SUM(prduct_n_wrhousng_qy)
+FROM prduct_n_wrhousng
+WHERE prdlst_code = ?
+GROUP BY prdlst_code;
+
+-- 설비 코드, 설비명 조회
+SELECT pm.eqp_code, eqp.model_nm
+FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)			 
+WHERE procs_code = ?;
+
+SELECT pm.eqp_code, eqp.model_nm
+FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)	
+						 LEFT JOIN not_opr nopr ON (eqp.eqp_code = nopr.eqp_code)
+WHERE procs_code = ''
+AND (process_step = 'FS02'
+OR not_opr_code IS NULL);
+
+-- 공정별 소요시간
+SELECT expect_reqre_time * pp.order_qy
+FROM procs_flowchart pf JOIN prdctn_plan pp ON (pf.procs_code = pp.procs_code)
+WHERE pp.mnfct_no = ?;
+
+-- 분단위로 날짜 더하기
+SELECT DATE_ADD(NOW(), INTERVAL 240 MINUTE);
+
+
+-- 단순 실행문 -------------------------------------------
+
 SELECT * FROM prdctn_drct;
 
-COMMIT;
 SELECT * FROM thng_req;
 INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
 VALUES ('testbyshun-6', '자재 출고 요청 테스트', 1, 'testbyshun-11', 'M-LEATER', '가죽', 900, 'PI01','RD02', NOW());
@@ -1008,3 +1154,17 @@ COMMIT;
 SELECT prdlst_code, prdlst_name
 FROM repduct
 WHERE prdlst_name LIKE CONCAT('%', '케이스', '%');
+
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, pd.prd_nm, ps.prdctn_co, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn, tr.prd_code AS matril_code, tr.prd_nm AS matril_nm, tr.req_qy
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+							 JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
+WHERE ps.prd_code LIKE CONCAT('%', ?, '%')
+AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY) )
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time;
+
+SELECT procs_code, procs_nm
+FROM procs_flowchart
+WHERE procs_nm LIKE CONCAT('%', ?, '%')
+OR procs_code LIKE CONCAT('%', ?, '%') ;

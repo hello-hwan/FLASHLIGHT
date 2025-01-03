@@ -16,11 +16,11 @@
           <template v-slot:title>
             <span class="font-weight-black">자체 생산 추가</span>
           </template>
-      
-          <v-card-text class="bg-surface-light pt-4">
+            <v-card-text class="bg-surface-light pt-4">
               <AgGridVue style=" height: 93px; margin: 0 auto;"
                   :defaultColDef="defaultColDef"
                   :rowData="rowData"
+                  :onCellValueChanged="getprd"
                   @cellClicked="adddrct"
                   :gridOptions="gridOptions"
                   class="ag-theme-alpine">
@@ -41,6 +41,9 @@ import { ref, watch, defineProps } from "vue";
 import axios from "axios";
 import { ajaxUrl } from '@/utils/commons.js';
 import { useToast } from 'primevue/usetoast';
+import prdselectbox from "./prdselectbox.vue";
+import useDates from "@/utils/useDates";
+
 
 
 // 알림창
@@ -56,10 +59,29 @@ const rowData = ref([{"prd_code":"", "prd_nm": "", "order_qy": 0, "dedt": ""}]);
 // 컬럼명 정의
 // field : 배열안 객체의 필드명, headerName : 우리가 표시할 컬럼 이름, flex: 열 크기, hide: 숨길건지(검색시 필요할수도 있으니 표시할거만 표시), suppressToolPanel: hide 쓰면 같이 써야하는거
 const ColDefs = [
-  { field: "prd_code", headerName:"제품 코드", editable: true},
-  { field: "prd_nm", headerName:"제품 명" , editable: true},
+  { field: "prd_code", 
+    headerName:"제품 코드", 
+    editable: true, 
+    cellEditor: 'agSelectCellEditor',
+    cellEditorParams: (params) => {
+      console.log("파람",params);
+      return { "values" : [...prdlist.value] }
+  },
+    // cellRenderer: prdselectbox
+   },
+  { field: "prd_nm", 
+    headerName:"제품 명", 
+    editable: true, 
+    cellRenderer: (e) => {getprd(e)}
+  },
   { field: "order_qy", headerName:"요청량" , editable: true},
-  { field: "dedt", headerName:"기한" , editable: true},
+  { field: "dedt", headerName: "기한", valueFormatter: (params) => {
+          if (!params.value) {
+            return "";
+          }
+          return `${ useDates.dateFormat(params.value, 'yyyy-MM-dd') }`
+        },
+        cellEditor: "agDateCellEditor", cellDataType: "date", editable: true },
   { field: "추가", headerName: "추가", cellRenderer: () => "추가"}
 ];
 
@@ -79,7 +101,20 @@ const adddrct = async (event) => {
       // 생산 추가 이후 목록 다시 재 리스트
 
   }
-}
+};
+
+const prdlist = ref([]);
+
+const getprd = async (event) => {
+  if(event.colDef.field == "prd_nm"){
+    let result = await axios.get(`${ajaxUrl}/prod/prdlist`, event.newValue);
+    if(result != undefined){
+      prdlist.value = result.data;
+    }
+  }
+  console.log("부모",prdlist);
+};
+// getprd(rowData.value[0].prd_nm);
 
 //ag grid 옵션 설정
 const gridOptions = {
