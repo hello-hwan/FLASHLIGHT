@@ -214,4 +214,9 @@ const searchCompany = async() => {
 input {
     width: 220px;
 }
+button{
+    margin-left : 5px;
+    margin-right: 5px;
+    line-height: 15px;
+}
 </style>
