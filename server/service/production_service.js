@@ -33,8 +33,10 @@ const drctlist = async (prd_code, day_str) => {
   }
   let innerArray = [prd_code, day_str, day_str, day_str, day_str];
 
-  let list = await mariaDB.query('pr_seldrct', innerArray);
-  
+  // let list = await mariaDB.query('pr_seldrct', innerArray);
+  let list = await mariaDB.query('pr_anodrct', [...innerArray, innerArray[1], innerArray[2]]);
+  let day = new Date(day_str);
+  let finday = new Date( day.getTime() + 1000*60*60*24*7 );
   let result = [];
   let model = '';
   
@@ -56,13 +58,13 @@ const drctlist = async (prd_code, day_str) => {
   start_time.setHours(0, 0, 0, 0);
   let start = start_time.getTime();
   let colspan = 0;
-
+  
   for(let i = 0; i < list.length; i++){
     if(model != list[i].model_nm){
-      if(colspan < 168 && colspan > 0){
-        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168-colspan, "order_no" : "" });
-      }
 
+      if(colspan > 0 && colspan < 168){
+        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168-colspan, "order_no" : "" });
+      }
       colspan = 0;
 
       begin_time = list[i].pre_begin_time;
@@ -70,17 +72,35 @@ const drctlist = async (prd_code, day_str) => {
 
       end_time = list[i].pre_end_time;
       end = new Date(end_time).getTime();
+      if(begin < start){
+        if(colspan + list[i].drct_time >= 168){
+          if(finday.getTime() > end){
+            result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (end-start)/1000/60/60, "order_no" : list[i].order_no });
+            colspan += (end-start)/1000/60/60;
+          } else {
+            result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (168 - colspan), "order_no" : list[i].order_no });
+            colspan = 168;
+          }
+        } else {
+          result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (end-start)/1000/60/60, "order_no" : list[i].order_no });
+          colspan += (end-start)/1000/60/60;
+        }
+        model = list[i].model_nm;
+        end_time = list[i].pre_end_time;
+        end = new Date(end_time).getTime();
+        continue;
+      }
       if(begin - start > 0){
         result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-start)/1000/60/60, "order_no" : "" });
         colspan += (begin-start)/1000/60/60;
       }
-        
-    } 
+         
+    }
     begin_time = list[i].pre_begin_time;
     begin = new Date(begin_time).getTime();
     if(begin - end > 0){
       result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-end)/1000/60/60, "order_no" : "" });
-      colspan += (begin-start)/1000/60/60;
+      colspan += (begin-end)/1000/60/60;
     }
     if(colspan >= 168){
       model = list[i].model_nm;
@@ -90,14 +110,49 @@ const drctlist = async (prd_code, day_str) => {
       result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (168 - colspan), "order_no" : list[i].order_no });
       colspan = 168;
     } else {
-      result.push(list[i]);
-      colspan += list[i].drct_time;
+        result.push(list[i]);
+        colspan += list[i].drct_time;
+      
     }
     model = list[i].model_nm;
     end_time = list[i].pre_end_time;
     end = new Date(end_time).getTime();
-  
+    
   }
+  console.log(colspan);
+  let eqp = await mariaDB.query('pr_eqp');
+  let co = 0;
+  for(let i = 0; i < eqp.length; i++){
+    if(model == eqp[i].model_nm){
+      co = i;
+    }
+  }
+  console.log(co);
+  for(let i = co; i < eqp.length; i++){
+    if(colspan < 168 && colspan > 0){
+      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168-colspan, "order_no" : "" });
+      colspan = 0;
+      continue;
+    } else if (colspan == 168){
+      colspan = 0;
+    } else {
+      result.push({"prdctn_code" : "", "procs_nm" : "Found", "model_nm" : eqp[i].model_nm, "prd_nm" : "No - data", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168, "order_no" : "" })
+    }
+  }
+  for(let i = 0; i < eqp.length; i++){
+      let name1 = eqp[i].model_nm;
+      let find = 0;
+    for(let j = 0; j < result.length; j++){
+      let name2 = result[j].model_nm;
+      if(name1 != name2){
+        find++
+      }
+    }
+    if(find == result.length){
+      result.push({"prdctn_code" : "", "procs_nm" : "Found", "model_nm" : name1, "prd_nm" : "No - data", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168, "order_no" : "" });
+    }
+  }
+  
 return result;
 };
 

@@ -15,6 +15,7 @@ const pr_eqp = // 설비 조회 (생산지시)
 `
 SELECT eqp_code, model_nm
 FROM eqp
+ORDER BY 2
 `;
 
 const pr_srcdrct = // 생산 지시 당일 조회
@@ -50,14 +51,42 @@ GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
 ORDER BY pd.model_nm, pd.pre_begin_time
 `;
 
+const pr_anodrct = // 생산 지시 조회 테스트용 => 이게 맞는 듯
+`
+SELECT pd.prdctn_code
+       , pd.procs_nm
+       , pd.model_nm
+       , pd.prd_nm
+       , pd.prdctn_co
+       , pd.pre_begin_time
+       , pd.pre_end_time
+       , TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time
+       , pp.order_no
+
+FROM prdctn_drct pd 
+JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+
+WHERE pd.prd_code LIKE CONCAT('%', ?, '%')
+AND (? BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR DATE_ADD( ?, INTERVAL 7 DAY) BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY) )
+
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time
+`;
+
+
 const pr_selstate = // 공정 현황 - 당일 기준 검색
 `
 SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, pd.prd_nm, ps.prdctn_co, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn, tr.prd_code AS matril_code, tr.prd_nm AS matril_nm, tr.req_qy
 FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
-							 JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
+				  JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
 WHERE ps.prd_code LIKE CONCAT('%', ?, '%')
-AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY)
-     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY) )
+AND (? BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR DATE_ADD( ?, INTERVAL 7 DAY) BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY) )
 GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
 ORDER BY pd.model_nm, pd.pre_begin_time
 `;
@@ -264,6 +293,7 @@ module.exports = {
   pr_movetable,
   pr_selstate,
   pr_selprocs,
+  pr_anodrct,
 
 
 
