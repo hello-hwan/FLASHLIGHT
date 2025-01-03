@@ -289,7 +289,6 @@ export default {
             }
         },
         goToDetail(empl_no) {
-            console.log(this.rowData)
             for (let i = 0; i < this.rowData.length; i++) {
                 if (this.rowData[i].empl_no == empl_no) {
                     this.empl_no = this.rowData[i].empl_no;

@@ -187,7 +187,6 @@ export default {
             const selectedNodes = this.gridApi.getSelectedNodes();
             for (let i = 0; i < selectedNodes.length; i++) {
                 let result_arr = [];
-                console.log(selectedNodes[i].data.index);
                 for (let j = 0; j < this.rowData.length; j++) {
                     if (this.rowData[j].index == selectedNodes[i].data.index) {
                         continue;
@@ -226,8 +225,6 @@ export default {
                     this.rowData[i].expect_reqre_time,
                     bom_code.data.bom_code
                 ];
-                console.log("1st");
-                console.log(procs_flowchart_insert);
                 let insert_row = 0;
                 for (let j = 0; j < check_code.length + 1; j++) {
                     if (this.rowData[i].procs_ordr_no == check_code[j]) {
@@ -238,7 +235,6 @@ export default {
                     let result_1 = await axios.post(`${ajaxUrl}/procsFlowchartInsert`, procs_flowchart_insert)
                         .catch(err => console.log(err));
                     check_code = [...check_code, this.rowData[i].procs_ordr_no];
-                    console.log(check_code);
                 }
 
                 let mtril_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchmtnm/${this.rowData[i].mtril_nm}`)
@@ -250,8 +246,6 @@ export default {
                     this.rowData[i].mtril_nm,
                     this.rowData[i].usgqty
                 ]
-                console.log("2ed");
-                console.log(procs_matrl_insert);
                 let result_2 = await axios.post(`${ajaxUrl}/procsMatrlInsert`, procs_matrl_insert)
                     .catch(err => console.log(err));
 
@@ -259,8 +253,6 @@ export default {
                     this.prd_code + '-' + this.rowData[i].procs_ordr_no,
                     this.rowData[i].eqp_code
                 ]
-                console.log("3rd");
-                console.log(procs_mchn_insert);
                 let result_3 = await axios.post(`${ajaxUrl}/procsMchnInsert`, procs_mchn_insert)
                     .catch(err => console.log(err));
             }

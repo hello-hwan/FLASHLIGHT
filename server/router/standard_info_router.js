@@ -286,7 +286,6 @@ router.get('/search_empl', async (req, res) => {
     phone_search, 
     author_selected
   ];
-  console.log(search);
   let list = await standard_info_service.search_empl(search);
   res.send(list);
 });

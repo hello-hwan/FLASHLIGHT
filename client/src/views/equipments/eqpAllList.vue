@@ -14,9 +14,9 @@
                 @grid-ready="onGridReady" class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
-        <button type="button" class="btn btn-primary" style="color: white; margin: 10px;" @click="add_eqp_btn()">기기 추가
+        <button type="button" class="btn btn-primary" style="color: white; margin: 10px; padding: 2px;" @click="add_eqp_btn()">기기 추가
             등록</button>
-        <button type="button" class="btn btn-danger" style="color: white; margin: 10px;" @click="delete_eqp_btn()">등록 기기
+        <button type="button" class="btn btn-danger" style="color: white; margin: 10px; padding: 2px;" @click="delete_eqp_btn()">등록 기기
             삭제</button>
     </div>
     <div style="height: 60px; background-color: lightgray; margin-left: auto;" v-show="delete_div">
@@ -30,7 +30,7 @@
     <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
         <div class="modal-wrap" @click="modal_close_btn()" v-show="modal_on_off">
             <div class="modal-container" @click.stop="">
-                <div id="search-bar" style="height: 350px;">
+                <div id="search-bar" style="height: 325px;">
                     <table class="table table-hover">
                         <thead>
                             <tr>
@@ -135,8 +135,8 @@
                 </div>
 
                 <div class="modal-btn">
-                    <button @click="modal_close_btn()" class="btn btn-secondary">닫기</button>
-                    <button @click="modal_submit_btn()" class="btn btn-primary">등록</button>
+                    <button @click="modal_close_btn()" class="btn btn-secondary" style="margin: 5px;">닫기</button>
+                    <button @click="modal_submit_btn()" class="btn btn-primary" style="margin: 5px;">등록</button>
                 </div>
             </div>
         </div>

@@ -181,7 +181,6 @@ export default {
         },
         select_change(event) {
             this.chck_sttus = event.target.value;
-            console.log(this.chck_sttus);
         },
         add_btn() {
             let new_sample = {
@@ -197,7 +196,6 @@ export default {
             const selectedNodes = this.gridApi.getSelectedNodes();
             for (let i = 0; i < selectedNodes.length; i++) {
                 let result_arr = [];
-                console.log(selectedNodes[i].data.index);
                 for (let j = 0; j < this.rowData.length; j++) {
                     if (this.rowData[j].index == selectedNodes[i].data.index) {
                         continue;
@@ -226,7 +224,6 @@ export default {
                 this.chck_sttus,
                 parseInt(this.$route.params.fx_code)
             ];
-            console.log(input);
             let result = await axios.put(`${ajaxUrl}/equip/not_check_update`, input)
                 .catch(err => console.log(err));
             let now = new Date();
@@ -239,7 +236,6 @@ export default {
                 this.fx_code_list.chck_time,
                 now
             ]
-            console.log(list);
             let result_2 = await axios.post(`${ajaxUrl}/equip/chck_fc_insert`, list)
                 .catch(err => console.log(err));
 
@@ -253,7 +249,6 @@ export default {
                     this.rowData[i].stblt_at,
                 ];
                 insert_arr.push(chck_result_insert);
-                console.log(chck_result_insert);
             }
 
             let result_3 = await axios.post(`${ajaxUrl}/equip/chck_result_insert`, insert_arr)
@@ -268,7 +263,6 @@ export default {
                 '미점검',
                 parseInt(this.$route.params.fx_code)
             ];
-            console.log(input);
             let result = await axios.put(`${ajaxUrl}/equip/not_check_update`, input)
                 .catch(err => console.log(err));
 
@@ -317,7 +311,6 @@ export default {
                 this.not_check,
                 'OD01'
             ];
-            console.log(list);
             let result = await axios.post(`${ajaxUrl}/equip/not_opr_insert`, list)
                 .catch(err => console.log(err));
 
@@ -328,7 +321,6 @@ export default {
                 '미가동',
                 parseInt(this.$route.params.fx_code)
             ];
-            console.log(input);
             let result_2 = await axios.put(`${ajaxUrl}/equip/not_check_update`, input)
                 .catch(err => console.log(err));
         }
