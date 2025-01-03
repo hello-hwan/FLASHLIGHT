@@ -238,7 +238,7 @@ const insertMtToOrder = async(orderMtList) => {
             orderMtList[i].company_code,
             orderMtList[i].order_name,
             orderMtList[i].company_name,
-            orderMtList[i].price,
+            orderMtList[i].price == null ? 0 : orderMtList[i].price,
             key == '' ? 'none': key
         ];
 
@@ -304,7 +304,7 @@ const mtOrderModify = async(modifyInfo) => {
             modifyInfo[i].order_date,
             modifyInfo[i].order_name,
             modifyInfo[i].order_qy,
-            modifyInfo[i].price,
+            modifyInfo[i].price == null ? 0 : modifyInfo[i].price,
             modifyInfo[i].state,
             modifyInfo[i].unit,
             modifyInfo[i].order_code

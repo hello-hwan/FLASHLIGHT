@@ -383,6 +383,12 @@ const insertMtOrderList = async() => {
     //유효성 검사
     for(let i=0; i<rowData.length; i++) {
 
+        try{
+            if(rowData[i].dedt.length>0);
+        } catch {
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
+            return;
+        }
         //주문날짜 오늘날짜로 설정
         rowData[i].order_date = customDateToday();
 
@@ -399,8 +405,8 @@ const insertMtOrderList = async() => {
             //발주명, 거래처명 이 비어있으면 오류
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명, 거래처 명을 확인해주세요.', life: 3000 });
             return;
-        } else if (rowData[i].dedt.length == 0 ) {
-            //주문수량이 비어 있으면 오류 메세지 출력
+        } else if (rowData[i].dedt.length == 0 || rowData[i].dedt == undefined) {
+            //납기일이 비어 있으면 오류 메세지 출력
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
             return;
         } else if (orderName.length > 20) {
@@ -434,7 +440,8 @@ const insertMtOrderList = async() => {
         //입력 데이터 보내기
         let result = await axios.post(`${ajaxUrl}/mtril/insertMtOrderList`, rowData)
                                  .catch(err=>console.log(err));
-        
+                                
+        console.log('등록 작동');
         console.log('결과 ', result);
         if(result.data == 'success') {
             toast.add({ severity: 'success', summary: '발주 등록 완료', detail: '처리가 완료되었습니다.', life: 3000 });
