@@ -121,7 +121,7 @@
    import { ref } from 'vue';
    import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
    import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-   import SearchModal from '@/components/materials/orderControlModal.vue';
+   import SearchModal from '@/components/quality/qualityRequestModal.vue';
    ModuleRegistry.registerModules([AllCommunityModule]);    
    import axios from 'axios';
    import { ajaxUrl } from '@/utils/commons.js';
