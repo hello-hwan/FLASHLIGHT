@@ -41,7 +41,7 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import { ref } from 'vue';
-import {useRouter} from 'vue-router';
+import { useRouter} from 'vue-router';
 
 
 import { useStore } from 'vuex'; // Vuex 스토어 가져오기

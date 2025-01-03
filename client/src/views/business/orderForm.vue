@@ -115,6 +115,11 @@ import { ajaxUrl } from '@/utils/commons.js';
 
 import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue';
 
+import store from '@/store'
+import { useStore } from 'vuex';
+
+import { useToast } from 'primevue/usetoast';
+
 export default {
     data() { 
         return { 
@@ -129,9 +134,13 @@ export default {
             searchProductName:'', 
             modalCheck2 : false, 
             index : 0,
+            empName : store.state.empInfo[store.state.empInfo.length - 1].name,
+            toast : useToast()
         }; 
     }, 
     created() { 
+        
+        console.log('------------', useStore());
         this.getOrderListNo();
         // this.onAddRow(); 
         this.colDefs = ref([ 
@@ -197,9 +206,7 @@ export default {
                                              .catch(err=>console.log(err)); 
                 console.log("결과는", result); 
             } 
-            alert(`등록되었습니다.`); 
-            //this.$router.push({path : 'orderForm'});
-            
+            this.toast.add({ severity: 'success', summary: '등록', detail: '등록성공', life: 3000 });
         }, 
         customDateFormat1(params){
             return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd');
@@ -208,9 +215,10 @@ export default {
             return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd');
         },
         selectOrder2 () {
-            console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
+            console.log(this.$store.empInfo);
+            //console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
             this.modalOpen2();
-            console.log('선택된 제품 값',this.gridApi2.getSelectedNodes());
+            //console.log('선택된 제품 값',this.gridApi2.getSelectedNodes());
             const selectedNodes = this.gridApi2.getSelectedNodes();
             const productSelectedData = selectedNodes.map((node) => node.data);
             if(productSelectedData[0] != null){
@@ -223,17 +231,17 @@ export default {
                         prd_name:productSelectedData[0].prdlst_name, 
                         untpc: 0, 
                         order_qy: 0,
-                        wrter:"김기환"
+                        wrter: this.empName
                     };
                     this.index = this.index + 1;
                     console.log('뉴데이터값은',newData);
                     this.rowData = [...this.rowData, newData];
                     console.log(this.rowData);
                 } else {
-                    alert('제품코드가 중복됩니다.');
+                    this.toast.add({ severity: 'warn', summary: '실패', detail: '제품코드가 중복입니다.', life: 3000 });
                 }
             } else {
-                alert('제품이 선택되지 않았습니다.');
+                this.toast.add({ severity: 'warn', summary: '실패', detail: '제품이 선택되지 않았습니다.', life: 3000 });
             }
         },
         deleteBtn(){ 
@@ -347,7 +355,7 @@ export default {
 .orderRowInsert{
      float: right;
 }
-input[type="date"] {
+input {
     width: 220px;
 }
 

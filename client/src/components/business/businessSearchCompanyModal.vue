@@ -59,6 +59,9 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+import { useToast } from 'primevue/usetoast';
+const toast = useToast();
+
 //부모 컴포넌트로 데이터 보내기
 const emit = defineEmits(["companySelectedData"]);
 
@@ -115,12 +118,17 @@ const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
     const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log('모달에서 선택된 행 데이터:', companySelectedData);
-    companyName = companySelectedData[0].mtlty_name;
-    companyCode = companySelectedData[0].bcnc_code;
-
-    console.log(companyName, companyCode);
-    emit("companySelectedData", companySelectedData);
+    console.log(companySelectedData);
+    if (companySelectedData[0] != null){
+        console.log('모달에서 선택된 행 데이터:', companySelectedData);
+        companyName = companySelectedData[0].mtlty_name;
+        companyCode = companySelectedData[0].bcnc_code;
+        
+        console.log(companyName, companyCode);
+        emit("companySelectedData", companySelectedData);
+    } else {
+        toast.add({ severity: 'warn', summary: '실패', detail: '거래처가 선택되지 않았습니다.', life: 3000 });
+    }
 };
 //행 데이터를 담을 변수
 const rowData = ref([]);
@@ -203,5 +211,7 @@ const searchCompany = async() => {
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
-
+input {
+    width: 220px;
+}
 </style>

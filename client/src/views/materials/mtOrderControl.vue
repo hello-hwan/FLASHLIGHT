@@ -13,10 +13,10 @@
                 style="color: #fff;" @click="openReq" v-if="checkForReqMt">요청 자재 목록 닫기</button>
                 <button type="button" class="btn btn-primary"
                 style="color: #fff;" @click="openReq" v-else>요청 자재 목록 보기</button>
-                <!--발주건 조회-->
-                <orderSearchModal v-bind:state="forSearchOrder" @selectedData="getOrderDetails"/> 
                 <button type="button" class="btn btn-danger"
                 style="color: #fff; margin-left: 30px" v-show="delBtn" @click="delOrder">발주삭제</button>
+                <!--발주건 조회-->
+                <orderSearchModal v-bind:state="forSearchOrder" @selectedData="getOrderDetails"/> 
             </span>
         </div>
         <!--요청 자재 목록-->
@@ -629,10 +629,10 @@ const removeAllInfo = () => {
     margin-bottom: 10px;
 }
 .top-btn {
-    display: inline-block;
     margin-top: 10px;
-    position:relative;
-    right: -78%;
+    right: -70%;
+    display: flex;
+    justify-content: right;
 }
 
 </style>

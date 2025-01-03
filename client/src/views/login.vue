@@ -91,7 +91,7 @@ const login = async() => {
     console.log(result);
     if(result.data.length == 0) {
         //로그인이 안된경우
-        toast.add({ severity: 'warn', summary: '로그인 실패', detail: '로그인을 실패했습니다.', life: 3000 });
+        toast.add({ severity: 'warn', summary: '로그인 실패', detail: '아이디, 비밀번호를 확인해주세요', life: 3000 });
         empId.value = '';
         emplPassword.value = '';
     } else {
