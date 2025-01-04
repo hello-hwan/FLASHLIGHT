@@ -82,7 +82,9 @@
                         <span>제품 명</span>
                         <InputText type="text" v-model="this.searchProductName" v-on:keyup.enter="searchProduct"> <p>{{ this.searchProductName }}</p></InputText>
                     </div>
-                    <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                    <div style="display:flex; justify-content: center;">
+                        <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                    </div>
                 </div>
     
                 <AgGridVue 
@@ -95,7 +97,7 @@
                 >
                 </AgGridVue>
     
-                <div class="modal-btn">
+                <div class="modal-btn" style="display:flex; justify-content: center;">
                     <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
                     <button @click="selectOrder2" class="btn btn-primary">확인</button>
                 </div>
@@ -157,7 +159,8 @@
             this.getOrderModify();
             this.colDefs = ref([ 
             { field: "order_list_no", headerName:"주문목록번호", editable: true, hide: true }, 
-            { field: "prd_code", headerName:"품목코드", editable: true, checkboxSelection: true }, 
+            { field: "prd_code", headerName:"품목코드", checkboxSelection: true }, 
+            { field: "prd_name", headerName:"품목이름" }, 
             { field: "untpc", headerName:"주문단가", editable: true }, 
             { field: "order_qy", headerName:"주문수량", editable: true }, 
             { field: "wrter", headerName:"작성자", editable: true } 
@@ -211,7 +214,6 @@
                 if (result.data[0].count == 0){
                     this.orderModifyCheck = 0
                 } ;
-
             },
             async getorderInfoList(){ 
                 console.log(`상세조회 시작`,this.selectNo); 
@@ -268,13 +270,15 @@
                     let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
                                                  .catch(err=>console.log(err)); 
                     console.log("결과는", result); 
-                    this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
                 } 
+                this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
+                
             }, 
             async delOrderInfo(){
                 let result = await axios.delete(`${ajaxUrl}/business/orderInfo/${this.selectNo}`)
                                                .catch(err=>console.log(err));
-                    console.log(result);
+                console.log(result);
+                // this.$router.push({name:'orderList'});
             },
             onAddRow(){ 
                 let newData = { 
@@ -304,7 +308,6 @@
                         result_arr = [...result_arr,this.rowData[j]]; 
                     } 
                     this.rowData=result_arr; 
-                    this.toast.add({ severity: 'success', summary: '삭제', detail: '삭제성공', life: 3000 });
                 } 
             }, 
             onBtnExportDataAsCsvLotList(){
