@@ -74,8 +74,7 @@
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
                 class="ag-theme-alpine"
-                id="grid-one"
-              >
+                id="grid-one">
               </AgGridVue>
             </v-card-text>
           </v-card>
@@ -139,23 +138,26 @@ export default {
       let result = await axios.get(`${ajaxUrl}/prductWrhousngList`)
         .catch(err => console.log(err));
       this.prductWrhousngList = result.data;
-      this.rowData = this.prductWrhousngList;
+      this.rowData = this.prductWrhousngList
       this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
 
     filterByCode() {
+      let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+      let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.wrhousng_day;
-        let startDate = !this.startDate || prductNDate >= this.startDate;
-        let endDate = !this.endDate || prductNDate <= this.endDate;
+        let prductNDate = new Date(row.wrhousng_day).setHours(0,0,0,0);
         return (
           (!this.LOTCode || row.prduct_lot.includes(this.LOTCode)) &&
           (!this.prdlstCode || row.prdlst_c_code.includes(this.prdlstCode)) &&
           (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
-          startDate && endDate
+          (!startDate || prductNDate >= startDate) &&
+          (!endDate || prductNDate <= endDate)
         );
       });
     },
+    
     resetFilter() {
       this.LOTCode = "";
       this.prdlstCode = "";
@@ -172,7 +174,7 @@ export default {
     },
 
     customDateFormat(params) {
-      return userDateUtils.dateFormat(params.data.prduct_n_wrhousng_day, 'yyyy-MM-dd');
+      return userDateUtils.dateFormat(params.data.wrhousng_day, 'yyyy-MM-dd');
     }
   },
   components: {

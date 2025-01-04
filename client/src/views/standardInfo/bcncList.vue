@@ -26,11 +26,14 @@
                   <input type="text" id="itemCode" class="form-control" v-model="mtltyName" />
                 </div>
                 <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">업태</label>
+                  <label for="searchType" class="col-form-label">업태</label>
                 </div>
-                <div class="col-3">
-                  <input type="text" id="itemCode" class="form-control" v-model="searchBizcnd" />
-                </div>
+                <div class="col-auto">
+                  <select v-model="searchBizcnd" class="form-control" id="seCode">
+                    <option value="생산">생산</option>
+                    <option value="도소매">도소매</option>
+                  </select>
+              </div>
                 <div class="col-auto">
                   <label for="itemCode" class="col-form-label">종목</label>
                 </div>
@@ -65,8 +68,6 @@
         </v-col>
       </v-row>
 
-
-
       <v-row>
         <v-col cols="4">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
@@ -88,19 +89,27 @@
                 <input type="text" id="mtrilNameAdd" class="form-control" v-model="bcncNameAdd" />
               </div>
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">업태</label>
-              </div>
-              <div class="col-auto">
-                <input type="text" id="mtrilNameAdd" class="form-control" v-model="bizcnDAdd" />
+                  <label for="searchType" class="col-form-label">업태</label>
+                </div>
+                <div class="col-auto">
+                  <select v-model="bizcnDAdd" class="form-control" id="seCode">
+                    <option value="생산">생산</option>
+                    <option value="도소매">도소매</option>
+                  </select>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">종목</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemAdd" class="form-control" v-model="itemAdd" />
+                <select v-model="itemAdd" class="form-control">
+                  <option v-for="item in filteredItemOptions" :key="item" :value="item">
+                    {{ item }}
+                  </option>
+                </select>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">납품주소</label>
+
               </div>
               <div class="col-auto">
                 <input type="text" id="dvyfgAdresAdd" class="form-control" v-model="dvyfgAdresAdd" />
@@ -118,8 +127,8 @@
                 <input type="text" id="chargerPhoneAdd" class="form-control" v-model="chargerPhoneAdd" />
               </div>
               <div class="col-12 mt-3">
-                <button class="btn btn-success" @click="addData">등록</button>
-                <button class="btn btn-success" @click="reset">초기화</button>
+                <button class="btn btn-primary mx-2" @click="addData">등록</button>
+                <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
               </v-col>
             </v-card-text>
@@ -145,7 +154,7 @@
                 id="grid-one">
               </AgGridVue>
               <div class="mt-3">
-                <button class="btn btn-warning" v-if="isModified" @click="saveChanges">수정</button>
+                <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
             </v-card-text>
@@ -198,19 +207,31 @@ export default {
       chargerNameAdd  : "",   // 담당자 명
       chargerPhoneAdd  : "",  // 담당자 전화번호
 
-      toast: useToast()
-      
+      toast: useToast(),
+
+      // 업태 선택에 따른 종목 리스트
+      itemOptions: {
+        생산: ["가죽", "폴리카보네이트", "TPU", "실리콘"],
+        도소매: ["케이스"],
+      },
+      filteredItemOptions: []
     };
+  },
+  watch: {
+    bizcnDAdd() {
+      this.updateItemOptions();
+    },
   },
   created() {
     this.getbcncList();
+    this.updateItemOptions();
 
     this.colDefs = [
       { field: "bcnc_code", headerName: "거래처 코드" },
       { field: "bizrno", headerName: "사업자 등록 번호" },
       { field: "mtlty_name", headerName: "거래처 명" },
       { field: "bizcnd", headerName: "업태" },
-      { field: "item", headerName: "종목" },
+      { field: "item", headerName: "종목"  ,editable: true},
       { field: "dvyfg_adres", headerName: "납품 주소" , editable: true},
       { field: "charger_name", headerName: "담당자 명" , editable: true},
       { field: "charger_phone", headerName: "담당자 번호" , editable: true},
@@ -234,6 +255,12 @@ export default {
     
   },
   methods: {
+    updateItemOptions() {
+      // 선택된 업태에 따라 종목 옵션 업데이트
+      this.filteredItemOptions = this.itemOptions[this.bizcnDAdd] || [];
+      // 종목 기본값 초기화
+      this.itemAdd = this.filteredItemOptions.length ? this.filteredItemOptions[0] : "";
+    },
 
     // 셀 값 변경 이벤트 핸들러
     onCellValueChanged() {
@@ -264,15 +291,15 @@ export default {
       console.log(obj);
       let result = await axios.post(`${ajaxUrl}/bcncAdd`, obj)
                         .catch(err => console.log(err));
-      if(result != null){
-        let resul2 = await axios.get(`${ajaxUrl}/bcncList`)
+      if(result){
+        let result2 = await axios.get(`${ajaxUrl}/bcncList`)
           .catch(err => console.log(err));
-          this.bcncList = result.data;
+          this.bcncList = result2.data;
           this.rowData = this.bcncList;
           this.filteredRowData = this.rowData;
-      }else{
-        this.toast.add({ severity: 'warn', summary: '경고', detail: '등록실패.', life: 3000 });
+          this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다.', life: 3000 });
       }
+        
                         
     },
 
@@ -284,8 +311,13 @@ export default {
           sfinvc: row.sfinvc
         }
         //console.log(obj);
-        let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
+        let result = await axios.put(`${ajaxUrl}/bcncUpdate/${this.rowData[i].bcnc_code}`, obj)
                                 .catch(err => console.log(err));
+        let result2 = await axios.get(`${ajaxUrl}/bcncList`)
+                                  .catch(err => console.log(err));
+          this.bcncList = result2.data;
+          this.rowData = this.bcncList;
+          this.filteredRowData = this.rowData;
       }
     },
 
@@ -318,17 +350,36 @@ export default {
 
     // 검색값에 따른 필터링
     filterByCode() {
+
+      let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+      let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
       this.filteredRowData = this.rowData.filter((row) => {
+
+        let newDate = new Date(row.regist_day).setHours(0,0,0,0);
         return (
           (!this.bcncCode || row.bcnc_code.includes(this.bcncCode)) &&
           (!this.mtltyName || row.mtlty_name.includes(this.mtltyName)) &&
           (!this.searchBizcnd || row.bizcnd.includes(this.searchBizcnd)) &&
           (!this.searchItem || row.item.includes(this.searchItem)) &&
-          (!this.chargerName || row.charger_name.includes(this.chargerName))
+          (!this.chargerName || row.charger_name.includes(this.chargerName)) &&
+          (!startDate || newDate >= startDate) &&
+          (!endDate || newDate <= endDate)
         );
       });
     },
     
+    // 등록 input 초기화
+    reset(){
+      this.bizrnoAdd = "";         // 사업자등록번호
+      this.bcncNameAdd = "";       // 상호명
+      this.bizcnDAdd = "";         // 업태
+      this.itemAdd  = "";          // 종목
+      this.dvyfgAdresAdd  = "";    // 납품주소
+      this.chargerNameAdd  = "";   // 담당자 명
+      this.chargerPhoneAdd  = "";  // 담당자 전화번호
+    },
+
     // 검색 필터 초기화
     resetFilter() {
       this.bcncCode = "";

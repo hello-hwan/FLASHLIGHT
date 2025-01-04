@@ -144,7 +144,6 @@ router.get('/infoprductList', async (req, res) => {
 // 완제품 등록
 router.post('/prductInsert', async (req, res) => {
   let info = req.body;
-  console.log('router => ', info);
   let result = await standard_info_service.prductInsert(info);
   res.send(result);
 })
@@ -153,6 +152,16 @@ router.post('/prductInsert', async (req, res) => {
 router.delete('/prductDelete/:code', async (req, res) => {
   let code = req.params.code;
   let result = await standard_info_service.prductDelete(code);
+  res.send(result);
+})
+
+// 완제품 수정
+router.put('/prductUpdate/:code', async (req, res) => {
+  let code = req.params.code
+  let info = req.body;
+  console.log('router code =>', code);
+  console.log('router info =>', info);
+  let result = await standard_info_service.prductUpdate(code,info);
   res.send(result);
 })
 
@@ -176,7 +185,18 @@ router.delete('/bcnc_code/:code', async (req,res) => {
   let result = await standard_info_service.bcncDelete(code);
   res.send(result);
 });
- 
+
+
+// 거래처 수정
+router.put('/bcncUpdate/:code', async (req, res) => {
+  let code = req.params.code
+  let info = req.body;
+  console.log('router code =>', code);
+  console.log('router info =>', info);
+  let result = await standard_info_service.prductUpdate(code,info);
+  res.send(result);
+})
+
 // 품질검사항목관리
 router.get('/standardInfo/qiList', async (req, res) => {
   let qiNo = req.query.qi_info; // key=value => req.query.key;

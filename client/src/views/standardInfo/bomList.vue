@@ -202,7 +202,8 @@ import { useToast } from 'primevue/usetoast';
         { field: "prdlst_code", headerName: "제품코드" },
         { field: "prdist_name", headerName: "제품명" },
         { field: "prdctn_qy", headerName: "기본생산수량" },
-        { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+        { field: "상세보기", headerName: "상세보기", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                                  return '<button class="btn btn-primary mx-2">상세보기</button>'}},
       ];
   
       // 상세보기 컬럼 정의

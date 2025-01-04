@@ -142,7 +142,8 @@ export default {
         valueFormatter: this.customDateFormat, // valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
       },
       { field: "prd_code", headerName: "출고제품종류수" },
-      { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+      { field: "상세보기", headerName: "상세보기", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                                return '<button class="btn btn-primary mx-2">상세보기</button>'}},
     ];
 
     // 출고가능제품의 컬럼 정의
@@ -231,13 +232,16 @@ export default {
 
      // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
+      let startDate = new Date(this.startDate).setHours(0,0,0,0);
+      let endDate = new Date(this.endDate).setHours(0,0,0,0);
+
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.order_date;
-        let startDate = !this.startDate || prductNDate >= this.startDate;
-        let endDate = !this.endDate || prductNDate <= this.endDate;
+        let prductNDate = new Date(row.order_date).setHours(0,0,0,0);
+        
         return (
           (!this.prductNReqName || row.order_no.includes(this.prductNReqName)) &&
-          startDate && endDate
+          (!startDate || prductNDate >= startDate) &&
+          (!endDate || prductNDate <= endDate)
         );
       });
     },
@@ -257,7 +261,7 @@ export default {
     },
     // 날짜 yyyy-MM-dd 형식에 맞춰서 가져오기
     customDateFormat(params) {
-      return userDateUtils.dateFormat(params.data.req_de, 'yyyy-MM-dd');  // wrdate는 alias 이름
+      return userDateUtils.dateFormat(params.data.order_date, 'yyyy-MM-dd');  // wrdate는 alias 이름
     }, 
     formet(params) {
       if (params.value == 'RD02') {

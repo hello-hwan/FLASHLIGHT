@@ -147,13 +147,25 @@ const prductList = async () => {
 
 // 완제품 등록
 const prductInsert = async (info) => {
-  let result = await mariaDB.query('prductInsert', info);
+  try{
+    let result = await mariaDB.query('prductInsert', info);
   return result;
+  }catch(err){
+    console.log(err);
+  }
+  
 }
 
 // 완제품 삭제
 const prductDelete = async (code) => {
   let result = await mariaDB.query('prductDelete', code);
+  return result;
+}
+
+// 완제품 수정 
+const prductUpdate = async (code, info) => {
+  let data = [info, code];
+  let result = await mariaDB.query('prductUpdate', data);
   return result;
 }
 
@@ -176,6 +188,14 @@ const bcncAdd = async (info) => {
 // 거래처 삭제
 const bcncDelete = async(code) =>{
   let result = await mariaDB.query('bcncDelete', code);
+  return result;
+}
+
+
+// 거래처 수정 
+const bcncUpdate = async (code, info) => {
+  let data = [info, code];
+  let result = await mariaDB.query('bcncUpdate', data);
   return result;
 }
 
@@ -332,7 +352,9 @@ module.exports = {
   prductList,
   prductInsert,
   prductDelete,
+  prductUpdate,
   bcncList,
+  bcncUpdate,
   qiList,
   procsFlowchartList,
   procsFlowchartDetail,

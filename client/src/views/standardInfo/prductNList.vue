@@ -84,8 +84,8 @@
                 <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
               </div>
               <div class="col-12 mt-3">
-                <button class="btn btn-success" @click="addData">등록</button>
-                <button class="btn btn-success" @click="reset">초기화</button>
+                <button class="btn btn-primary mx-2" @click="addData">등록</button>
+                <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
               </v-col>
             </v-card-text>
@@ -111,7 +111,7 @@
                 id="grid-one">
               </AgGridVue>
               <div class="mt-3">
-                <button class="btn btn-warning" v-if="isModified" @click="saveChanges">수정</button>
+                <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
             </v-card-text>
@@ -213,7 +213,6 @@ export default {
         this.dlivyUnitAdd,
         this.sfinvcAdd,
       ]
-      console.log(obj);
       if(!this.prductNNameAdd){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '반제품명을 입력하세요.', life: 3000 });
       }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
@@ -224,6 +223,11 @@ export default {
         let result = await axios.post(`${ajaxUrl}/prductNAdd`, obj)
                         .catch(err => console.log(err));
                         this.rowData.push(obj); //등록시 그리드에 바로적용   
+        let result2 = await axios.get(`${ajaxUrl}/infoprductNList`)
+            .catch(err => console.log(err));
+        this.prductNList = result2.data;
+        this.rowData = this.prductNList;
+        this.filteredRowData = this.rowData; 
         if(result){
           this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다..', life: 3000 });
         }

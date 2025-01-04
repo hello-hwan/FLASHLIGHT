@@ -230,6 +230,12 @@ const prductDelete =
 repduct
 WHERE prdlst_code = ?`
 
+// 완제품 수정
+const prductUpdate =
+`UPDATE repduct
+set ?
+WHERE prdlst_code = ?`
+
 // 거래처 조회
 const bcncList = 
 `SELECT bcnc_code
@@ -268,6 +274,12 @@ VALUES (CONCAT('bcnc-', nextval(bcnc_seq))
 const bcncDelete = 
 `DELETE FROM
 bcnc
+WHERE bcnc_code = ?`;
+
+// 거래처 수정
+const bcncUpdate = 
+`UPDATE bcnc
+set ?
 WHERE bcnc_code = ?`;
 
 // 품질검사항목관리
@@ -498,7 +510,9 @@ module.exports = {
   infoprductList,
   prductInsert,
   prductDelete,
+  prductUpdate,
   bcncList,
+  bcncUpdate,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

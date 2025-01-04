@@ -144,7 +144,8 @@ export default {
       { field: "req_de", headerName: "요청일",
         valueFormatter: this.customDateFormat, // valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
       },
-      { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+      { field: "상세보기", headerName: "상세보기",cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                              return '<button class="btn btn-primary mx-2">상세보기</button>'}},
     ];
 
     // 출고가능제품의 컬럼 정의
@@ -233,13 +234,16 @@ export default {
 
      // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
-      this.filteredRowData = this.rowData.filter((row) => {
-        let reqDe = row.req_de;
-        let startDate = !this.startDate || reqDe >= this.startDate;
-        let endDate = !this.endDate || reqDe <= this.endDate;
+      let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+      let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
+      this.filteredRowData.filter((row) => {
+        let reqDe = new Date(row.req_de).setHours(0,0,0,0);
+        
         return (
           (!this.prductNReqName || row.req_name.includes(this.prductNReqName)) &&
-          startDate && endDate
+          (!startDate || reqDe >= startDate) && 
+          (!endDate || reqDe <= endDate)
         );
       });
     },

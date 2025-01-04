@@ -43,12 +43,12 @@
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <v-col cols="12" class="mb-4">
-              <div class="col-auto">
+              <!-- <div class="col-auto">
                   <label for="itemCode" class="col-form-label">완제품 코드</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="itemCode" class="form-control" v-model="prdlstCodeAdd" />
-              </div>
+              </div> -->
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">완제품 명</label>
               </div>
@@ -94,8 +94,8 @@
                 <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
               </div>
               <div class="col-12 mt-3">
-                <button class="btn btn-success" @click="addData">등록</button>
-                <button class="btn btn-success" @click="reset">초기화</button>
+                <button class="btn btn-primary mx-2" @click="addData">등록</button>
+                <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
               </v-col>
             </v-card-text>
@@ -121,7 +121,7 @@
                 id="grid-one">
               </AgGridVue>
               <div class="mt-3">
-                <button class="btn btn-warning" v-if="isModified" @click="saveChanges">수정</button>
+                <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
             </v-card-text>
@@ -158,7 +158,8 @@ export default {
       // 검색 입력값
       prductCode: "", 
       prductName: "",
-      toast: useToast()
+      toast: useToast(),
+      count : 0
 
     };
   },
@@ -213,20 +214,17 @@ export default {
     },
     
     async addData(){
-      let obj = {
-        prdlst_code: this.prdlstCodeAdd,
-        prdlst_name: this.prdlstNameAdd,
-        stndrd_x: this.stndrdX,
-        stndrd_y: this.stndrdY,
-        stndrd_z: this.stndrdZ,
-        unit: this.unitAdd,
-        wrhousng_untpc: this.wrhousngUntpcAdd,
-        dlivy_untpc: this.dlivyUntpcAdd,
-        sfinvc: this.sfinvcAdd
-      }
-      if(!this.prdlstCodeAdd){
-        this.toast.add({ severity: 'warn', summary: '경고', detail: '완제품코드를 입력하세요', life: 3000 });
-      }else if(!this.prdlstNameAdd){
+      let obj = [
+        this.prdlstNameAdd,
+        this.stndrdX,
+        this.stndrdY,
+        this.stndrdZ,
+        this.unitAdd,
+        this.wrhousngUntpcAdd,
+        this.dlivyUntpcAdd,
+        this.sfinvcAdd
+      ]
+      if(!this.prdlstNameAdd){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '완제품명을 입력하세요', life: 3000 });
       }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '규격를 입력하세요', life: 3000 });
@@ -235,7 +233,11 @@ export default {
       }else{ 
         let result = await axios.post(`${ajaxUrl}/prductInsert`, obj)
                         .catch(err => console.log(err));
-                        this.rowData.push(obj); //등록시 그리드에 바로적용   
+        let result2 = await axios.get(`${ajaxUrl}/infoprductList`)
+                                  .catch(err => console.log(err));
+      this.prductList = result2.data;
+      this.rowData = this.prductList;
+      this.filteredRowData = this.rowData
         if(result){
           this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다.', life: 3000 });
         }
@@ -250,9 +252,15 @@ export default {
           untpc: row.untpc,
           sfinvc: row.sfinvc
         }
-        //console.log(obj);
-        let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
+        this.count += 1;
+        let result = await axios.put(`${ajaxUrl}/prductUpdate/${this.rowData[i].prdlst_code}`, obj)
                                 .catch(err => console.log(err));
+        if(this.rowData.length == this.count){
+          if(result){
+            this.toast.add({ severity: 'success', summary: '성공', detail: '수정되었습니다.', life: 3000 });
+          }
+        }
+        
       }
     },
 

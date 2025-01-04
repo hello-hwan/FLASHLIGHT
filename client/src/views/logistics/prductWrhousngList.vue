@@ -61,7 +61,8 @@ created() {
         { field: "nrmlt", headerName:"생산수량" },
         { field: "end_time", headerName:"생산완료일",
             valueFormatter: this.customDateFormat },
-        { field: "입고", headerName: "입고", cellRenderer: () => {return "입고"}}
+        { field: "입고", headerName: "입고",  cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                            return '<button class="btn btn-primary mx-2">입고</button>'}}
     ])
     this.gridOptionsReturn = {
                 columnDefs: this.returnColDefs,

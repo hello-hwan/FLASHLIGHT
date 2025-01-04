@@ -68,13 +68,13 @@ const prduct_n_wrhousng =
 				   ,prduct_n_wrhousng_qy
 				   ,prduct_n_invntry_qy)
 VALUES (CONCAT('NLOT-',nextval(prduct_n_wrhousng_seq)),
-         ?,
-         now(),
-         '일반',
-         ?,
-         ?,
-         ?,
-         ?)`;
+       ?,
+       now(),
+       '일반',
+       ?,
+       ?,
+       ?,
+       ?)`;
 
 // 반제품 입고완료 리스트
 const prduct_n_wrhousngList =
@@ -191,15 +191,16 @@ VALUES (CONCAT('LOT-',nextval(prduct_wrhousng_seq))
 // 완제품 출고 요청 리스트
 const prduct_possible =
 `SELECT l.order_no
-       ,l.order_list_no
+       ,MIN(l.order_list_no) AS order_list_no 
        ,l.process_status
        ,r.order_date
-       ,count(l.prd_code) AS prd_code
+       ,COUNT(DISTINCT l.prd_code) AS prd_code 
 FROM order_lists l JOIN order_requst r
 ON l.order_no = r.order_no
-WHERE process_status = 'OD01'
+WHERE l.process_status = 'OD01'
 AND l.prd_code LIKE 'C%'
-GROUP BY l.order_no, l.prd_code`;
+GROUP BY l.order_no, l.process_status, r.order_date
+ORDER BY l.order_no`;
 
 // 수정전
 // `SELECT l.order_no
@@ -251,7 +252,7 @@ const prduct_dliy_process =
 // 완제품 출고 완료 요청리스트
 const prduct_dlivyList=
 `SELECT o.order_no
-       ,d.dlivy_day
+       ,d.dlivy_day as wrhousngDay
        ,d.prdlst_code
        ,d.order_list_no
        ,o.prd_name

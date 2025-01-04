@@ -139,9 +139,10 @@ export default {
 
     this.colDefs = [
       { field: "order_no", headerName: "주문번호" },
-      { field: "dlivy_day", headerName: "요청일자", valueFormatter: this.customDateFormat },
+      { field: "wrhousngDay", headerName: "요청일자", valueFormatter: this.customDateFormat },
       { field: "prd_name", headerName: "완제품명" },
-      { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+      { field: "상세보기", headerName: "상세보기",cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                                return '<button class="btn btn-primary mx-2">상세보기</button>'}},
     ];
 
     this.gridOptionsReturn = {
@@ -201,20 +202,42 @@ export default {
       this.rowData = this.prductNDlivyList;
       this.filteredRowData = this.rowData; 
     },
+
     // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
+      let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+      let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.dlivy_day;
-        let startDate = !this.startDate || prductNDate >= this.startDate;
-        let endDate = !this.endDate || prductNDate <= this.endDate;
+
+        let prductNDate = new Date(row.wrhousngDay).setHours(0,0,0,0);
+
         return (
           (!this.prductNReqName || row.order_no.includes(this.prductNReqName)) &&
           (!this.prdlstCode || row.prd_name.includes(this.prdlstCode)) &&
-          startDate && endDate
+          (!startDate || prductNDate >= startDate) &&
+          (!endDate || prductNDate <= endDate)
         );
       });
     },
     
+
+    // filterByCode() {
+    //   let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+    //   let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
+    //   this.filteredRowData = this.rowData.filter((row) => {
+    //     let prductNDate = new Date(row.wrhousng_day).setHours(0,0,0,0);
+    //     return (
+    //       (!this.LOTCode || row.prduct_lot.includes(this.LOTCode)) &&
+    //       (!this.prdlstCode || row.prdlst_c_code.includes(this.prdlstCode)) &&
+    //       (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
+    //       (!startDate || prductNDate >= startDate) &&
+    //       (!endDate || prductNDate <= endDate)
+    //     );
+    //   });
+    // },
+
     resetFilter() {
       this.LOTCode = "";
       this.prdlstCode = "";
@@ -231,7 +254,7 @@ export default {
     },
 
     customDateFormat(params) {
-      return userDateUtils.dateFormat(params.data.dlivy_day, 'yyyy-MM-dd');
+      return userDateUtils.dateFormat(params.data.wrhousngDay, 'yyyy-MM-dd');
     }
   },
   components: {
