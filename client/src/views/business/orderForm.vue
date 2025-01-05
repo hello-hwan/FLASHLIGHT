@@ -27,7 +27,7 @@
                         <label for="orderFormOrderDate" class="col-form-label">주문일자</label>
                     </div>
                     <div class="col-auto">
-                        <input type="date" id="orderFormOrderDate" class="form-control" v-model="this.requst.order_date" placeholder="2024-12-28">
+                        <input type="date" id="orderFormOrderDate" class="form-control" v-model="this.requst.order_date">
                     </div>
                 </div>
                 <div class="row g-3 align-items-center">
@@ -35,12 +35,7 @@
                         <label for="orderFormDete" class="col-form-label">납품일자</label>
                     </div>
                     <div class="col-auto">
-                        <input type="date" id="orderFormDete" class="form-control" v-model="this.requst.dete" placeholder="2025-08-17">
-                    </div>
-                    <div class="col-auto">
-                        <span class="form-text">
-                        2024-00-00
-                        </span>
+                        <input type="date" id="orderFormDete" class="form-control" v-model="this.requst.dete">
                     </div>
                 </div>
                 <div class="row g-3 align-items-center">
@@ -81,7 +76,9 @@
                         <span>제품 명</span>
                         <InputText type="text" v-model="this.searchProductName" v-on:keyup.enter="searchProduct"> <p>{{ this.searchProductName }}</p></InputText>
                     </div>
-                    <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                    <div style="display:flex; justify-content: center;">
+                        <button @click="searchProduct"class="btn btn-primary search-btn">조회</button>
+                    </div>
                 </div>
     
                 <AgGridVue 
@@ -90,11 +87,11 @@
                     class="ag-theme-alpine"
                     style="height: 500px"
                     @grid-ready="onGridReady2"
-                    rowSelection="multiple"
+                    rowSelection="single"
                 >
                 </AgGridVue>
     
-                <div class="modal-btn">
+                <div class="modal-btn" style="display:flex; justify-content: center;">
                     <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
                     <button @click="selectOrder2" class="btn btn-primary">확인</button>
                 </div>
@@ -106,21 +103,20 @@
 <script>
 import { ref } from 'vue';
 import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-import userDateUtils from '@/utils/useDates.js';
-ModuleRegistry.registerModules([AllCommunityModule]);
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'; 
+import userDateUtils from '@/utils/useDates.js'; 
+ModuleRegistry.registerModules([AllCommunityModule]); 
 
-import axios from 'axios';
-import { ajaxUrl } from '@/utils/commons.js';
+import axios from 'axios'; 
+import { ajaxUrl } from '@/utils/commons.js'; 
 
-import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue';
+import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue'; 
 
 import store from '@/store'
-import { useStore } from 'vuex';
 
 import { useToast } from 'primevue/usetoast';
 
-export default {
+export default { 
     data() { 
         return { 
             orderList: [], 
@@ -135,12 +131,13 @@ export default {
             modalCheck2 : false, 
             index : 0,
             empName : store.state.empInfo[store.state.empInfo.length - 1].name,
-            toast : useToast()
+            toast : useToast(),
+            dt :'',
+            nextDt:''
         }; 
     }, 
     created() { 
-        
-        console.log('------------', useStore());
+        this.today();
         this.getOrderListNo();
         // this.onAddRow(); 
         this.colDefs = ref([ 
@@ -156,7 +153,7 @@ export default {
             { field: "untpc", headerName:"주문단가", editable: true }, 
             { field: "order_qy", headerName:"주문수량", editable: true }, 
             { field: "wrter", headerName:"작성자", editable: true } 
-        ]);
+        ]); 
         this.gridOptionsOrder = { 
                 columnDefs: this.colDefs, 
                 pagination: true, 
@@ -189,6 +186,25 @@ export default {
         bfSearchCompanyModal
     }, 
     methods: { 
+        today(){
+                this.dt = new Date();
+                this.nextDt = this.dt;
+                // console.log(userDateUtils.dateFormat(this.dt,'yyyy-MM-dd'));
+                this.requst.order_date = userDateUtils.dateFormat(this.dt,'yyyy-MM-dd');
+                // console.log(this.nextDt.getMonth() + 1 );
+                this.nextDt.setMonth(this.nextDt.getMonth() + 1);
+                this.dt = new Date();
+                console.log(userDateUtils.dateFormat(this.dt,'yyyy-MM-dd'));
+                console.log(userDateUtils.dateFormat(this.nextDt,'yyyy-MM-dd'));
+                // console.log(this.nextDt.getMonth());
+                // console.log('날짜는',this.nextDt.getDate());
+                // console.log('날짜 차이는',this.nextDt.getMonth(),this.dt.getMonth());
+                while(this.nextDt.getMonth() - this.dt.getMonth() == 2){
+                    this.nextDt.setDate(this.nextDt.getDate() - 1);
+                    console.log('날짜는',this.nextDt.getDate());
+                }
+                this.requst.dete =userDateUtils.dateFormat(this.nextDt,'yyyy-MM-dd');
+            },
         onGridReady(params) { 
             this.gridApi = params.api; 
             this.columnApi = params.columnApi; 
@@ -197,16 +213,29 @@ export default {
             this.gridApi2 = params.api; 
             this.columnApi2 = params.columnApi; 
         }, 
+        // 주문 등록 후 새로운 주문 등록화면으로 이동 
         async orderInsert() { 
-            for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
-                let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
-                console.log("합친결과는"); 
-                console.log(orderRegister); 
-                let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
-                                             .catch(err=>console.log(err)); 
-                console.log("결과는", result); 
+            let numCheck = 1; 
+            for(let i = 0; i < this.gridApi.getRenderedNodes().length; i++){ 
+                if ( this.gridApi.getRenderedNodes()[i].data.order_qy <= 0 || this.gridApi.getRenderedNodes()[i].data.untpc <= 0){
+                    numCheck = 0; 
+                } 
             } 
-            this.toast.add({ severity: 'success', summary: '등록', detail: '등록성공', life: 3000 });
+            console.log('수량 체크 숫자는',numCheck);
+            if(numCheck == 0){
+                this.toast.add({ severity: 'warn', summary: '실패', detail: '주문수량과 주문가격은 양수로 입력하세요.', life: 3000 });
+            } else if(numCheck == 1) {
+                for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
+                    let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
+                    console.log("합친결과는"); 
+                    console.log(orderRegister); 
+                    let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
+                                                 .catch(err=>console.log(err)); 
+                    console.log("결과는", result); 
+                } 
+                this.toast.add({ severity: 'success', summary: '등록', detail: '등록성공', life: 3000 });
+                history.go(0);
+            } 
         }, 
         customDateFormat1(params){
             return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd');
@@ -219,20 +248,20 @@ export default {
             //console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
             this.modalOpen2();
             //console.log('선택된 제품 값',this.gridApi2.getSelectedNodes());
-            const selectedNodes = this.gridApi2.getSelectedNodes();
-            const productSelectedData = selectedNodes.map((node) => node.data);
-            if(productSelectedData[0] != null){
-                console.log('모달에서 선택된 행 데이터:', productSelectedData[0].prdlst_code);
-                let rowCount = this.rowData.find(data => data.prd_code == productSelectedData[0].prdlst_code);
-                if(rowCount == null && productSelectedData[0].prdlst_code != null){
-                    let newData = {
+            const selectedNodes = this.gridApi2.getSelectedNodes(); 
+            const productSelectedData = selectedNodes.map((node) => node.data); 
+            if(productSelectedData[0] != null){ 
+                console.log('모달에서 선택된 행 데이터:', productSelectedData[0].prdlst_code); 
+                let rowCount = this.rowData.find(data => data.prd_code == productSelectedData[0].prdlst_code); 
+                if(rowCount == null && productSelectedData[0].prdlst_code != null){ 
+                    let newData = { 
                         index: this.index,
                         prd_code:productSelectedData[0].prdlst_code, 
                         prd_name:productSelectedData[0].prdlst_name, 
                         untpc: 0, 
-                        order_qy: 0,
-                        wrter: this.empName
-                    };
+                        order_qy: 0, 
+                        wrter: this.empName 
+                    }; 
                     this.index = this.index + 1;
                     console.log('뉴데이터값은',newData);
                     this.rowData = [...this.rowData, newData];
@@ -242,11 +271,11 @@ export default {
                 }
             } else {
                 this.toast.add({ severity: 'warn', summary: '실패', detail: '제품이 선택되지 않았습니다.', life: 3000 });
-            }
-        },
+            } 
+        }, 
         deleteBtn(){ 
             const selectedNodes = this.gridApi.getSelectedNodes(); 
-            console.log(selectedNodes);
+            console.log(selectedNodes); 
             for (let i = 0 ; i < selectedNodes.length ; i ++){ 
                 let result_arr = []; 
                 console.log(selectedNodes[i].data.index); 
@@ -258,53 +287,53 @@ export default {
                 } 
                 this.rowData=result_arr; 
             } 
-        },
-        onInsertInit(){
-            this.requst = {
+        }, 
+        onInsertInit(){ 
+            this.requst = { 
                 p_code : "", 
                 order_date :"2024-12-28", 
                 dete : "2025-08-17", 
                 order_no : this.requst.order_no
             };
         }, 
-        getBFCompanyInfo(info){
-            this.requst.p_code = info[0].bcnc_code;
-        },
-        async getOrderListNo(){
-            let list = await axios.get(`${ajaxUrl}/business/orderArray`)
-                                      .catch(err=>console.log(err));
-            console.log(list.data);
-            let orderNoArray = list.data.map(x => x.order_no.substr(6));
-            orderNoArray.sort((a,b) => b-a);
-            this.requst.order_no = 'ORDER-' + ( orderNoArray[0] - 1 + 2 );
-            console.log(this.requst.order_no);
-        },
-        modalOpen2 () {
-            this.modalCheck2 = !this.modalCheck2;
-            console.log(this.modalCheck2);
+        getBFCompanyInfo(info){ 
+            this.requst.p_code = info[0].bcnc_code; 
+        }, 
+        async getOrderListNo(){ 
+            let list = await axios.get(`${ajaxUrl}/business/orderArray`) 
+                                      .catch(err=>console.log(err)); 
+            console.log(list.data); 
+            let orderNoArray = list.data.map(x => x.order_no.substr(6)); 
+            orderNoArray.sort((a,b) => b-a); 
+            this.requst.order_no = 'ORDER-' + ( orderNoArray[0] - 1 + 2 ); 
+            console.log(this.requst.order_no); 
+        }, 
+        modalOpen2 () { 
+            this.modalCheck2 = !this.modalCheck2; 
+            console.log(this.modalCheck2); 
                 //행 데이터 초기화
-                this.rowData2 = [];
+                this.rowData2 = []; 
     
                 //검색조건 초기화
-                this.searchProductCode = null;
-                this.searchProductName = null;
+                this.searchProductCode = null; 
+                this.searchProductName = null; 
         },
         //모달 발주건을 선택하고 확인버튼 클릭
-        async searchProduct ()  {
+        async searchProduct ()  { 
             //서버로 보낼 검색 데이터
-            let obj = {product_code: this.searchProductCode,
-                    product_name: this.searchProductName
-            };
+            let obj = {product_code: this.searchProductCode, 
+                    product_name: this.searchProductName 
+            }; 
             //console.log("새로만든 객체: ",obj);
-            let result = await axios.post(`${ajaxUrl}/business/searchProduct`, obj)
-                                    .catch(err=>console.log(err));
+            let result = await axios.post(`${ajaxUrl}/business/searchProduct`, obj) 
+                                    .catch(err=>console.log(err)); 
 
             //console.log("통신결과: ",result);
             //행 데이터 담기
-            this.rowData2 = result.data;   
-        }
-    }
-};
+            this.rowData2 = result.data; 
+        } 
+    } 
+}; 
 </script>
 
 <style scoped>

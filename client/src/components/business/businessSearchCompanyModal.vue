@@ -24,12 +24,14 @@
                 <div class="align-left"> 
                     <span>거래처 코드</span>
                     <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
-                    <span>상호명</span>
+                    <span>거래처 명</span>
                     <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
                     <span>담당자 명</span>
                     <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
                 </div>
-                <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
+                <div style="display:flex; justify-content: center;">
+                    <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
+                </div>
             </div>
             
             <AgGridVue 
@@ -38,10 +40,11 @@
                 class="ag-theme-alpine"
                 style="height: 500px"
                 @grid-ready="onGridReady"
+                rowSelection="single"
                 >
             </AgGridVue>
             
-            <div class="modal-btn">
+            <div class="modal-btn" style="display:flex; justify-content: center;">
             <button @click="modalOpen"class="btn btn-secondary">닫기</button>
             <button @click="selectOrder" class="btn btn-primary">확인</button>
             </div>
@@ -135,9 +138,9 @@ const rowData = ref([]);
 
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const ColDefs = [
-  { field: "bcnc_code", headerName: "발주번호"},
-  { field: "mtlty_name", headerName: "발주코드"},
-  { field: "charger_name", headerName: "발주명"},
+  { field: "bcnc_code", headerName: "거래처 코드", flex:1},
+  { field: "mtlty_name", headerName: "거래처 명", flex:1},
+  { field: "charger_name", headerName: "담당자 명", flex:1},
   { headerName : "선택",  checkboxSelection: true, flex:0.3}
 ];
 
@@ -181,9 +184,9 @@ const searchCompany = async() => {
 .modal-container {
     position: relative;
     top: 53%;
-    left: 61%;
+    left: 50%;
     transform: translate(-50%, -50%);
-    width: 60%;
+    width: 50%;
     background: #fff;
     border-radius: 10px;
     padding: 20px;

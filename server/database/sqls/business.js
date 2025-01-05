@@ -17,7 +17,7 @@ SELECT r.order_no,
             ELSE '미생산'
        END AS 'prdctn_at'
 FROM order_requst r LEFT OUTER JOIN order_lists l ON r.order_no = l.order_no LEFT OUTER JOIN bcnc b ON r.p_code=b.bcnc_code
-ORDER BY 1 DESC`;
+ORDER BY cast(substring(r.order_no,7,6 ) as unsigned ) DESC`;
 
 const orderRequestInsert = `
 CALL p_insert_order_info(?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -39,6 +39,7 @@ SELECT r.order_no,
        r.wrter, 
        l.order_list_no, 
        l.prd_code, 
+       l.prd_name,
        l.untpc, 
        l.order_qy 
 FROM order_requst r LEFT OUTER JOIN order_lists l
@@ -74,6 +75,16 @@ FROM order_lists o JOIN prdctn_plan p
                     ON o.order_list_no = p.order_list_no
 WHERE UPPER( o.order_no ) = UPPER( ? )`;
 
+const bs_modifyCheck_list = `
+SELECT IFNULL( count( o.order_list_no ), 0 ) as count
+FROM order_lists o JOIN prduct_dlivy p
+                   on o.order_list_no  = p.order_list_no
+WHERE UPPER (o.order_list_no) = UPPER( ? )`;
+
+
+
+
+
 module.exports = {
     orderRequest,
     orderRequestInsert,
@@ -82,7 +93,8 @@ module.exports = {
     bs_searchCompany,
     bs_orderArray,
     bs_searchProduct,
-    bs_modifyCheck
+    bs_modifyCheck,
+    bs_modifyCheck_list
 };
 
 

@@ -68,5 +68,12 @@ router.get('/business/orderModify/:order_no',async(req,res)=>{
     res.send(orderModify);
 });
 
+// 수정 가능 여부 체크
+router.get('/business/orderModify2/:order_list_no', async(req,res)=>{
+    let orderListNo = req.params.order_list_no;
+    let orderModify = await businessService.modifyOrderListByListNo(orderListNo);
+    res.send(orderModify);
+})
+
 module.exports = router;
 
