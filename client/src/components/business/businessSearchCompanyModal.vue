@@ -40,6 +40,7 @@
                 class="ag-theme-alpine"
                 style="height: 500px"
                 @grid-ready="onGridReady"
+                rowSelection="single"
                 >
             </AgGridVue>
             

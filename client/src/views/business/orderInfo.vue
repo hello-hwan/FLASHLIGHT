@@ -45,7 +45,7 @@
                             <input type="text" id="orderInfoOrderNo" class="form-control" aria-describedby="passwordHelpInline" v-model="this.selectNo" disabled>
                         </div>
                     </div>
-                    <div style="margin-top:10px;" v-if="this.orderModifyCheck < 1">
+                    <div style="margin-top:10px;" v-if="this.orderModifyCheck < 1 && this.delCheck < 1">
                         <!-- <button type="button" class="btn btn-secondary" @click="getAllRows()">저장</button> -->
                         <button type="button" class="btn btn-success" @click="orderListReplace()" style="color:white;">주문수정</button>
                         <button type="button" class="btn btn-warning" @click="getorderInfoList()" >초기화</button>
@@ -93,7 +93,7 @@
                     class="ag-theme-alpine"
                     style="height: 500px"
                     @grid-ready="onGridReady2"
-                    rowSelection="multiple"
+                    rowSelection="single"
                 >
                 </AgGridVue>
     
@@ -110,7 +110,7 @@
     import { ref } from 'vue';
     import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
     import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-    //import userDateUtils from '@/utils/useDates.js';
+    import userDateUtils from '@/utils/useDates.js';
     import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue';
     ModuleRegistry.registerModules([AllCommunityModule]);
     
@@ -136,16 +136,19 @@
                     dete:'',
                     order_no:''
                 },
-                orderModifyCheck:1,
+                orderModifyCheck : 1,
+                delCheck : 1,
                 orderInfomation: {mtltyName: '', pCode: ''},
                 searchProductCode:'',
                 searchProductName:'',
                 modalCheck2:false,
                 index:0,
-                toast : useToast()
+                toast : useToast(),
+                dt : ''
             }; 
         }, 
         created() { 
+            this.today();
             console.log('--------------값을 받아오는 중입니까----------',this.$route.params);
             this.selectNo = this.$route.params.order_no;
             console.log(this.selectNo);
@@ -155,8 +158,8 @@
             this.orderInfomation.pCode = this.pCode;
             console.log('작동');
             console.log('------------------------자식으로 보내기 전 확인----------', this.orderInfomation);
-            this.getorderInfoList();
             this.getOrderModify();
+            this.getorderInfoList();
             this.colDefs = ref([ 
             { field: "order_list_no", headerName:"주문목록번호", editable: true, hide: true }, 
             { field: "prd_code", headerName:"품목코드", checkboxSelection: true }, 
@@ -198,15 +201,50 @@
             bfSearchCompanyModal
         }, 
         methods: { 
+            today(){
+                this.dt = new Date();
+                console.log(userDateUtils.dateFormat(this.dt,'yyyy-MM-dd'));
+                this.requst.order_date = userDateUtils.dateFormat(this.dt,'yyyy-MM-dd');
+                this.requst.dete =userDateUtils.dateFormat(this.dt,'yyyy-MM-dd');
+            },
+            // 주문 상세 ag grid 객체
             onGridReady(params) { 
                 this.gridApi = params.api; 
                 this.columnApi = params.columnApi; 
             }, 
+            // 품목 조회 ag grid 객체
             onGridReady2(params){
                 this.gridApi2=params.api;
                 this.columnApi2=params.columnApi;
             },
-            async getOrderModify(){
+            // 상세조회 창 오픈
+            async getorderInfoList(){ 
+                console.log(`상세조회 시작`,this.selectNo); 
+                let result = await axios.get(`${ajaxUrl}/business/orderList/${this.selectNo}`) 
+                                            .catch(err=>console.log(err)); 
+                console.log(`결과의 데이터 값 중 첫번째 p 코드`, result.data[0].p_code); 
+                this.orderInfoList = result.data; 
+                console.log(this.orderInfoList); 
+                this.requst.p_code = result.data[0].p_code; 
+                this.requst.order_date = result.data[0].order_date; 
+                this.requst.dete = result.data[0].dete; 
+                this.requst.order_no = result.data[0].order_no; 
+                this.rowData = ref(this.orderInfoList); 
+                // 출고 테이블에서 사용중인지 여부
+                console.log(result.data.length);
+                for (let i = 0; i <  result.data.length;i++){
+                    let listNo = result.data[0].order_no + '-' + (i+1);
+                    console.log('주문 목록 번호 조회 결과',listNo);
+                    let listCheckResult = await axios.get(`${ajaxUrl}/business/orderModify2/${listNo}`)
+                                            .catch(err=> console.log(err));
+                    console.log(listCheckResult);
+                    if(listCheckResult.data[0].count == 0){
+                        this.delCheck = 0;
+                    }
+                }
+            }, 
+                  // 수정가능 여부 체크 함수 -생산 계획에서 사용중인지 여부
+                  async getOrderModify(){
                 console.log('주문 수정 여부 체크', this.selectNo);
                 let result = await axios.get(`${ajaxUrl}/business/orderModify/${this.selectNo}`)
                                         .catch(err=> console.log(err));
@@ -214,28 +252,14 @@
                 if (result.data[0].count == 0){
                     this.orderModifyCheck = 0
                 } ;
+
             },
-            async getorderInfoList(){ 
-                console.log(`상세조회 시작`,this.selectNo); 
-                let result = await axios.get(`${ajaxUrl}/business/orderList/${this.selectNo}`) 
-                                            .catch(err=>console.log(err)); 
-                console.log(`받아온 값`, result); 
-                console.log(`받아온 값의 데이터`, result.data); 
-                console.log(`첫번째 데이터 값`, result.data[0]); 
-                console.log(`첫번째 데이터 값 중 p 코드`, result.data[0].p_code); 
-                this.orderInfoList = result.data; 
-                console.log(this.orderInfoList); 
-                this.requst.p_code = result.data[0].p_code; 
-                this.requst.order_date = result.data[0].order_date; 
-                this.requst.dete = result.data[0].dete; 
-                this.requst.order_no = result.data[0].order_no; 
-                console.log(this.requst); 
-                this.rowData = ref(this.orderInfoList); 
-            }, 
+            // 제품 모달창 - 제품 코드 중복, 제품 미선택시 팝업 띄워줌 
             selectOrder2 () {
-            console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
+            console.log(this.$store.empInfo);
+            //console.log('오더폼 데이터',this.gridApi.getSelectedNodes());
             this.modalOpen2();
-            console.log('선택된 제품 값',this.gridApi2.getSelectedNodes());
+            //console.log('선택된 제품 값',this.gridApi2.getSelectedNodes());
             const selectedNodes = this.gridApi2.getSelectedNodes();
             const productSelectedData = selectedNodes.map((node) => node.data);
             if(productSelectedData[0] != null){
@@ -247,9 +271,9 @@
                         prd_code:productSelectedData[0].prdlst_code, 
                         prd_name:productSelectedData[0].prdlst_name, 
                         untpc: 0, 
-                        order_qy: 0,
-                        wrter:"김기환"
-                    };
+                        order_qy: 0, 
+                        wrter: this.empName 
+                    }; 
                     this.index = this.index + 1;
                     console.log('뉴데이터값은',newData);
                     this.rowData = [...this.rowData, newData];
@@ -261,8 +285,13 @@
                 this.toast.add({ severity: 'warn', summary: '실패', detail: '제품이 선택되지 않았습니다.', life: 3000 });
             }
         },
+        // 주문 수정 기능 - 주문 통째로 delete 이후 재 등록 
             async orderListReplace() { 
-                this.delOrderInfo();
+                // 주문 삭제
+                let result = await axios.delete(`${ajaxUrl}/business/orderInfo/${this.selectNo}`)
+                                               .catch(err=>console.log(err));
+                console.log(result);
+                // 주문 등록
                 for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
                     let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
                     console.log("합친결과는"); 
@@ -271,30 +300,38 @@
                                                  .catch(err=>console.log(err)); 
                     console.log("결과는", result); 
                 } 
+                // 리스트로 이동
+                this.$router.push({name:'orderList'});
+                alert('수정되었습니다.');
                 this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
                 
             }, 
+            // 주문 삭제 기능 - order_no 로 주문 요청, 주문리스트 동시에 삭제되는 프로시저
             async delOrderInfo(){
+                console.log(this.selectNo);
                 let result = await axios.delete(`${ajaxUrl}/business/orderInfo/${this.selectNo}`)
                                                .catch(err=>console.log(err));
                 console.log(result);
-                // this.$router.push({name:'orderList'});
+                //리스트로 이동
+                this.$router.push({name:'orderList'});
             },
-            onAddRow(){ 
-                let newData = { 
-                    order_list_no: "ORDER-00-0", 
-                    prd_code:"PRD-01", 
-                    untpc: 0, 
-                    order_qy: 0, 
-                    wrter:"김기환" 
-                }; 
-                this.rowData = [...this.rowData, newData]; 
-                console.log(this.rowData); 
-            }, 
+            // 기존 행추가 함수 - 모달창 띄워서 삭제됨
+            // onAddRow(){ 
+            //     let newData = { 
+            //         order_list_no: "ORDER-00-0", 
+            //         prd_code:"PRD-01", 
+            //         untpc: 0, 
+            //         order_qy: 0, 
+            //         wrter:"김기환" 
+            //     }; 
+            //     this.rowData = [...this.rowData, newData]; 
+            //     console.log(this.rowData); 
+            // }, 
             onRemoveSelected(){ 
                 this.rowData.pop(); 
                 this.rowData = [...this.rowData]; 
             }, 
+            // 신규 행삭제
             deleteBtn(){ 
                 const selectedNodes = this.gridApi.getSelectedNodes(); 
                 console.log(selectedNodes); 
@@ -310,9 +347,11 @@
                     this.rowData=result_arr; 
                 } 
             }, 
+            // 엑셀 내보내기 기능
             onBtnExportDataAsCsvLotList(){
                 this.gridApi.exportDataAsCsv();
             },
+            // 제품 모달창 온 오프 기능 + 검색조건 초기화
             modalOpen2 () {
             this.modalCheck2 = !this.modalCheck2;
             console.log(this.modalCheck2);

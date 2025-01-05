@@ -183,6 +183,7 @@ export default {
             console.log('-------------------함수로 이동해서 값을 받는지', order_no, mtlty_name, p_code)
             this.$router.push({name:'orderInfo', params : {order_no:order_no, mtlty_name:mtlty_name, p_code:p_code}}); 
         }, 
+        // 필터링 후 결과 조회
         filteredResult(){ 
             //console.log(this.gridApi, this.colDefs, this.rowData.filter()); 
             //console.log('거래처명 조회결과',this.filter_mtlty_name);
