@@ -25,7 +25,7 @@ const bomMtilList = async () => {
   return list;
 }
 
-// BOM 등록  
+// BOM 소모품등록  
 const bomInsert = async (bomInfo) => {
   let result = await mariaDB.query('bomInsert', bomInfo);
   try{
@@ -37,7 +37,16 @@ const bomInsert = async (bomInfo) => {
   }catch(err){
     console.log(err);
   }
+}
 
+// BOM 등록
+const bomAdd = async (info) => {
+  try {
+    let result = await mariaDB.query('bomAdd', info);
+    return result
+  } catch (error) {
+    console.log(error);    
+  }
 }
 
 // BOM 관리 select
@@ -70,6 +79,24 @@ const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
 const bom_cmpdsDel = async (cmpdsNo) => {
   let result = await mariaDB.query('bom_cmpdsDel', cmpdsNo);
   return result;
+}
+
+// BOM 삭제
+const bomDelete = async(code) => {
+  let result = await mariaDB.query('bomDelete', code);
+  return result;
+}
+
+// 반제품 조회(모달)
+const prduct_n = async () => {
+  let list = await mariaDB.query('prduct_n');
+  return list;
+}
+
+// 완제품 조회(모달)
+const prduct = async () => {
+  let list = await mariaDB.query('prduct');
+  return list;
 }
 
 // 자재 조회
@@ -334,13 +361,17 @@ const loginService = async (info) => {
 };
 
 module.exports = {
-  cmmntest,
+  cmmntest, 
   bomtest,
   bomInfo,
   bomInsert,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
-  bomMtilList, 
+  bomMtilList,
+  bomAdd,
+  bomDelete,
+  prduct_n,
+  prduct,
   mtril,
   mtrilAdd,
   mtrilDelete,
@@ -352,7 +383,7 @@ module.exports = {
   prductList,
   prductInsert,
   prductDelete,
-  prductUpdate,
+  prductUpdate, 
   bcncList,
   bcncUpdate,
   qiList,

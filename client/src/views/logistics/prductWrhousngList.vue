@@ -72,9 +72,10 @@ created() {
                 paginateChildRows: true,
                 animateRows: false,
                 defaultColDef: {
-                    filter: true,
+                    //filter: true,
                     flex: 1,
-                    minWidth: 10
+                    minWidth: 10,
+                    resizable: false,
                 }
             };
 }, 
@@ -114,7 +115,6 @@ async onCellClicked(event) {
         let result = await axios.get(`${ajaxUrl}/prductList`)
                                 .catch(err => console.log(err));
         this.prductList = result.data;
-        console.log(this.prductList);
         this.rowDataSelect = this.prductList;
     },
     //날짜 yyyy-MM-dd형식에 맞춰서 가져오기

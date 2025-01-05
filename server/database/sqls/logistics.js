@@ -22,14 +22,15 @@ const prdctn_n_return_list =
        ,d.prduct_n_name
        ,d.prduct_n_code
        ,d.nusgqty
-       ,w.prduct_n_wrhousng_day
+       ,d.requst_date
        ,t.prdctn_code
 FROM prduct_n_dlivy d JOIN prduct_n_wrhousng w
 ON d.prduct_n_lot = w.prduct_n_lot
 JOIN thng_req t
 ON  d.req_code = t.req_code
 WHERE d.usgstt = 'MU02'
-AND d.nusgqty > 0`;
+AND d.nusgqty > 0
+ORDER BY requst_date`;
 
 // 반제품 반환 등록
 const prduct_n_wrhousngReturn = 
@@ -85,7 +86,8 @@ const prduct_n_wrhousngList =
        ,prdlst_code
        ,prduct_n_invntry_qy 
 FROM prduct_n_wrhousng
-WHERE prduct_n_invntry_qy > 0`;
+WHERE prduct_n_invntry_qy > 0
+ORDER BY prduct_n_lot DESC`;
 
 // 반제품 출고 요청 리스트(수정해야됨)
 const prduct_n_dlivy =
@@ -141,7 +143,8 @@ const prduct_n_dlivyList =
        ,prduct_n_name
        ,req_code
 FROM prduct_n_dlivy
-GROUP BY prduct_n_req_name`;
+GROUP BY prduct_n_req_name
+ORDER BY requst_date DESC`;
 
 // 반제품 출고완료 상세 리스트
 const prductNDlivyListInfo = 
@@ -168,6 +171,8 @@ ON d.prdctn_code = s.prdctn_code
 LEFT JOIN prduct_wrhousng w
 ON s.prdctn_code = w.prdctn_code
 WHERE s.prd_code LIKE 'C%'
+AND s.nrmlt > 0
+AND s.end_time IS NOT NULL
 AND w.wrhousng_day IS NULL`;
 
 // 완제품 입고 등록
@@ -258,7 +263,8 @@ const prduct_dlivyList=
        ,o.prd_name
 FROM prduct_dlivy d JOIN order_lists o
 ON d.order_list_no = o.order_list_no
-GROUP BY o.order_no`;
+GROUP BY o.order_no
+ORDER BY wrhousngDay DESC`;
 
 
 // 완제품 출고 완료 상세리스트
@@ -282,7 +288,8 @@ const prductWrhousngList =
        ,prdlst_c_code
        ,prduct_invntry_qy 
 FROM prduct_wrhousng
-WHERE prduct_invntry_qy > 0`;
+WHERE prduct_invntry_qy > 0
+ORDER BY prduct_lot DESC`;
 
 
 module.exports = {

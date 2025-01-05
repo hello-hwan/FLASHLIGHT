@@ -41,8 +41,18 @@ router.post('/bom', async (req, res) => {
   }catch(err){
     console.log(err); 
   }
-  
 });
+
+// BOM 등록
+router.post('/bomAdd', async (req, res) => {
+  let info = req.body;
+  try {
+    let result = await standard_info_service.bomAdd(info);
+    res.send(result);
+  } catch (error) {
+    console.log('router', error);
+  }
+})
 
 // BOM 관리 select 
 router.get('/bomManage/:bomCode', async (req, res) => {
@@ -73,6 +83,27 @@ router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {
   let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
   res.send(result); 
 });
+
+// BOM 삭제
+router.delete('/bomDelete/:code', async (req, res) => {
+  let code = req.params.code;
+  let result = await standard_info_service.bomDelete(code);
+  res.send(result);
+})
+
+// 반제품 조회(모달)
+router.get('/prduct_n', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.prduct_n(searchs);
+  res.send(list);
+})
+
+// 완제품 조회(모달)
+router.get('/prduct', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.prduct(searchs);
+  res.send(list);
+})
 
 // 자재 조회
 router.get('/mtril', async (req, res) => {

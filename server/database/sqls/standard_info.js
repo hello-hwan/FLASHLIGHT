@@ -7,23 +7,24 @@ const bom =
        ,prdist_name
        ,prdctn_qy
        ,sumry 
-FROM bom`;
+FROM bom
+ORDER BY CAST(SUBSTRING(bom_code, 4) AS INT) DESC`;
 
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
-       ,bc.bom_code
-       ,bc.cmpds_prdlst_code
-	,bc.cmpds_prdlst_name
+       ,b.bom_code
+       ,b.prdlst_code as prdlst_codeInfo
+	,b.prdist_name as prdlst_nameInfo
        ,bc.stndrd_x
 	,bc.stndrd_y
        ,bc.stndrd_z
        ,bc.unit 
        ,bc.cnsum_count
        ,b.sumry
-FROM bom b JOIN bom_cmpds bc  
+FROM bom b LEFT JOIN bom_cmpds bc  
 on b.bom_code = bc.bom_code
-WHERE b.bom_code = ?`;
+WHERE b.bom_code = '?`;
 
 // BOM 업데이트
 const bomUpdate = 
@@ -91,6 +92,36 @@ const bom_cmpdsDel =
 bom_cmpds
 WHERE cmpds_no = ?`;
 
+// BOM 삭제
+const bomDelete =
+`DELETE FROM
+bom
+WHERE bom_code = ?`
+
+// 반제품 조회(모달)
+const prduct_n = 
+`SELECT prdlst_code as prdlst_n_code
+       ,prdlst_name as prdlst_n_name
+FROM prduct_n`;
+
+// 완제품 조회(모달)
+const prduct =
+`SELECT prdlst_code
+       ,prdlst_name
+FROM repduct`;
+
+const bomAdd =
+`INSERT INTO BOM (bom_code
+                 ,prdlst_code
+                 ,prdist_name
+                 ,prdctn_qy
+                 ,sumry)
+VALUES (CONCAT('bb-',NEXTVAL(bom_code_seq))
+       ,?
+       ,?
+       ,?
+       ,?)`
+
 // 자재 조회
 const mtril =
 `SELECT m.mtril_code
@@ -105,8 +136,9 @@ GROUP BY m.mtril_code
         ,m.mtril_name
 	 ,m.unit
 	 ,m.untpc
-	 ,m.sfinvc`;
-
+	 ,m.sfinvc
+ORDER BY m.mtril_code DESC`;
+ 
 // 자재 등록
 const mtrilAdd =
 `INSERT INTO mtril (mtril_code
@@ -145,7 +177,8 @@ const infoprductNList =
        ,p.sfinvc
        ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
 FROM prduct_n p LEFT JOIN procs_flowchart f                   
-ON prdlst_code = prd_code`;
+ON prdlst_code = prd_code
+ORDER BY p.prdlst_code DESC`;
 
 // 반제품 등록
 const prductNAdd = 
@@ -201,7 +234,8 @@ GROUP BY r.prdlst_code
 	 ,r.stndrd_z
 	 ,r.unit
 	 ,r.wrhousng_untpc
-	 ,r.sfinvc`;
+	 ,r.sfinvc
+ORDER BY r.prdlst_code DESC`;
 
 // 완제품 등록
 const prductInsert = 
@@ -247,7 +281,8 @@ const bcncList =
        ,charger_name
        ,charger_phone
        ,regist_day
-FROM bcnc`;
+FROM bcnc
+ORDER BY bcnc_code DESC`;
 
 // 거래처 등록
 const bcncAdd = 
@@ -490,7 +525,7 @@ const delete_empl =
  WHERE  empl_no = ?
  AND    password = ?
  `;
-
+ 
 module.exports = {
   bom,
   bomInfo,
@@ -499,6 +534,10 @@ module.exports = {
   bom_cmpdsUpdate,
   bom_cmpdsDel,
   bomMtilList,
+  bomAdd,
+  bomDelete,
+  prduct_n,
+  prduct,
   mtril,
   mtrilAdd,
   mtrilDelete,

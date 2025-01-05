@@ -84,7 +84,7 @@ created() {
         { field: "prduct_n_name", headerName:"제품명" },         // 반제품 반환 리스트로 변경해야됨
         { field: "prduct_n_code", headerName:"제품코드" },    // 반제품 반환 리스트로 변경해야됨
         { field: "nusgqty", headerName:"재입고량" },    // 반제품 반환 리스트로 변경해야됨
-        { field: "prduct_n_wrhousng_day", headerName:"재입고날짜",
+        { field: "requst_date", headerName:"출고날짜",
             valueFormatter: (params) => { return userDateUtils.dateFormat(params.value, 'yyyy-MM-dd'); }
         },
         //{ field: "입고", headerName:"입고", cellRenderer: () => {return "입고"}}
@@ -100,9 +100,10 @@ created() {
         paginateChildRows: true,
         animateRows: false,
         defaultColDef: {
-            filter: true,
+            //filter: true,
             flex: 1,
-            minWidth: 10
+            minWidth: 10,
+            resizable: false,
         }
     };
     this.getprductNList();
@@ -124,9 +125,10 @@ created() {
                 paginateChildRows: true,
                 animateRows: false,
                 defaultColDef: {
-                    filter: true,
+                    //filter: true,
                     flex: 1,
-                    minWidth: 10
+                    minWidth: 10,
+                    resizable: false,
                 }
             };
 }, 
@@ -209,7 +211,7 @@ methods: {
     },
     //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
     customDateFormat(params) {
-            return userDateUtils.dateFormat(params.data.end_time, 'yyyy-MM-dd');  // test_date는 알레아스 이름
+            return userDateUtils.dateFormat(params.value, 'yyyy-MM-dd');  // 날짜 데이터 전체 포맷
     },
     // 반환 리스트 출력
     prductNReturnListisModified(){

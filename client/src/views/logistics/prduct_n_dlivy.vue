@@ -164,9 +164,10 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
+       // filter: true,
         flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
 
@@ -178,9 +179,10 @@ export default {
       defaultColDef: {
         flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
-  },
+  }, 
   methods: {
     // 셀 클릭 시 호출되는 이벤트
     onCellClicked(event) {

@@ -165,7 +165,7 @@ import { useToast } from 'primevue/usetoast';
         isButtonDisabled : true,
         isModified: false, // 수정 상태 추적 변수
         modalCheck2 : false,
-        isModalVisible: false, // 모달 표시 여부
+        //isModalVisible: false, // 모달 표시 여부
         selectedCmpdsCode: null, // 선택된 소모품 코드 데이터
         bomList: [], // BOM 리스트
         rowData: [], // BOM 데이터
@@ -183,13 +183,14 @@ import { useToast } from 'primevue/usetoast';
         gridOptionsReturn: {}, // AgGrid 옵션
   
         searchCode: "", // 검색 입력값
-        prdlstCode: this.prdlst_code,
-        prdlstName: this.prdist_name, 
+        prdlstCode: "",
+        prdlstName: "", 
         productionQty: "",
         remarks: "", 
         rowCount: 0,
         isNewRow: true,
-        toast : useToast()
+        toast : useToast(),
+        bomCode: ""
       };
 
     },
@@ -277,7 +278,7 @@ import { useToast } from 'primevue/usetoast';
             let result = await axios.get(`${ajaxUrl}/bomMtilList`)
                               .catch(err => console.log(err));
             this.bomInfoList = result.data
-                              this.rowDataInfotest = this.bomInfoList;
+            this.rowDataInfotest = this.bomInfoList;
                 // //행 데이터 초기화
                 // this.rowData2 = [];
     
@@ -285,11 +286,14 @@ import { useToast } from 'primevue/usetoast';
                 // this.searchProductCode = null;
                 // this.searchProductName = null;
         },
-
-
+    
       onCellClicked(event) {
         if (event.colDef.field === "상세보기") {
           this.istest = true;
+          this.bomCode = event.data.bom_code;
+          this.prdlstCode = event.data.prdlst_code;
+          this.prdlstName = event.data.prdist_name;
+          this.productionQty = event.data.prdctn_qy;
           this.selectedBomCode = event.data.prdlst_code; // 상세보기를 위한 데이터 추츨
           this.getbomListInfo(this.selectedBomCode); // 상세 정보 조회
           this.remarks = event.data.sumry;
@@ -302,6 +306,7 @@ import { useToast } from 'primevue/usetoast';
         this.bomList = result.data;
         this.rowData = this.bomList;
         this.filteredRowData = this.rowData; // 초기 데이터 설정
+        //console.log(this.rowData);
       },
 
       // BOM 코드를 기반으로 조건SELECT 후 소모품 그리드에 데이터 삽입
@@ -310,12 +315,9 @@ import { useToast } from 'primevue/usetoast';
                                   .catch(err => console.log(err));
         //console.log(result.data);
         this.bomListInfo = result.data;
-       // console.log(this.bomListInfo);
         this.rowDataInfo = this.bomListInfo;
+        console.log('info 데이터',this.rowDataInfo);
         if (result) {
-          this.prdlstCode = result.data[0].prdlst_code;
-          this.prdlstName = result.data[0].prdist_name;
-          this.productionQty = result.data[0].prdctn_qy;
           this.rowData = result.data;
           this.rowCount = this.rowData.length;
           this.trueRowCount = this.rowData.length;
@@ -374,10 +376,11 @@ import { useToast } from 'primevue/usetoast';
 
       async saveData() { 
         if(this.rowCount < this.rowDataInfo.length){
+          console.log('저장시 데이터',this.bomCode);
           for(let i = this.rowCount; i < this.rowDataInfo.length; i ++) {
           let row = this.rowDataInfo[i];
           let obj = [
-            this.rowData[0].bom_code,
+            this.bomCode,
             row.cmpds_prdlst_code,
             row.cmpds_prdlst_name, 
             row.stndrd_x,
@@ -408,7 +411,7 @@ import { useToast } from 'primevue/usetoast';
           prdctn_qy: this.productionQty,
           sumry: this.remarks
         }
-        let result = axios.put(`${ajaxUrl}/bomUpdate/${this.rowData[0].bom_code}`, info)
+        let result = axios.put(`${ajaxUrl}/bomUpdate/${this.bomCode}`, info)
                             .catch(err => console.log(err)); 
         if(result){
           

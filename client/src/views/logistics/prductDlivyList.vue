@@ -138,8 +138,8 @@ export default {
     this.getprductNDlivyList();
 
     this.colDefs = [
-      { field: "order_no", headerName: "주문번호" },
-      { field: "wrhousngDay", headerName: "요청일자", valueFormatter: this.customDateFormat },
+      { field: "order_no", headerName: "주문번호" , width: 160 },
+      { field: "wrhousngDay", headerName: "요청일자", width: 150, valueFormatter: this.customDateFormat },
       { field: "prd_name", headerName: "완제품명" },
       { field: "상세보기", headerName: "상세보기",cellStyle: { textAlign: "center" } ,cellRenderer: () => {
                                                 return '<button class="btn btn-primary mx-2">상세보기</button>'}},
@@ -151,14 +151,14 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
-        flex: 1,
+        //filter: true,
         minWidth: 10,
+        resizable: false,
       },
     }
     this.colDefsInfo = [
-      { field: "prduct_lot", headerName: "LOT" },
-      { field: "prd_name", headerName: "완제품명" },
+      { field: "prduct_lot", headerName: "LOT" , width: 120},
+      { field: "prd_name", headerName: "완제품명" , width: 225},
       { field: "prdlst_code", headerName: "완제품코드"},
       { field: "dlivy_qy", headerName: "출고수량" },
       { field: "dlivy_day", headerName: "출고일자", valueFormatter: this.customDateFormat  },
@@ -170,9 +170,10 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
-        flex: 1,
+       // filter: true,
+        //flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     }
   },

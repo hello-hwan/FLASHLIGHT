@@ -138,21 +138,21 @@ export default {
     // 출고리스트 컬럼 정의
     this.colDefs = [
       { field: "order_no", headerName: "요청명" },
-      { field: "order_date", headerName: "요청일",
+      { field: "order_date", headerName: "요청일", width: 160,
         valueFormatter: this.customDateFormat, // valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
       },
-      { field: "prd_code", headerName: "출고제품종류수" },
-      { field: "상세보기", headerName: "상세보기", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+      { field: "prd_code", headerName: "출고제품종류수" , cellStyle: { textAlign: "center" }, width: 180},
+      { field: "상세보기", headerName: "상세보기", width: 150, cellStyle: { textAlign: "center" } ,cellRenderer: () => {
                                                 return '<button class="btn btn-primary mx-2">상세보기</button>'}},
     ];
 
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
-      { field: "prd_name", headerName: "반제품제품명" },
-      { field: "prd_code", headerName: "반제품제품코드" },
-      { field: "lot", headerName: "반제품LOT" },
-      { field: "order_qy", headerName: "요청수량" },
-      { field: "lot_qy", headerName: "출고가능수량" },
+      { field: "prd_name", headerName: "반제품제품명", width: 225 },
+      { field: "prd_code", headerName: "반제품제품코드" , width: 150},
+      { field: "lot", headerName: "반제품LOT" , width: 100},
+      { field: "order_qy", headerName: "요청수량", width: 100 },
+      { field: "lot_qy", headerName: "출고가능수량" , width: 130},
     ];
 
     // AgGrid 기본 옵션 설정
@@ -162,9 +162,10 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
-        flex: 1,
+        //filter: true,
+        //flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
 
@@ -174,8 +175,9 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        flex: 1,
+        //flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
   },

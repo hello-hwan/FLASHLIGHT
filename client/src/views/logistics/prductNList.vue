@@ -139,9 +139,10 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
+        //filter: true,
         flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
   },

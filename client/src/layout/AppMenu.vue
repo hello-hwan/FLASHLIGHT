@@ -185,7 +185,11 @@ const model = ref([
                     {
                         label: '자재 관리 / 자재 조회',
                         to: '/standardInfo/mtrilList'
-                    }, 
+                    },
+                    {
+                        label: 'BOM 등록',
+                        to: '/standardInfo/bomManage'
+                    },
                     {
                         label: 'BOM 관리 / BOM 조회',
                         to: '/standardInfo/bomList'
