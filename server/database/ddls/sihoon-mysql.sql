@@ -297,7 +297,7 @@ BEGIN
 				INTO v_req_qy
 				FROM thng_req
 				WHERE prd_code = v_mtril_code
-				AND procs_at = 'RD01'
+				AND procs_at = 'RD02'
 				AND prdctn_code IS NOT NULL; 
 				
 				-- 자재 조회
@@ -352,13 +352,48 @@ BEGIN
 					-- 제작이나 발주요청 해야하는 수량 = 0 - (재고 - (소모수량 * 주문량) - 요청수량 - 안전재고)
 					SET v_real_qy = 0 - ( v_mtril_qy - ( v_sum_qy * v_prdctn_co ) - v_req_qy - v_sfinvc);
 					
+					-- 자재일 때
+					IF v_prd_se = 'PI01' THEN 
+						
+						-- 자재 제작번호 제일 처음으로 구분
+						SELECT mnfct_no
+						INTO v_mnfct_no
+						FROM prdctn_plan
+						WHERE order_list_no = v_order_list_no
+						ORDER BY 1
+						LIMIT 1 OFFSET 0;
+					
+						-- 자재 요청 일어났는지
+						SELECT COUNT(mnfct_no)
+						INTO v_req_co
+						FROM thng_req
+						WHERE prd_code = v_mtril_code
+						AND mnfct_no = v_mnfct_no
+						AND req_qy = v_real_qy;
+					
+						-- 요청 안일어났으면
+						IF v_req_co = 0 THEN
+					
+							-- 물품 요청 테이블에 삽입
+							INSERT INTO thng_req (req_code, req_name, mnfct_no, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
+							VALUES ( CONCAT('req-', NEXTVAL(req_seq)), CONCAT(v_mtril_nm, '-', v_real_qy,'-발주요청'), v_mnfct_no, v_mtril_code, v_mtril_nm, v_real_qy, v_prd_se, 'RD03', NOW());
+							
+							SET v_not_ok = TRUE;
+
+						END IF;						
+						
+					ELSE
+					-- 반제품일 때
 					SET v_not_ok = TRUE;
 					LEAVE useqy_loop;
-									
+					
+					END IF;				
 				END IF;		-- 재고수량 모자랄때
 					
 			END LOOP useqy_loop;
 			CLOSE cursor_useqy;
+			
+			SET done = FALSE;
 			
 			-- 재고 수량 모자랄때
 			IF v_not_ok THEN
@@ -382,36 +417,6 @@ BEGIN
 							ROLLBACK;
 						END IF;
 					
-						SET c_pdn_plan = 1;
-						LEAVE out_loop;
-						
-					END IF;
-					
-				-- 자재일때
-				ELSE 	
-					-- 자재 제작번호 제일 처음으로 구분
-					SELECT mnfct_no
-					INTO v_mnfct_no
-					FROM prdctn_plan
-					WHERE order_list_no = v_order_list_no
-					ORDER BY 1
-					LIMIT 1 OFFSET 0;
-					
-					-- 자재 요청 일어났는지
-					SELECT COUNT(mnfct_no)
-					INTO v_req_co
-					FROM thng_req
-					WHERE prd_code = v_mtril_code
-					AND mnfct_no = v_mnfct_no
-					AND req_qy = v_real_qy;
-					
-					-- 요청 안일어났으면
-					IF v_req_co = 0 THEN
-					
-						-- 물품 요청 테이블에 삽입
-						INSERT INTO thng_req (req_code, req_name, mnfct_no, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
-						VALUES ( CONCAT('req-', NEXTVAL(req_seq)), CONCAT(v_mtril_nm, '-', v_real_qy,'-발주요청'), v_mnfct_no, v_mtril_code, v_mtril_nm, v_real_qy, v_prd_se, 'RD03', NOW());
-						
 						SET c_pdn_plan = 1;
 						LEAVE out_loop;
 						
@@ -536,7 +541,7 @@ BEGIN
 		FROM procs_flowchart
 		WHERE procs_code = c_procs_code;
 		
-		SET v_real_begin = STR_TO_DATE('2999-12-31', '%Y-%m-%d');
+		SET v_real_begin = STR_TO_DATE('2999-12-31 23:59:59', '%Y-%m-%d %H:%i:%s');
 		
 		-- 설비 커서
 		OPEN cursor_eqp;
@@ -566,6 +571,8 @@ BEGIN
 			END LOOP drct_loop;
 			CLOSE cursor_drct;
 			
+			SET done = FALSE;
+			
 			-- 점검일정 커서
 			OPEN cursor_chck;
 			chck_loop : LOOP
@@ -582,6 +589,8 @@ BEGIN
 			-- 점검일정 커서 닫음
 			END LOOP chck_loop;
 			CLOSE cursor_chck;
+			
+			SET done = FALSE;
 			
 			-- 생산 지시 조회 결과가 있을때 => 바로 뒤 타임 + 1 시간(장비 교체나 뒷정리 시간)
 			IF v_null = 1 THEN
@@ -629,6 +638,8 @@ BEGIN
 		-- 설비 커서 닫음
 		END LOOP eqp_loop;
 		CLOSE cursor_eqp;	
+		
+		SET done = FALSE;
 		
 		INSERT INTO prdctn_drct ( prdctn_code, mnfct_no, procs_code, procs_nm, eqp_code, model_nm, prd_code, prd_nm, prdctn_co, pre_begin_time, pre_end_time)
 		VALUES ( IFNULL(CONCAT(v_mnfct_no, '-', v_real_code ), '-') , v_mnfct_no, v_procs_code, v_procs_nm, v_real_code, v_real_nm, v_prd_code, v_prd_nm, v_prdctn_co, v_real_begin, v_real_end );
@@ -982,11 +993,13 @@ BEGIN
 			SET v_total = v_total + 1;
 				
 		-- 공정별 재료 커서 클로즈		
-		END LOOP;
-		CLOSE cursor_mtril;	
+		END LOOP loop_mtril;
+		CLOSE cursor_mtril;
+		
+		SET done = FALSE;	
 		
 	-- 생산지시 커서 클로즈
-	END LOOP;
+	END LOOP loop_drct;
 	CLOSE cursor_drct;
 	
 	IF v_real = v_total THEN
@@ -996,5 +1009,20 @@ BEGIN
 	END IF;
 		
 END //
-DELIMITER ;
+DELIMITER ;      
+        
+SELECT * FROM prdctn_plan ORDER BY 1 DESC;
 
+SELECT * FROM prdctn_drct ORDER BY 2 DESC;
+
+select * from prdctn_drct pd 
+where 
+-- 		str_to_date('2025-03-01', '%Y-%m-%d') BETWEEN pd.pre_begin_time AND pd.pre_end_time
+--      OR DATE_ADD( str_to_date('2025-01-01', '%Y-%m-%d'), INTERVAL 7 DAY) BETWEEN pd.pre_begin_time AND pd.pre_end_time
+-- 	 OR 
+     pd.pre_begin_time BETWEEN '2025-03-01' AND DATE_ADD( '2025-03-01', INTERVAL 7 DAY)
+     OR pd.pre_end_time BETWEEN '2025-03-01' AND DATE_ADD('2025-03-01', INTERVAL 7 DAY);
+
+SELECT * FROM thng_req ORDER BY 3 DESC;
+
+select * from mtril_wrhousing;

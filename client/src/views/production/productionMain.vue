@@ -60,7 +60,7 @@
           <!-- 테이블 헤드 일자/오전,오후 -->
           <thead>
             <tr>
-              <th rowspan="2">설비명</th>
+              <th rowspan="2" colspan="32">설비명</th>
               <th colspan="24"> {{ day }}</th>
               <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+1), 'yyyy-MM-dd') }}</th>
               <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+2), 'yyyy-MM-dd') }}</th>
@@ -92,13 +92,14 @@
   
             <!-- 설비명 만큼 행 반복 -->
             <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
-              <th>{{ eqp.model_nm }}</th>
+              <th colspan="32">{{ eqp.model_nm }}</th>
   
               <!-- 일정만큼 열 반복 -->
               <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+              <!-- <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.procs_nm }}</td> -->
   
               <!-- 데이터 없으면 표시할 데이터 -->
-              <td v-if="drctlist.length == 0" colspan="168">No Data Found</td>
+              <td v-if="drctlist.length == 0" colspan="168">No - Data - Found</td>
             </tr>
           </tbody>
           
@@ -245,13 +246,16 @@
 <style scoped>
   .table-plan th, .table-plan td {
     border: 2px, solid, black;
-    width: 0.5%;
+    width: 0.5% !important;
     background-color: white;
+    text-align: center;
   }
   .table-plan {
     border: 2px, solid, black !important;
     border-radius: 30px !important;
-    background-color: white;
+    /* background-color: white; */
+    width: 100%;
+    table-layout: fixed;
   }
   .search-prd-box {
     position: relative;

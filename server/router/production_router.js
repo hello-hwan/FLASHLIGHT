@@ -255,6 +255,8 @@ router.get('/prod/drcttable', async (req, res) => {
   array.push(req.query.day);
   array.push(req.query.day);
   array.push(req.query.day);
+  array.push(req.query.day);
+  array.push(req.query.day);
   prodService
   .drcttable(array)
   .then(list => {

@@ -108,6 +108,7 @@
   .kiosk {
     max-width: 802mm;
     height: 1427mm;
+    text-align: center;
   }
 
 </style>
