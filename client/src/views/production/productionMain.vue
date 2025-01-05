@@ -41,7 +41,7 @@
                 </div>
                 
               </div>
-              <div style="margin-top:10px;">
+              <div class="flex-center" style="margin-top:10px;">
                 <button type="button" class="btn btn-success" style="color:white;" @click="getlist">조회</button>
                 <button type="button" class="btn btn-warning" @click="resetvalue">초기화</button>
                 <button type="button" class="btn btn-info" @click="getanotherlist(prd, day)">공정 현황 조회</button>
@@ -253,9 +253,12 @@
   .table-plan {
     border: 2px, solid, black !important;
     border-radius: 30px !important;
-    /* background-color: white; */
+    background-color: white;
     width: 100%;
     table-layout: fixed;
+  }
+  .form-control{
+    width: 220px;
   }
   .search-prd-box {
     position: relative;
@@ -269,5 +272,14 @@
     height: 38px;
     width: 220px;
     border-radius: 8px;
+  }
+  .flex-center{
+    display: flex;
+    justify-content: center;
+  }
+  .btn {
+    color: white !important;
+    line-height: 100%;
+    margin: 5px;
   }
 </style>

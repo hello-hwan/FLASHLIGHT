@@ -42,7 +42,7 @@
                             <input type="date" id="state_date" class="form-control" aria-describedby="passwordHelpInline" style="width: 220px;" v-model="edate">
                         </div>
                     </div>
-                    <div style="margin-top:10px;">
+                    <div class="flex-center" style="margin-top:10px;">
                         <button type="button" class="btn btn-success" style="color:white;" @click="getlist">조회</button>
                         <button type="button" class="btn btn-warning" @click="resetvalue">초기화</button>
                     </div>
@@ -166,6 +166,9 @@ onBeforeMount(() => {
     text-align: center !important;
     margin: 0 auto !important;
 }
+.form-control{
+  width: 220px;
+}
 .search-procs-box {
     position: relative;
     z-index: 1;
@@ -178,6 +181,15 @@ onBeforeMount(() => {
   height: 38px;
   width: 250px;
   border-radius: 8px;
+}
+.flex-center{
+  display: flex;
+  justify-content: center;
+}
+.btn {
+  color: white !important;
+  line-height: 100%;
+  margin: 5px;
 }
 
 </style>
