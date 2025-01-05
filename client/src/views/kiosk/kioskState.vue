@@ -30,7 +30,7 @@
                 text-align: right;
                 height: 38px;"></div>
             <div class="float-left text-lg-center" style="width: 50%;">
-              <label class="display-6 font-weight-black">생산자</label>
+              <label class="display-6 font-weight-black">생산자(사원번호)</label>
               <br>
               <Number v-model="empl"></Number>
               <div style="margin-bottom: 10px;

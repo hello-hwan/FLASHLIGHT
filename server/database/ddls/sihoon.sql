@@ -1064,7 +1064,9 @@ BEGIN
 				
 		-- 공정별 재료 커서 클로즈		
 		END LOOP loop_mtril;
-		CLOSE cursor_mtril;	
+		CLOSE cursor_mtril;
+		
+		SET done = FALSE;	
 		
 	-- 생산지시 커서 클로즈
 	END LOOP loop_drct;
@@ -1221,11 +1223,28 @@ FROM procs_flowchart
 WHERE procs_nm LIKE CONCAT('%', ?, '%')
 OR procs_code LIKE CONCAT('%', ?, '%') ;
 
-DELETE FROM prdctn_drct WHERE MNFCT_NO = 26;
+DELETE FROM prdctn_drct WHERE MNFCT_NO IN (26, 27);
 COMMIT;
 
 DELETE FROM thng_req WHERE mnfct_no = 26;
 
 SELECT * FROM mtril_wrhousing;
 
+CALL insert_req();
+
+SELECT * FROM procs_flowchart;
+
+SELECT * FROM order_lists ORDER BY 1;
+
+SELECT DATE_ADD('2025-03-05 00:00:00', INTERVAL (3354) HOUR);
+
 CALL play_drct();
+
+SELECT * FROM procs_flowchart WHERE procs_code = 'C-I13P-1001-1';
+
+SELECT * FROM prdctn_drct;
+COMMIT;
+
+SELECT * from prdctn_drct;
+
+SELECT DATE_ADD('2024-12-30', INTERVAL 7 DAY);

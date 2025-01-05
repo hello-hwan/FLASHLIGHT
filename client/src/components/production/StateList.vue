@@ -22,7 +22,7 @@
         :groupDefaultExpanded="groupDefaultExpanded"
         -->
           <v-card-text class="bg-surface-light pt-4">
-              <AgGridVue style=" height: 300px; margin: 0 auto;"
+            <AgGridVue style=" height: 300px; margin: 0 auto;"
                   :defaultColDef="defaultColDef"
                   :rowData="rowData"
                   :gridOptions="gridOptions"
@@ -38,16 +38,23 @@
 
 <script setup>
 import { AgGridVue } from "ag-grid-vue3";
-import { AllCommunityModule, ModuleRegistry,_ColumnGroupModule } from 'ag-grid-community';
-ModuleRegistry.registerModules([AllCommunityModule]);
-import { ref, defineProps, onBeforeMount } from "vue";
+// import { AllCommunityModule, ModuleRegistry, ValidationModule } from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
+// import { RowGroupingModule, RowGroupingPanelModule } from 'ag-grid-enterprise';
+// ModuleRegistry.registerModules([AllCommunityModule, RowGroupingModule, RowGroupingPanelModule, ValidationModule]);
+ModuleRegistry.registerModules([AllCommunityModule,]);
+import { ref, defineProps, onBeforeMount, watch } from "vue";
 import axios from "axios";
 import { ajaxUrl } from '@/utils/commons.js';
 import { useToast } from 'primevue/usetoast';
 import useDates from "@/utils/useDates";
 
 
-let props = defineProps(["date", "code"])
+let props = defineProps(["date", "code"]);
+
+watch(props, async (newValue, oldValue) => {
+  await getlist(newValue.date, newValue.code);
+});
 
 // 알림창
 const toast = useToast();
@@ -62,7 +69,8 @@ const rowData = ref([]);
 // 컬럼명 정의
 // field : 배열안 객체의 필드명, headerName : 우리가 표시할 컬럼 이름, flex: 열 크기, hide: 숨길건지(검색시 필요할수도 있으니 표시할거만 표시), suppressToolPanel: hide 쓰면 같이 써야하는거
 const ColDefs = [
-  { field: "prdctn_code", headerName:"지시코드", hide: true, suppressToolPanel: true, rowGruop: true, enableRowGroup: true },
+  // { field: "prdctn_code", headerName:"지시코드", hide: true, suppressToolPanel: true, rowGruop: true, enableRowGroup: true },
+  { field: "prdctn_code", headerName:"지시코드", hide: true, suppressToolPanel: true},
   { field: "procs_code", headerName:"공정코드", hide: true, suppressToolPanel: true },
   { field: "procs_nm", headerName:"공정명"},
   { field: "prd_code", headerName:"제품코드", hide: true, suppressToolPanel: true },
@@ -90,8 +98,8 @@ const getlist = async (date, code) => {
       result.data[i].end_time = useDates.dateFormat(end, 'yyyy-MM-dd') + ' ' + useDates.timeFormat(end, 'hh:mm:ss');
     }
     rowData.value = result.data;
+    console.log(result.data);
   }
-  
 };
 onBeforeMount(() => {
   getlist(props.date, props.code);

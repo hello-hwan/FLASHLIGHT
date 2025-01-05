@@ -17,26 +17,28 @@
             <!-- 숫자 입력 -->
             <div class="click-num">
               <table class="table-kiosk">
-                <tr>
-                  <th @click="typing">1</th>
-                  <th @click="typing">2</th>
-                  <th @click="typing">3</th>
-                </tr>
-                <tr>
-                  <th @click="typing">4</th>
-                  <th @click="typing">5</th>
-                  <th @click="typing">6</th>
-                </tr>
-                <tr>
-                  <th @click="typing">7</th>
-                  <th @click="typing">8</th>
-                  <th @click="typing">9</th>
-                </tr>
-                <tr>
-                  <th @click="typing">초기화</th>
-                  <th @click="typing">0</th>
-                  <th @click="typing">지우기</th>
-                </tr>
+                <tbody>
+                  <tr>
+                    <th @click="typing">1</th>
+                    <th @click="typing">2</th>
+                    <th @click="typing">3</th>
+                  </tr>
+                  <tr>
+                    <th @click="typing">4</th>
+                    <th @click="typing">5</th>
+                    <th @click="typing">6</th>
+                  </tr>
+                  <tr>
+                    <th @click="typing">7</th>
+                    <th @click="typing">8</th>
+                    <th @click="typing">9</th>
+                  </tr>
+                  <tr>
+                    <th @click="typing">초기화</th>
+                    <th @click="typing">0</th>
+                    <th @click="typing">지우기</th>
+                  </tr>
+                </tbody>
               </table>
             </div>
             
