@@ -30,7 +30,8 @@
                   :defaultColDef="defaultColDef"
                   :rowData="rowData"
                   :gridOptions="gridOptions"
-                  class="ag-theme-alpine">
+                  class="ag-theme-alpine"
+                  overlayNoRowsTemplate="결과 없음">
               </AgGridVue>
           </v-card-text>
         </v-card>
@@ -74,12 +75,12 @@ const rowData = ref([]);
 
 //요청명 리스트 컬럼 정의
 const ColDefs = [
-  { field: "req_name", headerName:"요청명", flex: 1.5},
+  { field: "req_name", headerName:"요청명", flex: 2.5},
   { field: "req_code", headerName:"요청 코드", hide: true, suppressToolPanel: true},
   { field: "mt_code", headerName:"자재코드"},
   { field: "mt_name", headerName:"자재명"},
   { field: "req_qy", headerName:"요청수량"},
-  { field: "lot", headerName:"lot", flex: 2.5},
+  { field: "lot", headerName:"로트번호", flex: 1.5},
   { field: "lot_qy", headerName: "출고수량"},
   { field: "unit", headerName:"단위", flex: 0.8},
   { field: 'prdctn_code',hide: true, suppressToolPanel: true}

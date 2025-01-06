@@ -203,7 +203,7 @@ const lotRowData = ref([]);
 //열 정보: 번호, 발주명, 거래처코드, 거래처명, 선택
 const lotColDefs = [
   { field: "mtril_name", headerName: "자재명" , flex:1},
-  { field: "mtril_lot", headerName: "로트명", flex:1},
+  { field: "mtril_lot", headerName: "로트번호", flex:1},
   { field: "mtril_qy", headerName: "재고 수량", flex:1},
   { field: "unit", headerName: "단위", flex:1},
   { field: "wrhousng_date", headerName: "입고일", flex:1, valueFormatter: (params) => {

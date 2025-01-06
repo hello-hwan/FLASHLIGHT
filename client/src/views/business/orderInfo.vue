@@ -35,11 +35,6 @@
                             <div class="col-auto">
                                 <input type="date" id="orderInfoDete" class="form-control" aria-describedby="passwordHelpInline" v-model="this.requst.dete" >
                             </div>
-                            <div class="col-auto">
-                                <span class="form-text">
-                                2024-00-00
-                                </span>
-                            </div>
                         </div>
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
@@ -67,7 +62,7 @@
                         <!-- ag grid 내용 출력 -->
                         <div>
                             <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 519px; margin:0 auto" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
-                            @grid-ready="onGridReady" rowSelection="multiple">
+                            @grid-ready="onGridReady" rowSelection="multiple" overlayNoRowsTemplate="결과 없음">
                             </ag-grid-vue>
                         </div>
 
@@ -107,6 +102,7 @@
                     style="height: 500px"
                     @grid-ready="onGridReady2"
                     rowSelection="single"
+                    overlayNoRowsTemplate="결과 없음"
                 >
                 </AgGridVue>
 
@@ -196,8 +192,8 @@
                 suppressFieldDotNotation : true 
             }; 
             this.colDefs2 = [
-                { field: "prdlst_code", headerName: "제품코드"},
-                { field: "prdlst_name", headerName: " 제품이름"},
+                { field: "prdlst_code", headerName: "제품코드", flex:1},
+                { field: "prdlst_name", headerName: " 제품이름",flex:2},
                 { headerName : "선택",  checkboxSelection: true, flex:0.3}
             ];
             this.GridOptions2 = {

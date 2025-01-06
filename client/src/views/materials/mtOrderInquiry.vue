@@ -111,7 +111,7 @@ const mtOrderColDefs = [
   { field: "mtril_name", headerName:"자재명", flex: 1},
   { field: "bcnc_code", headerName:"거래처코드", flex: 1},
   { field: "mtlty_name", headerName:"거래처명", flex: 1},
-  { field: "order_price", headerName:"입고단가", flex: 0.7},
+  { field: "order_price", headerName:"입고단가", flex: 0.8},
   { field: "order_qy", headerName:"수량", flex: 0.6},
   { field: "unit", headerName:"단위", flex: 0.6},
   { field: "order_date", headerName:"발주일", flex: 0.9, valueFormatter: dateFormatter },

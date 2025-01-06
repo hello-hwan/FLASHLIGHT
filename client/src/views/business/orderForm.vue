@@ -56,7 +56,7 @@
                         <!-- ag grid 내용 출력 -->
                         <div>
                             <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" style="height: 519px; position:relative; z-index:0;" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
-                            @grid-ready="onGridReady" rowSelection="multiple" >
+                            @grid-ready="onGridReady" rowSelection="multiple" overlayNoRowsTemplate="결과 없음">
                             </ag-grid-vue>
                         </div>
                     </v-card-text>
@@ -93,6 +93,7 @@
                     style="height: 500px"
                     @grid-ready="onGridReady2"
                     rowSelection="single"
+                    overlayNoRowsTemplate="결과 없음"
                 >
                 </AgGridVue>
 
@@ -169,8 +170,8 @@ export default {
                 } 
         }; 
         this.colDefs2 = [
-            { field: "prdlst_code", headerName: "제품코드"},
-            { field: "prdlst_name", headerName: " 제품이름"},
+            { field: "prdlst_code", headerName: "제품코드", flex:1},
+            { field: "prdlst_name", headerName: " 제품이름", flex:2},
             { headerName : "선택",  checkboxSelection: true, flex:0.3}
         ];
         this.GridOptions2 = {

@@ -69,7 +69,7 @@ const ColDefs = [
         }},
   { field: "mtril_code", headerName: "자재코드", flex:1},
   { field: "mtril_name", headerName: "자재명", flex:1},
-  { field: "mtril_lot", headerName: "lot", flex:1},
+  { field: "mtril_lot", headerName: "로트번호", flex:1},
   { field: "dlivy_qy", headerName: "출고수량", flex:1},
   { field: "unit", headerName: "단위", flex:1},
   { field: "charger", headerName: "담당자", flex:1},

@@ -37,6 +37,7 @@
                 style="height: 500px"
                 @grid-ready="onGridReady"
                 rowSelection="single"
+                overlayNoRowsTemplate="결과 없음"
                 >
             </AgGridVue>
             

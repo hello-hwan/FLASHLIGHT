@@ -126,14 +126,12 @@ const modalOpen = async() => {
 const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
-    const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log('모달에서 선택된 행 데이터:', companySelectedData);
+    const companySelectedData = selectedNodes.map((node) => node.data); //모달에서 선택한 데이터
+
+    //화면에 회사명이 보일 수 있게 설정.
     companyName.value = companySelectedData[0].mtlty_name;
     companyCode.value = companySelectedData[0].bcnc_code;
 
-    //console.log(companyName, companyCode);
-    companyName.value = companySelectedData[0].mtlty_name;
-    companyCode.value = companySelectedData[0].bcnc_code;
     emit("companySelectedData", companySelectedData);
 };
 //행 데이터를 담을 변수

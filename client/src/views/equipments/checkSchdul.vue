@@ -1,32 +1,36 @@
 <template>
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th style="width: 100%; font-size: 30px;">
+    <div>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center; margin-bottom: 30px;">
+            <template v-slot:title>
+                <span class="font-weight-black">
                     점검 일자 조회
-                </th>
-            </tr>
-        </thead>
-    </table>
-    <div style="width: 49%; display: inline-block;">
-        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="now_btn()">현재
-        </button>
-        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="all_btn()">전체
-        </button>
-        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-            @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
-        </ag-grid-vue>
-    </div>
-    <div style="width: 2%; display: inline-block;">
-    </div>
-    <div style="width: 49%; height: 525px; display: inline-block;">
-        <v-row>
-            <v-col>
-                <v-sheet height="525">
-                    <v-calendar color="primary" :events="events"></v-calendar>
-                </v-sheet>
-            </v-col>
-        </v-row>
+                </span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4">        
+                <div>
+                    <div style="display:flex; justify-content: right;">
+                        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="now_btn()">현재
+                        </button>
+                        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="all_btn()">전체
+                        </button>
+                    </div>
+                    <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
+                        @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
+                    </ag-grid-vue>
+                </div>
+            </v-card-text>
+        </v-card>
+        <v-card-text class="bg-surface-light pt-4">        
+            <div>
+                <v-row>
+                    <v-col>
+                        <v-sheet>
+                            <v-calendar color="primary" :events="events"></v-calendar>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
+            </div>
+        </v-card-text>
     </div>
 </template>
 
@@ -62,8 +66,8 @@ export default {
         this.gridOptions = {
             columnDefs: this.orderColDefs,
             pagination: true,
-            paginationPageSize: 10,
-            paginationPageSizeSelector: [10, 20, 50, 100],
+            paginationPageSize: 5,
+            paginationPageSizeSelector: [5, 10, 20],
             paginateChildRows: true,
             animateRows: false,
             defaultColDef: {

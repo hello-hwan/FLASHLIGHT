@@ -3,7 +3,7 @@
         <!--버튼-->
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;">행 추가</button>
+        style="line-height: 1px; color: #fff;">자재 추가</button>
 
         <!--모달 영역-->
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">

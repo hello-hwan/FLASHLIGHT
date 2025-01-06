@@ -1,125 +1,128 @@
 <template>
     <div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 70%; font-size: 30px;">
-                        점검 일자 상세 조회
-                    </th>
-                </tr>
-            </thead>
-        </table>
-        <table class="table table-hover">
-            <tbody>
-                <tr>
-                    <th style="width: 25%;">
-                        점검명
-                    </th>
-                    <th style="width: 25%;">
-                        {{ fx_code_list.chck_nm }}
-                    </th>
-                    <th style="width: 25%;">
-                        모델명
-                    </th>
-                    <th style="width: 25%;">
-                        {{ fx_code_list.model_nm }}
-                    </th>
-                </tr>
-            </tbody>
-            <tbody>
-                <tr>
-                    <th style="width: 25%;">
-                        점검종류
-                    </th>
-                    <th style="width: 25%;">
-                        {{ fx_code_list.chck_knd }}
-                    </th>
-                    <th style="width: 25%;">
-                        담당자
-                    </th>
-                    <th style="width: 25%;">
-                        <input style="background-color:lightsteelblue; text-align: center;" type="text"
-                            v-model="fx_code_list.charger">
-                    </th>
-                </tr>
-            </tbody>
-            <tbody>
-                <tr>
-                    <th style="width: 25%;">
-                        점검일자
-                    </th>
-                    <th style="width: 25%;">
-                        {{ this.now_date }}
-                    </th>
-                    <th style="width: 25%;">
-                        점검시간
-                    </th>
-                    <th style="width: 25%;">
-                        <input style="background-color:lightsteelblue; text-align: center;" type="text"
-                            v-model="fx_code_list.chck_time">
-                    </th>
-                </tr>
-            </tbody>
-            <tbody>
-                <tr>
-                    <th style="width: 25%;">
-                        이전 점검일자
-                    </th>
-                    <th style="width: 25%;">
-                        {{ fx_code_list.last_bgnde }}
-                    </th>
-                    <th style="width: 25%;">
-                        다음 점검 예정일
-                    </th>
-                    <th style="width: 25%;">
-                        {{ this.next_date }}
-                    </th>
-                </tr>
-            </tbody>
-        </table>
-        <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions"
-                style="height: 310px; width: 100%;" @grid-ready="onGridReady" rowSelection="multiple"
-                class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
-            </ag-grid-vue>
-        </div>
-        <table class="table table-hover">
-            <tbody>
-                <tr>
-                    <th style="width: 10%;">
-                        <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행 추가</button>
-                    </th>
-                    <th style="width: 10%;">
-                        <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행 삭제</button>
-                    </th>
-                    <th style="width: 40%;">
-                        <input style="background-color:lightsteelblue;" type="text" size="50" v-model="not_check">
-                    </th>
-                    <th style="width: 10%;">
-                        <button type="button" class="btn btn-warning" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_check_btn()">미점검</button>
-                    </th>
-                    <th style="width: 10%;">
-                        <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_opr_btn()">미가동</button>
-                    </th>
-                    <th style="width: 10%;">
-                        최종 결과
-                    </th>
-                    <th style="width: 10%;">
-                        <select @change='select_change($event)' class="form-select" aria-label="Default select example"
-                            style="text-align: center;">
-                            <option selected>결과</option>
-                            <option value="합격">합격</option>
-                            <option value="불합격">불합격</option>
-                        </select>
-                    </th>
-                </tr>
-                <tr>
-                    <th style="width: 50%;" colspan="7">
-                        <button type="button" class="btn btn-success" style="color: white; margin: 2px 2px 2px 90%; padding: 2px; width: 75px;" @click="chck_fx_insert()">등록</button>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; margin-bottom: 30px;">
+            <template v-slot:title>
+                <span class="font-weight-black" style="display: flex; justify-content: center;">
+                    점검 일자 상세 조회
+                </span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4">
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <th style="width: 25%;">
+                                점검명
+                            </th>
+                            <th style="width: 25%;">
+                                {{ fx_code_list.chck_nm }}
+                            </th>
+                            <th style="width: 25%;">
+                                모델명
+                            </th>
+                            <th style="width: 25%;">
+                                {{ fx_code_list.model_nm }}
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th style="width: 25%;">
+                                점검종류
+                            </th>
+                            <th style="width: 25%;">
+                                {{ fx_code_list.chck_knd }}
+                            </th>
+                            <th style="width: 25%;">
+                                담당자
+                            </th>
+                            <th style="width: 25%;">
+                                <input style="background-color:lightsteelblue; text-align: center;" type="text"
+                                    v-model="fx_code_list.charger">
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th style="width: 25%;">
+                                점검일자
+                            </th>
+                            <th style="width: 25%;">
+                                {{ this.now_date }}
+                            </th>
+                            <th style="width: 25%;">
+                                점검시간
+                            </th>
+                            <th style="width: 25%;">
+                                <input style="background-color:lightsteelblue; text-align: center;" type="text"
+                                    v-model="fx_code_list.chck_time">
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <th style="width: 25%;">
+                                이전 점검일자
+                            </th>
+                            <th style="width: 25%;">
+                                {{ fx_code_list.last_bgnde }}
+                            </th>
+                            <th style="width: 25%;">
+                                다음 점검 예정일
+                            </th>
+                            <th style="width: 25%;">
+                                {{ this.next_date }}
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </v-card-text>
+        </v-card>
+
+        <v-card-text class="bg-surface-light pt-4">
+            <div>
+                <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions"
+                    style="height: 310px; width: 100%;" @grid-ready="onGridReady" rowSelection="multiple"
+                    class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
+                </ag-grid-vue>
+            </div>
+            <table class="table table-hover">
+                <tbody>
+                    <tr>
+                        <th style="width: 10%;">
+                            <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행 추가</button>
+                        </th>
+                        <th style="width: 10%;">
+                            <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행 삭제</button>
+                        </th>
+                        <th style="width: 40%;">
+                            <input style="background-color:lightsteelblue;" type="text" size="50" v-model="not_check">
+                        </th>
+                        <th style="width: 10%;">
+                            <button type="button" class="btn btn-warning" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_check_btn()">미점검</button>
+                        </th>
+                        <th style="width: 10%;">
+                            <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_opr_btn()">미가동</button>
+                        </th>
+                        <th style="width: 10%;">
+                            최종 결과
+                        </th>
+                        <th style="width: 10%;">
+                            <select @change='select_change($event)' class="form-select" aria-label="Default select example"
+                                style="text-align: center;">
+                                <option selected>결과</option>
+                                <option value="합격">합격</option>
+                                <option value="불합격">불합격</option>
+                            </select>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th style="width: 50%;" colspan="7">
+                            <button type="button" class="btn btn-success" style="color: white; margin: 2px 2px 2px 90%; padding: 2px; width: 75px;" @click="chck_fx_insert()">등록</button>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </v-card-text>
     </div>
 </template>
 

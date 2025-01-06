@@ -35,11 +35,6 @@
                             <div class="col-auto">
                                 <input type="date" id="orderListOrderDate" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_date" >
                             </div>
-                            <div class="col-auto">
-                                <span class="form-text">
-                                ex 2024-12-15
-                                </span>
-                            </div>
                         </div>
                         <div class="row g-3 align-items-center">
                             <div class="col-2">
@@ -47,11 +42,6 @@
                             </div>
                             <div class="col-auto">
                                 <input type="date" id="orderListDete" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_dete">
-                            </div>
-                            <div class="col-auto">
-                                <span class="form-text">
-                                ex 2025-08-23
-                                </span>
                             </div>
                         </div>
                         <div class="row g-3 align-items-center">
@@ -78,7 +68,7 @@
                         <!-- ag grid 내용 출력 -->
                         <div>
                             <ag-grid-vue :rowData="filteredRowData" :columnDefs="colDefs" style="height: 519px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
-                            @grid-ready="onGridReady" rowSelection="multiple">
+                            @grid-ready="onGridReady" rowSelection="multiple" overlayNoRowsTemplate="결과 없음">
                             </ag-grid-vue>
                         </div>
                         <button type="button" class="btn btn-primary" @click="onBtnExportDataAsCsvLotList()" style="margin-top:10px; color:white;">EXCEL 내보내기</button>
