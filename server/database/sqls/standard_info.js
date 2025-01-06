@@ -1,5 +1,15 @@
 //기준정보 sql
 
+// 반제품 조회 (bom모달)
+const prductNModel =
+`SELECT prdlst_code
+       ,prdlst_name
+       ,unit
+       ,wrhousng_unite
+       ,sfinvc
+FROM prduct_n`;
+
+
 // BOM 조회
 const bom =
 `SELECT bom_code
@@ -549,6 +559,7 @@ const delete_empl =
  `;
  
 module.exports = {
+  prductNModel,
   bom,
   bomInfo,
   bomInsert,

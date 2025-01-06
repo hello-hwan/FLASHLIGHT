@@ -231,6 +231,7 @@ const prduct_possible_dlivy =
 FROM order_lists l JOIN order_requst r
 ON l.order_no = r.order_no
 WHERE process_status = 'OD01'
+AND order_qy > 0
 AND l.order_no = ?`;
 
 
