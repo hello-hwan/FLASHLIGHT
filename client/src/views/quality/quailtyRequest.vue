@@ -111,18 +111,18 @@ const insertInfoList = async () => {
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '검사 결과를 입력해주세요', life: 3000 });
             return;
         };
-        newDataList.push({mtril_code: rowData.value[0].mtril_code,
-                          mtril_name: rowData.value[0].mtril_name,
-                          rec_num: rowData.value[0].order_qy,
+        newDataList.push({mtril_code: rowData.value[i].mtril_code,
+                          mtril_name: rowData.value[i].mtril_name,
+                          rec_num: rowData.value[i].order_qy,
                           mtlty_name: companyName.value,
                           empl_no: store.state.empInfo[store.state.empInfo.length-1].user_id,
-                          pass_amount: (rowData.value[0].order_qy - rowData.value[0].error_amount), //통과수량 = 발주수량 - 불량 수량
+                          pass_amount: (rowData.value[i].order_qy - rowData.value[i].error_amount), //통과수량 = 발주수량 - 불량 수량
                           order_no: orderNo.value,
                           bcnc_code: companyCode.value,
-                          inspec_standard: rowData.value[0].inspec_standard,
-                          inspec_item: rowData.value[0].mtril_code,
-                          p_result: rowData.value[0].result,
-                          error_amount: rowData.value[0].error_amount});
+                          inspec_standard: rowData.value[i].inspec_standard,
+                          inspec_item: rowData.value[i].mtril_code,
+                          p_result: rowData.value[i].result,
+                          error_amount: rowData.value[i].error_amount});
     };
     let result = await axios.post(`${ajaxUrl}/quality/insertQiList`, newDataList)
                             .catch(err => console.log(err));
@@ -131,7 +131,7 @@ const insertInfoList = async () => {
         toast.add({ severity: 'success', summary: '검사 완료', detail: '처리가 완료되었습니다', life: 3000 });
         removeData();
     } else {
-        toast.add({ severity: 'warn', summary: '검사 실패', detail: '작업을 실패하였습니다', life: 3000 });
+        toast.add({ severity: 'warn', summary: '검사 실패', detail: '불량 수량을 입력해주세요', life: 3000 });
     }
 
     //새로고침

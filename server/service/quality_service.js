@@ -27,7 +27,7 @@ const mtrilList = async(key) => {
 
 //발주 등록
 const insertResult = async(key) => {
-    //console.log('------------------------', key);
+    console.log('------------------------', key);
 
     //tableSeq[0].mtril_check_code ==> primary key
     let resultSum = 0;
@@ -46,7 +46,7 @@ const insertResult = async(key) => {
                         key[i].pass_amount,
                         key[i].order_no,
                         key[i].bcnc_code];
-        //console.log('checkArr-----------',checkArr);
+        console.log('checkArr-----------',checkArr);
         let checkInsertData = await mariaDB.query('quailtyInsert', checkArr)
                                            .catch(err=>console.log(err));
         
@@ -56,16 +56,18 @@ const insertResult = async(key) => {
                          key[i].p_result,
                          key[i].error_amount,
                          tableSeq[0].mtril_check_code];
-        //console.log('resultArr-----------',resultArr);
+        console.log('resultArr-----------',resultArr);
+
         let resultInsertData = await mariaDB.query('quailtyResultInsert', resultArr)
-                                            .catch(err=>console.log(err));     
+                                            .catch(err=>console.log(err));
+                                                
         //console.log('checkInsertData------------', checkInsertData);
         //console.log('resultInsertData-----------', resultInsertData); 
         
         //결과를 더하고 2로 나눔.
         resultSum += (checkInsertData.affectedRows + resultInsertData.affectedRows)/2;
     };
-    
+
     if(resultSum == key.length) {
         //결과의 합의 평균이 넘어온 배열의 길이와 같으면 성공
         return 'success';
