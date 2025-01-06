@@ -6,48 +6,47 @@
                     자재 발주조회
                 </span>
             </template>
+            <v-card-text class="bg-surface-light pt-4">
+                <div class="search-bar">
+                    <div>
+                        <div>
+                            <span>발주명</span>
+                            <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrderList"> <p>{{ orderName }}</p></InputText>
+                        </div>
+                        <div>
+                            <span>자재명</span>
+                            <InputText type="text" v-model="mtrilName" v-on:keyup.enter="searchOrderList"> <p>{{ mtrilName }}</p></InputText>
+                        </div>
+                        <div>
+                            <span>거래처 상호명</span>
+                            <InputText type="text" v-model="companyName" v-on:keyup.enter="searchOrderList"> <p>{{ companyName }}</p></InputText>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <span>발주일</span>
+                            <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
+                            <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
+                        </div>
+                        <div>
+                            <span>납기일</span>
+                            <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
+                            <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
+                        </div>
+                        <div>
+                            <span>발주 담당자</span>
+                            <InputText type="text" v-model="chargerName" v-on:keyup.enter="searchOrderList"> <p>{{ chargerName }}</p></InputText>
+                        </div>       
+                    </div>
+                    <div style="text-align: center; width: 100%;">
+                        <button @click="resetSearchKey" class="btn btn-secondary search -btn" style="line-height:1;">초기화</button>
+                        <button @click="searchOrderList" class="btn btn-primary search-btn" >조회</button>
+                    </div>
+                </div>
+            </v-card-text>
         </v-card>
     </div>
-    <div class="content-section">
-        <v-card-text class="bg-surface-light pt-4">
-            <div class="search-bar">
-                <div>
-                    <div>
-                        <span>발주명</span>
-                        <InputText type="text" v-model="orderName" v-on:keyup.enter="searchOrderList"> <p>{{ orderName }}</p></InputText>
-                    </div>
-                    <div>
-                        <span>자재명</span>
-                        <InputText type="text" v-model="mtrilName" v-on:keyup.enter="searchOrderList"> <p>{{ mtrilName }}</p></InputText>
-                    </div>
-                    <div>
-                        <span>거래처 상호명</span>
-                        <InputText type="text" v-model="companyName" v-on:keyup.enter="searchOrderList"> <p>{{ companyName }}</p></InputText>
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <span>발주일</span>
-                        <InputText type="date" v-model="startOrderDate"> <p>{{ startOrderDate }}</p></InputText> -
-                        <InputText type="date" v-model="endOrderDate"> <p>{{ endOrderDate }}</p></InputText>
-                    </div>
-                    <div>
-                        <span>납기일</span>
-                        <InputText type="date" v-model="startDedt"> <p>{{ startDedt }}</p></InputText> -
-                        <InputText type="date" v-model="endDedt"> <p>{{ endDedt }}</p></InputText>
-                    </div>
-                    <div>
-                        <span>발주 담당자</span>
-                        <InputText type="text" v-model="chargerName" v-on:keyup.enter="searchOrderList"> <p>{{ chargerName }}</p></InputText>
-                    </div>       
-                </div>
-                <div style="text-align: center; width: 100%;">
-                    <button @click="resetSearchKey" class="btn btn-secondary search -btn" style="line-height:1;">초기화</button>
-                    <button @click="searchOrderList" class="btn btn-primary search-btn" >조회</button>
-                </div>
-            </div>
-        </v-card-text>
-    </div>
+
     <div class="content-section">
         <v-card
         class="mx-auto">
@@ -59,7 +58,7 @@
             rowSelection="multiple"
             class="ag-theme-alpine"
             @grid-ready="onGridReady"
-            style="height: 476px">
+            style="height: 516px;">
             </AgGridVue>
             <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
             <!--pdf내보내기-->

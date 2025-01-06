@@ -2,35 +2,33 @@
   <div>
     <div class="content-section">
       <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
-          <template v-slot:title>
-              <span class="font-weight-black">
-                입고 조회
-              </span>
-          </template>
+        <template v-slot:title>
+            <span class="font-weight-black">
+              입고 조회
+            </span>
+        </template>
+        <v-card-text class="bg-surface-light pt-4">
+          <span>구분 </span>
+          <select v-model="selected">
+            <option value="">전체</option>
+            <option value="MW01">발주</option>
+            <option value="MW02">반환</option>
+          </select>
+          <span>자재명 </span>
+          <InputText type="text" v-model="mtrilName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
+          <span>담당자 </span>
+          <InputText type="text" v-model="chargerName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
+          <span>입고일 </span>
+          <InputText type="date" v-model="wrhDateStart" class="emp_info"> <p>{{ wrhDateStart }}</p></InputText>-
+          <InputText type="date" v-model="wrhDateEnd" class="emp_info"> <p>{{ wrhDateEnd }}</p></InputText>
+          <div style="width: 100%;">
+            <button @click="remove"class="btn btn-secondary search-btn" >초기화</button>
+            <button @click="getList"class="btn btn-primary search-btn" >조회</button>
+          </div>
+        </v-card-text>
       </v-card>
     </div>
 
-    <div class="content-section text-align-center">
-      <v-card-text class="bg-surface-light pt-4">
-        <span>구분 </span>
-        <select v-model="selected">
-          <option value="">전체</option>
-          <option value="MW01">발주</option>
-          <option value="MW02">반환</option>
-        </select>
-        <span>자재명 </span>
-        <InputText type="text" v-model="mtrilName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
-        <span>담당자 </span>
-        <InputText type="text" v-model="chargerName" class="emp_info" v-on:keyup.enter="getList"> <p>{{ chargerName }}</p></InputText>
-        <span>입고일 </span>
-        <InputText type="date" v-model="wrhDateStart" class="emp_info"> <p>{{ wrhDateStart }}</p></InputText>-
-        <InputText type="date" v-model="wrhDateEnd" class="emp_info"> <p>{{ wrhDateEnd }}</p></InputText>
-        <div style="width: 100%;">
-          <button @click="remove"class="btn btn-secondary search-btn" >초기화</button>
-          <button @click="getList"class="btn btn-primary search-btn" >조회</button>
-        </div>
-      </v-card-text>
-    </div>
 
     <div class="content-section">
       <v-card-text class="bg-surface-light pt-4">
