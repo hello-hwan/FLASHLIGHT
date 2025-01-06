@@ -131,6 +131,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
+import { useStore } from 'vuex';
 
 export default {
     data() {
@@ -143,7 +144,8 @@ export default {
             now_date: '',
             next_date: '',
             chck_sttus: '',
-            not_check: ''
+            not_check: '', 
+            store: ''
         }
     },
     created() {
@@ -170,6 +172,7 @@ export default {
                 minWidth: 10
             }
         };
+        this.store = useStore();
     },
     components: {
         AgGridVue // Add Vue Data Grid component
@@ -215,6 +218,7 @@ export default {
             this.next_date = useDateUtils.dateFormat(now, "yyyy-MM-dd");
             this.not_check = this.fx_code_list.not_chck_resn;
             this.getChckIem();
+            this.fx_code_list.charger = this.store.state.empInfo[this.store.state.empInfo.length-1].name;
         },
         async chck_fx_insert() {
             let input = [

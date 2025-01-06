@@ -22,7 +22,7 @@
                         품목명
                     </th>
                     <th style="width: 25%;">
-                        총 소요시간
+                        총 소요시간 (분)
                     </th>
                     <th style="width: 25%;">
                         <button type="button" class="btn btn-primary"
@@ -41,7 +41,7 @@
                         <input style="background-color: lightsteelblue;" type="text" v-model="prd_nm">
                     </td>
                     <td>
-                        {{ all_time }} 시간
+                        {{ all_time }} 분
                     </td>
                     <td>
                     </td>
@@ -81,6 +81,22 @@
             </ag-grid-vue>
         </div>
     </div>
+    <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
+        <div class="modal-wrap" @click="modal_close_btn()" v-show="modal_on_off">
+            <div class="modal-container" @click.stop="">
+                <div>
+                    <p style="text-align: center; font-size: 30px; font-weight: bold;">
+                        {{ modal_header }}
+                    </p>
+                </div>
+                <div id="search-bar" style="height: 375px;">
+                    <ag-grid-vue :rowData="modal_rowData" :columnDefs="modal_colDefs" :gridOptions="modal_gridOptions"
+                        style="height: 325px" @grid-ready="onGridReady" class="ag-theme-alpine">
+                    </ag-grid-vue>
+                </div>
+            </div>
+        </div>
+    </span>
 </template>
 
 <script>
@@ -102,12 +118,12 @@ export default {
             rowData: [
                 {
                     index: '1',
-                    procs_ordr_no: '-',
-                    expect_reqre_time: '-',
-                    procs_nm: '-',
-                    mtril_nm: '-',
-                    usgqty: '-',
-                    eqp_code: '-'
+                    procs_ordr_no: '0',
+                    expect_reqre_time: '0',
+                    procs_nm: '입력',
+                    mtril_nm: '선택',
+                    usgqty: '0',
+                    eqp_code: '선택'
                 }
             ],
             colDefs: [],
@@ -121,7 +137,11 @@ export default {
             del_edit: 0,
             input_div: false,
             rowData_search: [],
-            colDefs_search: []
+            colDefs_search: [],
+            modal_on_off: false,
+            modal_header: '',
+            modal_rowData: [],
+            modal_colDefs: []
         };
     },
     created() {
@@ -137,11 +157,11 @@ export default {
         this.colDefs = [
             { field: "index", headerName: "인덱스", checkboxSelection: true },
             { field: "procs_ordr_no", headerName: "공정순서번호", editable: true },
-            { field: "expect_reqre_time", headerName: "예상소요시간", editable: true },
+            { field: "expect_reqre_time", headerName: "예상소요시간 (분)", editable: true },
             { field: "procs_nm", headerName: "시행작업", editable: true },
-            { field: "mtril_nm", headerName: "재료명", editable: true },
+            { field: "mtril_nm", headerName: "재료명" },
             { field: "usgqty", headerName: "재료양", editable: true },
-            { field: "eqp_code", headerName: "작업기기", editable: true }
+            { field: "eqp_code", headerName: "작업기기" }
         ];
         this.gridOptions = {
             columnDefs: this.orderColDefs,
@@ -154,7 +174,8 @@ export default {
                 filter: true,
                 flex: 1,
                 minWidth: 10
-            }
+            },
+            onCellClicked: (CellClickedEvent) => this.inputModal(CellClickedEvent)
         };
         this.toast = useToast();
         this.colDefs_search = [
@@ -164,6 +185,15 @@ export default {
         this.gridOptions_search = {
             onCellClicked: (CellClickedEvent) => this.autoInput(CellClickedEvent.data)
         };
+        this.modal_gridOptions = {
+            columnDefs: this.orderColDefs,
+            defaultColDef: {
+                filter: true,
+                flex: 1,
+                minWidth: 10
+            },
+            onCellClicked: (CellClickedEvent) => this.outputModal(CellClickedEvent.data)
+        }
     },
     components: {
         AgGridVue // Add Vue Data Grid component
@@ -176,12 +206,12 @@ export default {
         add_btn() {
             let new_sample = {
                 index: this.index_num,
-                procs_ordr_no: '-',
-                expect_reqre_time: '-',
-                procs_nm: '-',
-                mtril_nm: '-',
-                usgqty: '-',
-                eqp_code: '-'
+                procs_ordr_no: '0',
+                expect_reqre_time: '0',
+                procs_nm: '입력',
+                mtril_nm: '선택',
+                usgqty: '0',
+                eqp_code: '선택'
             };
             this.index_num = this.index_num + 1;
             this.rowData = [...this.rowData, new_sample];
@@ -200,66 +230,89 @@ export default {
             }
         },
         async submit_btn() {
-            if (this.$route.query.prd_code != null) {
-                let result = await axios.get(`${ajaxUrl}/prdCodeToProcsCode/${this.prd_code}`)
-                    .catch(err => console.log(err));
-                for (let i = 0; i < result.data.length; i++) {
-                    let result_1 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteMchn/${result.data[i].procs_code}`)
-                        .catch(err => console.log(err));
-                    let result_2 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteMatrl/${result.data[i].procs_code}`)
-                        .catch(err => console.log(err));
-                    let result_3 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteFlowchart/${result.data[i].procs_code}`)
-                        .catch(err => console.log(err));
-                }
-                this.$router.push({ name: 'procsFlowchartinsert', query: { prd_code: this.prd_code } });
-
-            }
-
-            let bom_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchBom/${this.prd_code}`)
-                .catch(err => console.log(err))
-            let check_code = [];
-            for (let i = 0; i < this.rowData.length; i++) {
-                let procs_flowchart_insert = [
-                    this.prd_code + '-' + this.rowData[i].procs_ordr_no,
-                    this.rowData[i].procs_nm,
-                    this.prd_code,
-                    this.prd_nm,
-                    this.rowData[i].procs_ordr_no,
-                    this.rowData[i].expect_reqre_time,
-                    bom_code.data.bom_code
-                ];
-                let insert_row = 0;
-                for (let j = 0; j < check_code.length + 1; j++) {
-                    if (this.rowData[i].procs_ordr_no == check_code[j]) {
-                        insert_row = 1;
+            let submit_check = 0;
+            let list_1 = await axios.get(`${ajaxUrl}/prd_code_bom_cmpds_list/${this.prd_code}`);
+            let bom_list = list_1.data;
+            console.log(bom_list)
+            console.log(this.rowData)
+            for (let i = 0 ; i < bom_list.length ; i++) {
+                let sum = 0;
+                for (let j = 0 ; j < this.rowData.length ; j++) {
+                    if (this.rowData[j].mtril_nm == bom_list[i].cmpds_prdlst_name) {
+                        sum = sum + parseInt(this.rowData[j].usgqty);
                     }
                 }
-                if (insert_row == 0) {
-                    let result_1 = await axios.post(`${ajaxUrl}/procsFlowchartInsert`, procs_flowchart_insert)
+                if (bom_list[i].cnsum_count == sum) {
+                    submit_check = 1;
+                } else {
+                    submit_check = 0;
+                }
+            }
+
+            if (submit_check == 0) {
+                this.toast.add({ severity: 'error', summary: '실패', detail: 'BOM이랑 같지 않습니다.', life: 3000 });
+            } else if (submit_check == 1) {
+                if (this.$route.query.prd_code != null) {
+                    let result = await axios.get(`${ajaxUrl}/prdCodeToProcsCode/${this.prd_code}`)
                         .catch(err => console.log(err));
-                    check_code = [...check_code, this.rowData[i].procs_ordr_no];
+                    for (let i = 0; i < result.data.length; i++) {
+                        let result_1 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteMchn/${result.data[i].procs_code}`)
+                            .catch(err => console.log(err));
+                        let result_2 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteMatrl/${result.data[i].procs_code}`)
+                            .catch(err => console.log(err));
+                        let result_3 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteFlowchart/${result.data[i].procs_code}`)
+                            .catch(err => console.log(err));
+                    }
+                    this.$router.push({ name: 'procsFlowchartList' });
+
                 }
 
-                let mtril_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchmtnm/${this.rowData[i].mtril_nm}`)
+                let bom_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchBom/${this.prd_code}`)
                     .catch(err => console.log(err))
-                let procs_matrl_insert = [
-                    this.prd_code + '-' + this.rowData[i].procs_ordr_no,
-                    this.rowData[i].procs_nm,
-                    mtril_code.data.mtril_code,
-                    this.rowData[i].mtril_nm,
-                    this.rowData[i].usgqty
-                ]
-                let result_2 = await axios.post(`${ajaxUrl}/procsMatrlInsert`, procs_matrl_insert)
-                    .catch(err => console.log(err));
+                let check_code = [];
+                for (let i = 0; i < this.rowData.length; i++) {
+                    let procs_flowchart_insert = [
+                        this.prd_code + '-' + this.rowData[i].procs_ordr_no,
+                        this.rowData[i].procs_nm,
+                        this.prd_code,
+                        this.prd_nm,
+                        this.rowData[i].procs_ordr_no,
+                        this.rowData[i].expect_reqre_time,
+                        bom_code.data.bom_code
+                    ];
+                    let insert_row = 0;
+                    for (let j = 0; j < check_code.length + 1; j++) {
+                        if (this.rowData[i].procs_ordr_no == check_code[j]) {
+                            insert_row = 1;
+                        }
+                    }
+                    if (insert_row == 0) {
+                        let result_1 = await axios.post(`${ajaxUrl}/procsFlowchartInsert`, procs_flowchart_insert)
+                            .catch(err => console.log(err));
+                        check_code = [...check_code, this.rowData[i].procs_ordr_no];
+                    }
 
-                let procs_mchn_insert = [
-                    this.prd_code + '-' + this.rowData[i].procs_ordr_no,
-                    this.rowData[i].eqp_code
-                ]
-                let result_3 = await axios.post(`${ajaxUrl}/procsMchnInsert`, procs_mchn_insert)
-                    .catch(err => console.log(err));
+                    let mtril_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchmtnm/${this.rowData[i].mtril_nm}`)
+                        .catch(err => console.log(err))
+                    let procs_matrl_insert = [
+                        this.prd_code + '-' + this.rowData[i].procs_ordr_no,
+                        this.rowData[i].procs_nm,
+                        mtril_code.data.mtril_code,
+                        this.rowData[i].mtril_nm,
+                        this.rowData[i].usgqty
+                    ]
+                    let result_2 = await axios.post(`${ajaxUrl}/procsMatrlInsert`, procs_matrl_insert)
+                        .catch(err => console.log(err));
+
+                    let procs_mchn_insert = [
+                        this.prd_code + '-' + this.rowData[i].procs_ordr_no,
+                        this.rowData[i].eqp_code
+                    ]
+                    let result_3 = await axios.post(`${ajaxUrl}/procsMchnInsert`, procs_mchn_insert)
+                        .catch(err => console.log(err));
+                }
+                this.$router.push({ name: 'procsFlowchartList' });
             }
-            this.$router.push({ name: 'procsFlowchartinsert', query: { prd_code: this.prd_code } });
         },
         async getProcsDetail(prd_code) {
             let result = await axios.get(`${ajaxUrl}/procsFlowchartDetail/${prd_code}`)
@@ -304,6 +357,78 @@ export default {
             this.prd_code = event.prdlst_code;
             this.prd_nm = event.prdist_name;
             this.input_div = false;
+        },
+        async inputModal(event) {
+            if (event.colDef.headerName === "재료명") {
+                this.modal_on_off = true;
+                this.modal_header = '재료 선택';
+                this.modal_colDefs = [
+                    { field: "cmpds_prdlst_code", headerName: "소모품목코드" },
+                    { field: "cmpds_prdlst_name", headerName: "소모품목명" },
+                    { field: "unit", headerName: "단위" },
+                    { field: "cnsum_count", headerName: "재료양" },
+                    { field: "index", hide: true, suppressToolPanel: true },
+                    { field: "info", hide: true, suppressToolPanel: true }
+                ];
+                let list = await axios.get(`${ajaxUrl}/prd_code_bom_cmpds_list/${this.prd_code}`);
+                this.modal_rowData = list.data;
+                for (let i = 0; i < this.modal_rowData.length; i++) {
+                    this.modal_rowData[i].index = event.data.index;
+                    this.modal_rowData[i].info = "mtril"
+                }
+                if (list.data.length == 0) {
+                    this.modal_colDefs = [
+                        { field: "nothing", headerName: "검색결과 없음" }
+                    ];
+                    this.modal_rowData = [
+                        { nothing: "검색결과 없음" }
+                    ];
+                }
+            } else if (event.colDef.headerName === "작업기기") {
+                this.modal_on_off = true;
+                this.modal_header = '기기 선택'
+                this.modal_colDefs = [
+                    { field: "eqp_code", headerName: "설비코드" },
+                    { field: "eqp_nm", headerName: "설비명" },
+                    { field: "model_nm", headerName: "모델명" },
+                    { field: "index", hide: true, suppressToolPanel: true },
+                    { field: "info", hide: true, suppressToolPanel: true }
+                ];
+                let list = await axios.get(`${ajaxUrl}/equip/eqp_all_list`);
+                this.modal_rowData = list.data;
+                for (let i = 0; i < this.modal_rowData.length; i++) {
+                    this.modal_rowData[i].index = event.data.index;
+                    this.modal_rowData[i].info = "equip"
+                }
+
+            } else {
+                this.modal_on_off = false;
+            }
+        },
+        modal_close_btn() {
+            this.modal_on_off = !this.modal_on_off;
+        },
+        outputModal(event) {
+            console.log(event)
+            if (event.info === "mtril") {
+                for (let i = 0; i < this.rowData.length; i++) {
+                    if (this.rowData[i].index == event.index) {
+                        this.rowData[i].mtril_nm = event.cmpds_prdlst_name;
+                        break;
+                    }
+                }
+                this.rowData = [...this.rowData];
+                this.modal_on_off = false;
+            } else if (event.info === "equip") {
+                for (let i = 0; i < this.rowData.length; i++) {
+                    if (this.rowData[i].index == event.index) {
+                        this.rowData[i].eqp_code = event.eqp_code;
+                        break;
+                    }
+                }
+                this.rowData = [...this.rowData];
+                this.modal_on_off = false;
+            }
         }
     },
     watch: {

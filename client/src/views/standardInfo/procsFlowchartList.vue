@@ -56,7 +56,7 @@ export default {
         this.colDefs = [
             { field: "prd_code", headerName: "품목코드" },
             { field: "prd_nm", headerName: "품목명" },
-            { field: "all_time", headerName: "총 소요시간" },
+            { field: "all_time", headerName: "총 소요시간 (분)" },
         ];
         this.gridOptions = {
             columnDefs: this.orderColDefs,
@@ -93,7 +93,7 @@ export default {
                 .catch(err => console.log(err));
             this.eqpList = result.data;
             for (let i = 0; i < this.eqpList.length; i++) {
-                this.eqpList[i].all_time = this.eqpList[i].all_time + " 시간";
+                this.eqpList[i].all_time = this.eqpList[i].all_time + " 분";
             }
             this.rowData = this.eqpList;
         },

@@ -363,10 +363,22 @@ const prd_code_bom_search =
  FROM bom
  WHERE prdlst_code LIKE CONCAT('%', ?, '%')`;
 
- const prd_code_bom_all_search = 
+const prd_code_bom_all_search = 
 `SELECT prdlst_code, 
         prdist_name
  FROM bom`;
+
+// 제품 코드로 BOM 조회해서 사용 재료 조회
+const prd_code_bom_cmpds_list = 
+`SELECT cmpds_prdlst_code, 
+       cmpds_prdlst_name, 
+       unit, 
+       cnsum_count
+FROM bom_cmpds
+WHERE bom_code = ( SELECT bom_code
+                   FROM bom
+                   WHERE prdlst_code = ?
+);`;
 
 // 전체 사원 조회
 const select_all_empl = 
@@ -489,6 +501,7 @@ module.exports = {
   bcncDelete,
   bomUpdate,
   prd_code_bom_all_search, 
+  prd_code_bom_cmpds_list,
   select_all_empl, 
   search_empl, 
   insert_empl, 
