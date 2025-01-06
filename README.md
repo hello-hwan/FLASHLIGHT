@@ -8,3 +8,5 @@
 
 
 #### 개발자 : 최민규 (조장), 최시훈 (부조장), 김기환, 김준규, 이주현, 최태백
+
+![image](https://github.com/user-attachments/assets/b782b070-89b8-45fb-9e2d-25345e14ff16)
