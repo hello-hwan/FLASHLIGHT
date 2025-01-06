@@ -12,10 +12,6 @@
         <input type="text" id="orderFormMtltyCode" class="form-control"  @click="modalOpen" v-model="companyCode" readonly>
     </div>
     
-    <!-- <span>거래처 명</span>
-    <InputText type="text" class="emp_info" @click="modalOpen" readonly placeholder="거래처 명을 입력해주세요" v-model="companyName">{{ companyName }}</InputText>
-    <span>거래처 코드</span>
-    <InputText type="text" class="emp_info" @click="modalOpen"readonly placeholder="거래처 코드를 입력해주세요" v-model="companyCode">{{ companyCode }}</InputText> -->
     <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
 
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck" >
@@ -90,15 +86,16 @@ let searchchargerName = null;
 const gridApi = ref(null);
 
 //grid가 생성될때 발생한 ag grid의 api를 변수에 담음
-const onGridReady = (params) => {
-    gridApi.value = params.api;
-};
+const onGridReady = (params) => { 
+    gridApi.value = params.api; 
+}; 
 
 //모달 열림 상태 담을 변수
 let modalCheck = ref(false);
 
 //모달이 열리면 true로 변경, 스크롤 막기
-let modalOpen = () => {
+let modalOpen = async() => {
+    
     let html = document.querySelector('html');
     if(modalCheck.value == false) {
         modalCheck.value = !modalCheck.value;
@@ -110,6 +107,7 @@ let modalOpen = () => {
     //행 데이터 초기화
     rowData.value = [];
     
+    await searchCompany();
     //검색조건 초기화
     searchCompanyCode = null;
     searchcompanyName = null;
@@ -153,6 +151,7 @@ const GridOptions = {
 };
 
 const searchCompany = async() => {
+    console.log('작동');
     //서버로 보낼 검색 데이터
     let obj = {company_code: searchCompanyCode,
                 company_name: searchcompanyName,
@@ -166,6 +165,7 @@ const searchCompany = async() => {
     //행 데이터 담기
     rowData.value = result.data;   
 };
+
 
 </script>
 
