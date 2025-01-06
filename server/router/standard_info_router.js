@@ -35,15 +35,24 @@ router.get('/bomMtilList', async (req, res) => {
 // BOM소모품 등록
 router.post('/bom', async (req, res) => {
   let Insert = req.body;
-  console.log('router',Insert);
   try{
     let result = await standard_info_service.bomInsert(Insert); 
   res.send(result);
   }catch(err){
     console.log(err); 
   }
-  
 });
+
+// BOM 등록
+router.post('/bomAdd', async (req, res) => {
+  let info = req.body;
+  try {
+    let result = await standard_info_service.bomAdd(info);
+    res.send(result);
+  } catch (error) {
+    console.log('router', error);
+  }
+})
 
 // BOM 관리 select 
 router.get('/bomManage/:bomCode', async (req, res) => {
@@ -56,8 +65,6 @@ router.get('/bomManage/:bomCode', async (req, res) => {
 router.put('/bomUpdate/:code', async (req, res) => {
   let code = req.params.code;
   let info = req.body;
-  console.log('router code',code);
-  console.log('router info',info);
   let result = await standard_info_service.bomUpdate(info, code);
   res.send(result);
 })
@@ -77,6 +84,27 @@ router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {
   res.send(result); 
 });
 
+// BOM 삭제
+router.delete('/bomDelete/:code', async (req, res) => {
+  let code = req.params.code;
+  let result = await standard_info_service.bomDelete(code);
+  res.send(result);
+})
+
+// 반제품 조회(모달)
+router.get('/prduct_n', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.prduct_n(searchs);
+  res.send(list);
+})
+
+// 완제품 조회(모달)
+router.get('/prduct', async (req, res) => {
+  let searchs = req.query;
+  let list = await standard_info_service.prduct(searchs);
+  res.send(list);
+})
+
 // 자재 조회
 router.get('/mtril', async (req, res) => {
   let searchs = req.query;
@@ -87,8 +115,13 @@ router.get('/mtril', async (req, res) => {
 // 자재 등록
 router.post('/mtrilAdd', async (req, res) => {
   let info = req.body;
-  let result = await standard_info_service.mtrilAdd(info);
-  res.send(result);
+  try {
+    let result = await standard_info_service.mtrilAdd(info);
+    res.send(result);
+  } catch (error) {
+    console.log('router',error);
+  }
+  
 })
 
 // 자재 삭제
@@ -147,7 +180,6 @@ router.get('/infoprductList', async (req, res) => {
 // 완제품 등록
 router.post('/prductInsert', async (req, res) => {
   let info = req.body;
-  console.log('router => ', info);
   let result = await standard_info_service.prductInsert(info);
   res.send(result);
 })
@@ -156,6 +188,16 @@ router.post('/prductInsert', async (req, res) => {
 router.delete('/prductDelete/:code', async (req, res) => {
   let code = req.params.code;
   let result = await standard_info_service.prductDelete(code);
+  res.send(result);
+})
+
+// 완제품 수정
+router.put('/prductUpdate/:code', async (req, res) => {
+  let code = req.params.code
+  let info = req.body;
+  console.log('router code =>', code);
+  console.log('router info =>', info);
+  let result = await standard_info_service.prductUpdate(code,info);
   res.send(result);
 })
 
@@ -179,7 +221,18 @@ router.delete('/bcnc_code/:code', async (req,res) => {
   let result = await standard_info_service.bcncDelete(code);
   res.send(result);
 });
- 
+
+
+// 거래처 수정
+router.put('/bcncUpdate/:code', async (req, res) => {
+  let code = req.params.code
+  let info = req.body;
+  console.log('router code =>', code);
+  console.log('router info =>', info);
+  let result = await standard_info_service.prductUpdate(code,info);
+  res.send(result);
+})
+
 // 품질검사항목관리
 router.get('/standardInfo/qiList', async (req, res) => {
   let qiNo = req.query.qi_info; // key=value => req.query.key;

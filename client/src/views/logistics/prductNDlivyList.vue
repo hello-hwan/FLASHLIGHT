@@ -115,9 +115,9 @@ export default {
   data() {
     return {
       prductNDlivyList: [], // 반제품출고 리스트
-      rowData: [],
       filteredRowData: [],
       colDefs: [],
+      rowData: [],
 
       prductNDlivyListInfo: [],
       rowDataInfo: [],
@@ -127,7 +127,6 @@ export default {
 
       prductNReqName: "", // 검색 입력값
       prdlstCode: "",
-      prdlstName: "",
       seCode: "",
       startDate: "",
       endDate: ""
@@ -137,10 +136,11 @@ export default {
     this.getprductNDlivyList();
 
     this.colDefs = [
-      { field: "prduct_n_req_name", headerName: "반제품요청명" },
-      { field: "requst_date", headerName: "요청일자", valueFormatter: this.customDateFormat },
-      { field: "prduct_n_name", headerName: "반제품명" },
-      { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+      { field: "prduct_n_req_name", headerName: "반제품요청명", width: 180 },
+      { field: "requst_date", headerName: "요청일자", width: 120, valueFormatter: this.customDateFormat },
+      { field: "prduct_n_name", headerName: "반제품명" , width: 230},
+      { field: "상세보기", headerName: "상세보기" , width: 150,cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                                  return '<button class="btn btn-primary mx-2">상세보기</button>'}}
     ];
 
     this.gridOptionsReturn = {
@@ -149,16 +149,17 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
-        flex: 1,
+       // filter: true,
         minWidth: 10,
+        resizable: false,
       },
     }
+
     this.colDefsInfo = [
-      { field: "prduct_n_lot", headerName: "LOT" },
-      { field: "prduct_n_name", headerName: "반제품명" },
-      { field: "prduct_n_code", headerName: "반제품코드"},
-      { field: "requst_qy", headerName: "재고량" },
+      { field: "prduct_n_lot", headerName: "LOT", width: 130 },
+      { field: "prduct_n_name", headerName: "반제품명", width: 230 },
+      { field: "prduct_n_code", headerName: "반제품코드", width: 130},
+      { field: "requst_qy", headerName: "출고수량" , width: 100},
       { field: "usgqty", headerName: "사용량" },
       { field: "requst_date", headerName: "출고일자", valueFormatter: this.customDateFormat  },
     ];
@@ -169,9 +170,9 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
-        flex: 1,
+       // filter: true,
         minWidth: 10,
+        resizable: false,
       },
     }
   },
@@ -189,8 +190,8 @@ export default {
         let result = await axios.get(`${ajaxUrl}/prductNDlivyListInfo/${ReqCode}`)
                                   .catch(err => console.log(err));
         this.prductNDlivyListInfo = result.data;
-        console.log(result.data);
         this.rowDataInfo = this.prductNDlivyListInfo;
+        
     },
 
 
@@ -200,28 +201,32 @@ export default {
       this.prductNDlivyList = result.data;
       this.rowData = this.prductNDlivyList;
       this.filteredRowData = this.rowData; 
+      
     },
+
     // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
+
+      let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+      let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.prduct_n_wrhousng_day;
-        let startDate = !this.startDate || prductNDate >= this.startDate;
-        let endDate = !this.endDate || prductNDate <= this.endDate;
+        let prductNDate = new Date(row.requst_date).setHours(0,0,0,0);
+
         return (
-          (!this.LOTCode || row.prduct_n_lot.includes(this.LOTCode)) &&
-          (!this.prdlstCode || row.prdlst_code.includes(this.prdlstCode)) &&
-          (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
-          (!this.seCode || row.se === this.seCode) &&
-          startDate && endDate
+          (!this.prductNReqName || row.prduct_n_req_name.includes(this.prductNReqName)) &&
+          (!this.prdlstCode || row.prduct_n_name.includes(this.prdlstCode)) &&
+          (!this.seCode || row.se == this.seCode) &&
+          (!startDate || prductNDate >= startDate) &&
+          (!endDate || prductNDate <= endDate)
         );
       });
     },
     
+    // 초기화
     resetFilter() {
-      this.LOTCode = "";
+      this.prductNReqName = "";
       this.prdlstCode = "";
-      this.prdlstName = "";
-      this.seCode = "";
       this.startDate = "";
       this.endDate = "";
       this.filteredRowData = this.rowData;
@@ -245,6 +250,7 @@ export default {
 <style scoped>
 .ag-theme-alpine {
   height: 500px;
+  width: 100%
 }
 
 button {

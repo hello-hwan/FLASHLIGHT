@@ -25,7 +25,7 @@ const bomMtilList = async () => {
   return list;
 }
 
-// BOM 등록  
+// BOM 소모품등록  
 const bomInsert = async (bomInfo) => {
   let result = await mariaDB.query('bomInsert', bomInfo);
   try{
@@ -37,7 +37,16 @@ const bomInsert = async (bomInfo) => {
   }catch(err){
     console.log(err);
   }
+}
 
+// BOM 등록
+const bomAdd = async (info) => {
+  try {
+    let result = await mariaDB.query('bomAdd', info);
+    return result
+  } catch (error) {
+    console.log(error);    
+  }
 }
 
 // BOM 관리 select
@@ -55,7 +64,7 @@ const bomUpdate = async (code,info) => {
   }catch(err){
     console.log(err);
   }
-   
+
 }
 
 // BOM소모품 업데이트
@@ -70,6 +79,24 @@ const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
 const bom_cmpdsDel = async (cmpdsNo) => {
   let result = await mariaDB.query('bom_cmpdsDel', cmpdsNo);
   return result;
+}
+
+// BOM 삭제
+const bomDelete = async(code) => {
+  let result = await mariaDB.query('bomDelete', code);
+  return result;
+}
+
+// 반제품 조회(모달)
+const prduct_n = async () => {
+  let list = await mariaDB.query('prduct_n');
+  return list;
+}
+
+// 완제품 조회(모달)
+const prduct = async () => {
+  let list = await mariaDB.query('prduct');
+  return list;
 }
 
 // 자재 조회
@@ -114,9 +141,8 @@ const prductNList = async() => {
 
 // 반제품 등록
 const prductNAdd = async (info) => {
-  let result = await mariaDB.query('prductNAdd', info);
-
   try{
+    let result = await mariaDB.query('prductNAdd', info);
     if (result.insertId != null) {
       return { message: '데이터 삽입 성공' };
     } else {
@@ -126,7 +152,7 @@ const prductNAdd = async (info) => {
       console.log(err);
     }
 }
- 
+
 // 반제품 삭제
 const prductNDelete = async (code) => {
   let result = await mariaDB.query('prductNDelete', code);
@@ -148,13 +174,25 @@ const prductList = async () => {
 
 // 완제품 등록
 const prductInsert = async (info) => {
-  let result = await mariaDB.query('prductInsert', info);
+  try{
+    let result = await mariaDB.query('prductInsert', info);
   return result;
+  }catch(err){
+    console.log(err);
+  }
+  
 }
 
 // 완제품 삭제
 const prductDelete = async (code) => {
   let result = await mariaDB.query('prductDelete', code);
+  return result;
+}
+
+// 완제품 수정 
+const prductUpdate = async (code, info) => {
+  let data = [info, code];
+  let result = await mariaDB.query('prductUpdate', data);
   return result;
 }
 
@@ -177,6 +215,14 @@ const bcncAdd = async (info) => {
 // 거래처 삭제
 const bcncDelete = async(code) =>{
   let result = await mariaDB.query('bcncDelete', code);
+  return result;
+}
+
+
+// 거래처 수정 
+const bcncUpdate = async (code, info) => {
+  let data = [info, code];
+  let result = await mariaDB.query('bcncUpdate', data);
   return result;
 }
 
@@ -323,13 +369,17 @@ const loginService = async (info) => {
 };
 
 module.exports = {
-  cmmntest,
+  cmmntest, 
   bomtest,
   bomInfo,
   bomInsert,
   bom_cmpdsUpdate,
   bom_cmpdsDel,
-  bomMtilList, 
+  bomMtilList,
+  bomAdd,
+  bomDelete,
+  prduct_n,
+  prduct,
   mtril,
   mtrilAdd,
   mtrilDelete,
@@ -341,7 +391,9 @@ module.exports = {
   prductList,
   prductInsert,
   prductDelete,
+  prductUpdate, 
   bcncList,
+  bcncUpdate,
   qiList,
   procsFlowchartList, 
   procsFlowchartDetail, 

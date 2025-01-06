@@ -6,7 +6,7 @@
         <v-col cols="12" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
             <template v-slot:title>
-              <span class="font-weight-black">완제품조회</span>
+              <span class="font-weight-black">완제품 입고 조회</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- 필터 검색 필드 -->
@@ -74,8 +74,7 @@
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
                 class="ag-theme-alpine"
-                id="grid-one"
-              >
+                id="grid-one">
               </AgGridVue>
             </v-card-text>
           </v-card>
@@ -128,9 +127,10 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
+        //filter: true,
         flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
   },
@@ -139,23 +139,26 @@ export default {
       let result = await axios.get(`${ajaxUrl}/prductWrhousngList`)
         .catch(err => console.log(err));
       this.prductWrhousngList = result.data;
-      this.rowData = this.prductWrhousngList;
+      this.rowData = this.prductWrhousngList
       this.filteredRowData = this.rowData; // 초기 데이터 설정
     },
 
     filterByCode() {
+      let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+      let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.wrhousng_day;
-        let startDate = !this.startDate || prductNDate >= this.startDate;
-        let endDate = !this.endDate || prductNDate <= this.endDate;
+        let prductNDate = new Date(row.wrhousng_day).setHours(0,0,0,0);
         return (
           (!this.LOTCode || row.prduct_lot.includes(this.LOTCode)) &&
           (!this.prdlstCode || row.prdlst_c_code.includes(this.prdlstCode)) &&
           (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
-          startDate && endDate
+          (!startDate || prductNDate >= startDate) &&
+          (!endDate || prductNDate <= endDate)
         );
       });
     },
+    
     resetFilter() {
       this.LOTCode = "";
       this.prdlstCode = "";
@@ -172,7 +175,7 @@ export default {
     },
 
     customDateFormat(params) {
-      return userDateUtils.dateFormat(params.data.prduct_n_wrhousng_day, 'yyyy-MM-dd');
+      return userDateUtils.dateFormat(params.data.wrhousng_day, 'yyyy-MM-dd');
     }
   },
   components: {
