@@ -158,8 +158,13 @@ const prduct_n_dlivyList = async() => {
 
 // 완제품 입고대기 리스트(일반)
 const prductList = async() => {
-  let list =await mariaDB.query('prductList');
-  return list;
+  try {
+    let list =await mariaDB.query('prductList');
+    return list;  
+  } catch (error) {
+    console.log('service', error);
+  }
+  
 }
 
 // 완제품 입고 등록

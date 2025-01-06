@@ -85,8 +85,13 @@ router.get('/prductNDlivyListInfo/:code', async (req, res) => {
 // 완제품 입고대기 리스트(일반)
 router.get('/prductList', async (req, res) => {
   let searchs = req.query;
-  let prductList = await logistics_service.prductList(searchs);
-  res.send(prductList);
+  try {
+    let prductList = await logistics_service.prductList(searchs);
+    res.send(prductList);  
+  } catch (error) {
+    console.log('router', error);
+  }
+  
 })
 
 
