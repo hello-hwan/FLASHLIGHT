@@ -1,204 +1,225 @@
 <template>
     <div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 75%; font-size: 30px;">
-                        사원 관리
-                    </th>
-                </tr>
-            </thead>
-        </table>
-        <div style="width: 30%; float: left;">
-            <table class="table table-hover" style="text-align: center;">
-                <thead>
-                    <tr>
-                        <th>
-                            구분
-                        </th>
-                        <th>
-                            내용
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            *사원번호
-                        </th>
-                        <th>
-                            <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                type="text" v-model="empl_no" size="10">
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            *이름
-                        </th>
-                        <th>
-                            <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                type="text" v-model="empl_name" size="10">
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            *비밀번호
-                        </th>
-                        <th>
-                            <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                type="password" v-model="password" size="10">
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            *부서명
-                        </th>
-                        <th>
-                            <select class="form-select" aria-label="Default select example" v-model="dept_se"
-                                style="width: 150px; margin: auto; text-align: center;">
-                                <option value="DP01">영업</option>
-                                <option value="DP02">품질</option>
-                                <option value="DP03">자재</option>
-                                <option value="DP04">물류</option>
-                                <option value="DP05">생산</option>
-                                <option value="DP06">설비</option>
-                                <option value="DP00">관리자</option>
-                            </select>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            부서번호
-                        </th>
-                        <th>
-                            {{ this.dept_se }}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            전화번호
-                        </th>
-                        <th>
-                            <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                type="text" v-model="phone" size="15">
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            입사일
-                        </th>
-                        <th>
-                            {{ this.encpn }}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            퇴사일
-                        </th>
-                        <th>
-                            {{ this.retire_day }}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>
-                            *권한
-                        </th>
-                        <th>
-                            <select class="form-select" aria-label="Default select example" v-model="author"
-                                style="width: 150px; margin: auto; text-align: center;">
-                                <option value="AZ02">일반사원</option>
-                                <option value="AZ01">관리자</option>
-                            </select>
-                        </th>
-                    </tr>
-                </thead>
-            </table>
-            <div style="text-align: center;">
-                <button type="button" class="btn btn-primary" style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
-                    @click="add_btn()">등록</button>
-                <button type="button" class="btn btn-info" style="color: black; margin: 2px 5%; padding: 2px; width: 75px;"
-                    @click="reset_btn()">초기화</button>
-            </div>
-            <div style="text-align: center;">
-                <button type="button" class="btn btn-warning" style="color: black; margin: 2px 5%; padding: 2px; width: 75px;"
-                    @click="edit_btn()">수정</button>
-                <button type="button" class="btn btn-danger" style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
-                    @click="delete_btn()">삭제</button>
-            </div>
-            <div style="height: auto; background-color: lightgray; margin-left: auto;" v-show="edit_div">
-                <p style="margin: 2px; padding: 2px;">아래에 현재 비밀번호를 입력하고 버튼을 누르면 변경됩니다.</p>
-                <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="edit_input" size="9">
-                <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;"
-                    @click="edit_cansle_button()">취소</button>
-                <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;"
-                    @click="real_edit_btn()">변경</button>
-            </div>
-            <div style="height: auto; background-color: lightgray; margin-left: auto;" v-show="delete_div">
-                <p style="margin: 2px; padding: 2px;">아래에 퇴사할 사원번호를 입력하고 버튼을 누르면 퇴사합니다.</p>
-                <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="delete_input" size="9">
-                <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;"
-                    @click="delete_cansle_button()">취소</button>
-                <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;"
-                    @click="real_delete_btn()">퇴사</button>
-            </div>
-        </div>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center; width: 99%;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    사원 관리
+                </span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4" style="height: 690px;">
+                <div style="width: 30%; float: left; padding: 10px;">
+                    <table class="table table-hover" style="text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>
+                                    구분
+                                </th>
+                                <th>
+                                    내용
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    *사원번호
+                                </th>
+                                <th>
+                                    <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
+                                        type="text" v-model="empl_no" size="10">
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    *이름
+                                </th>
+                                <th>
+                                    <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
+                                        type="text" v-model="empl_name" size="10">
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    *비밀번호
+                                </th>
+                                <th>
+                                    <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
+                                        type="password" v-model="password" size="10">
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    *부서명
+                                </th>
+                                <th>
+                                    <select class="form-select" aria-label="Default select example" v-model="dept_se"
+                                        style="width: 150px; margin: auto; text-align: center;">
+                                        <option value="DP01">영업</option>
+                                        <option value="DP02">품질</option>
+                                        <option value="DP03">자재</option>
+                                        <option value="DP04">물류</option>
+                                        <option value="DP05">생산</option>
+                                        <option value="DP06">설비</option>
+                                        <option value="DP00">관리자</option>
+                                    </select>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    부서번호
+                                </th>
+                                <th>
+                                    {{ this.dept_se }}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    전화번호
+                                </th>
+                                <th>
+                                    <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
+                                        type="text" v-model="phone" size="15">
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    입사일
+                                </th>
+                                <th>
+                                    {{ this.encpn }}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    퇴사일
+                                </th>
+                                <th>
+                                    {{ this.retire_day }}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    *권한
+                                </th>
+                                <th>
+                                    <select class="form-select" aria-label="Default select example" v-model="author"
+                                        style="width: 150px; margin: auto; text-align: center;">
+                                        <option value="AZ02">일반사원</option>
+                                        <option value="AZ01">관리자</option>
+                                    </select>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div style="text-align: center;">
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
+                            @click="add_btn()">등록</button>
+                        <button type="button" class="btn btn-secondary"
+                            style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
+                            @click="reset_btn()">초기화</button>
+                    </div>
+                    <div style="text-align: center;">
+                        <button type="button" class="btn btn-warning"
+                            style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
+                            @click="edit_btn()">수정</button>
+                        <button type="button" class="btn btn-danger"
+                            style="color: white; margin: 2px 5%; padding: 2px; width: 75px;"
+                            @click="delete_btn()">삭제</button>
+                    </div>
+                    <div style="height: auto; background-color: lightgray; margin-left: auto;" v-show="edit_div">
+                        <p style="margin: 2px; padding: 2px;">아래에 현재 비밀번호를 입력하고 버튼을 누르면 변경됩니다.</p>
+                        <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="edit_input"
+                            size="9">
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                            @click="edit_cansle_button()">취소</button>
+                        <button type="button" class="btn btn-danger"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                            @click="real_edit_btn()">변경</button>
+                    </div>
+                    <div style="height: auto; background-color: lightgray; margin-left: auto;" v-show="delete_div">
+                        <p style="margin: 2px; padding: 2px;">아래에 퇴사할 사원번호를 입력하고 버튼을 누르면 퇴사합니다.</p>
+                        <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="delete_input"
+                            size="9">
+                        <button type="button" class="btn btn-primary"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                            @click="delete_cansle_button()">취소</button>
+                        <button type="button" class="btn btn-danger"
+                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                            @click="real_delete_btn()">퇴사</button>
+                    </div>
+                </div>
 
-        <div style="width: 70%; float: left;">
-            <div>
-                <table class="table table-hover" style="text-align: center;">
-                    <thead>
-                        <tr>
-                            <th style="width: 16%;">
-                                사원번호
-                            </th>
-                            <th style="width: 16%;">
-                                사원명
-                            </th>
-                            <th style="width: 16%;">
-                                전화번호
-                            </th>
-                            <th style="width: 16%;">
-                                직책
-                            </th>
-                            <th style="width: 16%;">
-                            </th>
-                            <th style="width: 16%;">
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>
-                                <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                    type="text" v-model="empl_no_search" size="10">
-                            </th>
-                            <th>
-                                <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                    type="text" v-model="empl_name_search" size="10">
-                            </th>
-                            <th>
-                                <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
-                                    type="text" v-model="phone_search" size="15">
-                            </th>
-                            <th>
-                                <select class="form-select" aria-label="Default select example" v-model="dept_se_search"
-                                    style="width: 150px; margin: auto; text-align: center;">
-                                    <option value="" selected></option>
-                                    <option value="DP01">영업</option>
-                                    <option value="DP02">품질</option>
-                                    <option value="DP03">자재</option>
-                                    <option value="DP04">물류</option>
-                                    <option value="DP05">생산</option>
-                                    <option value="DP06">설비</option>
-                                    <option value="DP00">관리자</option>
-                                </select>
-                            </th>
-                        </tr>
-                    </tbody>
-                </table>
-                <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-                    @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
-                </ag-grid-vue>
-            </div>
-        </div>
+                <div style="width: 70%; float: left; padding: 10px">
+                    <div>
+                        <table class="table table-hover" style="text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 17%;">
+                                        사원번호
+                                    </th>
+                                    <th style="width: 17%;">
+                                        사원명
+                                    </th>
+                                    <th style="width: 17%;">
+                                        전화번호
+                                    </th>
+                                    <th style="width: 17%;">
+                                        직책
+                                    </th>
+                                    <th style="width: 16%;">
+                                    </th>
+                                    <th style="width: 16%;">
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        <input
+                                            style="background-color: lightsteelblue; margin: 5px; text-align: center;"
+                                            type="text" v-model="empl_no_search" size="10">
+                                    </th>
+                                    <th>
+                                        <input
+                                            style="background-color: lightsteelblue; margin: 5px; text-align: center;"
+                                            type="text" v-model="empl_name_search" size="10">
+                                    </th>
+                                    <th>
+                                        <input
+                                            style="background-color: lightsteelblue; margin: 5px; text-align: center;"
+                                            type="text" v-model="phone_search" size="15">
+                                    </th>
+                                    <th>
+                                        <select class="form-select" aria-label="Default select example"
+                                            v-model="dept_se_search"
+                                            style="width: 150px; margin: auto; text-align: center;">
+                                            <option value="" selected></option>
+                                            <option value="DP01">영업</option>
+                                            <option value="DP02">품질</option>
+                                            <option value="DP03">자재</option>
+                                            <option value="DP04">물류</option>
+                                            <option value="DP05">생산</option>
+                                            <option value="DP06">설비</option>
+                                            <option value="DP00">관리자</option>
+                                        </select>
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions"
+                            style="height: 525px" @grid-ready="onGridReady" class="ag-theme-alpine"
+                            overlayNoRowsTemplate="결과 없음">
+                        </ag-grid-vue>
+                    </div>
+                </div>
+            </v-card-text>
+        </v-card>
     </div>
 </template>
 
