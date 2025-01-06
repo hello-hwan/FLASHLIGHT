@@ -55,7 +55,7 @@
               <AgGridVue
                 style="height: 500px; margin: 0 auto;"
                 @grid-ready="onGridReady"
-                :rowData="rowData"
+                :rowData="filteredRowData"
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
                 @cellClicked="onCellClicked"
@@ -105,7 +105,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-
+import { useToast } from "primevue";
 
 export default {
   data() {
@@ -122,15 +122,14 @@ export default {
       req_de: "",
       prdctn_code: "",
       req_name: "",
-      obj: {},
       // 사원이름, 사원코드 임의값 
       emp_name: "이주현",
       emp_id: 200,
       // 검색 입력값
       prductNReqName: "",
-      prductNName: "",
       startDate:"",
       endDate: "",
+      toast: useToast()
     };
   },
   created() {
@@ -139,20 +138,21 @@ export default {
     // 출고리스트 컬럼 정의
     this.colDefs = [
       { field: "order_no", headerName: "요청명" },
-      { field: "order_date", headerName: "요청일",
+      { field: "order_date", headerName: "요청일", width: 160,
         valueFormatter: this.customDateFormat, // valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
       },
-      { field: "prd_code", headerName: "출고제품종류수" },
-      { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+      { field: "prd_code", headerName: "출고제품종류수" , cellStyle: { textAlign: "center" }, width: 180},
+      { field: "상세보기", headerName: "상세보기", width: 150, cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                                return '<button class="btn btn-primary mx-2">상세보기</button>'}},
     ];
 
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
-      { field: "prd_name", headerName: "반제품제품명" },
-      { field: "prd_code", headerName: "반제품제품코드" },
-      { field: "lot", headerName: "반제품LOT" },
-      { field: "order_qy", headerName: "요청수량" },
-      { field: "lot_qy", headerName: "출고가능수량" },
+      { field: "prd_name", headerName: "반제품제품명", width: 225 },
+      { field: "prd_code", headerName: "반제품제품코드" , width: 150},
+      { field: "lot", headerName: "반제품LOT" , width: 100},
+      { field: "order_qy", headerName: "요청수량", width: 100 },
+      { field: "lot_qy", headerName: "출고가능수량" , width: 130},
     ];
 
     // AgGrid 기본 옵션 설정
@@ -162,9 +162,10 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
-        flex: 1,
+        //filter: true,
+        //flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
 
@@ -174,8 +175,9 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        flex: 1,
+        //flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
   },
@@ -208,7 +210,6 @@ export default {
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
-      //console.log(this.obj);
     },
 
     // 출고완료처리
@@ -224,7 +225,7 @@ export default {
                               .catch(err => console.log(err));
 
       if(result){
-        alert('출고완료');
+        this.toast.add({ severity: 'success', summary: '성공', detail: '출고되었습니다.', life: 3000 });
         this.getprductNDlivyList();
         this.getprductNdlivyPossible();
       }
@@ -233,13 +234,16 @@ export default {
 
      // 검색버튼 클릭 = 검색값에 따른 필터링
     filterByCode() {
+      let startDate = new Date(this.startDate).setHours(0,0,0,0);
+      let endDate = new Date(this.endDate).setHours(0,0,0,0);
+
       this.filteredRowData = this.rowData.filter((row) => {
-        let reqDe = row.req_de;
-        let startDate = !this.startDate || reqDe >= this.startDate;
-        let endDate = !this.endDate || reqDe <= this.endDate;
+        let prductNDate = new Date(row.order_date).setHours(0,0,0,0);
+        
         return (
-          (!this.prductNReqName || row.req_name.includes(this.prductNReqName)) &&
-          startDate && endDate
+          (!this.prductNReqName || row.order_no.includes(this.prductNReqName)) &&
+          (!startDate || prductNDate >= startDate) &&
+          (!endDate || prductNDate <= endDate)
         );
       });
     },
@@ -259,7 +263,7 @@ export default {
     },
     // 날짜 yyyy-MM-dd 형식에 맞춰서 가져오기
     customDateFormat(params) {
-      return userDateUtils.dateFormat(params.data.req_de, 'yyyy-MM-dd');  // wrdate는 alias 이름
+      return userDateUtils.dateFormat(params.data.order_date, 'yyyy-MM-dd');  // wrdate는 alias 이름
     }, 
     formet(params) {
       if (params.value == 'RD02') {

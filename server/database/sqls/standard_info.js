@@ -7,23 +7,24 @@ const bom =
        ,prdist_name
        ,prdctn_qy
        ,sumry 
-FROM bom`;
+FROM bom
+ORDER BY CAST(SUBSTRING(bom_code, 4) AS INT) DESC`;
 
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
-       ,bc.bom_code
-       ,bc.cmpds_prdlst_code
-	,bc.cmpds_prdlst_name
+       ,b.bom_code
+       ,b.prdlst_code as prdlst_codeInfo
+	,b.prdist_name as prdlst_nameInfo
        ,bc.stndrd_x
 	,bc.stndrd_y
        ,bc.stndrd_z
        ,bc.unit 
        ,bc.cnsum_count
        ,b.sumry
-FROM bom b JOIN bom_cmpds bc  
+FROM bom b LEFT JOIN bom_cmpds bc  
 on b.bom_code = bc.bom_code
-WHERE b.bom_code = ?`;
+WHERE b.bom_code = '?`;
 
 // BOM 업데이트
 const bomUpdate = 
@@ -91,6 +92,36 @@ const bom_cmpdsDel =
 bom_cmpds
 WHERE cmpds_no = ?`;
 
+// BOM 삭제
+const bomDelete =
+`DELETE FROM
+bom
+WHERE bom_code = ?`
+
+// 반제품 조회(모달)
+const prduct_n = 
+`SELECT prdlst_code as prdlst_n_code
+       ,prdlst_name as prdlst_n_name
+FROM prduct_n`;
+
+// 완제품 조회(모달)
+const prduct =
+`SELECT prdlst_code
+       ,prdlst_name
+FROM repduct`;
+
+const bomAdd =
+`INSERT INTO BOM (bom_code
+                 ,prdlst_code
+                 ,prdist_name
+                 ,prdctn_qy
+                 ,sumry)
+VALUES (CONCAT('bb-',NEXTVAL(bom_code_seq))
+       ,?
+       ,?
+       ,?
+       ,?)`
+
 // 자재 조회
 const mtril =
 `SELECT m.mtril_code
@@ -105,12 +136,21 @@ GROUP BY m.mtril_code
         ,m.mtril_name
 	 ,m.unit
 	 ,m.untpc
-	 ,m.sfinvc`;
+	 ,m.sfinvc
+ORDER BY m.mtril_code DESC`;
 
 // 자재 등록
 const mtrilAdd =
-`INSERT INTO mtril
-SET ? `;
+`INSERT INTO mtril (mtril_code
+                   ,mtril_name
+                   ,unit
+                   ,untpc
+                   ,sfinvc)
+VALUES (CONCAT('M-',nextval(mtril_no_seq)),
+        ?,
+        ?,
+        0,
+        ?)`;
 
 // 자재 삭제
 const mtrilDelete = 
@@ -127,22 +167,39 @@ WHERE mtril_code = ?`;
 // 반제품 조회
 const infoprductNList = 
 `SELECT p.prdlst_code
-      ,p.prdlst_name
-      ,p.stndrd_x
-      ,p.stndrd_y
-      ,p.stndrd_z
-      ,p.unit
-      ,p.wrhousng_unite
-      ,p.dlivy_unit
-      ,p.sfinvc
-      ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
+       ,p.prdlst_name
+       ,p.stndrd_x
+       ,p.stndrd_y
+       ,p.stndrd_z
+       ,p.unit
+       ,p.wrhousng_unite
+       ,p.dlivy_unit
+       ,p.sfinvc
+       ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
 FROM prduct_n p LEFT JOIN procs_flowchart f                   
-ON prdlst_code = prd_code`;
+ON prdlst_code = prd_code
+ORDER BY p.prdlst_code DESC`;
 
 // 반제품 등록
 const prductNAdd = 
-`INSERT INTO prduct_n
-SET ?`;
+`INSERT INTO prduct_n(prdlst_code
+                     ,prdlst_name
+                     ,stndrd_x
+                     ,stndrd_y
+                     ,stndrd_z
+                     ,unit
+                     ,wrhousng_unite
+                     ,dlivy_unit
+                     ,sfinvc)
+VALUES (CONCAT('C-',nextval(prduct_n_no_seq))
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?)`;
 
 // 반제품 삭제
 const prductNDelete = 
@@ -177,17 +234,40 @@ GROUP BY r.prdlst_code
 	 ,r.stndrd_z
 	 ,r.unit
 	 ,r.wrhousng_untpc
-	 ,r.sfinvc`;
+	 ,r.sfinvc
+ORDER BY r.prdlst_code DESC`;
 
 // 완제품 등록
 const prductInsert = 
-`INSERT INTO repduct
-set ?`;
+`INSERT INTO repduct (prdlst_code
+                     ,prdlst_name
+                     ,stndrd_x
+                     ,stndrd_y
+                     ,stndrd_z
+                     ,unit
+                     ,wrhousng_untpc
+                     ,dlivy_untpc
+                     ,sfinvc)
+VALUES (CONCAT('C-',nextval(repduct_no_seq))
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?
+       ,?)`;
 
 // 완제품 삭제
 const prductDelete = 
 `DELETE FROM
 repduct
+WHERE prdlst_code = ?`
+
+// 완제품 수정
+const prductUpdate =
+`UPDATE repduct
+set ?
 WHERE prdlst_code = ?`
 
 // 거래처 조회
@@ -201,8 +281,9 @@ const bcncList =
        ,charger_name
        ,charger_phone
        ,regist_day
-FROM bcnc`;
- 
+FROM bcnc
+ORDER BY bcnc_code DESC`;
+
 // 거래처 등록
 const bcncAdd = 
 `INSERT INTO bcnc (bcnc_code
@@ -228,6 +309,12 @@ VALUES (CONCAT('bcnc-', nextval(bcnc_seq))
 const bcncDelete = 
 `DELETE FROM
 bcnc
+WHERE bcnc_code = ?`;
+
+// 거래처 수정
+const bcncUpdate = 
+`UPDATE bcnc
+set ?
 WHERE bcnc_code = ?`;
 
 // 품질검사항목관리
@@ -304,7 +391,7 @@ const procsFlowchartInsert =
                              bom_code) 
  VALUES(?, ?, ?, ?, ?, ?, ?)
 `;
- 
+
 // 공정별 재료 소모 생성
 const procsMatrlInsert = 
 `INSERT INTO procs_matrl(procs_matrl_no, 
@@ -363,10 +450,22 @@ const prd_code_bom_search =
  FROM bom
  WHERE prdlst_code LIKE CONCAT('%', ?, '%')`;
 
- const prd_code_bom_all_search = 
+const prd_code_bom_all_search = 
 `SELECT prdlst_code, 
         prdist_name
  FROM bom`;
+
+// 제품 코드로 BOM 조회해서 사용 재료 조회
+const prd_code_bom_cmpds_list = 
+`SELECT cmpds_prdlst_code, 
+       cmpds_prdlst_name, 
+       unit, 
+       cnsum_count
+FROM bom_cmpds
+WHERE bom_code = ( SELECT bom_code
+                   FROM bom
+                   WHERE prdlst_code = ?
+);`;
 
 // 전체 사원 조회
 const select_all_empl = 
@@ -448,7 +547,7 @@ const delete_empl =
  WHERE  empl_no = ?
  AND    password = ?
  `;
-
+ 
 module.exports = {
   bom,
   bomInfo,
@@ -457,6 +556,10 @@ module.exports = {
   bom_cmpdsUpdate,
   bom_cmpdsDel,
   bomMtilList,
+  bomAdd,
+  bomDelete,
+  prduct_n,
+  prduct,
   mtril,
   mtrilAdd,
   mtrilDelete,
@@ -468,7 +571,9 @@ module.exports = {
   infoprductList,
   prductInsert,
   prductDelete,
+  prductUpdate,
   bcncList,
+  bcncUpdate,
   qiList,
   qiListModal,
   procsFlowchartList, 
@@ -489,6 +594,7 @@ module.exports = {
   bcncDelete,
   bomUpdate,
   prd_code_bom_all_search, 
+  prd_code_bom_cmpds_list,
   select_all_empl, 
   search_empl, 
   insert_empl, 

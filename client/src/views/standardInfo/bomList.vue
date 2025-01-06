@@ -111,7 +111,7 @@
           <textarea id="remarks" class="form-control" rows="3" v-model="remarks" @change="changeTest" ></textarea>
         </div>
         <div class="col-12 mt-3">
-          <button class="btn btn-success" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
+          <button class="btn btn-primary search-btn" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
         </div>
       </div>
     </v-container>
@@ -121,13 +121,13 @@
             <div class="modal-container" @click.stop="">
                 <div id="search-bar">
                     <div class="align-left"> 
-                        <span>제품 코드</span>
+                        <span>자재 코드</span>
                         <InputText type="text" ></InputText>
-                        <span>제품 명</span>
+                        <span>자재 명</span>
                         <InputText type="text" > </InputText>
+                        <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
                     </div>
-                    <AgGridVue
-                      style="width: 100%; height: 460px; margin: 0 auto;"
+                    <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="rowDataInfotest"
                       :columnDefs="colDefsInfotest"
                       :gridOptions="gridOptions"
@@ -135,7 +135,6 @@
                       @grid-ready="onGridReady"
                       class="ag-theme-alpine">
                     </AgGridVue>
-                    <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
                 </div>
     
                 <div class="modal-btn">
@@ -157,7 +156,7 @@ import bfSearchCompanyModal from '@/components/standardInfo/ModalTest.vue';
   
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-
+import { useToast } from 'primevue/usetoast';
 
   export default {
     data() {
@@ -166,7 +165,7 @@ import { ajaxUrl } from "@/utils/commons.js";
         isButtonDisabled : true,
         isModified: false, // 수정 상태 추적 변수
         modalCheck2 : false,
-        isModalVisible: false, // 모달 표시 여부
+        //isModalVisible: false, // 모달 표시 여부
         selectedCmpdsCode: null, // 선택된 소모품 코드 데이터
         bomList: [], // BOM 리스트
         rowData: [], // BOM 데이터
@@ -184,12 +183,14 @@ import { ajaxUrl } from "@/utils/commons.js";
         gridOptionsReturn: {}, // AgGrid 옵션
   
         searchCode: "", // 검색 입력값
-        prdlstCode: this.prdlst_code,
-        prdlstName: this.prdist_name, 
+        prdlstCode: "",
+        prdlstName: "", 
         productionQty: "",
         remarks: "", 
         rowCount: 0,
         isNewRow: true,
+        toast : useToast(),
+        bomCode: ""
       };
 
     },
@@ -202,7 +203,8 @@ import { ajaxUrl } from "@/utils/commons.js";
         { field: "prdlst_code", headerName: "제품코드" },
         { field: "prdist_name", headerName: "제품명" },
         { field: "prdctn_qy", headerName: "기본생산수량" },
-        { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+        { field: "상세보기", headerName: "상세보기", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                                  return '<button class="btn btn-primary mx-2">상세보기</button>'}},
       ];
   
       // 상세보기 컬럼 정의
@@ -276,7 +278,7 @@ import { ajaxUrl } from "@/utils/commons.js";
             let result = await axios.get(`${ajaxUrl}/bomMtilList`)
                               .catch(err => console.log(err));
             this.bomInfoList = result.data
-                              this.rowDataInfotest = this.bomInfoList;
+            this.rowDataInfotest = this.bomInfoList;
                 // //행 데이터 초기화
                 // this.rowData2 = [];
     
@@ -284,11 +286,14 @@ import { ajaxUrl } from "@/utils/commons.js";
                 // this.searchProductCode = null;
                 // this.searchProductName = null;
         },
-
-
+    
       onCellClicked(event) {
         if (event.colDef.field === "상세보기") {
           this.istest = true;
+          this.bomCode = event.data.bom_code;
+          this.prdlstCode = event.data.prdlst_code;
+          this.prdlstName = event.data.prdist_name;
+          this.productionQty = event.data.prdctn_qy;
           this.selectedBomCode = event.data.prdlst_code; // 상세보기를 위한 데이터 추츨
           this.getbomListInfo(this.selectedBomCode); // 상세 정보 조회
           this.remarks = event.data.sumry;
@@ -301,6 +306,7 @@ import { ajaxUrl } from "@/utils/commons.js";
         this.bomList = result.data;
         this.rowData = this.bomList;
         this.filteredRowData = this.rowData; // 초기 데이터 설정
+        //console.log(this.rowData);
       },
 
       // BOM 코드를 기반으로 조건SELECT 후 소모품 그리드에 데이터 삽입
@@ -309,12 +315,9 @@ import { ajaxUrl } from "@/utils/commons.js";
                                   .catch(err => console.log(err));
         //console.log(result.data);
         this.bomListInfo = result.data;
-       // console.log(this.bomListInfo);
         this.rowDataInfo = this.bomListInfo;
+        console.log('info 데이터',this.rowDataInfo);
         if (result) {
-          this.prdlstCode = result.data[0].prdlst_code;
-          this.prdlstName = result.data[0].prdist_name;
-          this.productionQty = result.data[0].prdctn_qy;
           this.rowData = result.data;
           this.rowCount = this.rowData.length;
           this.trueRowCount = this.rowData.length;
@@ -344,7 +347,7 @@ import { ajaxUrl } from "@/utils/commons.js";
         // 첫 번째 선택된 행 가져오기
         let selectedNodes = this.gridOptions.api.getSelectedNodes();
         if (selectedNodes.length === 0) {
-          alert('행을선택하세요');
+          this.toast.add({ severity: 'warn', summary: '경고', detail: '행을 선택하세요', life: 3000 });
           return;
         }
 
@@ -373,10 +376,11 @@ import { ajaxUrl } from "@/utils/commons.js";
 
       async saveData() { 
         if(this.rowCount < this.rowDataInfo.length){
+          console.log('저장시 데이터',this.bomCode);
           for(let i = this.rowCount; i < this.rowDataInfo.length; i ++) {
           let row = this.rowDataInfo[i];
           let obj = [
-            this.rowData[0].bom_code,
+            this.bomCode,
             row.cmpds_prdlst_code,
             row.cmpds_prdlst_name, 
             row.stndrd_x,
@@ -385,9 +389,9 @@ import { ajaxUrl } from "@/utils/commons.js";
             row.unit,
             row.cnsum_count,
           ]
-          console.log(obj);
+          
           if(this.rowDataInfo[i].stndrd_x == null && this.rowDataInfo[i].stndrd_y == null && this.rowDataInfo[i].stndrd_z == null && this.rowDataInfo[i].cnsum_count == null){
-            alert('값을입력해주세요');
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '값을입력해주세요', life: 3000 });
           }else{
             let result = await axios.post(`${ajaxUrl}/bom`, obj)
                                     .catch(err => console.log(err));
@@ -407,8 +411,8 @@ import { ajaxUrl } from "@/utils/commons.js";
           prdctn_qy: this.productionQty,
           sumry: this.remarks
         }
-        let result = axios.put(`${ajaxUrl}/bomUpdate/${this.rowData[0].bom_code}`, info)
-                             .catch(err => console.log(err)); 
+        let result = axios.put(`${ajaxUrl}/bomUpdate/${this.bomCode}`, info)
+                            .catch(err => console.log(err)); 
         if(result){
           
         }
@@ -449,7 +453,7 @@ import { ajaxUrl } from "@/utils/commons.js";
           } else {
             // 저장버튼 비활성화
             this.isButtonDisabled = true;
-            alert("이미 추가된 항목입니다.");
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '이미추가된 항목 입니다.', life: 3000 });
           }
         }
       },
@@ -519,33 +523,4 @@ import { ajaxUrl } from "@/utils/commons.js";
     float: right;
 }
 
-/* 모달 스타일 */
-/* .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  width: 80%;
-  max-width: 800px; 
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  height: auto;
-}
-
-
-.ag-theme-alpine {
-  height: 400px; 
-  width: 100%; 
-} */
 </style>

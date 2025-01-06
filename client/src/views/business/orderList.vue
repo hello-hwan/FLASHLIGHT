@@ -1,86 +1,92 @@
 <template>
-    <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
-        <template v-slot:title>
-            <span class="font-weight-black">
-                주문 조회
-            </span>
-        </template>
-    </v-card>
+
+    <!-- 주문 조회 페이지 -->
     <v-container fluid>
         <v-row>
-        <!-- 검색 필드 -->
-        <v-col cols="12">
-          <v-card class="mx-auto" style="border-radius: 13px;">
-            <v-card-text class="bg-surface-light pt-4">
-                    <div class="row g-3 align-items-center">
-                        <div class="col-2">
-                            <label for="orderListMtltyName" class="col-form-label">업체명</label>
+            <v-col cols="12">
+                <v-card class="mx-auto" style="border-radius: 13px;">
+
+                    <!-- 페이지 이름 -->
+                    <template v-slot:title>
+                        <span class="font-weight-black">
+                            주문 조회
+                        </span>
+                    </template>
+                    <v-card-text class="bg-surface-light pt-4">
+
+                        <!-- 거래처명, 주문일자, 납품일자, 주문번호로 주문 검색 -->
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="orderListMtltyName" class="col-form-label">거래처 명</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="text" id="orderListMtltyName" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_mtlty_name" @keydown="filteredResult()">
+                            </div>
+                            <div class="col-auto">
+                                <span class="form-text">
+                                    ex 예담
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <input type="text" id="orderListMtltyName" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_mtlty_name" @keydown="filteredResult()">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="orderListOrderDate" class="col-form-label">주문일자</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="date" id="orderListOrderDate" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_date" >
+                            </div>
+                            <div class="col-auto">
+                                <span class="form-text">
+                                ex 2024-12-15
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <span class="form-text">
-                            ex 예담
-                            </span>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="orderListDete" class="col-form-label">납품일자</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="date" id="orderListDete" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_dete">
+                            </div>
+                            <div class="col-auto">
+                                <span class="form-text">
+                                ex 2025-08-23
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row g-3 align-items-center">
-                        <div class="col-2">
-                            <label for="orderListOrderDate" class="col-form-label">주문일자</label>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-2">
+                                <label for="orderListOrderNo" class="col-form-label">주문번호</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="text" id="orderListOrderNo" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_no" @keydown="filteredResult()">
+                            </div>
+                            <div class="col-auto">
+                                <span class="form-text">
+                                ex ORDER-01
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <input type="date" id="orderListOrderDate" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_date" >
+
+                        <!-- 버튼 위치 -->
+                        <div style="margin-top:10px; margin-bottom:10px;">
+                            <button type="button" class="btn btn-primary" @click="filteredResult()" style="color:white;">조회</button>
+                            <button type="button" class="btn btn-secondary" @click="resetFilter()" style="color:white;">초기화</button>
+                            <button type="button" class="btn btn-primary" @click="onBtnExportDataAsCsvLotList()" style="color:white;">EXCEL 내보내기</button>
                         </div>
-                        <div class="col-auto">
-                            <span class="form-text">
-                            ex 2024-12-15
-                            </span>
+
+                        <!-- ag grid 내용 출력 -->
+                        <div>
+                            <ag-grid-vue :rowData="filteredRowData" :columnDefs="colDefs" style="height: 519px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
+                            @grid-ready="onGridReady" rowSelection="multiple">
+                            </ag-grid-vue>
                         </div>
-                    </div>
-                    <div class="row g-3 align-items-center">
-                        <div class="col-2">
-                            <label for="orderListDete" class="col-form-label">납품일자</label>
-                        </div>
-                        <div class="col-auto">
-                            <input type="date" id="orderListDete" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_dete">
-                        </div>
-                        <div class="col-auto">
-                            <span class="form-text">
-                            ex 2025-08-23
-                            </span>
-                        </div>
-                    </div>
-                    <div class="row g-3 align-items-center">
-                        <div class="col-2">
-                            <label for="orderListOrderNo" class="col-form-label">주문번호</label>
-                        </div>
-                        <div class="col-auto">
-                            <input type="text" id="orderListOrderNo" class="form-control" aria-describedby="passwordHelpInline" v-model="filter_order_no" @keydown="filteredResult()">
-                        </div>
-                        <div class="col-auto">
-                            <span class="form-text">
-                            ex ORDER-01
-                            </span>
-                        </div>
-                    </div>
-                    <div style="margin-top:10px;">
-                        <button type="button" class="btn btn-success" @click="filteredResult()" style="color:white;">조회</button>
-                        <button type="button" class="btn btn-warning" @click="resetFilter()" >초기화</button>
-                        <button type="button" class="btn btn-warning" @click="onBtnExportDataAsCsvLotList()" >EXCEL 내보내기</button>
-                    </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
+                        <button type="button" class="btn btn-primary" @click="onBtnExportDataAsCsvLotList()" style="margin-top:10px; color:white;">EXCEL 내보내기</button>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
     </v-container>
-    <v-card-text class="bg-surface-light pt-4">
-        <div>
-            <ag-grid-vue :rowData="filteredRowData" :columnDefs="colDefs" style="height: 519px" class="ag-theme-alpine" :gridOptions="gridOptionsOrder"
-            @grid-ready="onGridReady" rowSelection="multiple">
-            </ag-grid-vue>
-        </div>
-    </v-card-text>
 </template>
 
 <script>
@@ -129,28 +135,23 @@ export default {
             { field: "prdctn_at", headerName:"생산여부" } 
         ]); 
         this.gridOptionsOrder = { 
-                columnDefs: this.returnColDefs, 
-                pagination: true, 
-                paginationPageSize: 10, 
-                paginationPageSizeSelector: [10, 20, 50, 100], 
-                paginateChildRows: true, 
-                animateRows: false, 
-                defaultColDef: { 
-                    filter: true, 
-                    flex: 1, 
-                    minWidth: 10 
-                }, 
-                onCellClicked:params => {
-                    console.log('-------------------값 확인 보내기 전-----------', params.node.data.order_no, 
-                                    params.node.data.mtlty_name,
-                                    params.node.data.p_code);
-
-
-                    this.goToDetail(params.node.data.order_no, 
-                                    params.node.data.mtlty_name,
-                                    params.node.data.p_code );
-                    console.log('cell was clicked', params.node.data.order_no);
-                }
+            columnDefs: this.returnColDefs, 
+            pagination: true, 
+            paginationPageSize: 10, 
+            paginationPageSizeSelector: [10, 20, 50, 100], 
+            paginateChildRows: true, 
+            animateRows: false, 
+            defaultColDef: { 
+                filter: true, 
+                flex: 1, 
+                minWidth: 10 
+            }, 
+            onCellClicked:params => {
+                this.goToDetail(params.node.data.order_no, 
+                                params.node.data.mtlty_name,
+                                params.node.data.p_code );
+                console.log('cell was clicked', params.node.data.order_no);
+            }
         }; 
 
     }, 
@@ -163,15 +164,18 @@ export default {
             this.gridApi = params.api; 
             this.columnApi = params.columnApi; 
         }, 
+        // 주문 조회 함수
         async getorderList() { 
+
+            //주문 조회 요청, 결과값을 담아줌
             let result = await axios.get(`${ajaxUrl}/business/orderList`) 
                 .catch(err => console.log(err)); 
             this.orderList = result.data; 
             console.log(result, result.data); 
             this.rowData = ref(this.orderList); 
+
+            //필터링 된 결과를 rowData에 담아줌
             this.filteredRowData= this.rowData; 
-            // console.log(this.rowData);
-            // console.log(...this.rowData);
         }, 
         customDateFormat1(params){ 
             return userDateUtils.dateFormat(params.data.order_date,'yyyy-MM-dd'); 
@@ -179,31 +183,41 @@ export default {
         customDateFormat2(params){ 
             return userDateUtils.dateFormat(params.data.dete,'yyyy-MM-dd'); 
         }, 
+        // 주문번호, 거래처명, 거래처 코드를 params로 보내면서 router로 주문 상세 페이지로 이동
         goToDetail(order_no, mtlty_name, p_code){ 
-            console.log('-------------------함수로 이동해서 값을 받는지', order_no, mtlty_name, p_code)
             this.$router.push({name:'orderInfo', params : {order_no:order_no, mtlty_name:mtlty_name, p_code:p_code}}); 
         }, 
+        // 필터링 후 결과 조회
         filteredResult(){ 
-            //console.log(this.gridApi, this.colDefs, this.rowData.filter()); 
-            //console.log('거래처명 조회결과',this.filter_mtlty_name);
+
+            // 필터링 조건으로 조회 ( true일때만 반환)
             this.filteredRowData = this.rowData.filter((row)=>{ 
-                // console.log('주문번호',row.order_no);
-                // console.log('거래처',row.mtlty_name);
+
+                // 주문일자를 담을 변수
                 let orderDate = row.order_date; 
+
+                //납품 일자를 담을 변수
                 let newDete = row.dete; 
+
+                // 주문 일자가 null이면 true, null이 아니면 입력된 주문일자보다 같거나 클때만 true
                 let filter_order_date = !this.filter_order_date || orderDate >= this.filter_order_date;
+
+                // 납품 일자가 null이면 true, null이 아니면 입력된 납품 일자보다 같거나 클때만 true
                 let filter_dete = !this.filter_dete || newDete >= this.filter_dete;
-                console.log('거래처명 조회결과',this.filter_mtlty_name);
-                console.log(row);
-                console.log((!this.filter_mtlty_name || row.mtlty_name.includes(this.filter_mtlty_name)));
+
+                // 반환할 조건
                 return( 
+                    // 주문번호가 null이면 true, null이 아니면 해당 검색어를 포함해야 true
                     (!this.filter_order_no || row.order_no.includes(this.filter_order_no)) && 
+                    // 거래처명이 null이면 true, null이 아니면 해당 검색어를 포함해야 true
                     (!this.filter_mtlty_name || row.mtlty_name.includes(this.filter_mtlty_name)) && 
+                    // 바로 위에 정의된 boolean 타입 변수
                     filter_order_date && filter_dete
                 ) ;
             });
             console.log('필터링 결과는',this.filteredRowData);
         }, 
+        // 검색 조건 초기화
         resetFilter(){
             this.filter_order_no = ''; 
             this.filter_mtlty_name = ''; 
@@ -211,6 +225,7 @@ export default {
             this.filter_dete = ''; 
             this.filteredRowData = this.rowData; 
         },
+        // 엑셀로 내보내는 함수
         onBtnExportDataAsCsvLotList(){
             console.log('작동');
             this.gridApi.exportDataAsCsv();

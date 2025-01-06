@@ -16,6 +16,7 @@ const eqplist = async () => {
 // 생산 지시 조회 - 키오스크 버전 당일만 조회
 const finddrct = async () => {
   let list = await mariaDB.query('pr_srcdrct');
+  // let list = await mariaDB.query('pr_srcdrcttoday');
   return list;
 };
 
@@ -197,8 +198,8 @@ const drctinfo = async (code) => {
 };
 
 // 해당 공정의 자재 소모량 조회
-const selmatrl = async (code) => {
-  let list = await mariaDB.query('pr_selmatrl', code);
+const selmatrl = async (array) => {
+  let list = await mariaDB.query('pr_selmatrl', array);
   for(let i = 0; i < list.length; i++){
     list[i].usage = "";
   }
@@ -286,12 +287,12 @@ const finyesmt = async (code, matril) => {
   for(let i = 0; i < matril.length; i++){
     let se_list = await mariaDB.transaction_query('pr_se', [code, matril[i].mtril_code]);
     let se = se_list[0].prd_se;
-    let qy = parseInt(matril[i].usgqty);
-    
+    let qy = parseInt(matril[i].usage);
     if(se == 'PI01'){
       //자재일때
       // 자재 출고 조회
-      let mt_list = await mariaDB.transaction_query('pr_mt', [code, matril.mtril_code]);
+      let mt_list = await mariaDB.transaction_query('pr_mt', [code, matril[i].mtril_code]);
+      console.log("자재 출고", mt_list);
       for(let j = 0; j < mt_list.length; j++){
         
         if(qy == 0){
@@ -304,7 +305,7 @@ const finyesmt = async (code, matril) => {
           let mt_ins = await mariaDB.transaction_query('pr_insuse', [ mt_list[j].mtril_lot, matril[i].mtril_code, mt_list[j].mtril_name, se, mt_list[j].requst_qy, code, mt_list[j].dlivy_no ]);
           ins_co += mt_ins.affectedRows;
           // 수정
-          let mt_up = await mariaDB.transaction_query('pr_upmt', [ mt_list[j].requst_qy, 0 ]);
+          let mt_up = await mariaDB.transaction_query('pr_upmt', [ mt_list[j].requst_qy, 0, mt_list[j].dlivy_no ]);
           up_co += mt_up.affectedRows;
           qy -= mt_list[j].requst_qy;
         } else {
@@ -313,7 +314,7 @@ const finyesmt = async (code, matril) => {
           let mt_ins = await mariaDB.transaction_query('pr_insuse', [ mt_list[j].mtril_lot, matril[i].mtril_code, mt_list[j].mtril_name, se, qy, code, mt_list[i].dlivy_no ]);
           ins_co += mt_ins.affectedRows;
           // 수정
-          let mt_up = await mariaDB.transaction_query('pr_upmt', [ qy, mt_list[j].requst_qy - qy ]);
+          let mt_up = await mariaDB.transaction_query('pr_upmt', [ qy, mt_list[j].requst_qy - qy, mt_list[j].dlivy_no ]);
           up_co += mt_up.affectedRows;
           qy = 0;
         } // end of if(mt_list[j].requst_qy)
@@ -323,7 +324,7 @@ const finyesmt = async (code, matril) => {
     } else if(se == 'PI02'){
       //반제품일때
       // 반제품 출고 조회
-      let prdn_list = await mariaDB.transaction_query('pr_prdn', [code, matril.mtril_code]);
+      let prdn_list = await mariaDB.transaction_query('pr_prdn', [code, matril[i].mtril_code]);
       for(let k = 0; k < prdn_list.length; k++){
         
         if(qy == 0){
@@ -336,7 +337,7 @@ const finyesmt = async (code, matril) => {
           let prdn_ins = await mariaDB.transaction_query('pr_insuse', [ prdn_list[k].prduct_n_lot, matril[i].mtril_code, prdn_list[k].prduct_n_name, se, prdn_list[k].requst_qy, code, prdn_list[k].prduct_n_dlivy_no ]);
           ins_co += prdn_ins.affectedRows;
           // 수정
-          let prdn_up = await mariaDB.transaction_query('pr_upprdn', [prdn_list[k].requst_qy, 0 ]);
+          let prdn_up = await mariaDB.transaction_query('pr_upprdn', [prdn_list[k].requst_qy, 0, prdn_list[k].prduct_n_dlivy_no ]);
           up_co += prdn_up.affectedRows;
           qy -= mt_list[j].requst_qy;
           
@@ -346,7 +347,7 @@ const finyesmt = async (code, matril) => {
           let prdn_ins = await mariaDB.transaction_query('pr_insuse', [ prdn_list[k].prduct_n_lot, matril[i].mtril_code, prdn_list[k].prduct_n_name, se, qy, code, prdn_list[k].prduct_n_dlivy_no ]);
           ins_co += prdn_ins.affectedRows;
           // 수정
-          let prdn_up = await mariaDB.transaction_query('pr_upprdn', [ qy, prdn_list[k].requst_qy - qy ]);
+          let prdn_up = await mariaDB.transaction_query('pr_upprdn', [ qy, prdn_list[k].requst_qy - qy, prdn_list[k].prduct_n_dlivy_no ]);
           up_co += prdn_up.affectedRows;
           qy = 0;
         } // end of if(prdn_list[k].requst_qy)

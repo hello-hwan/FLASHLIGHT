@@ -67,6 +67,11 @@ const modifyOrderListByNo = async (keywords)=>{
     return orderModify;
 }
 
+const modifyOrderListByListNo = async (keywords)=>{
+    let orderModify2 = await mariaDB.query('bs_modifyCheck_list', keywords);
+    return orderModify2;
+}
+
 module.exports = {
     findAllOrderRequest,
     createNewOrderRequest,
@@ -75,5 +80,6 @@ module.exports = {
     searchCompanyModal,
     findOrderArray,
     searchProductModal,
-    modifyOrderListByNo
+    modifyOrderListByNo,
+    modifyOrderListByListNo
 };
