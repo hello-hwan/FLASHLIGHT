@@ -48,17 +48,11 @@ const bomInsert =
                         bom_code,
                         cmpds_prdlst_code,
                         cmpds_prdlst_name,
-                        stndrd_x,
-                        stndrd_y,
-                        stndrd_z,
                         unit,
                         cnsum_count)
 VALUES (CONCAT('M-SL', nextval(bom_cmpds_seq)), 
         ?, 
-        ?, 
-        ?, 
-        ?, 
-        ?, 
+        ?,  
         ?, 
         ?, 
         ?)`;
