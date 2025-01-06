@@ -89,7 +89,7 @@ created() {
         },
         //{ field: "입고", headerName:"입고", cellRenderer: () => {return "입고"}}
         { field: "입고", headerName: "입고",  cellStyle: { textAlign: "center" } ,cellRenderer: () => {
-                                            return '<button class="btn btn-primary mx-2">입고</button>';
+                                            return '<button id="btnTest" class="btn btn-primary mx-2">입고</button>';
         }}
     ])
     this.gridOptionsReturn = {
@@ -114,7 +114,7 @@ created() {
         { field: "end_time", headerName:"생산완료일",
             valueFormatter: this.customDateFormat },
         { field: "입고", headerName: "입고",  cellStyle: { textAlign: "center" } ,cellRenderer: () => {
-                                            return '<button class="btn btn-primary mx-2">입고</button>'}}
+                                            return '<button id="btnTest2" class="btn btn-primary mx-2">입고</button>'}}
 
     ])
     this.gridOptionsReturn = {
@@ -228,3 +228,10 @@ methods: {
 }
 };
 </script>
+<style>
+
+span>button{
+    margin-bottom: 7px;
+}
+
+</style>

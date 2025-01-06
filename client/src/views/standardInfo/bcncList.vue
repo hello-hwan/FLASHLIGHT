@@ -291,13 +291,15 @@ export default {
       console.log(obj);
       let result = await axios.post(`${ajaxUrl}/bcncAdd`, obj)
                         .catch(err => console.log(err));
-      if(result){
+      if(result.status == 200){
         let result2 = await axios.get(`${ajaxUrl}/bcncList`)
           .catch(err => console.log(err));
           this.bcncList = result2.data;
           this.rowData = this.bcncList;
           this.filteredRowData = this.rowData;
           this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다.', life: 3000 });
+      }else{
+        this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가 발생하엿습니다.', life: 3000 });
       }
         
                         
@@ -341,9 +343,15 @@ export default {
         selectedData.forEach((data) => {
           console.log(data.bcnc_code);
           if (data.bcnc_code) {
-            axios.delete(`${ajaxUrl}/bcnc_code/${data.bcnc_code}`)
+            let result = axios.delete(`${ajaxUrl}/bcnc_code/${data.bcnc_code}`)
               .then(() => console.log(`행 삭제 완료: ${data.bcnc_code}`))
               .catch((err) => console.error(`행 삭제 실패: ${data.bcnc_code}`, err));
+              console.log(result);
+            if(result){
+              this.toast.add({ severity: 'success', summary: '성공', detail: '삭제가 완료되었습니다.', life: 3000 });
+            }else{
+              this.toast.add({ severity: 'warn', summary: '경고', detail: '삭제 중 오류가 발생하엿습니다.', life: 3000 });
+            }
           }
         });
     },

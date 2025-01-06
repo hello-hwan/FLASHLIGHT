@@ -6,7 +6,7 @@
         <v-col cols="12" class="mb-4">
           <v-card class="mx-auto" style="border-radius: 13px;">
             <template v-slot:title>
-              <span class="font-weight-black">완제품조회</span>
+              <span class="font-weight-black">완제품 입고 조회</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <!-- 필터 검색 필드 -->

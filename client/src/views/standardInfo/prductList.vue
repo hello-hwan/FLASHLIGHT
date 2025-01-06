@@ -256,8 +256,10 @@ export default {
         let result = await axios.put(`${ajaxUrl}/prductUpdate/${this.rowData[i].prdlst_code}`, obj)
                                 .catch(err => console.log(err));
         if(this.rowData.length == this.count){
-          if(result){
+          if(result.status == 200){
             this.toast.add({ severity: 'success', summary: '성공', detail: '수정되었습니다.', life: 3000 });
+          }else{
+            this.toast.add({ severity: 'warn', summary: '실패', detail: '수정 중 오류가발생하엿습니다.', life: 3000 });
           }
         }
         
@@ -282,9 +284,14 @@ export default {
 
         selectedData.forEach((data) => {
           if (data.prdlst_code) {
-            axios.delete(`${ajaxUrl}/prductDelete/${data.prdlst_code}`)
+            let result = axios.delete(`${ajaxUrl}/prductDelete/${data.prdlst_code}`)
               .then(() => console.log(`행 삭제 완료: ${data.prdlst_code}`))
               .catch((err) => console.error(`행 삭제 실패: ${data.prdlst_code}`, err));
+            if(result){
+              this.toast.add({ severity: 'success', summary: '성공', detail: '삭제가 완료되었습니다.', life: 3000 });
+            }else{
+              this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가 발생하엿습니다.', life: 3000 });
+            }
           }
         });
     },

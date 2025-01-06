@@ -198,6 +198,7 @@ export default {
       }else{ 
         let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
                           .catch(err => console.log(err));
+          
         let list = await axios.get(`${ajaxUrl}/mtril`)
                           .catch(err => console.log(err));
                           this.mtrilList = list.data;
@@ -205,6 +206,8 @@ export default {
                           this.filteredRowData = this.rowData;  
         if(result){
           this.toast.add({ severity: 'success', summary: '성공', detail: '등록이 완료되었습니다.', life: 3000 });
+        }else{
+          this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가발생하엿습니다.', life: 3000 });
         }
       }
 
@@ -243,9 +246,14 @@ export default {
 
         selectedData.forEach((data) => {
           if (data.mtril_code) {
-            axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
+            let result = axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
               .then(() => console.log(`행 삭제 완료: ${data.mtril_code}`))
               .catch((err) => console.error(`행 삭제 실패: ${data.mtril_code}`, err));
+              if(result.status == 200){
+                this.toast.add({ severity: 'success', summary: '성공', detail: '삭제가 완료되었습니다.', life: 3000 });
+              }else{
+                this.toast.add({ severity: 'warn', summary: '실패', detail: '삭제 중 오류가 발생하엿습니다.', life: 3000 });
+              }
           }
         });
     },

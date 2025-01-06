@@ -138,7 +138,7 @@ GROUP BY m.mtril_code
 	 ,m.untpc
 	 ,m.sfinvc
 ORDER BY m.mtril_code DESC`;
- 
+
 // 자재 등록
 const mtrilAdd =
 `INSERT INTO mtril (mtril_code
@@ -146,7 +146,7 @@ const mtrilAdd =
                    ,unit
                    ,untpc
                    ,sfinvc)
-VALUES (CONCAT('M-'nextval(mtril_no_seq)),
+VALUES (CONCAT('M-',nextval(mtril_no_seq)),
         ?,
         ?,
         0,

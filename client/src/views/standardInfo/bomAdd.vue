@@ -2,12 +2,16 @@
   <div>
     <v-container fluid>
       <v-row>
-        <!-- 검색 필드 -->
-        <v-col cols="12" class="mb-4">
-          <v-card class="mx-auto" style="border-radius: 13px;">
+        <v-col cols="12">
+          <v-card style="margin-bottom: 5px;">
             <template v-slot:title>
               <span class="font-weight-black">BOM 조회</span>
             </template>
+          </v-card>
+        </v-col>
+        <!-- 검색 필드 -->
+        <v-col cols="12" class="mb-4">
+          <v-card class="mx-auto" style="border-radius: 13px;">
             <v-card-text class="bg-surface-light pt-4">
               <!-- 필터 검색 필드 -->
               <div class="row g-3 align-items-center">
@@ -111,15 +115,16 @@
                 <div id="search-bar">
                     <div class="align-left"> 
                         <span>완제품 코드</span>
-                        <InputText type="text" ></InputText>
+                        <InputText type="text" v-model="prductSearch"></InputText>
                         <span>완제품명</span>
-                        <InputText type="text" > </InputText>
+                        <InputText type="text" v-model="prductNameSearch"> </InputText>
                         <button class="btn btn-primary mx-2" @click="prductisModified">완제품리스트</button>
                         <button class="btn btn-primary mx-2" @click="prductNisModified">반제품리스트</button>
                         <button @click="searchProduct"class="btn btn-primary search-btn">조회</button>
+                        <button class="btn btn-secondary mx-2" @click="resetFilter">초기화</button>
                     </div>
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
-                      :rowData="rowDataprduct"
+                      :rowData="searchProductRow"
                       :columnDefs="colDefsprduct"
                       :gridOptions="gridOptions"
                       @cellClicked="onCellClicked3"
@@ -137,15 +142,16 @@
                 <div id="search-bar">
                     <div class="align-left"> 
                         <span>반제품 코드</span>
-                        <InputText type="text" ></InputText>
+                        <InputText type="text" v-model="prductNSearch"></InputText>
                         <span>반제품명</span>
-                        <InputText type="text" > </InputText>
+                        <InputText type="text" v-model="prductNNameSearch"> </InputText>
                         <button class="btn btn-primary mx-2" @click="prductisModified">완제품리스트</button>
                         <button class="btn btn-primary mx-2" @click="prductNisModified">반제품리스트</button>
-                        <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                        <button @click="searchProductN"class="btn btn-primary search-btn" >조회</button>
+                        <button class="btn btn-secondary mx-2" @click="resetNFilter">초기화</button>
                     </div>
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
-                      :rowData="rowDataprductN"
+                      :rowData="searchProductNRow"
                       :columnDefs="colDefsprductN"
                       :gridOptions="gridOptions"
                       @cellClicked="onCellClicked3"
@@ -189,6 +195,16 @@ export default {
       prductN: [],
       rowDataprductN: [],
       colDefsprductN: [],
+
+      searchProductRow: [],
+      searchProductNRow: [],
+
+      // 모달 검색 입력값
+      prductSearch: "",
+      prductNSearch: "",
+
+      prductNameSearch: "",
+      prductNNameSearch: "",
 
       prduct: [],
       rowDataprduct: [],
@@ -284,11 +300,13 @@ export default {
                                   .catch(err => console.log(err));
             this.prductN = listN.data
             this.rowDataprductN = this.prductN
+            this.searchProductNRow = this.rowDataprductN
 
             let list = await axios.get(`${ajaxUrl}/prduct`)
                                   .catch(err => console.log(err));
             this.prduct = list.data
             this.rowDataprduct = this.prduct
+            this.searchProductRow = this.rowDataprduct
     },
 
     // 그리드 초기값 불러오기
@@ -331,8 +349,10 @@ export default {
                           this.mtrilList = list.data;
                           this.rowData = this.mtrilList;
                           this.filteredRowData = this.rowData;  
-        if(result){
+        if(result.status == 200){
           this.toast.add({ severity: 'success', summary: '성공', detail: '등록이 완료되었습니다.', life: 3000 });
+        }else{
+          this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가발생하엿습니다.', life: 3000 });
         }
       }
 
@@ -345,8 +365,8 @@ export default {
           untpc: row.untpc,
           sfinvc: row.sfinvc
         }
-        let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
-                                .catch(err => console.log(err));
+        // let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
+        //                         .catch(err => console.log(err));
         // if(result){
         //   this.toast.add({ severity: 'success', summary: '성공', detail: '수정이 완료되었습니다.', life: 3000 });
         // }
@@ -372,9 +392,14 @@ export default {
 
         selectedData.forEach((data) => {
           if (data.bom_code) {
-            axios.delete(`${ajaxUrl}/bomDelete/${data.bom_code}`)
+            let result = axios.delete(`${ajaxUrl}/bomDelete/${data.bom_code}`)
               .then(() => console.log(`행 삭제 완료: ${data.bom_code}`))
               .catch((err) => console.error(`행 삭제 실패: ${data.bom_code}`, err));
+            if(result){
+              this.toast.add({ severity: 'success', summary: '성공', detail: '삭제가 완료되었습니다.', life: 3000 });
+            }else{
+              this.toast.add({ severity: 'warn', summary: '경고', detail: '삭제 중 오류가 발생하엿습니다', life: 3000 });
+            }
           }
         });
     },
@@ -388,6 +413,27 @@ export default {
         );
       });
     },
+
+
+
+    // 모달 검색값에 따른 필터링
+    searchProduct(){
+      this.searchProductRow = this.rowDataprduct.filter((row) => {
+        return (
+          (!this.prductSearch || row.prdlst_code.includes(this.prductSearch)) &&
+          (!this.prductNameSearch || row.prdlst_name.includes(this.prductNameSearch)) 
+        )
+      })
+    },
+
+    searchProductN(){
+      this.searchProductNRow = this.rowDataprductN.filter((row) => {
+        return (
+          (!this.prductNSearch || row.prdlst_n_code.includes(this.prductNSearch)) &&
+          (!this.prductNNameSearch || row.prdlst_n_name.includes(this.prductNNameSearch)) 
+        )
+      })
+    },
     
     // 검색 필터 초기화
     resetFilter() {
@@ -396,6 +442,21 @@ export default {
       this.sfinvcAdd,
       this.remarks
       this.filteredRowData = this.rowData;
+    },
+
+
+ 
+    // 모달 검색 필터 초기화
+    resetFilter(){
+      this.prductSearch = "",
+      this.prductNameSearch = "",
+      this.searchProductRow = this.rowDataprduct
+    },
+
+    resetNFilter(){
+      this.prductNSearch = "",
+      this.prductNNameSearch = "",
+      this.searchProductNRow = this.rowDataprductN
     },
 
     // 등록 input 초기화

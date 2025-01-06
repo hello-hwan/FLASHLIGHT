@@ -115,8 +115,13 @@ router.get('/mtril', async (req, res) => {
 // 자재 등록
 router.post('/mtrilAdd', async (req, res) => {
   let info = req.body;
-  let result = await standard_info_service.mtrilAdd(info);
-  res.send(result);
+  try {
+    let result = await standard_info_service.mtrilAdd(info);
+    res.send(result);
+  } catch (error) {
+    console.log('router',error);
+  }
+  
 })
 
 // 자재 삭제
