@@ -4,6 +4,13 @@ const express = require('express');
 const router = express.Router();
 const standard_info_service = require('../service/standard_info_service.js');
 
+// 반제품 조회 (bom모달)
+router.get('/prductNModel', async (req, res) => {
+  let searchs = req.query;
+  let prductNModel = await standard_info_service.prductNModel(searchs);
+  res.send(prductNModel);
+})
+
 // 기준정보 데이터 select 테스트
 router.get('/cmmn', async (req, res)=>{ 
   let searchs = req.query;

@@ -171,19 +171,19 @@ const model = ref([
                         to: '/'
                     },
                     {
-                        label: '거래처 관리 / 거래처 조회',
+                        label: '거래처 관리',
                         to: '/standardInfo/infobcncList'
                     },
                     {
-                        label: '제품 관리 / 제품 조회',
+                        label: '제품 관리',
                         to: '/standardInfo/infoprductList'
                     },
                     {
-                        label: '반제품 관리 / 반제품 조회',
+                        label: '반제품 관리',
                         to: '/standardInfo/infoprductNList'
                     },
                     {
-                        label: '자재 관리 / 자재 조회',
+                        label: '자재 관리',
                         to: '/standardInfo/mtrilList'
                     },
                     {
@@ -191,7 +191,7 @@ const model = ref([
                         to: '/standardInfo/bomManage'
                     },
                     {
-                        label: 'BOM 관리 / BOM 조회',
+                        label: 'BOM 관리',
                         to: '/standardInfo/bomList'
                     },
                     {

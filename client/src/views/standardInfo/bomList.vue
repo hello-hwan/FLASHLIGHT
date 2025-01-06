@@ -68,6 +68,7 @@
                 :rowSelection="rowSelection"
                 @cellClicked="onCellClicked"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-one"
               >
@@ -91,6 +92,7 @@
                 @cellClicked="onCellClicked2"
                 @grid-ready="onGridReady2"
                 @cell-value-changed="onCellValueChanged"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
               >
               </AgGridVue>
@@ -118,21 +120,54 @@
 
     <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
         <div class="modal-wrap" @click="modalOpen2" v-show="modalCheck2" >
-            <div class="modal-container" @click.stop="">
+            <div class="modal-container" @click.stop="" v-if="mtrilModal">
                 <div id="search-bar">
                     <div class="align-left"> 
                         <span>자재 코드</span>
-                        <InputText type="text" ></InputText>
+                        <InputText type="text" v-model="mtrilCodeInput"></InputText>
                         <span>자재 명</span>
-                        <InputText type="text" > </InputText>
-                        <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                        <InputText type="text" v-model="mtrilNameInput"> </InputText>
+                        <button @click="searchMtril"class="btn btn-primary search-btn" >조회</button>
+                        <button class="btn btn-secondary" @click="resetModal">초기화</button>
+                        <button @click="mtrilModalOpen"class="btn btn-primary search-btn" >자재</button>
+                        <button @click="prdlstNModalOpen"class="btn btn-primary search-btn" >반제품</button>
                     </div>
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
-                      :rowData="rowDataInfotest"
+                      :rowData="mtrilFilter"
                       :columnDefs="colDefsInfotest"
                       :gridOptions="gridOptions"
                       @cellClicked="onCellClicked3"
                       @grid-ready="onGridReady"
+                      overlayNoRowsTemplate="결과없음"
+                      class="ag-theme-alpine">
+                    </AgGridVue>
+                </div>
+    
+                <div class="modal-btn">
+                    <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
+                    
+                </div>
+            </div>
+
+            <div class="modal-container" @click.stop="" v-if="prdlstNModal">
+                <div id="search-bar">
+                    <div class="align-left"> 
+                        <span>반제품 코드</span>
+                        <InputText type="text" v-model="prdlstCodeInput"></InputText>
+                        <span>반제품 명</span>
+                        <InputText type="text" v-model="prdlstNameInput"> </InputText>
+                        <button @click="searchPrductN"class="btn btn-primary search-btn" >조회</button>
+                        <button class="btn btn-secondary" @click="resetModal">초기화</button>
+                        <button @click="mtrilModalOpen"class="btn btn-primary search-btn" >자재</button>
+                        <button @click="prdlstNModalOpen"class="btn btn-primary search-btn" >반제품</button>
+                    </div>
+                    <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
+                      :rowData="prductNFilter"
+                      :columnDefs="colDefsInfoModal"
+                      :gridOptions="gridOptions"
+                      @cellClicked="onCellClicked3"
+                      @grid-ready="onGridReady"
+                      overlayNoRowsTemplate="결과없음"
                       class="ag-theme-alpine">
                     </AgGridVue>
                 </div>
@@ -161,6 +196,8 @@ import { useToast } from 'primevue/usetoast';
   export default {
     data() {
       return {
+        mtrilModal: true,
+        prdlstNModal: false,
         istest: false,
         isButtonDisabled : true,
         isModified: false, // 수정 상태 추적 변수
@@ -176,9 +213,17 @@ import { useToast } from 'primevue/usetoast';
         rowDataInfo: [], // 상세보기 데이터
         colDefsInfo: [], // 상세보기 컬럼 정의
   
+        // 모달 자재 조회 데이터
         bomInfoList: [],
         rowDataInfotest: [],
         colDefsInfotest: [],
+        mtrilFilter: [],
+
+        // 모달 반제품 조회 데이터
+        prductNModel: [], 
+        rowDataInfoModal: [],
+        colDefsInfoModal: [],
+        prductNFilter: [],
 
         gridOptionsReturn: {}, // AgGrid 옵션
   
@@ -190,7 +235,16 @@ import { useToast } from 'primevue/usetoast';
         rowCount: 0,
         isNewRow: true,
         toast : useToast(),
-        bomCode: ""
+        bomCode: "",
+
+        // 자재검색 입력값
+        mtrilCodeInput: "",
+        mtrilNameInput: "",
+
+        // 반제품 검색 입력값
+        prdlstCodeInput: "",
+        prdlstNameInput: ""
+
       };
 
     },
@@ -209,21 +263,31 @@ import { useToast } from 'primevue/usetoast';
   
       // 상세보기 컬럼 정의
       this.colDefsInfo = [
-        { field: "cmpds_prdlst_code", headerName: "소모품목코드", editable: (params) => params.node.data.isNewRow },
+        { field: "cmpds_prdlst_code", headerName: "소모품목코드", editable: (params) => params.node.data.isNewRow , valueGetter: (params) => params.data.cmpds_prdlst_code || params.data.prdlst_code},
         { field: "cmpds_prdlst_name", headerName: "소모품명", editable: (params) => params.node.data.isNewRow },
-        { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.stndrd_x == null },
-        { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
-        { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
+        // { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.stndrd_x == null },
+        // { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
+        // { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
         { field: "unit", headerName: "단위", editable: (params) => params.node.data.isNewRow },
         { field: "cnsum_count", headerName: "소모량", editable: true }, // 항상 수정 가능        
       ];
       
-      // 모달 컬럼저의
+      // 자재 모달 컬럼정의
       this.colDefsInfotest = [
         { field: "mtril_code", headerName: "자재코드" },
         { field: "mtril_name", headerName: "자재명" },
         { field: "unit", headerName: "단위" },
         { field: "untpc", headerName: "입고단가" },
+        { field: "sfinvc", headerName: "안전재고" },
+        { field: "선택", headerName: "선택", cellRenderer:() => '선택'}
+      ];
+
+      // 반제품 모달 컬럼 정의
+      this.colDefsInfoModal = [
+        { field: "prdlst_code", headerName: "반제품코드" },
+        { field: "prdlst_name", headerName: "반제품명" },
+        { field: "unit", headerName: "단위" },
+        { field: "wrhousng_unite", headerName: "입고단가" },
         { field: "sfinvc", headerName: "안전재고" },
         { field: "선택", headerName: "선택", cellRenderer:() => '선택'}
       ];
@@ -235,14 +299,12 @@ import { useToast } from 'primevue/usetoast';
         paginationPageSizeSelector: [10, 20, 50, 100],
         animateRows: false,
         defaultColDef: {
-          filter: true,
           flex: 1,
           minWidth: 10,
         },
       };
       this.gridOptions = {
         defaultColDef: {
-          filter: true,
           sortable: true,
           resizable: true,
           flex: 1,
@@ -279,6 +341,13 @@ import { useToast } from 'primevue/usetoast';
                               .catch(err => console.log(err));
             this.bomInfoList = result.data
             this.rowDataInfotest = this.bomInfoList;
+            this.mtrilFilter = this.rowDataInfotest;
+
+            let prdlstN = await axios.get(`${ajaxUrl}/prductNModel`)
+                                     .catch(err => console.log(err));
+              this.prductNModel = prdlstN.data;
+              this.rowDataInfoModal = this.prductNModel;
+              this.prductNFilter = this.rowDataInfoModal;
                 // //행 데이터 초기화
                 // this.rowData2 = [];
     
@@ -332,10 +401,43 @@ import { useToast } from 'primevue/usetoast';
         );
       },
 
+      // 자재모달 검색 필터링
+      searchMtril(){
+        this.mtrilFilter = this.rowDataInfotest.filter((row) => {
+          return (
+            (!this.mtrilCodeInput || row.mtril_code.includes(this.mtrilCodeInput)) &&
+            (!this.mtrilNameInput || row.mtril_name.includes(this.mtrilNameInput))
+          );
+        })
+      },
+
+      // 반제품 모달 검색 필터링
+      searchPrductN(){
+        this.prductNFilter = this.rowDataInfoModal.filter((row) => {
+          return (
+            (!this.prdlstCodeInput || row.prdlst_code.includes(this.prdlstCodeInput)) &&
+            (!this.prdlstNameInput || row.prdlst_name.includes(this.prdlstNameInput))
+          );
+        })
+      },
+
       // 검색조건 초기화
       resetFilter() {
         this.searchCode = "";
         this.filteredRowData = [...this.bomList];
+      },
+
+      // 모달 검색 조건 초기화
+      resetModal(){
+        console.log('클릭테스트')
+        this.prdlstCodeInput = "";
+        this.prdlstNameInput = "";
+        this.mtrilCodeInput = "";
+        this.mtrilNameInput = "";
+
+        this.mtrilFilter = this.rowDataInfotest;
+        this.prductNFilter = this.rowDataInfoModal
+
       },
 
       deleteRow() {
@@ -433,12 +535,20 @@ import { useToast } from 'primevue/usetoast';
 
       // 모달값 rowDataInfo그리드로 데이터 넘기기
       onCellClicked3(event){
-        if(event.colDef.field === "선택"){
-          let obj = {
+        let obj = {
             cmpds_prdlst_code:  event.data.mtril_code,
             cmpds_prdlst_name:  event.data.mtril_name,
             unit: event.data.unit,
             isNewRow: true
+        }
+        if(event.colDef.field === "선택"){
+          if(event.data.mtril_code == null){
+            obj = {
+              cmpds_prdlst_code:  event.data.prdlst_code,
+              cmpds_prdlst_name:  event.data.prdlst_name,
+              unit: event.data.unit,
+              isNewRow: true
+            }
           }
           const isDuplicate = this.rowDataInfo.some(
             (row) => row.cmpds_prdlst_code === obj.cmpds_prdlst_code
@@ -470,6 +580,15 @@ import { useToast } from 'primevue/usetoast';
         if (!this.gridOptions.api) {
           console.error("AgGrid API가 초기화되지 않았습니다.");
         }
+      },
+
+      mtrilModalOpen(){
+        this.mtrilModal = true;
+        this.prdlstNModal = false;
+      },
+      prdlstNModalOpen(){
+        this.mtrilModal = false;
+        this.prdlstNModal = true;
       }
     },
     

@@ -1,6 +1,12 @@
 //기준정보 router
 const mariaDB = require('../database/mapper.js');
 
+// 반제품 조회 (bom모달)
+const prductNModel = async () => {
+  let list = await mariaDB.query('prductNModel');
+  return list;
+}
+
 // 기준정보 데이터 select 테스트
 const cmmntest = async () => {
   let list = await mariaDB.query('cmmn');
@@ -361,6 +367,7 @@ const loginService = async (info) => {
 };
 
 module.exports = {
+  prductNModel,
   cmmntest, 
   bomtest,
   bomInfo,
