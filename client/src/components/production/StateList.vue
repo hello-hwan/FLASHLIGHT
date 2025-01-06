@@ -98,7 +98,6 @@ const getlist = async (date, code) => {
       result.data[i].end_time = useDates.dateFormat(end, 'yyyy-MM-dd') + ' ' + useDates.timeFormat(end, 'hh:mm:ss');
     }
     rowData.value = result.data;
-    console.log(result.data);
   }
 };
 onBeforeMount(() => {

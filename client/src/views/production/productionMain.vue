@@ -95,7 +95,7 @@
               <th colspan="32">{{ eqp.model_nm }}</th>
   
               <!-- 일정만큼 열 반복 -->
-              <td class="over-sub" nowrap v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+              <td class="over-sub" nowrap v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
               <!-- <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.procs_nm }}</td> -->
   
               <!-- 데이터 없으면 표시할 데이터 -->
@@ -111,6 +111,7 @@
               <tr v-for="color in colors">
                 <th :style="{backgroundColor : color}"> {{ color }}</th>
                 <td v-for="drct in drctlist.filter((c)=> c.color == color)" >{{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+                <td v-if="drctlist.length == 0">No - Data - Found</td>
               </tr>
             </tbody>
           </table>
@@ -204,6 +205,7 @@
       colorlist[i].color = newArray[colorlist[i].order_no];
     }
     drctlist.value = colorlist;
+    console.log(drctlist.value);
 
   };
   onBeforeMount(() => {
@@ -276,7 +278,7 @@
     text-align: center;
   }
   .data-detail th {
-    width: 12.3%;
+    width: 12.5%;
     border: 2px solid #000;
   }
   .data-detail td{

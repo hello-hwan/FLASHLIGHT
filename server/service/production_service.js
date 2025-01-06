@@ -64,7 +64,7 @@ const drctlist = async (prd_code, day_str) => {
     if(model != list[i].model_nm){
 
       if(colspan > 0 && colspan < 168){
-        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168-colspan, "order_no" : "" });
+        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round(168-colspan), "order_no" : "" });
       }
       colspan = 0;
 
@@ -76,14 +76,14 @@ const drctlist = async (prd_code, day_str) => {
       if(begin < start){
         if(colspan + list[i].drct_time >= 168){
           if(finday.getTime() > end){
-            result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (end-start)/1000/60/60, "order_no" : list[i].order_no });
+            result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((end-start)/1000/60/60), "order_no" : list[i].order_no });
             colspan += (end-start)/1000/60/60;
           } else {
-            result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (168 - colspan), "order_no" : list[i].order_no });
+            result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((168 - colspan)), "order_no" : list[i].order_no });
             colspan = 168;
           }
         } else {
-          result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (end-start)/1000/60/60, "order_no" : list[i].order_no });
+          result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((end-start)/1000/60/60), "order_no" : list[i].order_no });
           colspan += (end-start)/1000/60/60;
         }
         model = list[i].model_nm;
@@ -92,7 +92,7 @@ const drctlist = async (prd_code, day_str) => {
         continue;
       }
       if(begin - start > 0){
-        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-start)/1000/60/60, "order_no" : "" });
+        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round((begin-start)/1000/60/60), "order_no" : "" });
         colspan += (begin-start)/1000/60/60;
       }
          
@@ -100,7 +100,7 @@ const drctlist = async (prd_code, day_str) => {
     begin_time = list[i].pre_begin_time;
     begin = new Date(begin_time).getTime();
     if(begin - end > 0){
-      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : (begin-end)/1000/60/60, "order_no" : "" });
+      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round((begin-end)/1000/60/60), "order_no" : "" });
       colspan += (begin-end)/1000/60/60;
     }
     if(colspan >= 168){
@@ -108,7 +108,7 @@ const drctlist = async (prd_code, day_str) => {
       continue;
     }
     if(colspan + list[i].drct_time >= 168){
-      result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : (168 - colspan), "order_no" : list[i].order_no });
+      result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((168 - colspan)), "order_no" : list[i].order_no });
       colspan = 168;
     } else {
         result.push(list[i]);
@@ -120,7 +120,6 @@ const drctlist = async (prd_code, day_str) => {
     end = new Date(end_time).getTime();
     
   }
-  console.log(colspan);
   let eqp = await mariaDB.query('pr_eqp');
   let co = 0;
   for(let i = 0; i < eqp.length; i++){
@@ -128,10 +127,9 @@ const drctlist = async (prd_code, day_str) => {
       co = i;
     }
   }
-  console.log(co);
   for(let i = co; i < eqp.length; i++){
     if(colspan < 168 && colspan > 0){
-      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168-colspan, "order_no" : "" });
+      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round(168-colspan), "order_no" : "" });
       colspan = 0;
       continue;
     } else if (colspan == 168){
@@ -153,8 +151,10 @@ const drctlist = async (prd_code, day_str) => {
       result.push({"prdctn_code" : "", "procs_nm" : "Found", "model_nm" : name1, "prd_nm" : "No - data", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168, "order_no" : "" });
     }
   }
-  
-return result;
+  let rearray = result.sort(function(a, b) {
+    return a.model_nm.toLowerCase() < b.model_nm.toLowerCase() ? -1 : 1
+  })
+return rearray;
 };
 
 // 제품리스트 검색 기능
