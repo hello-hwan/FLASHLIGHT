@@ -89,18 +89,18 @@ VALUES(?,
 //품질검사 결과 리스트
 const qiResult =
 `
-SELECT  m.mtril_check_code,
-		s.inspec_standard,
-        s.p_result,
-        m.mtlty_name,
-        m.prd_code,
-        m.mtril_name,
-        m.rec_num,
-        m.pass_amount,
-        s.error_amount,
-        t.unit,
-        m.test_date,
-        f.empl_name
+SELECT  m.mtril_check_code AS mtril_check_code,
+		s.inspec_standard AS inspec_standard,
+        s.p_result AS p_result,
+        m.mtlty_name AS mtlty_name,
+        m.prd_code AS prd_code,
+        m.mtril_name AS mtril_name,
+        m.rec_num AS rec_num,
+        m.pass_amount AS pass_amount,
+        s.error_amount AS error_amount,
+        t.unit AS unit,
+        m.test_date AS test_date,
+        f.empl_name AS empl_name
 FROM    inspection_check m JOIN check_result s
 							 ON (m.mtril_check_code = s.mtril_check_code)
 						   JOIN mtril t
@@ -115,6 +115,7 @@ AND    m.test_date BETWEEN IFNULL(?, m.test_date) AND IFNULL(?, m.test_date)
 AND    m.empl_no IN (SELECT d.empl_no
                      FROM   empl d
                      WHERE  d.empl_name LIKE CONCAT('%', IFNULL(?, d.empl_name), '%'))
+ORDER BY m.mtril_check_code desc
 `;
 
 module.exports = {
