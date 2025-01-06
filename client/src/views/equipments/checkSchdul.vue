@@ -68,7 +68,7 @@ export default {
             columnDefs: this.orderColDefs,
             pagination: true,
             paginationPageSize: 5,
-            paginationPageSizeSelector: [10, 20, 50, 100],
+            paginationPageSizeSelector: [5, 10, 20],
             paginateChildRows: true,
             animateRows: false,
             defaultColDef: {

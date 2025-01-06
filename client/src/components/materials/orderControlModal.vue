@@ -2,7 +2,7 @@
     <span style="margin-left:20px">
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;" v-if="state == 'pdf'">PDF 내보내기</button>
+        style="line-height: 1px; color: #fff; margin:12px;" v-if="state == 'pdf'">PDF 내보내기</button>
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
         style="line-height: 1px; color: #fff;" v-else-if="state == 'order'">발주건 조회</button>
