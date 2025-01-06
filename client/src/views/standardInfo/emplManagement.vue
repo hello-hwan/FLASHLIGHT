@@ -195,7 +195,7 @@
                     </tbody>
                 </table>
                 <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-                    @grid-ready="onGridReady" class="ag-theme-alpine">
+                    @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
                 </ag-grid-vue>
             </div>
         </div>

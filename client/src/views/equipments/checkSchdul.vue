@@ -14,8 +14,8 @@
                         <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="all_btn()">전체
                         </button>
                     </div>
-                    <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 308px"
-                        @grid-ready="onGridReady" class="ag-theme-alpine">
+                    <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
+                        @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
                     </ag-grid-vue>
                 </div>
             </v-card-text>
@@ -31,7 +31,6 @@
                 </v-row>
             </div>
         </v-card-text>
-
     </div>
 </template>
 

@@ -9,7 +9,7 @@
             <v-card-text class="bg-surface-light pt-4">
                 <div>
                     <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
-                        @grid-ready="onGridReady" class="ag-theme-alpine">
+                        @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
                     </ag-grid-vue>
                     <div style="background-color: #fff; padding: 6px; font-weight: 500; border: 1px solid #babfc7; border-top: none; text-align: right;">
                         특이사항 : 
