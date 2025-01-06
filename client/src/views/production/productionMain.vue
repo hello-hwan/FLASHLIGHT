@@ -42,9 +42,9 @@
                 
               </div>
               <div class="flex-center" style="margin-top:10px;">
-                <button type="button" class="btn btn-success" style="color:white;" @click="getlist">조회</button>
-                <button type="button" class="btn btn-warning" @click="resetvalue">초기화</button>
-                <button type="button" class="btn btn-info" @click="getanotherlist(prd, day)">공정 현황 조회</button>
+                <button type="button" class="btn btn-primary" style="color:white;" @click="getlist">조회</button>
+                <button type="button" class="btn btn-secondary" @click="resetvalue">초기화</button>
+                <button type="button" class="btn btn-success" @click="getanotherlist(prd, day)">공정 현황 조회</button>
               </div>
             </v-card-text>
           </v-card>
@@ -95,7 +95,7 @@
               <th colspan="32">{{ eqp.model_nm }}</th>
   
               <!-- 일정만큼 열 반복 -->
-              <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+              <td class="over-sub" nowrap v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
               <!-- <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.procs_nm }}</td> -->
   
               <!-- 데이터 없으면 표시할 데이터 -->
@@ -104,6 +104,19 @@
           </tbody>
           
           </table>
+        </div>
+        <div class="data-detail">
+          <table>
+            <thead>
+              <tr>
+                <th v-for="color in colors" :style="{backgroundColor : color}">{{ color }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <td></td>
+            </tbody>
+          </table>
+
         </div>
     </v-card-text>
 
@@ -148,6 +161,8 @@
   // 설비 불러올 함수 실행
   getEqp();
 
+  // 색상 배열
+  const colors = ["#f8aca5", "#f8cfa5", "#fafbc4", "#cffbc4", "#b6f8f8", "#a5d1f8", "#c4b6f8"];
 
   // 생산일정 담을 변수
   const drctlist = ref([]);
@@ -162,8 +177,7 @@
       drctlist.value = [];
       return;
     }
-    // 색상 배열
-    const colors = ["#f8aca5", "#f8cfa5", "#fafbc4", "#cffbc4", "#b6f8f8", "#a5d1f8", "#c4b6f8"];
+    
 
     // 주문 번호 유니크하게 뽑아내고 주문번호를 매칭시키기 
     let newArray = [];
@@ -281,5 +295,10 @@
     color: white !important;
     line-height: 100%;
     margin: 5px;
+  }
+  .over-sub{
+    width: 100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 </style>

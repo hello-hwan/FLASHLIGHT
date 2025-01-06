@@ -59,7 +59,7 @@ const model = ref([
                 items: [
                     {
                         label: '생산 계획 안내',
-                        to: '/production'
+                        to: '/production/productionMain'
                     },
                     {
                         label: '공장 실적 조회',
