@@ -1248,3 +1248,50 @@ COMMIT;
 SELECT * from prdctn_drct;
 
 SELECT DATE_ADD('2024-12-30', INTERVAL 7 DAY);
+
+SELECT * FROM product_state;
+
+DELETE FROM product_state WHERE prdctn_code = '26-mchn-1';
+
+COMMIT;
+
+SELECT * FROM prdctn_drct;
+
+DELETE FROM prdctn_drct WHERE mnfct_no IN (26,27);
+
+SELECT * FROM prdctn_plan;
+
+DELETE FROM prdctn_plan WHERE mnfct_no IN (1001,1002, 1003, 1004);
+
+SELECT * FROM order_lists;
+
+SELECT * FROM cmmn WHERE cmmn_code = 'OD01';
+
+CALL insert_plan();
+
+CALL play_drct();
+
+CALL insert_req();
+
+SELECT * FROM product_state;
+
+SELECT * FROM badn_info;
+
+DELETE FROM badn_info WHERE badn_code = '1005-mchn-1-1';
+
+DELETE FROM product_state WHERE prdctn_code = '1005-mchn-1';
+
+SELECT * FROM thng_req WHERE req_name LIKE '%출고요청%';
+
+DELETE FROM thng_req WHERE req_name LIKE '%출고요청%';
+
+UPDATE product_state SET end_time = NULL, nrmlt = NULL, badn = NULL WHERE prdctn_code = '1005-mchn-1';
+
+SELECT md.dlivy_no, md.mtril_lot, md.mtril_name, md.requst_qy, md.usgqty, md.nusgqty, md.usgstt
+FROM mtril_dlivy md JOIN thng_req tr ON (md.req_code = tr.req_code)
+								    LEFT JOIN mtril_wrhousing mw ON (md.mtril_lot = mw.mtril_lot)
+WHERE tr.prdctn_code = '1005-mchn-1'
+AND tr.prd_code = 'M-LEATHER'
+ORDER BY mw.wrhousng_date;
+
+SELECT * FROM use_mtril;

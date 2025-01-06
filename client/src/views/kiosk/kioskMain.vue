@@ -69,9 +69,17 @@
             // 생산 시작 X
             result.data[i].color = '#959595';
         }
-        
+        let beginTime = new Date(result.data[i].pre_begin_time);
+        let today = new Date(new Date().getFullYear() + '-' +(new Date().getMonth() + 1) + '-' + new Date().getDate());
+        // 오늘 이전에 생산지시가 내려진 데이터들 오늘 오전으로 땡기기 
+        // => 어제 오전에 했든 오후에 했든 시작시간으로 오전 오후 나누기 때문에 오전으로 땡김
+        // (데이터를 땡기는게 아니라 조건문만)
+        if(beginTime.getTime() < today.getTime()){
+          beginTime.setHours(0);
+          beginTime.setDate(today.getDate());
+        }
         // 오후
-        if(new Date(result.data[i].pre_begin_time).getHours() >= 12 ){
+        if(beginTime.getHours() >= 12 ){
             right.push(result.data[i]);
         } else {
             // 오전
