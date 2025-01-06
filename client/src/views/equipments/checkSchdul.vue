@@ -14,7 +14,7 @@
         <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="all_btn()">전체
         </button>
         <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-            @grid-ready="onGridReady" class="ag-theme-alpine">
+            @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
         </ag-grid-vue>
     </div>
     <div style="width: 2%; display: inline-block;">

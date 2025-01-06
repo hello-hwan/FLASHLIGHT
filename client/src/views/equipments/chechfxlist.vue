@@ -80,7 +80,7 @@
         <div>
             <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions"
                 style="height: 310px; width: 100%;" @grid-ready="onGridReady" rowSelection="multiple"
-                class="ag-theme-alpine">
+                class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
             </ag-grid-vue>
         </div>
         <table class="table table-hover">

@@ -11,7 +11,7 @@
         </table>
         <div>
             <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-                @grid-ready="onGridReady" class="ag-theme-alpine">
+                @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
             </ag-grid-vue>
         </div>
         <button type="button" class="btn btn-primary" style="color: white; margin: 10px; padding: 2px; width: 150px;" @click="add_eqp_btn()">기기 추가
