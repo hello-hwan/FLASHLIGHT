@@ -21,9 +21,11 @@ export default {
         async onButtonClicked() {
             // 버튼 클릭 시 현재 행의 데이터를 출력
             //console.log(this.params.data);
-            
+
+            //부모로부터 가지고 온 행 데이터
             let data = this.params.data;
-            console.log(data);
+            //console.log(data);
+            
             //전송할 데이터 객체
             let obj = {
                 mtril_check_code : data.checkCode == null ? 'none' : data.checkCode,
@@ -35,15 +37,13 @@ export default {
                 wrhousng_date: userDateUtils.dateFormat(data.wrdate, 'yyyy-MM-dd'),
                 mtril_lot: data.lot == null ? '0' : data.lot
             }
-            console.log(obj);
             //입고테이블에 인서트
-            
             let result = await axios.post(`${ajaxUrl}/mtril/mtWrhous`, obj)
                                .catch(err => console.log(err));
             let addRes = result;
             console.log(addRes);
 
-            //삭제
+            //선택된 데이터 화면에서삭제
             this.params.api.applyTransaction({
                 remove: [this.params.node.data]
             });

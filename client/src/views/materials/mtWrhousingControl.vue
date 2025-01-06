@@ -88,7 +88,6 @@ export default {
                 paginateChildRows: true,
                 animateRows: false,
                 defaultColDef: {
-                    filter: true,
                     flex: 1,
                     minWidth: 10
                 }
@@ -116,7 +115,6 @@ export default {
                 paginateChildRows: true,
                 animateRows: false,
                 defaultColDef: {
-                    filter: true,
                     flex: 1,
                     minWidth: 10
                 },

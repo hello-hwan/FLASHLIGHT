@@ -38,7 +38,7 @@
                 :rowData="orderRowData"
                 :gridOptions="GridOptions"
                 class="ag-theme-alpine"
-                style="height: 500px"
+                style="height: 518px"
                 @grid-ready="onGridReady"
                 >
             </AgGridVue>
@@ -100,7 +100,7 @@ const onGridReady = (params) => {
 let modalCheck = ref(false);
 
 //모달이 열리면 true로 변경, 스크롤 막기
-const modalOpen = () => {
+const modalOpen = async () => {
     const html = document.querySelector('html');
     if(modalCheck.value == false) {
         modalCheck.value = !modalCheck.value;
@@ -112,6 +112,9 @@ const modalOpen = () => {
     //행 데이터 초기화
     orderRowData.value = [];
     
+    //바로 검색
+    await searchOrder();
+
     //검색조건 초기화
     orderName.value = "";
     company.value = "";
@@ -191,6 +194,7 @@ const removeSearchKey = () => {
     startDedt.value = "";
     endDedt.value = "";
     empName.value = "";
+    
     //화면에 데이터 삭제 후 전체검색
     searchOrder();
 };

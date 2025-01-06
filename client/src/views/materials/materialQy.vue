@@ -175,7 +175,7 @@ const onBtnExportDataAsCsvLotList = () => {
 let modalCheck = ref(false);
 
 //모달이 열리면 true로 변경, 스크롤 막기
-const modalOpen = () => {
+const modalOpen = async() => {
     const html = document.querySelector('html');
     if(modalCheck.value == false) {
         modalCheck.value = !modalCheck.value;
@@ -187,9 +187,11 @@ const modalOpen = () => {
     //행 데이터 초기화
     lotRowData.value = [];
     
+    
+    await searchMt();
     //검색에 사용할 자재 코드
     mtrilCode.value = null;
-
+    
     //검색조건
     keyLotName.value = null;
     wrhousingCharger.value = null;
