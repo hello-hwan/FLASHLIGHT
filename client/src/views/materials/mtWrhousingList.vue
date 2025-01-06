@@ -74,7 +74,7 @@ watch(() => selected.value, (newVal) => {
 const ColDefs = [
   { field: "mtril_code", headerName: "자재코드", flex:1},
   { field: "mtril_name", headerName: "자재명", flex:1},
-  { field: "wrh_qy", headerName: "검사통과량\n반환수량", flex:1},
+  { field: "wrh_qy", headerName: "검사통과량 / 반환수량", flex:1},
   { field: "unit", headerName: "단위", flex:1},
   { field: "mtril_lot", headerName: "lot", flex:1},
   { field: "wrhousng_se", headerName: "구분", flex:1},

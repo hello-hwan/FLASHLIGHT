@@ -14,12 +14,16 @@
                             <InputText type="text" v-model="checkCode" v-on:keyup.enter="getList"> <p>{{ checkCode }}</p></InputText>
                         </div>
                         <div>
-                            <span>검사 결과 </span>
-                            <InputText type="text" v-model="pResult" v-on:keyup.enter="getList"> <p>{{ pResult }}</p></InputText>
-                        </div>
-                        <div>
                             <span>자재명 </span>
                             <InputText type="text" v-model="mtrilName" v-on:keyup.enter="getList"> <p>{{ mtrilName }}</p></InputText>
+                        </div>
+                        <div>
+                            <span>검사 결과 </span>
+                            <select v-model="pResult">
+                                <option value="">전체</option>
+                                <option value="합격">합격</option>
+                                <option value="불합격">불합격</option>
+                            </select>
                         </div>
                     </div>
                     <div>
@@ -72,7 +76,7 @@ const qiListRowData = ref([]);
 
 //검색 데이터
 const checkCode = ref("");
-const pResult = ref("");
+const pResult = ref(""); //기본값 설정 (전체)
 const mtrilName = ref("");
 const companyName = ref("");
 const startDate = ref("");
@@ -92,8 +96,8 @@ const colDefs = [
     { field: "mtlty_name",headerName : "거래처명", flex: 1},
     { field: "mtril_name",headerName: "자재명", flex: 1},
     { field: "pass_amount",headerName : "합격 수량", flex: 1},
-    { field: "pass_amount",headerName : "불량 수량", flex: 1},
-    { field: "pass_amount",headerName : "단위", flex: 0.7},
+    { field: "error_amount",headerName : "불량 수량", flex: 1},
+    { field: "unit",headerName : "단위", flex: 0.7},
     { field: "test_date",headerName : "검사일자", valueFormatter: customDateFormat, flex: 1 },
     { field: "empl_name",headerName : "담당자", flex: 0.8}, 
 ];
@@ -168,5 +172,18 @@ const removeData = () => {
 .search-bar>div>div span {
     display: inline-block;
     width: 100px;
+}
+select {
+  -webkit-appearance: auto;
+  background-color: #fff;
+  border-radius: 6px;
+  border: 1px solid #d6d6d6;
+  width: 80px;
+  height: 42px;
+  text-align: center;
+  margin-right: 20px;
+}
+input{
+    margin-bottom: 10px;
 }
 </style>

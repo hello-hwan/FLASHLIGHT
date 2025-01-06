@@ -15,7 +15,7 @@
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" margin: 0 auto; "
+            <AgGridVue style=" height: 258px; margin: 0 auto; "
                 :defaultColDef="defaultColDef"
                 :rowData="reqRowData"
                 :gridOptions="gridOptionsReq"
