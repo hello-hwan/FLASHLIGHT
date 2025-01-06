@@ -50,7 +50,7 @@
         </table>
         <div style="height: 300px;" v-show="input_div">
             <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
-                style="height: 250px; width: 30%; margin-right: auto;" @grid-ready="onGridReady"
+                style="height: 250px; width: 30%; margin-right: auto;"
                 class="ag-theme-alpine">
             </ag-grid-vue>
         </div>
@@ -91,7 +91,7 @@
                 </div>
                 <div id="search-bar" style="height: 375px;">
                     <ag-grid-vue :rowData="modal_rowData" :columnDefs="modal_colDefs" :gridOptions="modal_gridOptions"
-                        style="height: 325px" @grid-ready="onGridReady" class="ag-theme-alpine">
+                        style="height: 325px" class="ag-theme-alpine">
                     </ag-grid-vue>
                 </div>
             </div>
@@ -183,6 +183,12 @@ export default {
             { field: "prdist_name", headerName: "품목명" }
         ];
         this.gridOptions_search = {
+            columnDefs: this.orderColDefs,
+            defaultColDef: {
+                filter: true,
+                flex: 1,
+                minWidth: 10
+            },
             onCellClicked: (CellClickedEvent) => this.autoInput(CellClickedEvent.data)
         };
         this.modal_gridOptions = {
@@ -250,7 +256,7 @@ export default {
             }
 
             if (submit_check == 0) {
-                this.toast.add({ severity: 'error', summary: '실패', detail: 'BOM이랑 같지 않습니다.', life: 3000 });
+                this.toast.add({ severity: 'error', summary: '실패', detail: 'BOM이랑 총 수량이 같지 않습니다.', life: 3000 });
             } else if (submit_check == 1) {
                 if (this.$route.query.prd_code != null) {
                     let result = await axios.get(`${ajaxUrl}/prdCodeToProcsCode/${this.prd_code}`)
@@ -264,7 +270,6 @@ export default {
                             .catch(err => console.log(err));
                     }
                     this.$router.push({ name: 'procsFlowchartList' });
-
                 }
 
                 let bom_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchBom/${this.prd_code}`)
