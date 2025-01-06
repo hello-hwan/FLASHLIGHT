@@ -9,7 +9,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     optimizeDeps: {
         noDiscovery: true,
-        include: ['jspdf', 'jspdf-autotable']   //pdf autotable생성을 위함
+            //pdf autotable생성을 위함
     },
     plugins: [
         vue(),

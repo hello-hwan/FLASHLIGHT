@@ -11,6 +11,12 @@ import orderListModal from '@/components/materials/orderControlModal.vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
+
+let empName = store.state.empInfo[store.state.empInfo.length-1].name;
+
+
 //자식 컴포넌트로 어디에서 어떤작업을 원하는지 특정하기 위해 임의의 문자열 전송
 let forPdf = 'pdf';
 
@@ -42,11 +48,11 @@ watch(() => orderCode.value, async(newVal) => {
   orderInfoFromDB = [];
   mtrilListFromDB = [];
 
-  console.log('작동', newVal);
+  //발주서에 들어갈 데이터를 가져옴(주문코드로 db에서 검색)
   let result = await axios.get(`${ajaxUrl}/mtril/orderForm/${newVal}`)
   .catch(err=>console.log(err));
 
-  console.log('확인 버튼 클릭 후 가져온 데이터', result);
+  //console.log('확인 버튼 클릭 후 가져온 데이터', result);
   dataList = result.data;
   //거래처 정보 담기
   companyInfoFromDB = result.data[0];
@@ -59,16 +65,16 @@ watch(() => orderCode.value, async(newVal) => {
   };
   orderInfoFromDB = {order_date: result.data[1][0].order_date, 
                      dedt: result.data[1][0].dedt,
-                     price: totalPrice.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","),
+                     price: totalPrice.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","),  //천의 자리마다 ,찍기
                      empl_name: result.data[1][0].empl_name};
 
   //자재 리스트
   for(let i=0; i<result.data[1].length; i++) {
     mtrilListFromDB.push({
       mtril_name: result.data[1][i].mtril_name,
-      mtril_qy: result.data[1][i].order_qy.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","),
+      mtril_qy: result.data[1][i].order_qy.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","),  //천의 자리마다 ,찍기
       unit: result.data[1][i].unit,
-      price: (result.data[1][i].order_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+"원")
+      price: (result.data[1][i].order_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+"원")  //천의 자리마다 ,찍기
     });
   };
 
@@ -103,9 +109,10 @@ const generatePDF = () => {
 
   doc.setFontSize(13);
   doc.text(15, 140, '아래 내용으로 발주를 신청합니다');
-  doc.line(85, 140, 135, 140);
+  doc.line(85, 142, 110, 142);
+  doc.text(90, 140, empName);
   doc.setFontSize(15);
-  doc.text(140, 140, '담당자 (인)');
+  doc.text(115, 140, '담당자 (인)');
   //거래처 정보
   companyInfo(doc);
 
@@ -217,17 +224,17 @@ const mtrilList = (doc) => {
   };
             
   doc.autoTable({
-      theme: 'plain',
+      theme: 'plain', //오토테이블 테마 설정
       margin: { left: 10 }, // 우측 테이블의 마진 설정
-      tableLineColor: [0, 0, 0],
-      tableLineWidth: 0.3,
+      tableLineColor: [0, 0, 0],  //테이블 선 색깔
+      tableLineWidth: 0.3,  //테이블 선 굵기
       headStyles:  { halign: 'center', valign: 'middle', fillColor: [234, 234, 234], lineColor: [0, 0, 0], lineWidth: 0.3 },	  	//헤더 부분 옵션
-      startX: 0, 													//시작점 X 좌표
-      startY: 150,													//시작점 Y 좌표
-      tableWidth : 190,											//테이블 너비
+      startX: 0,  //시작점 X 좌표
+      startY: 150,  //시작점 Y 좌표
+      tableWidth : 190, //테이블 너비
       styles : { font : 'malgun', fontStyle :'normal'},  	//폰트적용(나눔명조체를 사용하였는데 이는 기본 사용법 글 참조하여 설정필요)
-      head: headMtrilList,
-      body : bodyMtrilList
+      head: headMtrilList,  //헤드에 들어갈 데이터
+      body : bodyMtrilList  //바디에 들어갈 데이터
   });
 };
 </script>

@@ -76,7 +76,7 @@ const ColDefs = [
   { field: "mtril_name", headerName: "자재명", flex:1},
   { field: "wrh_qy", headerName: "검사통과량 / 반환수량", flex:1},
   { field: "unit", headerName: "단위", flex:1},
-  { field: "mtril_lot", headerName: "lot", flex:1},
+  { field: "mtril_lot", headerName: "로트번호", flex:1},
   { field: "wrhousng_se", headerName: "구분", flex:1},
   { field: "wrhousng_date", headerName: "입고일", flex:1, valueFormatter: (params) => {
           if (!params.value) {
