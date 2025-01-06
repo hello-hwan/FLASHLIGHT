@@ -64,7 +64,7 @@
                         <mtSearchModal @mtSelectedData="addRow"/>
                             
                         <button type="button" @click="removeRow"
-                        class="btn btn-warning" style="color: #fff;"> 선택 행 삭제</button>
+                        class="btn btn-danger" style="color: #fff;"> 선택 행 삭제</button>
                         
                         <button type="button" @click="removeAllRow"
                         class="btn btn-secondary" style="color: #fff;">초기화</button>
@@ -279,7 +279,15 @@ const getOrderRowData = () => {
 
 //행 추가
 const addRow = (info) => {
-    console.log(info);
+    //console.log(info);
+    //만약 이미 발주 자재 리스트에 같은 자재가 있다면 행이 추가되지 않음.
+    for(let i=0; i<orderRowData.value.length; i++) {
+        if(info[0].mtril_code == orderRowData.value[i].mt_code) {
+            toast.add({ severity: 'warn', summary: '자재 중복', detail: '이미 같은 자재가 리스트에 있습니다', life: 3000 });
+            return;
+        };
+    };
+
     //행추가할 객체 생성
     let obj = {order_no: 0, req_code: "", mt_name: info[0].mtril_name, mt_code: info[0].mtril_code, price: 0, order_qy: 0, 
     unit: info[0].unit, order_date: "", dedt: ""};

@@ -145,24 +145,7 @@ const model = ref([
                         to: '/logistics/prductNDlivyList'
                     },
                 ]
-            },   
-            {
-                label: '통계',
-                items: [
-                    {
-                        label: '기간별 생산량',
-                        to: '/'
-                    },
-                    {
-                        label: '출고율',
-                        to: '/'
-                    },
-                    {
-                        label: '불량률 조회',
-                        to: '/'
-                    }
-                ]
-            },   
+            },    
             {
                 label: '기준 정보',
                 items: [
@@ -197,11 +180,7 @@ const model = ref([
                     {
                         label: '공정 흐름도 조회',
                         to: '/standardInfo/procsFlowchartList'
-                    },
-                    {
-                        label: '품질 검사 항목 관리',
-                        to: '/standardInfo/qiList'
-                    },
+                    }
                 ]
             },  
         ]
