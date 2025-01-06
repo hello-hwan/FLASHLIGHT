@@ -1,18 +1,18 @@
 <template>
     <div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 70%; font-size: 30px;">
-                        미점검 설비 조회
-                    </th>
-                </tr>
-            </thead>
-        </table>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center; margin-bottom: 30px;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    미점검 설비 조회
+                </span>
+            </template>
+        </v-card>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
-                @grid-ready="onGridReady" class="ag-theme-alpine">
-            </ag-grid-vue>
+            <v-card-text class="bg-surface-light pt-4">
+                <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
+                    @grid-ready="onGridReady" class="ag-theme-alpine">
+                </ag-grid-vue>
+            </v-card-text>
         </div>
     </div>
 </template>

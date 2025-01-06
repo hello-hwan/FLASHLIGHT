@@ -38,7 +38,8 @@
                     rowSelection="multiple"
                     class="ag-theme-alpine"
                     @grid-ready="onGridReady"
-                    style="height: 516px;">
+                    style="height: 516px;"
+                    overlayNoRowsTemplate="결과 없음">
                     </AgGridVue>
                 </v-card-text>
             </v-card>
@@ -85,6 +86,7 @@
                     class="ag-theme-alpine"
                     @grid-ready="mtListonGridReady"
                     style="height: 520px"
+                    overlayNoRowsTemplate="자재를 추가해주세요"
                     >
                     </AgGridVue>
             </v-card-text>

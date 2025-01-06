@@ -22,6 +22,7 @@
                 :frameworkComponents="frameworkComponents"
                 class="ag-theme-alpine"
                 domLayout="autoHeight"
+                overlayNoRowsTemplate="결과 없음"
                 >
             </AgGridVue>
         </v-card-text>

@@ -245,7 +245,7 @@ FROM inspection_check m JOIN mtril s
 WHERE m.mtril_check_code NOT IN (SELECT t.mtril_check_code
 				FROM mtril_wrhousing t
                                 WHERE t.mtril_check_code IS NOT NULL)
-ORDER BY m.test_date;
+ORDER BY checkCode
 `;
 
 //자재 입고 테이블에 insert, 생산 반환 리스트 상태 업데이트

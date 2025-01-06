@@ -40,6 +40,7 @@
                 class="ag-theme-alpine"
                 style="height: 518px"
                 @grid-ready="onGridReady"
+                overlayNoRowsTemplate="결과 없음"
                 >
             </AgGridVue>
             
