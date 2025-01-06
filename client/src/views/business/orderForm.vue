@@ -169,8 +169,8 @@ export default {
                 } 
         }; 
         this.colDefs2 = [
-            { field: "prdlst_code", headerName: "제품코드"},
-            { field: "prdlst_name", headerName: " 제품이름"},
+            { field: "prdlst_code", headerName: "제품코드", flex:1},
+            { field: "prdlst_name", headerName: " 제품이름", flex:2},
             { headerName : "선택",  checkboxSelection: true, flex:0.3}
         ];
         this.GridOptions2 = {
