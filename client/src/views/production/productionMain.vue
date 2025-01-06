@@ -111,7 +111,7 @@
       <ImpossibleProduction v-show="!issrc"/>
 
       <!-- 검색 없을시 표시창 자체 생산 지시 추가 -->
-      <SelfProduction v-show="!issrc"/>
+      <!-- <SelfProduction v-show="!issrc"/> -->
 
       <!-- 검색 있을시 표시창 공정실적조회 -->
       <StateList v-show="issrc" :date="day" :code="prd"/>
@@ -163,7 +163,7 @@
       return;
     }
     // 색상 배열
-    const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "purple"];
+    const colors = ["#f8aca5", "#f8cfa5", "#fafbc4", "#cffbc4", "#b6f8f8", "#a5d1f8", "#c4b6f8"];
 
     // 주문 번호 유니크하게 뽑아내고 주문번호를 매칭시키기 
     let newArray = [];
