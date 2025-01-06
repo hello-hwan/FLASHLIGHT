@@ -31,7 +31,7 @@
                         품목명
                     </th>
                     <th style="width: 25%;">
-                        총 소요시간
+                        총 소요시간 (분)
                     </th>
                     <th style="width: 25%;">
                         <button type="button" class="btn btn-primary"
@@ -49,7 +49,7 @@
                         {{ this.topTable.prd_nm }}
                     </td>
                     <td>
-                        {{ this.topTable.all_time }} 시간
+                        {{ this.topTable.all_time }} 분
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger"
@@ -108,7 +108,7 @@ export default {
         this.getProcsDetailTop(this.prd_code);
         this.colDefs = [
             { field: "procs_ordr_no", headerName: "공정순서번호" },
-            { field: "expect_reqre_time", headerName: "예상소요시간" },
+            { field: "expect_reqre_time", headerName: "예상소요시간 (분)" },
             { field: "procs_nm", headerName: "시행작업" },
             { field: "mtril_nm", headerName: "재료명" },
             { field: "usgqty", headerName: "재료양" },
@@ -149,7 +149,7 @@ export default {
                 .catch(err => console.log(err));
             this.eqpList = result.data;
             for (let i = 0; i < this.eqpList.length; i++) {
-                this.eqpList[i].expect_reqre_time = this.eqpList[i].expect_reqre_time + " 시간";
+                this.eqpList[i].expect_reqre_time = this.eqpList[i].expect_reqre_time + " 분";
             }
             this.rowData = this.eqpList;
         },

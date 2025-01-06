@@ -348,6 +348,13 @@ router.get('/prd_code_bom_all_search', async (req, res) => {
   res.send(list);
 });
 
+// 제품 코드로 BOM 조회해서 사용 재료 조회
+router.get('/prd_code_bom_cmpds_list/:prd_code', async (req, res) => {
+  let prd_code = req.params.prd_code;
+  let list = await standard_info_service.prd_code_bom_cmpds_list(prd_code);
+  res.send(list);
+});
+
 // 전체 사원 조회
 router.get('/select_all_empl', async (req, res) => {
   let list = await standard_info_service.select_all_empl();
