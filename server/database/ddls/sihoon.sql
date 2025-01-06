@@ -1263,6 +1263,10 @@ SELECT * FROM prdctn_plan;
 
 DELETE FROM prdctn_plan WHERE mnfct_no IN (1001,1002, 1003, 1004);
 
+SELECT * FROM repduct;
+
+SELECT * FROM prduct_wrhousng WHERE prdlst_c_code = 'C-GS21P-1001';
+
 SELECT * FROM order_lists;
 
 SELECT * FROM cmmn WHERE cmmn_code = 'OD01';
@@ -1295,3 +1299,41 @@ AND tr.prd_code = 'M-LEATHER'
 ORDER BY mw.wrhousng_date;
 
 SELECT * FROM use_mtril;
+
+DELETE FROM use_mtril;
+SELECT * FROM prdctn_drct;
+
+
+CALL insert_plan();
+SELECT * FROM prdctn_plan;
+CALL play_drct();
+SELECT * FROM prdctn_drct;
+SELECT * FROM thng_req;
+SELECT * FROM procs_flowchart pf JOIN procs_matrl pl ON (pf.procs_code = pl.procs_code)
+                              JOIN procs_mchn  pm ON (pf.procs_code = pm.procs_code);
+
+SELECT * FROM procs_flowchart;
+SELECT * FROM procs_matrl;
+SELECT * FROM procs_mchn;
+
+SELECT pm.eqp_code, eqp.model_nm
+		FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)
+								 LEFT JOIN not_opr nopr ON (eqp.eqp_code = nopr.eqp_code)
+		WHERE (process_step = 'FS02'
+		OR not_opr_code IS NULL);
+
+SELECT * FROM order_lists WHERE process_status = 'OD02' ORDER BY 1;
+
+INSERT INTO order_lists();
+
+가용 가능한거 숫자 => 재고수량 + 생산 처리중 숫자 합 - 안전재고 - 나가야할 처리중인 주문량 합;
+
+COMMIT;
+SELECT SUM(a.total)
+FROM (SELECT SUM(DISTINCT(totqy)) AS total
+      FROM order_lists
+      WHERE process_status = 'OD02'
+      AND prd_code = 'C-I13P-1001'
+      GROUP BY prd_code, order_no) a;
+
+SELECT * FROM cmmn WHERE cmmn_code = 'OD02';
