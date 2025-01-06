@@ -84,7 +84,8 @@
     { field: "mtril_nm", headerName:"부족 자재 명"},
     { field: "req_qy", headerName:"부족 자재 수량"},
     { field: "real_qy", headerName:"요청량" , editable: true},
-    { field: "요청", headerName: "요청", cellRenderer: () => "요청"}
+    { field: "요청", headerName: "요청", cellRenderer: () => {
+      return '<button class="btn btn-primary mx-2" style="line-height:100%">요청</button>'}}
   ];
 
 
@@ -124,5 +125,4 @@
         
   };
   
-  </script>
-  
+  </script> 
