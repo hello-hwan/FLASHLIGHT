@@ -43,8 +43,8 @@
                         </div>
                     </div>
                     <div class="flex-center" style="margin-top:10px;">
-                        <button type="button" class="btn btn-success" style="color:white;" @click="getlist">조회</button>
-                        <button type="button" class="btn btn-warning" @click="resetvalue">초기화</button>
+                        <button type="button" class="btn btn-primary" style="color:white;" @click="getlist">조회</button>
+                        <button type="button" class="btn btn-secondary" @click="resetvalue">초기화</button>
                     </div>
             </v-card-text>
           </v-card>
