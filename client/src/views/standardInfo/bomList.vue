@@ -559,18 +559,16 @@ import { useToast } from 'primevue/usetoast';
         try {
             let result = await axios.put(`${ajaxUrl}/bomUpdate/${this.bomCode}`, info);
             console.log(result);
-            isUpdateSuccessful = true; // 업데이트 성공
+            isUpdateSuccessful = true;
         } catch (err) {
             console.log(err);
         }
 
-        // 저장과 업데이트가 모두 성공한 경우에만 toast 표시
         if (isSaveSuccessful && isUpdateSuccessful) {
-            // 저장이 성공적으로 끝난 경우에만 toast 띄우기
             this.toast.add({ severity: 'success', summary: '저장 완료', detail: '모든 데이터가 성공적으로 저장되었습니다.', life: 3000 });
             setTimeout(() => {
                 this.$router.go(0); // 새로고침
-            }, 500); // life 속성과 동일한 시간(3초) 설정
+            }, 500);
         }
       },
       
