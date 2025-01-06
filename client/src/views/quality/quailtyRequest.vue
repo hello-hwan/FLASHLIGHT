@@ -61,8 +61,8 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import requestModal from '@/components/quality/qualityRequestModal.vue';
 
-import { useRouter } from 'vue-router'  //라우터 가져오기
-const router = useRouter();
+// import { useRouter } from 'vue-router'  //라우터 가져오기
+// const router = useRouter();
 
 import { useStore } from 'vuex'; // Vuex 스토어 가져오기
 const store = useStore();
@@ -99,12 +99,13 @@ const gridOptions = {
     paginationPageSizeSelector: [10, 20, 50, 100],
     paginateChildRows: true,
     animateRows: false,
-    rowSelection: 'single'};
+    rowSelection: 'single'  //한 행만 선택되게 만듦
+};
 
 //품질검사 등록
 const insertInfoList = async () => {
     console.log(rowData.value);
-    //server로 전송할 데이터
+    //server로 전송할 데이터 만들기
     let newDataList = [];
     for(let i=0; i<rowData.value.length; i++) {
         if(rowData.value[i].result == undefined) {
@@ -124,10 +125,12 @@ const insertInfoList = async () => {
                           p_result: rowData.value[i].result,
                           error_amount: rowData.value[i].error_amount});
     };
+    //통신 결과
     let result = await axios.post(`${ajaxUrl}/quality/insertQiList`, newDataList)
                             .catch(err => console.log(err));
-    console.log(result.data);
-    if(result.data) {
+    //console.log(result.data);
+
+    if(result.data == 'success') {
         toast.add({ severity: 'success', summary: '검사 완료', detail: '처리가 완료되었습니다', life: 3000 });
         removeData();
     } else {
@@ -141,7 +144,6 @@ const insertInfoList = async () => {
 //화면에 보이는 데이터 삭제
 const removeData = () => {
     //새로고침
-    //router.go(0);
     orderNo.value = "";
     orderName.value = "";
     companyCode.value ="";
@@ -166,7 +168,8 @@ const getMtList = async(orderCode) => {
     let result = await axios.get(`${ajaxUrl}/quality/mtrilList/${orderCode}`)
                             .catch(err => console.log(err));
 
-    console.log(result);
+    //console.log(result);
+    //테이블에 데이터 넣기
     rowData.value = result.data;
 };
 

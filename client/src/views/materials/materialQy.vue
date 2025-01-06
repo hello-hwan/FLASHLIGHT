@@ -82,7 +82,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 
 //버튼가져오기
-import switchBtn from '@/components/materials/goToLotDetailQy.vue';
+import switchBtn from '@/components/materials/switchLotQy.vue';
 
 //행 데이터
 const mtRowData = ref([]);
