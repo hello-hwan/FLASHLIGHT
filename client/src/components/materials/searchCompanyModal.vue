@@ -33,12 +33,13 @@
                 class="ag-theme-alpine"
                 style="height: 518px"
                 @grid-ready="onGridReady"
+                overlayNoRowsTemplate="결과 없음"
                 >
             </AgGridVue>
             
             <div class="modal-btn">
-            <button @click="modalOpen"class="btn btn-secondary">닫기</button>
-            <button @click="selectOrder" class="btn btn-primary">확인</button>
+            <button @click="modalOpen"class="btn btn-secondary" style="margin-right: 10px;">닫기</button>
+            <button @click="selectOrder" class="btn btn-primary" style="margin-left: 10px;">확인</button>
             </div>
         </div>
         </div>

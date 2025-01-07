@@ -37,7 +37,8 @@
         :gridOptions="GridOptions"
         class="ag-theme-alpine"
         style="height: 516px"
-        @grid-ready="onGridReady">
+        @grid-ready="onGridReady"
+        overlayNoRowsTemplate="결과 없음">
         </AgGridVue>
         <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
       </v-card-text>
