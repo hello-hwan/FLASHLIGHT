@@ -113,7 +113,11 @@ const mtril = async () => {
 
 // 자재 등록
 const mtrilAdd = async (info) => {
-  let result = await mariaDB.query('mtrilAdd', info);
+  //자재코드 가져오기
+  let key = await mariaDB.query('mtKey')
+                         .catch(err => console.log(err));
+  //자재 등록
+  let result = await mariaDB.query('mtrilAdd', [key[0].mtril_code, ...info]);
   
   try{
   if (result.insertId != null) {

@@ -101,11 +101,7 @@
                   <label for="itemCode" class="col-form-label">종목</label>
               </div>
               <div class="col-auto">
-                <select v-model="itemAdd" class="form-control">
-                  <option v-for="item in filteredItemOptions" :key="item" :value="item">
-                    {{ item }}
-                  </option>
-                </select>
+                <InputText type="text" v-model="itemAdd"> <p>{{ itemAdd }}</p></InputText>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">납품주소</label>
@@ -212,7 +208,9 @@ export default {
 
       // 업태 선택에 따른 종목 리스트
       itemOptions: {
-        생산: ["가죽", "폴리카보네이트", "TPU", "실리콘"],
+        생산: ["폴리카보네이트", "폴리우레탄", "실리콘", "가죽", "알루미늄", "원목", "카본", "폴리프로필렌",
+              "염료"
+        ],
         도소매: ["케이스"],
       },
       filteredItemOptions: []
