@@ -12,17 +12,17 @@
               <!-- 필터 검색 필드 -->
               <div class="row g-3 align-items-center">
                 <!-- 반제품LOT번호 -->
-                <div class="col-1">
+                <div class="col-auto">
                   <label for="itemCode" class="col-form-label">거래처 코드</label>
                 </div>
-                <div class="col-3">
+                <div class="col-1">
                   <input type="text" id="itemCode" class="form-control" v-model="bcncCode" />
                 </div>
                 <!-- 품목코드 --> 
                 <div class="col-auto">
                   <label for="itemCode" class="col-form-label">거래처 이름</label>
                 </div>
-                <div class="col-3">
+                <div class="col-2">
                   <input type="text" id="itemCode" class="form-control" v-model="mtltyName" />
                 </div>
                 <div class="col-auto">
@@ -34,16 +34,16 @@
                     <option value="도소매">도소매</option>
                   </select>
               </div>
-                <div class="col-auto">
+                <!-- <div class="col-auto">
                   <label for="itemCode" class="col-form-label">종목</label>
                 </div>
-                <div class="col-3"> 
+                <div class="col-2"> 
                   <input type="text" id="itemCode" class="form-control" v-model="searchItem" />
-                </div>
+                </div> -->
                 <div class="col-auto">
                   <label for="itemCode" class="col-form-label">담당자 명</label>
                 </div>
-                <div class="col-3">
+                <div class="col-auto">
                   <input type="text" id="itemCode" class="form-control" v-model="chargerName" />
                 </div>
                 <div class="col-auto">
@@ -58,7 +58,7 @@
                 <div class="col-auto">
                   <input type="date" id="endDate" class="form-control" v-model="endDate" :min="startDate"/>
                 </div>
-                <div class="col-3">
+                <div class="d-flex justify-content-center mt-4">
                   <button class="btn btn-primary mx-2" @click="filterByCode">검색</button>
                   <button class="btn btn-secondary mx-2" @click="resetFilter">초기화</button>
                 </div>
@@ -77,18 +77,21 @@
             <v-card-text class="bg-surface-light pt-4" style="height: 595px">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">사업자등록번호</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="bizrnoAdd" class="form-control" v-model="bizrnoAdd" />
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">거래처 명</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="mtrilNameAdd" class="form-control" v-model="bcncNameAdd" />
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="searchType" class="col-form-label">업태</label>
                 </div>
                 <div class="col-auto">
@@ -98,31 +101,34 @@
                   </select>
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">종목</label>
               </div>
               <div class="col-auto">
-                <InputText type="text" v-model="itemAdd"> <p>{{ itemAdd }}</p></InputText>
+                <InputText type="text" v-model="itemAdd" style="width:420px"> <p>{{ itemAdd }}</p></InputText>
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">납품주소</label>
-
               </div>
               <div class="col-auto">
                 <input type="text" id="dvyfgAdresAdd" class="form-control" v-model="dvyfgAdresAdd" />
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">담당자명</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="chargerNameAdd" class="form-control" v-model="chargerNameAdd" />
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">담당자전화번호</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="chargerPhoneAdd" class="form-control" v-model="chargerPhoneAdd" />
               </div>
-              <div class="col-12 mt-3">
+              <div class="col-12 mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" @click="addData">등록</button>
                 <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
@@ -150,9 +156,9 @@
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
-              <div class="mt-3">
+              <div class="mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
-                <button class="btn btn-danger" @click="deleteRow">삭제</button>
+                <button class="btn btn-danger" @click="deleteRow" >삭제</button>
               </div>
             </v-card-text>
           </v-card>
@@ -208,9 +214,9 @@ export default {
 
       // 업태 선택에 따른 종목 리스트
       itemOptions: {
-        생산: ["폴리카보네이트", "폴리우레탄", "실리콘", "가죽", "알루미늄", "원목", "카본", "폴리프로필렌",
-              "염료"
-        ],
+        // 생산: ["폴리카보네이트", "폴리우레탄", "실리콘", "가죽", "알루미늄", "원목", "카본", "폴리프로필렌",
+        //       "염료"
+        // ],
         도소매: ["케이스"],
       },
       filteredItemOptions: []
@@ -231,14 +237,14 @@ export default {
       { field: "mtlty_name", headerName: "거래처 명" },
       { field: "bizcnd", headerName: "업태" },
       { field: "item", headerName: "종목"  ,editable: true},
-      { field: "dvyfg_adres", headerName: "납품 주소" , editable: true},
+      { field: "dvyfg_adres", headerName: "납품 주소" },
       { field: "charger_name", headerName: "담당자 명" , editable: true},
       { field: "charger_phone", headerName: "담당자 번호" , editable: true},
       { field: "regist_day", headerName: "등록 날짜" ,
           valueFormatter: this.customDateFormat
       },
     ];
-
+    
     this.gridOptionsReturn = {
       pagination: true,
       paginationPageSize: 10,
@@ -287,37 +293,63 @@ export default {
         this.chargerPhoneAdd
       ]
       console.log(obj);
-      let result = await axios.post(`${ajaxUrl}/bcncAdd`, obj)
-                        .catch(err => console.log(err));
-      if(result.status == 200){
-        let result2 = await axios.get(`${ajaxUrl}/bcncList`)
-          .catch(err => console.log(err));
-          this.bcncList = result2.data;
-          this.rowData = this.bcncList;
-          this.filteredRowData = this.rowData;
-          this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다.', life: 3000 });
+      if(!this.bizrnoAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '사업자등록번호를 입력하세요.', life: 3000 });
+      }else if(!this.bcncNameAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '거래처명을 입력하세요.', life: 3000 });
+      }else if(!this.bizcnDAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '업태를 입력하세요.', life: 3000 });
+      }else if(!this.itemAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '종목을 입력하세요.', life: 3000 });
+      }else if(!this.dvyfgAdresAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '납품주소를 입력하세요.', life: 3000 });
+      }else if(!this.chargerNameAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '담당자명을 입력하세요.', life: 3000 });
+      }else if(!this.chargerPjoneAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '담당자전화번호를 입력하세요.', life: 3000 });
       }else{
-        this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가 발생하엿습니다.', life: 3000 });
+        let result = await axios.post(`${ajaxUrl}/bcncAdd`, obj)
+                          .catch(err => console.log(err));
+        if(result.status == 200){
+          let result2 = await axios.get(`${ajaxUrl}/bcncList`)
+            .catch(err => console.log(err));
+            this.bcncList = result2.data;
+            this.rowData = this.bcncList;
+            this.filteredRowData = this.rowData;
+            this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다.', life: 3000 });
+        }else{
+          this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가 발생하엿습니다.', life: 3000 });
+        }
       }
         
                         
     },
 
     async saveChanges(){
+      let check = true;
       for(let i = 0; i < this.rowData.length; i++){
         let row = this.rowData[i];
         let obj = {
-          untpc: row.untpc,
-          sfinvc: row.sfinvc
+          charger_name: row.charger_name,
+          charger_phone: row.charger_phone,
         }
         //console.log(obj);
-        let result = await axios.put(`${ajaxUrl}/bcncUpdate/${this.rowData[i].bcnc_code}`, obj)
-                                .catch(err => console.log(err));
-        let result2 = await axios.get(`${ajaxUrl}/bcncList`)
+        try{
+          let result = await axios.put(`${ajaxUrl}/bcncUpdate/${this.rowData[i].bcnc_code}`, obj)
                                   .catch(err => console.log(err));
-          this.bcncList = result2.data;
-          this.rowData = this.bcncList;
-          this.filteredRowData = this.rowData;
+        }catch{
+          check = false;
+        }
+        // let result2 = await axios.get(`${ajaxUrl}/bcncList`)
+        //                           .catch(err => console.log(err));
+        //   this.bcncList = result2.data;
+        //   this.rowData = this.bcncList;
+        //   this.filteredRowData = this.rowData;
+      }
+      if(check){
+        this.toast.add({ severity: 'success', summary: '업데이트 완료', detail: '모든 데이터가 성공적으로 업데이트되었습니다.', life: 3000 });
+      }else{
+        this.toast.add({ severity: 'error', summary: '업데이트 실패', detail: '데이터 업데이트 중 오류가 발생했습니다.', life: 3000 });
       }
     },
 

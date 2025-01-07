@@ -43,47 +43,50 @@
             <template v-slot:title>
               <span class="font-weight-black">반제품 등록</span>
             </template>
-            <v-card-text class="bg-surface-light pt-4">
+            <v-card-text class="bg-surface-light pt-4" style="height:595px">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">반제품 명</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="prductNNameAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="prductNNameAdd" style="height:50px;"/>
               </div>
               <div class="col-auto">
+                <span>*</span>
                 <label for="dimensions" class="col-form-label">규격</label>
               </div>
               <div class="col-auto d-flex align-items-center">
-                <input type="number" id="dimensionX" class="form-control mx-1" v-model="stndrdX" placeholder="규격X" style="width: 130px;"/>
-                <input type="number" id="dimensionY" class="form-control mx-1" v-model="stndrdY" placeholder="규격Y" style="width: 130px;"/>
-                <input type="number" id="dimensionZ" class="form-control mx-1" v-model="stndrdZ" placeholder="규격Z" style="width: 130px;" />
+                <input type="number" id="dimensionX" class="form-control mx-1" v-model="stndrdX" placeholder="규격X" style="width: 130px; height:50px;"/>
+                <input type="number" id="dimensionY" class="form-control mx-1" v-model="stndrdY" placeholder="규격Y" style="width: 130px; height:50px;"/>
+                <input type="number" id="dimensionZ" class="form-control mx-1" v-model="stndrdZ" placeholder="규격Z" style="width: 130px; height:50px;" />
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">단위</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" style="height:50px;"/>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">입고단가</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="wrhousngUniteAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="wrhousngUniteAdd" style="height:50px;"/>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">출고단가</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="dlivyUnitAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="dlivyUnitAdd" style="height:50px;"/>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">안전재고</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" style="height:50px;" />
               </div>
-              <div class="col-12 mt-3">
+              <div class="col-12 mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" @click="addData">등록</button>
                 <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
@@ -111,7 +114,7 @@
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
-              <div class="mt-3">
+              <div class="mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
@@ -166,7 +169,6 @@ export default {
       { field: "wrhousng_unite", headerName: "입고단가" , editable: true},
       { field: "dlivy_unit", headerName: "출고단가" , editable: true},
       { field: "sfinvc", headerName: "안전재고" , editable: true},
-      { field: "procs_ordr_no", headerName: "생산공정코드" , editable: true}
     ];
 
     this.gridOptionsReturn = {
@@ -202,7 +204,6 @@ export default {
     },
 
     async addData(){
-
       let obj = [
         this.prductNNameAdd,
         this.stndrdX,
@@ -215,7 +216,7 @@ export default {
       ]
       if(!this.prductNNameAdd){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '반제품명을 입력하세요.', life: 3000 });
-      }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
+      }else if(!this.stndrdX || !this.stndrdY || !this.stndrdZ){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '규격를 입력하세요.', life: 3000 });
       }else if(!this.unitAdd){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '단위를 입력하세요.', life: 3000 });
@@ -238,6 +239,7 @@ export default {
     },
 
     async saveChanges(){
+      let check = true;
       for(let i = 0; i < this.rowData.length; i++){
         let row = this.rowData[i];
         let obj ={
@@ -250,9 +252,17 @@ export default {
           dlivy_unit: row.dlivy_unit,
           sfinvc: row.sfinvc
         }
-        console.log(obj);
-        let result = await axios.put(`${ajaxUrl}/prductNUpdate/${this.rowData[i].prdlst_code}`,obj)
-                                  .catch(err => console.log(err));
+        try{
+          let result = await axios.put(`${ajaxUrl}/prductNUpdate/${this.rowData[i].prdlst_code}`,obj)
+                                    .catch(err => console.log(err));
+        }catch{
+          check = false;
+        }
+      }
+      if(check){
+        this.toast.add({ severity: 'success', summary: '업데이트 완료', detail: '모든 데이터가 성공적으로 업데이트되었습니다.', life: 3000 });
+      }else{
+        this.toast.add({ severity: 'error', summary: '업데이트 실패', detail: '데이터 업데이트 중 오류가 발생했습니다.', life: 3000 });
       }
     }, 
 
