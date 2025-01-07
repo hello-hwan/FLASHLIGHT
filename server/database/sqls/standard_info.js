@@ -19,7 +19,7 @@ const bom =
        ,sumry 
 FROM bom
 ORDER BY CAST(SUBSTRING(bom_code, 4) AS INT) DESC`;
-
+  
 // BOM 상세보기 쿼리
 const bomInfo =
 `SELECT bc.cmpds_no
@@ -190,7 +190,7 @@ const infoprductNList =
 FROM prduct_n p LEFT JOIN procs_flowchart f                   
 ON prdlst_code = prd_code
 ORDER BY p.prdlst_code DESC`;
-
+  
 // 반제품 등록
 const prductNAdd = 
 `INSERT INTO prduct_n(prdlst_code
@@ -202,7 +202,7 @@ const prductNAdd =
                      ,wrhousng_unite
                      ,dlivy_unit
                      ,sfinvc)
-VALUES (CONCAT('C-',nextval(prduct_n_no_seq))
+VALUES (CONCAT('N-',nextval(prduct_n_no_seq))
        ,?
        ,?
        ,?

@@ -87,8 +87,13 @@ router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
 // BOM 소모품 삭제
 router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {  
   let cmpdsNo = req.params.cmpdsNo; 
-  let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
-  res.send(result); 
+  try {
+    let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
+    res.send(result);   
+  } catch (error) {
+    console.log('router',error);
+  }
+  
 });
 
 // BOM 삭제

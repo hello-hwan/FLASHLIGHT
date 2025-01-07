@@ -136,10 +136,10 @@ const prduct_n_dlivyTest = async(prdctnNInfo) => {
           let result = await mariaDB.query('prduct_n_dlivyTest', dataArr)
                                     .catch(err => console.log(err));
           //성공하면 1을 리턴, 실패하면 0을 리턴
-          console.log(result);
+          console.log("결과",result);
           resultSum += result;
       };
-      
+       
       //성공한 수의 총합과 등록하는 데이터의 개수를 비교, 같으면 성공, 다르면 실패.
       if(resultSum = prdctnNInfo.length) {
           return 'success';

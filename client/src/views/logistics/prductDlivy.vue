@@ -46,14 +46,14 @@
 
       <v-row>
         <!-- 첫 번째 그리드: 출고리스트 -->
-        <v-col cols="6">
+        <v-col cols="5">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
               <span class="font-weight-black">출고 요청 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
-                style="height: 500px; margin: 0 auto;"
+                style="height: 500px; margin: 0 auto; width: "
                 @grid-ready="onGridReady"
                 :rowData="filteredRowData"
                 :columnDefs="colDefs"
@@ -69,7 +69,7 @@
         </v-col>
 
         <!-- 두 번째 그리드: 출고가능제품 -->
-        <v-col cols="6">
+        <v-col cols="7">
           <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
               <span class="font-weight-black">출고 제품</span>
@@ -139,22 +139,22 @@ export default {
 
     // 출고리스트 컬럼 정의
     this.colDefs = [
-      { field: "order_no", headerName: "요청명" },
-      { field: "order_date", headerName: "요청일", width: 160,
+      { field: "order_no", headerName: "요청명" , flex:1},
+      { field: "order_date", headerName: "요청일", flex:1,
         valueFormatter: this.customDateFormat, // valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
       },
-      { field: "prd_code", headerName: "출고제품종류수" , cellStyle: { textAlign: "center" }, width: 180},
-      { field: "상세보기", headerName: "상세보기", width: 150, cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+      { field: "prd_code", headerName: "출고제품종류수" , cellStyle: { textAlign: "center" }, flex:1},
+      { field: "상세보기", headerName: "상세보기", flex:1.2, cellStyle: { textAlign: "center" } ,cellRenderer: () => {
                                                 return '<button class="btn btn-primary mx-2">상세보기</button>'}},
     ];
 
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
-      { field: "prd_name", headerName: "반제품제품명", width: 225 },
-      { field: "prd_code", headerName: "반제품제품코드" , width: 150},
-      { field: "lot", headerName: "반제품LOT" , width: 100},
-      { field: "order_qy", headerName: "요청수량", width: 100 },
-      { field: "lot_qy", headerName: "출고가능수량" , width: 130},
+      { field: "prd_name", headerName: "반제품제품명", flex:1.7 },
+      { field: "prd_code", headerName: "반제품제품코드" , flex:1},
+      { field: "lot", headerName: "반제품LOT" , flex:1},
+      { field: "order_qy", headerName: "요청수량", flex:1 },
+      { field: "lot_qy", headerName: "출고가능수량" , flex:1},
     ];
 
     // AgGrid 기본 옵션 설정
@@ -223,13 +223,15 @@ export default {
         sendPrductNList.push(newObj);
       }
       console.log(sendPrductNList);
+        
       let result = await axios.post(`${ajaxUrl}/prduct_dliy_process`,sendPrductNList)
                               .catch(err => console.log(err));
-
-      if(result){
+      if(result.data == 'success'){
         this.toast.add({ severity: 'success', summary: '성공', detail: '출고되었습니다.', life: 3000 });
         this.getprductNDlivyList();
         this.getprductNdlivyPossible();
+      }else{
+        this.toast.add({ severity: 'warn', summary: '실패', detail: '수량이 부족합니다.', life: 3000 });
       }
 
     },

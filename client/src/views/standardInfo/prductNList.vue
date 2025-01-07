@@ -100,7 +100,7 @@
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
-                style="height: 550px; margin: 0 auto;"
+                style="height: 520px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"
@@ -175,7 +175,6 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
         flex: 1,
         minWidth: 10,
       },
