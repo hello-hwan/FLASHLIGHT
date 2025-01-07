@@ -95,6 +95,7 @@
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>

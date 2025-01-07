@@ -51,7 +51,7 @@
         <div style="height: 300px;" v-show="input_div">
             <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
                 style="height: 250px; width: 30%; margin-right: auto;"
-                class="ag-theme-alpine">
+                class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
             </ag-grid-vue>
         </div>
         <table class="table table-hover">
@@ -77,7 +77,7 @@
         </table>
         <div>
             <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" rowSelection="multiple"
-                style="height: 500px" @grid-ready="onGridReady" class="ag-theme-alpine">
+                style="height: 500px" @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
             </ag-grid-vue>
         </div>
     </div>
@@ -91,7 +91,7 @@
                 </div>
                 <div id="search-bar" style="height: 375px;">
                     <ag-grid-vue :rowData="modal_rowData" :columnDefs="modal_colDefs" :gridOptions="modal_gridOptions"
-                        style="height: 325px" class="ag-theme-alpine">
+                        style="height: 325px" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
                     </ag-grid-vue>
                 </div>
             </div>
@@ -236,11 +236,9 @@ export default {
             }
         },
         async submit_btn() {
-            let submit_check = 0;
+            let submit_check = 1;
             let list_1 = await axios.get(`${ajaxUrl}/prd_code_bom_cmpds_list/${this.prd_code}`);
             let bom_list = list_1.data;
-            console.log(bom_list)
-            console.log(this.rowData)
             for (let i = 0 ; i < bom_list.length ; i++) {
                 let sum = 0;
                 for (let j = 0 ; j < this.rowData.length ; j++) {
@@ -248,13 +246,10 @@ export default {
                         sum = sum + parseInt(this.rowData[j].usgqty);
                     }
                 }
-                if (bom_list[i].cnsum_count == sum) {
-                    submit_check = 1;
-                } else {
+                if (bom_list[i].cnsum_count != sum) {
                     submit_check = 0;
                 }
             }
-
             if (submit_check == 0) {
                 this.toast.add({ severity: 'error', summary: '실패', detail: 'BOM이랑 총 수량이 같지 않습니다.', life: 3000 });
             } else if (submit_check == 1) {
@@ -269,7 +264,7 @@ export default {
                         let result_3 = await axios.delete(`${ajaxUrl}/ProcsCodeToDeleteFlowchart/${result.data[i].procs_code}`)
                             .catch(err => console.log(err));
                     }
-                    this.$router.push({ name: 'procsFlowchartList' });
+                    this.$router.push({ name: 'procsFlowchartDetail', params: { prd_code: this.prd_code } });
                 }
 
                 let bom_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchBom/${this.prd_code}`)
@@ -316,7 +311,8 @@ export default {
                     let result_3 = await axios.post(`${ajaxUrl}/procsMchnInsert`, procs_mchn_insert)
                         .catch(err => console.log(err));
                 }
-                this.$router.push({ name: 'procsFlowchartList' });
+                //this.$router.push({ name: 'procsFlowchartDetail', params: { prd_code: this.prd_code } });
+                location.href = `/standardInfo/procsFlowchartDetail/${this.prd_code}`;
             }
         },
         async getProcsDetail(prd_code) {
@@ -343,18 +339,18 @@ export default {
             this.input_div = true;
             if (this.prd_code != null) {
                 let result = await axios.get(`${ajaxUrl}/prd_code_bom_search/${this.prd_code}`)
-                    .catch(err => console.log(err));;
+                    .catch(err => console.log(err));
                 this.rowData_search = result.data;
             }
         },
         async input_change(input) {
             if (input == '') {
                 let result = await axios.get(`${ajaxUrl}/prd_code_bom_all_search`)
-                    .catch(err => console.log(err));;
+                    .catch(err => console.log(err));
                 this.rowData_search = result.data;
             } else {
                 let result = await axios.get(`${ajaxUrl}/prd_code_bom_search/${input}`)
-                    .catch(err => console.log(err));;
+                    .catch(err => console.log(err));
                 this.rowData_search = result.data;
             }
         },
@@ -377,17 +373,16 @@ export default {
                 ];
                 let list = await axios.get(`${ajaxUrl}/prd_code_bom_cmpds_list/${this.prd_code}`);
                 this.modal_rowData = list.data;
+                let nothing = {
+                    cmpds_prdlst_code: null, 
+                    cmpds_prdlst_name: '없음', 
+                    unit: 0, 
+                    cnsum_count: 0
+                }
+                this.modal_rowData.push(nothing)
                 for (let i = 0; i < this.modal_rowData.length; i++) {
                     this.modal_rowData[i].index = event.data.index;
                     this.modal_rowData[i].info = "mtril"
-                }
-                if (list.data.length == 0) {
-                    this.modal_colDefs = [
-                        { field: "nothing", headerName: "검색결과 없음" }
-                    ];
-                    this.modal_rowData = [
-                        { nothing: "검색결과 없음" }
-                    ];
                 }
             } else if (event.colDef.headerName === "작업기기") {
                 this.modal_on_off = true;
@@ -414,11 +409,13 @@ export default {
             this.modal_on_off = !this.modal_on_off;
         },
         outputModal(event) {
-            console.log(event)
             if (event.info === "mtril") {
                 for (let i = 0; i < this.rowData.length; i++) {
                     if (this.rowData[i].index == event.index) {
                         this.rowData[i].mtril_nm = event.cmpds_prdlst_name;
+                        if (event.cmpds_prdlst_name == '없음') {
+                            this.rowData[i].usgqty = 0;
+                        }
                         break;
                     }
                 }

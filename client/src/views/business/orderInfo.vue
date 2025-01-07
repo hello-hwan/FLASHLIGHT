@@ -331,7 +331,6 @@
                     } 
                     // 리스트로 이동
                     this.$router.push({name:'orderList'});
-                    alert('수정되었습니다.');
                     this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
 
                 } else {

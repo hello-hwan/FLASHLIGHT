@@ -60,6 +60,7 @@
                 :rowSelection="rowSelection"
                 @cellClicked="onCellClicked"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
@@ -82,6 +83,7 @@
                 :rowSelection="rowSelection"
                 @cellClicked="onCellClicked"
                 :gridOptions="gridOptions"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-two">
               </AgGridVue>
