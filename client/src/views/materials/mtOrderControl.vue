@@ -440,9 +440,9 @@ const insertMtOrderList = async() => {
             //납기일이 비어 있으면 오류 메세지 출력
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
             return;
-        } else if (orderName.length > 20) {
-            //발주명이 20자 이상이면 오류
-            toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명은 20자 이하로 작성해주세요.', life: 3000 });
+        } else if (orderName.length > 100) {
+            //발주명이 100자 이상이면 오류
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명은 100자 이하로 작성해주세요.', life: 3000 });
             return;
         };
             //수량 입력이 잘못됐을 경우 오류 출력
