@@ -21,10 +21,6 @@ app.use(express.json());    //json파서
 app.use(express.urlencoded({ extended : false })); //query string 파서
 
 
-// app.listen(3000, ()=>{
-//     console.log('Server Start');
-//     console.log('http://localhost:3000');
-// });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -51,6 +47,12 @@ app.use(function (err, req, res, next) {
     // render the error page
     res.status(err.status || 500);
     res.render("error");
+});
+
+
+app.listen(3000, ()=>{
+    console.log('Server Start');
+    console.log('http://localhost:3000');
 });
 
 /* 
