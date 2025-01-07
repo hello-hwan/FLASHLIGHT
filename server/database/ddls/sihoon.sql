@@ -1337,3 +1337,13 @@ FROM (SELECT SUM(DISTINCT(totqy)) AS total
       GROUP BY prd_code, order_no) a;
 
 SELECT * FROM cmmn WHERE cmmn_code = 'OD02';
+
+SELECT * FROM thng_req;
+
+DELETE FROM thng_req WHERE req_code = 'req-577028';
+
+COMMIT;
+
+SELECT * FROM prdctn_drct;
+
+CALL play_drct();
