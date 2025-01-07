@@ -8,7 +8,10 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    output: path.resolve("../server/public"),
+    build: {
+        outDir: path.resolve("../server/public"),
+        emptyOutDir: true, // also necessary
+    },
     optimizeDeps: {
         noDiscovery: true,
         include: ['jspdf', 'jspdf-autotable']
@@ -30,7 +33,6 @@ export default defineConfig({
             '^/api': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, '')
             }
         }
     }
