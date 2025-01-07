@@ -19,8 +19,8 @@ AND     m.dedt BETWEEN IFNULL(?, m.dedt) AND IFNULL(?, m.dedt)
 AND     s.empl_no IN (SELECT t.empl_no
                       FROM   empl t
                       WHERE  t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%'))
-AND     m.order_no NOT IN (SELECT t.order_no
-			   FROM   inspection_check t)
+AND     m.order_no NOT IN (SELECT n.order_no
+						   FROM   inspection_check n)
 GROUP BY m.order_code
 ORDER BY m.order_no
 `;
@@ -28,7 +28,8 @@ ORDER BY m.order_no
 //발주 자재 리스트 가져오기
 const mtrilList =
 `
-SELECT m.mtril_code AS mtril_code,
+SELECT  m.order_no AS order_no,
+	    m.mtril_code AS mtril_code,
 		m.mtril_name AS mtril_name,
 		s.inspec_standard AS inspec_standard,
 		m.order_qy AS order_qy,
