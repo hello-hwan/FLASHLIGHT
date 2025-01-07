@@ -320,23 +320,6 @@ const bcncUpdate =
 `UPDATE bcnc
 set ?
 WHERE bcnc_code = ?`;
-
-// 품질검사항목관리
-const qiList =
-`SELECT inspec_item  
-       ,inspec_standard
-FROM inspection_detail 
-WHERE prd_code=?`; 
-
-// 품질검사항목관리 모달창
-const qiListModal=
-`SELECT prd_code
-       ,mtril_name
-       ,mtlty_name
-       ,empl_no
-FROM inspection_check
-WHERE prd_code LIKE CONCAT('%', ?, '%')`;
-
  
 // 공정 흐름도 조회
 const procsFlowchartList = 
@@ -579,8 +562,6 @@ module.exports = {
   prductUpdate,
   bcncList,
   bcncUpdate,
-  qiList,
-  qiListModal,
   procsFlowchartList, 
   procsFlowchartDetail, 
   procsFlowchartDetailTop, 
