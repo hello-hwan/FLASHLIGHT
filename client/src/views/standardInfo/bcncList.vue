@@ -74,7 +74,7 @@
             <template v-slot:title>
               <span class="font-weight-black">거래처 등록</span>
             </template>
-            <v-card-text class="bg-surface-light pt-4">
+            <v-card-text class="bg-surface-light pt-4" style="height: 595px">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">사업자등록번호</label>
@@ -247,7 +247,6 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
         flex: 1,
         minWidth: 10,
       },

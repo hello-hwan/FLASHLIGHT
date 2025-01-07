@@ -155,7 +155,7 @@
                       :rowData="searchProductNRow"
                       :columnDefs="colDefsprductN"
                       :gridOptions="gridOptions"
-                      @cellClicked="onCellClicked3"
+                      @cellClicked="onCellClicked4"
                       :rowSelection="rowSelection"
                       class="ag-theme-alpine">
                     </AgGridVue>
@@ -231,11 +231,11 @@ export default {
     
     this.getmtrilList();
     this.colDefs = [
-      { field: "bom_code", headerName: "BOM코드" , width: 200 },
-      { field: "prdlst_code", headerName: "품목코드", width: 230 },
-      { field: "prdist_name", headerName: "품목명", width: 200 },
-      { field: "prdctn_qy", headerName: "기본생산수량", width: 130, valueGetter: (params) => params.data.prdctn_qy || 0 },
-      { field: "sumry", headerName: "적요", width: 250  },
+      { field: "bom_code", headerName: "BOM코드" ,  flex:0.8 },
+      { field: "prdlst_code", headerName: "품목코드", flex:0.8 },
+      { field: "prdist_name", headerName: "품목명", flex:1.5 },
+      { field: "prdctn_qy", headerName: "기본생산수량", flex:1, valueGetter: (params) => params.data.prdctn_qy || 0 },
+      { field: "sumry", headerName: "적요", flex:1 , valueGetter: (params) => params.data.sumry || "내용없음" },
     ];
 
     this.gridOptionsReturn = {
@@ -291,6 +291,13 @@ export default {
       if(event.colDef.field === "선택"){
         this.prdlstCodeAdd = event.data.prdlst_code;
         this.prdlstNameAdd = event.data.prdlst_name;
+      }
+    },
+
+    onCellClicked4(event){
+      if(event.colDef.field === "선택"){
+        this.prdlstCodeAdd = event.data.prdlst_n_code;
+        this.prdlstNameAdd = event.data.prdlst_n_name;
       }
     },
 

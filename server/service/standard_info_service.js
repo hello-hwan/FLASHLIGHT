@@ -83,8 +83,13 @@ const bom_cmpdsUpdate = async (cmpdsNo, updateInfo) => {
 
 // BOM소모품 삭제
 const bom_cmpdsDel = async (cmpdsNo) => {
-  let result = await mariaDB.query('bom_cmpdsDel', cmpdsNo);
-  return result;
+  
+  try {
+    let result = await mariaDB.query('bom_cmpdsDel', cmpdsNo);
+    return result;  
+  } catch (error) {
+    console.log('serive', error)
+  }
 }
 
 // BOM 삭제
