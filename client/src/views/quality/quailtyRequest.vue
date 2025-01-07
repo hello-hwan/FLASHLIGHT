@@ -39,7 +39,8 @@
                                     :gridOptions="gridOptions" 
                                     style="height: 500px;"
                                     @grid-ready="onGridReady" 
-                                    class="ag-theme-alpine">
+                                    class="ag-theme-alpine"
+                                    overlayNoRowsTemplate="결과 없음">
                         </ag-grid-vue>            
                     </div>        
         
