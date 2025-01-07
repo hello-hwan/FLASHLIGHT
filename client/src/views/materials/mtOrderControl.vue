@@ -616,9 +616,9 @@ const removeAllInfo = () => {
     orderRowData.value = [];
 
     //발주명, 거래처명, 거래처코드 초기화
-    orderName = "";
-    companyName = "";
-    companyCode = "";
+    //orderName = "";
+    //companyName = "";
+    //companyCode = "";
 
     //삭제버튼 비활성화
     delBtn.value = false;
