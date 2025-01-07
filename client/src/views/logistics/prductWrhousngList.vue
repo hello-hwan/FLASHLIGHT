@@ -102,7 +102,7 @@ async onCellClicked(event) {
         event.data.nrmlt,
         event.data.nrmlt
     ]
-
+ 
     let result = await axios.post(`${ajaxUrl}/prductWrhousng`, obj)
                     .catch(err => console.log(err));
         this.toast.add({ severity: 'success', summary: '성공', detail: '입고가 완료되었습니다.', life: 3000 });

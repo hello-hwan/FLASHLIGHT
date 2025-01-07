@@ -212,6 +212,7 @@ export default {
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
+      console.log(this.obj);
     },
 
     // 출고완료처리
@@ -231,7 +232,7 @@ export default {
         this.getprductNDlivyList();
         this.getprductNdlivyPossible();
       }else{
-        this.toast.add({ severity: 'warn', summary: '실패', detail: '수량이 부족합니다.', life: 3000 });
+        this.toast.add({ severity: 'error', summary: '실패', detail: '출고처리 중 오류가 발생하엿습니다.', life: 3000 });
       }
 
     },
