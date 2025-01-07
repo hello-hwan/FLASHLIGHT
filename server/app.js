@@ -32,6 +32,7 @@ app.get('/', function(req, res, next) {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
+app.set("port", process.env.PORT || 3000);
 //새로고침, 라우터 이동 가능하게 만듦.
 app.use(history()); //라우터보다 먼저 실행되야함
 
