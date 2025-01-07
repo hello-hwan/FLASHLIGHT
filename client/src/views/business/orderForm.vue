@@ -366,7 +366,14 @@ export default {
             // 주문번호의 숫자를 내림차순으로 정렬
             orderNoArray.sort((a,b) => b-a); 
             // 주문번호중 가장 큰 0번째 번호에 1을 더해줌
-            this.requst.order_no = 'ORDER-' + ( orderNoArray[0] - 1 + 2 ); 
+            if(orderNoArray.length < 1){
+                orderNoArray[0] = 0;
+            }
+            if(orderNoArray < 9){
+                this.requst.order_no = 'ORDER-0' + ( orderNoArray[0] - 1 + 2 ); 
+            } else {
+                this.requst.order_no = 'ORDER-' + ( orderNoArray[0] - 1 + 2 ); 
+            }
             console.log(this.requst.order_no); 
         }, 
         // 제품 모달창 오픈 후 자동으로 기본값 조회

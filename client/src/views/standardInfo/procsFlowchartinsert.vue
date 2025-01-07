@@ -1,85 +1,83 @@
 <template>
     <div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 75%; font-size: 30px;">
-                        공정 흐름도 관리
-                    </th>
-                    <th style="width: 25%;" id="header">
-                        {{ this.header }}
-                    </th>
-                </tr>
-            </thead>
-        </table>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 25%;">
-                        품목코드
-                    </th>
-                    <th style="width: 25%;">
-                        품목명
-                    </th>
-                    <th style="width: 25%;">
-                        총 소요시간 (분)
-                    </th>
-                    <th style="width: 25%;">
-                        <button type="button" class="btn btn-primary"
-                            style="color: white; margin: 2px; padding: 2px; width: 75px;"
-                            @click="submit_btn()">저장</button>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <input style="background-color:lightsteelblue;" type="text" v-model="prd_code"
-                            @click="input_click()">
-                    </td>
-                    <td>
-                        <input style="background-color: lightsteelblue;" type="text" v-model="prd_nm">
-                    </td>
-                    <td>
-                        {{ all_time }} 분
-                    </td>
-                    <td>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div style="height: 300px;" v-show="input_div">
-            <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
-                style="height: 250px; width: 30%; margin-right: auto;"
-                class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
-            </ag-grid-vue>
-        </div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 15%; font-size: 20px;">
-                        공정 순서
-                    </th>
-                    <th style="width: 65%;">
-                    </th>
-                    <th style="width: 10%;">
-                        <button type="button" class="btn btn-primary"
-                            style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행
-                            추가</button>
-                    </th>
-                    <th style="width: 10%;">
-                        <button type="button" class="btn btn-danger"
-                            style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행
-                            삭제</button>
-                    </th>
-                </tr>
-            </thead>
-        </table>
-        <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" rowSelection="multiple"
-                style="height: 500px" @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
-            </ag-grid-vue>
-        </div>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    공정 흐름도 {{ header }}
+                </span>
+            </template>
+        </v-card>
+        <v-card-text class="bg-surface-light pt-4">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">
+                            품목코드
+                        </th>
+                        <th style="width: 25%;">
+                            품목명
+                        </th>
+                        <th style="width: 25%;">
+                            총 소요시간 (분)
+                        </th>
+                        <th style="width: 25%;">
+                            <button type="button" class="btn btn-primary"
+                                style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                                @click="submit_btn()">저장</button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input style="background-color:lightsteelblue;" type="text" v-model="prd_code"
+                                @click="input_click()">
+                        </td>
+                        <td>
+                            <input style="background-color: lightsteelblue;" type="text" v-model="prd_nm">
+                        </td>
+                        <td>
+                            {{ all_time }} 분
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="height: 300px;" v-show="input_div">
+                <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
+                    style="height: 250px; width: 30%; margin-right: auto;" class="ag-theme-alpine"
+                    overlayNoRowsTemplate="결과 없음">
+                </ag-grid-vue>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 15%; font-size: 20px;">
+                            공정 순서
+                        </th>
+                        <th style="width: 65%;">
+                        </th>
+                        <th style="width: 10%;">
+                            <button type="button" class="btn btn-primary"
+                                style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행
+                                추가</button>
+                        </th>
+                        <th style="width: 10%;">
+                            <button type="button" class="btn btn-danger"
+                                style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행
+                                삭제</button>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            <div>
+                <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" rowSelection="multiple"
+                    style="height: 500px" @grid-ready="onGridReady" class="ag-theme-alpine"
+                    overlayNoRowsTemplate="결과 없음">
+                </ag-grid-vue>
+            </div>
+        </v-card-text>
     </div>
     <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
         <div class="modal-wrap" @click="modal_close_btn()" v-show="modal_on_off">
@@ -147,12 +145,12 @@ export default {
     created() {
         this.prd_code = this.$route.query.prd_code;
         if (this.prd_code != null) {
-            this.header = '수정 화면';
+            this.header = '수정';
             this.getProcsDetail(this.prd_code);
             this.getProcsDetailTop(this.prd_code);
             this.del_edit = this.rowData.length;
         } else {
-            this.header = '등록 화면';
+            this.header = '등록';
         }
         this.colDefs = [
             { field: "index", headerName: "인덱스", checkboxSelection: true },
@@ -239,9 +237,9 @@ export default {
             let submit_check = 1;
             let list_1 = await axios.get(`${ajaxUrl}/prd_code_bom_cmpds_list/${this.prd_code}`);
             let bom_list = list_1.data;
-            for (let i = 0 ; i < bom_list.length ; i++) {
+            for (let i = 0; i < bom_list.length; i++) {
                 let sum = 0;
-                for (let j = 0 ; j < this.rowData.length ; j++) {
+                for (let j = 0; j < this.rowData.length; j++) {
                     if (this.rowData[j].mtril_nm == bom_list[i].cmpds_prdlst_name) {
                         sum = sum + parseInt(this.rowData[j].usgqty);
                     }
@@ -374,9 +372,9 @@ export default {
                 let list = await axios.get(`${ajaxUrl}/prd_code_bom_cmpds_list/${this.prd_code}`);
                 this.modal_rowData = list.data;
                 let nothing = {
-                    cmpds_prdlst_code: null, 
-                    cmpds_prdlst_name: '없음', 
-                    unit: 0, 
+                    cmpds_prdlst_code: null,
+                    cmpds_prdlst_name: '없음',
+                    unit: 0,
                     cnsum_count: 0
                 }
                 this.modal_rowData.push(nothing)
