@@ -288,7 +288,7 @@ export default {
             this.$router.push({ name: 'checkSchdul' });
         },
         async getChckIem() {
-            let result = await axios.get(`${ajaxUrl}/equip/chck_iem_list/${this.fx_code_list.eqp_code}`)
+            let result = await axios.get(`${ajaxUrl}/equip/chck_iem_list/${this.fx_code_list.model_nm}`)
                 .catch(err => console.log(err));
             if (result.data.length == 0) {
                 this.rowData = [
