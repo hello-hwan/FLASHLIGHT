@@ -259,7 +259,7 @@ import { useToast } from 'primevue/usetoast';
       // BOM 조회 컬럼 정의
       this.colDefs = [
         { field: "bom_code", headerName: "BOM코드", flex:0.8 },
-        { field: "prdlst_code", headerName: "제품코드" , flex:0.7},
+        { field: "prdlst_code", headerName: "품목코드" , flex:0.7},
         { field: "prdist_name", headerName: "제품명" , flex:2},
         { field: "prdctn_qy", headerName: "기본생산수량" , flex:0.9 ,cellStyle: { textAlign: "center" }},
         { field: "상세보기", headerName: "상세보기", flex:1, cellStyle: { textAlign: "center" } ,cellRenderer: () => {

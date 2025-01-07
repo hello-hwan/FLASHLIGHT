@@ -83,8 +83,8 @@ data() {
 created() {
     this.getprductNReturnList();
     this.colDefs = ([
-        { field: "prduct_n_name", headerName:"제품명" },         // 반제품 반환 리스트로 변경해야됨
-        { field: "prduct_n_code", headerName:"제품코드" },    // 반제품 반환 리스트로 변경해야됨
+        { field: "prduct_n_name", headerName:"반제품명" },         // 반제품 반환 리스트로 변경해야됨
+        { field: "prduct_n_code", headerName:"반제품코드" },    // 반제품 반환 리스트로 변경해야됨
         { field: "nusgqty", headerName:"재입고량" },    // 반제품 반환 리스트로 변경해야됨
         { field: "requst_date", headerName:"출고날짜",
             valueFormatter: (params) => { return userDateUtils.dateFormat(params.value, 'yyyy-MM-dd'); }
@@ -110,8 +110,8 @@ created() {
     };
     this.getprductNList();
     this.colDefsSelect = ([
-        { field: "prd_nm", headerName:"제품명" },
-        { field: "prd_code", headerName:"제품코드" },
+        { field: "prd_nm", headerName:"반제품명" },
+        { field: "prd_code", headerName:"반제품코드" },
         { field: "nrmlt", headerName:"생산수량" },
         { field: "end_time", headerName:"생산완료일",
             valueFormatter: this.customDateFormat },

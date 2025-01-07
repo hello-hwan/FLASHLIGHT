@@ -20,14 +20,14 @@
                 </div>
                 <!-- 품목코드 --> 
                 <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">품목코드</label>
+                  <label for="itemCode" class="col-form-label">반제품코드</label>
                 </div>
                 <div class="col-2">
                   <input type="text" id="itemCode" class="form-control" v-model="prdlstCode" />
                 </div>
                 <!-- 제품명 -->
                 <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">제품명</label>
+                  <label for="itemCode" class="col-form-label">반제품명</label>
                 </div>
                 <div class="col-1">
                   <input type="text" id="itemCode" class="form-control" v-model="prdlstName"/>
@@ -127,8 +127,8 @@ export default {
 
     this.colDefs = [
       { field: "prduct_n_lot", headerName: "반제품LOT" },
-      { field: "prdlst_code", headerName: "제품코드" },
-      { field: "prduct_name", headerName: "제품명" },
+      { field: "prdlst_code", headerName: "반제품코드" },
+      { field: "prduct_name", headerName: "반제품명" },
       { field: "prduct_n_wrhousng_day", headerName: "입고일자", valueFormatter: this.customDateFormat },
       { field: "prduct_n_invntry_qy", headerName: "재고수량" },
       { field: "se", headerName: "구분" }
