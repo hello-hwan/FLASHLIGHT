@@ -178,11 +178,11 @@ const model = ref([
                         to: '/standardInfo/bomList'
                     },
                     {
-                        label: '공정 흐름도 관리',
+                        label: '공정 흐름도 등록',
                         to: '/standardInfo/procsFlowchartinsert'
                     },
                     {
-                        label: '공정 흐름도 조회',
+                        label: '공정 흐름도 관리',
                         to: '/standardInfo/procsFlowchartList'
                     }
                 ]

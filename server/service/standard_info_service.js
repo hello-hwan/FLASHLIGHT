@@ -118,7 +118,11 @@ const mtril = async () => {
 
 // 자재 등록
 const mtrilAdd = async (info) => {
-  let result = await mariaDB.query('mtrilAdd', info);
+  //자재코드 가져오기
+  let key = await mariaDB.query('mtKey')
+                         .catch(err => console.log(err));
+  //자재 등록
+  let result = await mariaDB.query('mtrilAdd', [key[0].mtril_code, ...info]);
   
   try{
   if (result.insertId != null) {
@@ -236,20 +240,6 @@ const bcncUpdate = async (code, info) => {
   let result = await mariaDB.query('bcncUpdate', data);
   return result;
 }
-
-//품질검사항목관리
-const qiList = async (prd_code) => {
-  let list = await mariaDB.query('qiList', prd_code);
-  return list;
-}
- 
-
-//품질검사항목관리 모달창
-const qiListModal = async (prd_code) => {
-  let list = await mariaDB.query('qiListModal',prd_code) 
-                          .catch(err=>console.log(err));                     
-  return list;
-  }
 
 // 공정 흐름도 조회
 const procsFlowchartList = async () => {
@@ -411,8 +401,7 @@ module.exports = {
   prductDelete,
   prductUpdate, 
   bcncList,
-  bcncUpdate,
-  qiList,
+  bcncUpdate,  
   procsFlowchartList, 
   procsFlowchartDetail, 
   procsFlowchartDetailTop, 

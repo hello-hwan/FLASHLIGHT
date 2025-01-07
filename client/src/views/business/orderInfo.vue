@@ -120,7 +120,7 @@
     import { ref } from 'vue';
     import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
     import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-    import userDateUtils from '@/utils/useDates.js';
+    // import userDateUtils from '@/utils/useDates.js';
     import bfSearchCompanyModal from '@/components/business/businessSearchCompanyModal.vue';
     ModuleRegistry.registerModules([AllCommunityModule]);
     
@@ -128,6 +128,7 @@
 
     import axios from 'axios';
     import { ajaxUrl } from '@/utils/commons.js';
+    import store from '@/store'
     
     export default { 
         data() { 
@@ -153,7 +154,8 @@
                 searchProductName:'',
                 modalCheck2:false,
                 index:0,
-                toast : useToast()
+                toast : useToast(),
+                empName : store.state.empInfo[store.state.empInfo.length - 1].name
             }; 
         }, 
         created() { 
@@ -173,8 +175,10 @@
             { field: "prd_code", headerName:"품목코드", checkboxSelection: true }, 
             { field: "prd_name", headerName:"품목이름" }, 
             { field: "untpc", headerName:"주문단가", editable: true }, 
-            { field: "order_qy", headerName:"주문수량", editable: true }, 
-            { field: "wrter", headerName:"작성자", editable: true } 
+            { field: "totqy", headerName:"주문수량", editable: true }, 
+            { field: "order_qy", headerName:"생산수량", editable: false }, 
+            { field: "prdctn_at", headerName:"생산여부", editable: false }, 
+            { field: "wrter", headerName:"작성자", editable: false } 
             ]);
             this.gridOptionsOrder = { 
                 columnDefs: this.returnColDefs, 
@@ -201,7 +205,27 @@
                 animateRows: false,
                 pagination: true,
                 paginationPageSize: 10,
-                paginationPageSizeSelector: [10, 20, 50, 100],
+                paginationPageSizeSelector: [10, 20, 50, 100], /*
+                onCellValueChanged: (params) => {
+                    if (params.colDef.field === 'order_qy') {
+                        const orderQy = params.data.order_qy || 0;
+
+                        //음수 못 넣게 하기
+                        if (orderQy < 0) {
+                            this.toast.add({ 
+                                severity: 'warn', 
+                                summary: '수정실패', 
+                                detail: '수량은 양수로 입력하세요.', 
+                                life: 3000 
+                            });
+                                params.node.setData({
+                                ...params.data,
+                                order_qy: params.oldValue ?? 0,
+                            });
+                            params.api.refreshCells({ force: true });
+                        }
+                    }
+                },*/
             };
         }, 
         name: "App", 
@@ -292,7 +316,7 @@
                             prd_code:productSelectedData[0].prdlst_code, 
                             prd_name:productSelectedData[0].prdlst_name, 
                             untpc: 0, 
-                            order_qy: 0, 
+                            totqy: 0, 
                             wrter: this.empName 
                         }; 
 
@@ -316,23 +340,35 @@
             async orderListReplace() { 
                 // 주문목록에 내용이 있으면 수정
                 if(this.gridApi.getRenderedNodes().length > 0){
-                    // 주문 삭제
-                    let result = await axios.delete(`${ajaxUrl}/business/orderInfo/${this.selectNo}`)
-                                                   .catch(err=>console.log(err));
-                    console.log(result);
-                    // 주문 등록
+
+                    // 수량과 단가에 음수가 있으면 수정하지 않음
+                    let minusCheck = 1;
                     for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
-                        let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
-                        console.log("합친결과는"); 
-                        console.log(orderRegister); 
-                        let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
-                                                     .catch(err=>console.log(err)); 
-                        console.log("결과는", result); 
+                        if(this.gridApi.getRenderedNodes()[i].data.order_qy < 1 || this.gridApi.getRenderedNodes()[i].data.untpc < 1){
+                            minusCheck = 0;
+                        }
                     } 
-                    // 리스트로 이동
-                    this.$router.push({name:'orderList'});
-                    alert('수정되었습니다.');
-                    this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
+                    if (minusCheck == 1){
+                        // 주문 삭제
+                        let result = await axios.delete(`${ajaxUrl}/business/orderInfo/${this.selectNo}`)
+                                                       .catch(err=>console.log(err));
+                        console.log(result);
+    
+                        // 주문 등록
+                        for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
+                            let orderRegister = { ...this.requst,...this.gridApi.getRenderedNodes()[i].data };
+                            console.log("합친결과는"); 
+                            console.log(orderRegister); 
+                            let result = await axios.post(`${ajaxUrl}/business/orderForm`,orderRegister)
+                                                         .catch(err=>console.log(err)); 
+                            console.log("결과는", result); 
+                        } 
+                        // 리스트로 이동
+                        this.$router.push({name:'orderList'});
+                        this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
+                    } else {
+                        this.toast.add({ severity: 'warn', summary: '수정실패', detail: '수량과 단가는 양수로 입력하세요.', life: 3000 });
+                    }
 
                 } else {
                     // 주문목록에 내용이 없으면 표시할 팝업창
@@ -353,19 +389,32 @@
                 this.rowData.pop(); 
                 this.rowData = [...this.rowData]; 
             }, 
-            // 신규 행삭제
+            // ag grid에 선택된 행 삭제
             deleteBtn(){ 
+                // 선택된 행을 담아줄 변수
                 const selectedNodes = this.gridApi.getSelectedNodes(); 
+                console.log('선택된 행을 담은 변수는'); 
                 console.log(selectedNodes); 
+
+                // 선택된 행의 갯수만큼 반복
                 for (let i = 0 ; i < selectedNodes.length ; i ++){ 
+
+                    // 신규배열 생성
                     let result_arr = []; 
-                    console.log(selectedNodes[i].data.order_list_no); 
+                    console.log(selectedNodes[i].data.index); 
+
+                    // ag grid의 모든 행의 갯수만큼 반복 
                     for(let j = 0 ; j < this.rowData.length; j++){ 
-                        if(this.rowData[j].order_list_no == selectedNodes[i].data.order_list_no){ 
+
+                        // index를 비교하여 같으면 추가하지 않고 건너 뜀
+                        if(this.rowData[j].index == selectedNodes[i].data.index){ 
                             continue; 
                         } 
+
+                        // 신규배열에 인덱스가 같은 행을 빼고 등록
                         result_arr = [...result_arr,this.rowData[j]]; 
                     } 
+                    // index가 같은 행을 빼고 만들어진 배열을 ag grid의 rowData에 등록
                     this.rowData=result_arr; 
                 } 
             }, 

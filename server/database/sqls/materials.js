@@ -72,6 +72,7 @@ select mtril_code,
 from   mtril
 WHERE  mtril_name = IFNULL(?, mtril_name)
 AND    mtril_code = IFNULL(?, mtril_code)
+ORDER BY mtril_code
 `;
 
 //거래처 검색 모달 - mt003
@@ -373,6 +374,7 @@ SELECT  m.mtril_name AS mtril_name,
         m.unit AS unit,
         m.sfinvc AS sfinvc
 FROM    mtril m
+ORDER BY m.mtril_code
 `;
 
 //자재 재고 조회 - mt013 로트별 로트, 수량, 단위, 입고일, 입고담당자 이름

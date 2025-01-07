@@ -143,6 +143,13 @@ GROUP BY m.mtril_code
 	 ,m.sfinvc
 ORDER BY m.mtril_code DESC`;
 
+//자재 등록시 필요한 mtril_code가져오기
+const mtKey = 
+`
+SELECT CONCAT('M', LPAD(IFNULL(MAX(CAST(SUBSTR(mtril_code, 3) AS UNSIGNED)) + 1, 1), 3, '0')) AS mtril_code
+FROM mtril
+`;
+
 // 자재 등록
 const mtrilAdd =
 `INSERT INTO mtril (mtril_code
@@ -150,7 +157,7 @@ const mtrilAdd =
                    ,unit
                    ,untpc
                    ,sfinvc)
-VALUES (CONCAT('M-',nextval(mtril_no_seq)),
+VALUES (?,
         ?,
         ?,
         0,
@@ -320,23 +327,6 @@ const bcncUpdate =
 `UPDATE bcnc
 set ?
 WHERE bcnc_code = ?`;
-
-// 품질검사항목관리
-const qiList =
-`SELECT inspec_item  
-       ,inspec_standard
-FROM inspection_detail 
-WHERE prd_code=?`; 
-
-// 품질검사항목관리 모달창
-const qiListModal=
-`SELECT prd_code
-       ,mtril_name
-       ,mtlty_name
-       ,empl_no
-FROM inspection_check
-WHERE prd_code LIKE CONCAT('%', ?, '%')`;
-
  
 // 공정 흐름도 조회
 const procsFlowchartList = 
@@ -579,8 +569,6 @@ module.exports = {
   prductUpdate,
   bcncList,
   bcncUpdate,
-  qiList,
-  qiListModal,
   procsFlowchartList, 
   procsFlowchartDetail, 
   procsFlowchartDetailTop, 
@@ -606,5 +594,6 @@ module.exports = {
   search_pw, 
   update_empl, 
   delete_empl,
-  loginSelect
+  loginSelect,
+  mtKey
 };

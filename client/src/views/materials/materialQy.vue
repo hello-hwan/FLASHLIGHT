@@ -17,7 +17,8 @@
                     :rowData="mtRowData"
                     :gridOptions="gridOptions"
                     class="ag-theme-alpine"
-                    @grid-ready="mtListQyOnGridReady">
+                    @grid-ready="mtListQyOnGridReady"
+                    overlayNoRowsTemplate="결과 없음">
                 </AgGridVue>
                 <button @click="onBtnExportDataAsCsvMtList" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
             </v-card-text>
@@ -61,6 +62,7 @@
                     class="ag-theme-alpine"
                     style="height: 516px"
                     @grid-ready="onGridReady"
+                    overlayNoRowsTemplate="결과 없음"
                     >
                 </AgGridVue>
                 

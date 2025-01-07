@@ -8,7 +8,6 @@ import procsFlowchartinsert from "@/views/standardInfo/procsFlowchartinsert.vue"
 import emplManagement from "@/views/standardInfo/emplManagement.vue";
 
 import bomManage from "@/views/standardInfo/bomAdd.vue";
-import qiList from "@/views/standardInfo/qiList.vue";
 import mtrilList from "@/views/standardInfo/mtrilList.vue";
 import infoprductNList from "@/views/standardInfo/prductNList.vue";
 import infoprductList from "@/views/standardInfo/prductList.vue";
@@ -44,11 +43,7 @@ const standardInfoRoute = [
         name: 'bomManage',
         component: bomManage
     },
-    {
-        path: 'qiList',
-        name: 'qiList',
-        component: qiList
-    },
+    
     {
         path: 'mtrilList',
         name: 'mtrilList',
