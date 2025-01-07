@@ -3,8 +3,9 @@ require('dotenv').config({ path : './database/mariadb.env'});
 
 const express = require('express');
 const app = express();
-
 const path=require("path");
+const history = require("connect-history-api-fallback");
+
 //라우터 모듈 불러오기
 const businessRouter = require('./router/business_router.js');
 const equipmentsRouter = require('./router/equipments_router.js');
@@ -19,6 +20,7 @@ const statisticsRouter = require('./router/statistics_router.js');
 app.use(express.json());    //json파서
 app.use(express.urlencoded({ extended : false })); //query string 파서
 
+
 app.listen(3000, ()=>{
     console.log('Server Start');
     console.log('http://localhost:3000');
@@ -30,6 +32,8 @@ app.get('/', function(req, res, next) {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
+//새로고침, 라우터 이동 가능하게 만듦.
+app.use(history()); //라우터보다 먼저 실행되야함
 
 /* 
     라우터 불러오는 부분입니다. 
