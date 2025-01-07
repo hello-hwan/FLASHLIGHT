@@ -2,7 +2,7 @@
     <span style="margin-left:20px">
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;" v-if="state == 'pdf'">PDF 내보내기</button>
+        style="line-height: 1px; color: #fff; margin:12px;" v-if="state == 'pdf'">PDF 내보내기</button>
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
         style="line-height: 1px; color: #fff;" v-else-if="state == 'order'">발주건 조회</button>
@@ -29,6 +29,7 @@
                     </div>
                 </div>
                 <div style="width: 100%; text-align: center;">
+                    <button @click="removeSearchKey"class="btn btn-secondary search-btn" >초기화</button>
                     <button @click="searchOrder"class="btn btn-primary search-btn" >조회</button>
                 </div>
             </div>
@@ -37,8 +38,9 @@
                 :rowData="orderRowData"
                 :gridOptions="GridOptions"
                 class="ag-theme-alpine"
-                style="height: 500px"
+                style="height: 518px"
                 @grid-ready="onGridReady"
+                overlayNoRowsTemplate="결과 없음"
                 >
             </AgGridVue>
             
@@ -67,13 +69,13 @@ let state = ref(props.state);
 const emit = defineEmits(["selectedData"]);
 
 //검색조건
-let orderName = null;
-let company = null;
-let startOrderDate = null;
-let endOrderDate = null;
-let startDedt = null;
-let endDedt = null;
-let empName = null;
+let orderName = ref(null);
+let company = ref(null);
+let startOrderDate = ref(null);
+let endOrderDate = ref(null);
+let startDedt = ref(null);
+let endDedt = ref(null);
+let empName = ref(null);
 
 //날짜 포멧
 const customDateFormat = (params) => {
@@ -99,7 +101,7 @@ const onGridReady = (params) => {
 let modalCheck = ref(false);
 
 //모달이 열리면 true로 변경, 스크롤 막기
-const modalOpen = () => {
+const modalOpen = async () => {
     const html = document.querySelector('html');
     if(modalCheck.value == false) {
         modalCheck.value = !modalCheck.value;
@@ -111,14 +113,17 @@ const modalOpen = () => {
     //행 데이터 초기화
     orderRowData.value = [];
     
+    //바로 검색
+    await searchOrder();
+
     //검색조건 초기화
-    orderName = null;
-    company = null;
-    startOrderDate = null;
-    endOrderDate = null;
-    startDedt = null;
-    endDedt = null;
-    empName = null;
+    orderName.value = "";
+    company.value = "";
+    startOrderDate.value = "";
+    endOrderDate.value = "";
+    startDedt.value = "";
+    endDedt.value = "";
+    empName.value = "";
 }
 
 //모달 발주건을 선택하고 확인버튼 클릭
@@ -149,19 +154,20 @@ const GridOptions = {
       columnDefs: ColDefs,
       animateRows: false,
       pagination: true,
+      rowSelection: "single",
       paginationPageSize: 10,
       paginationPageSizeSelector: [10, 20, 50, 100],
 };
 
 const searchOrder = async() => {
     //서버로 보낼 검색 데이터
-    let obj = {order_name: orderName, 
-               mtlty_name: company,
-               start_order: startOrderDate,
-               end_order: endOrderDate,
-               start_dedt: startDedt,
-               end_dedt: endDedt,
-               emp_name: empName
+    let obj = {order_name: orderName.value, 
+               mtlty_name: company.value,
+               start_order: startOrderDate.value,
+               end_order: endOrderDate.value,
+               start_dedt: startDedt.value,
+               end_dedt: endDedt.value,
+               emp_name: empName.value
                 };
     console.log("새로만든 객체: ",obj);
     let result = [];
@@ -177,6 +183,21 @@ const searchOrder = async() => {
     //console.log("통신결과: ",result);
     //행 데이터 담기
     orderRowData.value = result.data;   
+};
+
+//검색 데이터 삭제
+const removeSearchKey = () => {
+    orderRowData.value = []
+    orderName.value = "";
+    company.value = "";
+    startOrderDate.value = "";
+    endOrderDate.value = "";
+    startDedt.value = "";
+    endDedt.value = "";
+    empName.value = "";
+    
+    //화면에 데이터 삭제 후 전체검색
+    searchOrder();
 };
 </script>
 

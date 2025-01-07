@@ -124,10 +124,12 @@ router.get('/prod/onedrct/:code', async (req, res) => {
 });
 
 // 소모재료 조회 - 키오스크 시작보고
-router.get('/prod/selmatrl/:code', async (req, res) => {
-  let code = req.params.code;
+router.get('/prod/selmatrl', async (req, res) => {
+  let array = [];
+  array.push(req.query.prdctn_code);
+  array.push(req.query.mnfct_no);
   prodService
-  .selmatrl(code)
+  .selmatrl(array)
   .then(list => {
     res.send(list);
   })
@@ -251,6 +253,8 @@ router.get('/prod/shiftlist', async (req, res) => {
 router.get('/prod/drcttable', async (req, res) => {
   let array = [];
   array.push(req.query.code);
+  array.push(req.query.day);
+  array.push(req.query.day);
   array.push(req.query.day);
   array.push(req.query.day);
   array.push(req.query.day);

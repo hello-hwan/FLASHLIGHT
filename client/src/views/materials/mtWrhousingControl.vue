@@ -88,7 +88,6 @@ export default {
                 paginateChildRows: true,
                 animateRows: false,
                 defaultColDef: {
-                    filter: true,
                     flex: 1,
                     minWidth: 10
                 }
@@ -116,7 +115,6 @@ export default {
                 paginateChildRows: true,
                 animateRows: false,
                 defaultColDef: {
-                    filter: true,
                     flex: 1,
                     minWidth: 10
                 },
@@ -152,7 +150,6 @@ export default {
 
 <style scoped>
 .card-custom {
-    border-top: 1px solid #9bb0be;
     border-bottom-right-radius: 13px;
     border-bottom-left-radius: 13px;
     margin-bottom: 30px;

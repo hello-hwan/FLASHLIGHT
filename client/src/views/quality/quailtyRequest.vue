@@ -1,246 +1,190 @@
 <template>
-    <table class="table table-hover">
-           <thead>
-               <tr>
-                   <th style="width: 70%; font-size: 30px;">
-                       품질입고검사
-                   </th>
-               </tr>
-           </thead>
-       </table>  
-       
-   <div class="container">
-       <v-container fluid>
-            <v-row>
-               <!-- 검색 필드 -->
-                   <v-col cols="12">
-                       <v-card class="mx-auto" style="border-radius: 13px;">
-                            <v-card-text class="bg-surface-light pt-4">
-
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">발주번호</label>
-               </div>
-               <div class="col-auto">
-                   <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="mt_no">
-               </div> 
-               <div class="col-auto">
-                   <span class="form-text">
-                       <search-modal v-bind:state="'order'" @selectedData="getOrderDetails"/>        
-                   </span>                    
-               </div>         
-           </div>
-
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">자재코드</label>
-               </div>
-               <div class="col-auto">
-                   <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="mtr_code">
-               </div>              
-           </div>
-
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">자재명</label>
-               </div>
-               <div class="col-auto">
-                   <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="mtr_name">
-               </div>               
-           </div>
-
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">거래처코드</label>
-               </div>
-               <div class="col-auto">
-                   <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline" v-model="bc_code">
-               </div>           
-           </div>    
-   
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">거래처명</label>
-               </div>
-               <div class="col-auto">
-                   <input type="text" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="bc_name">
-               </div>               
-           </div>
-
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">발주량</label>
-               </div>
-               <div class="col-auto">
-                   <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="ord_num">
-               </div>                
-           </div>                     
-
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">사원번호</label>
-               </div>
-               <div class="col-auto">
-                   <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="empl_no">
-               </div>           
-           </div>    
-           
-           <div class="row g-3 align-items-center">
-               <div class="col-1">
-                   <label for="inputPassword6" class="col-form-label">합격량</label>
-               </div>
-               <div class="col-auto">
-                   <input type="number" id="inputPassword6" class="form-control" aria-describedby="passwordHelpInline"  v-model="pass_num">
-               </div>           
-          </div>          
-   
-   <div style="margin-top: 30px">
-       <ag-grid-vue :rowData="rowData" 
-            :columnDefs="colDefs" 
-           :gridOptions="gridOptions" style="height: 500px"
-            @grid-ready="onGridReady" class="ag-theme-alpine">
-       </ag-grid-vue>            
-   </div>        
-
+    <div>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    입고검사
+                </span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4">
+                <!--발주건 조회-->
+                <div style="text-align: right; position: relative; z-index: 100;">
+                    <requestModal @selectedData="getOrderData"/>
+                </div>
+                <div style="display: none;">
+                    <span>발주번호</span>
+                    <InputText type="text" v-model="orderNo" > <p>{{ orderNo }}</p></InputText>
+                </div>
+                <span>발주명</span>
+                <InputText type="text" v-model="orderName" > <p>{{ orderName }}</p></InputText>
+                <span>거래처코드</span>
+                <InputText type="text" v-model="companyCode" > <p>{{ companyCode }}</p></InputText>
+                <span>거래처명</span>
+                <InputText type="text" v-model="companyName" > <p>{{ companyName }}</p></InputText>
+            </v-card-text>
+        </v-card>  
+        
+        <div >
+            <v-card class="mx-auto" style="margin-top:30px; border-radius: 13px; position: relative; z-index: 0;">
+                <v-card-text class="bg-surface-light pt-4">
+                    <div style="text-align: right;">    
+                        <span>담당자 </span>
+                        <InputText type="text" v-model="chargerName" style="width:80px; margin-bottom: 5px;"> <p>{{ chargerName }}</p></InputText>
+                        <button type="button" class="btn btn-warning" style="color: #fff; line-height: 1;" @click="removeData()">초기화</button>    
+                        <button type="button" class="btn btn-primary" style="color: #fff; line-height: 1;" @click="insertInfoList()">등록</button>
+                    </div>
+                    <div>
+                        <ag-grid-vue :rowData="rowData" 
+                                    :columnDefs="colDefs" 
+                                    :gridOptions="gridOptions" 
+                                    style="height: 500px;"
+                                    @grid-ready="onGridReady" 
+                                    class="ag-theme-alpine">
+                        </ag-grid-vue>            
+                    </div>        
+        
                 </v-card-text>
-           </v-card>
-       </v-col>
-   </v-row>
-</v-container>
-</div>
-   
-   <div style="margin-top: 30px">    
-       <button type="button" class="btn btn-primary" @click="quailtyInsert()">등록</button>
-       <button type="button" class="btn btn-warning" @click="onInit()">초기화</button>    
-   </div>
+            </v-card>
+        </div>
 
-   
-   </template>
-   
-   <script>
-   import { ref } from 'vue';
-   import { AgGridVue } from "ag-grid-vue3"; // Vue Data Grid Component
-   import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-   import SearchModal from '@/components/quality/qualityRequestModal.vue';
-   ModuleRegistry.registerModules([AllCommunityModule]);    
-   import axios from 'axios';
-   import { ajaxUrl } from '@/utils/commons.js';
-   
-   export default {
-       name: "App",
-       components: {
-           SearchModal,
-           AgGridVue, // Add Vue Data Grid component
-        },
-       data() {
-           return {            
-               rowData: [],
-               colDefs: [],
-               mt_num :'', //큰그릇
-               mt_no: '', // 발주번호
-               mtr_code:'', //자재코드
-               mtr_name:'', //자재명
-               bc_code:'', //거래처코드
-               bc_name:'', //거래처명
-               ord_num:'', //발주량
-               inspec_date:'', //검사일자
-               mtl_code:'', //품질검사코드
-               empl_no:'',//사원번호
-               pass_num:'', //합격량
-               mt_num2:''
-         
-           };
-       },
-       created() {        
-           this.colDefs =ref([
-               { field: "inspec_item",headerName: "검사항목"},
-               { field: "inspec_standard",headerName : "검사기준"},
-               { field: "error_amount",headerName : "불량량",editable : true},
-               { field: "p_result",headerName : "제품검사결과",editable : true ,cellEditor: 'agSelectCellEditor', cellEditorParams: {values: ['합격','불합격'],}} 
-           ]);
-   
-           this.gridOptions = {
-               columnDefs: this.orderColDefs,
-               pagination: true,
-               paginationPageSize: 10,
-               paginationPageSizeSelector: [10, 20, 50, 100],
-               paginateChildRows: true,
-               animateRows: false,
-               defaultColDef: {
-                   filter: true,
-                   flex: 1,
-                   minWidth: 10
-               },
-           };
-       },    
-    
-       methods: {
-           async getmt_no() {
-               let result = await axios.get(`${ajaxUrl}/quality/order_request?mt_info=${this.mt_no}`)
-                                       .catch(err => console.log(err));
 
-               this.mt_num = result.data;
-               this.bc_name=this.mt_num.mtlty_name; //거래처명
-               this.bc_code=this.mt_num.bcnc_code; //거래처코드
-               this.mtr_name=this.mt_num.mtril_name; //자재명
-               this.mtr_code=this.mt_num.mtril_code; //자재코드=품목코드
-               this.ord_num=this.mt_num.order_qy; //발주량=입고수량
-               
-               
-               let result2 = await axios.get(`${ajaxUrl}/quality/inspec_item?in_info=${this.mtr_code}`)
-                                        .catch(err => console.log(err)); 
-               this.mt_num2 = result2.data;
-               this.rowData = ref(this.mt_num2)         
-                         
-                                   
-           },
-          
-           async quailtyInsert(){
-               let inspect = [
-                   "",//품질검사코드
-                   this.mtr_code,//자재코드
-                   this.mtr_name, //자재명
-                   this.ord_num, //발주량=입고수량                   
-                   this.bc_name,//거래처명
-                   this.empl_no,//사원번호
-                   this.pass_num,//합격량                   
-                   this.mt_no, //발주번호
-                   this.bc_code//거래처코드                                                      
-               ];
-               
-               let obj = {
-                   inspect : inspect,
-                   check : this.rowData
-
-               }
-               console.log(obj);
-               let result3 = await axios.post(`${ajaxUrl}/quality/quailtyInsert`, obj)
-                                        .catch(err => console.log(err));
-
-               let addRes = result3.data;
-               console.log(addRes);
-                 
-           },
-           async getOrderDetails (info) {
-               this.mt_no = info[0].order_no;
-               this.getmt_no();
-           },
-           onInit(){ //초기화기능
-               this.mt_no= "", // 발주번호
-               this.mtr_code="", //자재코드
-               this.mtr_name="", //자재명
-               this.bc_code="", //거래처코드
-               this.bc_name="", //거래처명
-               this.ord_num="", //발주량               
-               this.empl_no="",//사원번호
-               this.pass_num="", //합격량 
-               this.rowData= [] //내용
-           },
-
-           async onGridReady() {}
-            }
-   };
+    </div>
+</template>
    
-   </script>
-  
-   
+<script setup>
+import { ref } from 'vue';
+import { AgGridVue } from 'ag-grid-vue3';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+ModuleRegistry.registerModules([AllCommunityModule]);
+
+import axios from 'axios';
+import { ajaxUrl } from '@/utils/commons.js';
+import requestModal from '@/components/quality/qualityRequestModal.vue';
+
+// import { useRouter } from 'vue-router'  //라우터 가져오기
+// const router = useRouter();
+
+import { useStore } from 'vuex'; // Vuex 스토어 가져오기
+const store = useStore();
+
+import { useToast } from 'primevue/usetoast';   //toast가져오기
+const toast = useToast();
+
+//발주건 정보
+const orderNo = ref("");
+const orderName = ref("");
+const companyCode =ref("");
+const companyName =ref("");
+const chargerName = store.state.empInfo[store.state.empInfo.length-1].name;
+
+//발주건 자재 목록 행 데이터 저장할 변수
+const rowData = ref([]);
+
+//발주건 자재 목록 ag grid 컬럼 선언
+const colDefs = [
+    { field: 'mtril_code', headerName: '자재코드', flex:1},
+    { field: 'mtril_name', headerName: '자재명', flex:1},
+    { field: 'inspec_standard', headerName: '검사기준', flex:1 },
+    { field: 'order_qy', headerName: '주문 수량', flex:1 },
+    { field: 'error_amount', headerName: '불량 수량', editable: true , flex:1},
+    { field: 'unit', headerName: '단위', editable: true , flex:1},
+    { field: 'result', headerName: '검사 결과', editable: true, 
+      cellEditor: 'agSelectCellEditor', cellEditorParams: { values: ['합격', '불합격'] }, flex:1}];
+
+//발주건 자재 목록 ag grid 그리드 옵션
+const gridOptions = {
+    columnDefs: colDefs.value,
+    pagination: true,
+    paginationPageSize: 10,
+    paginationPageSizeSelector: [10, 20, 50, 100],
+    paginateChildRows: true,
+    animateRows: false,
+    rowSelection: 'single'  //한 행만 선택되게 만듦
+};
+
+//품질검사 등록
+const insertInfoList = async () => {
+    console.log(rowData.value);
+    //server로 전송할 데이터 만들기
+    let newDataList = [];
+    for(let i=0; i<rowData.value.length; i++) {
+        if(rowData.value[i].result == undefined) {
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '검사 결과를 입력해주세요', life: 3000 });
+            return;
+        };
+        newDataList.push({mtril_code: rowData.value[i].mtril_code,
+                          mtril_name: rowData.value[i].mtril_name,
+                          rec_num: rowData.value[i].order_qy,
+                          mtlty_name: companyName.value,
+                          empl_no: store.state.empInfo[store.state.empInfo.length-1].user_id,
+                          pass_amount: (rowData.value[i].order_qy - rowData.value[i].error_amount), //통과수량 = 발주수량 - 불량 수량
+                          order_no: orderNo.value,
+                          bcnc_code: companyCode.value,
+                          inspec_standard: rowData.value[i].inspec_standard,
+                          inspec_item: rowData.value[i].mtril_code,
+                          p_result: rowData.value[i].result,
+                          error_amount: rowData.value[i].error_amount});
+    };
+    //통신 결과
+    let result = await axios.post(`${ajaxUrl}/quality/insertQiList`, newDataList)
+                            .catch(err => console.log(err));
+    //console.log(result.data);
+
+    if(result.data == 'success') {
+        toast.add({ severity: 'success', summary: '검사 완료', detail: '처리가 완료되었습니다', life: 3000 });
+        removeData();
+    } else {
+        toast.add({ severity: 'warn', summary: '검사 실패', detail: '불량 수량을 입력해주세요', life: 3000 });
+    }
+
+    //새로고침
+    //router.go(0);
+};
+
+//화면에 보이는 데이터 삭제
+const removeData = () => {
+    //새로고침
+    orderNo.value = "";
+    orderName.value = "";
+    companyCode.value ="";
+    companyName.value ="";
+    rowData.value = [];
+};
+
+//검색 모달에서 가져온 발주 데이터
+const getOrderData = (info) => {
+    //모달에서 가져온 데이터를 화면에 반영하기
+    orderNo.value = info[0].order_no;
+    orderName.value = info[0].order_name;
+    companyCode.value = info[0].bcnc_code;
+    companyName.value = info[0].mtlty_name;
+
+    //db에서 자재 검색, 테이블에 데이터 넣기
+    getMtList(info[0].order_code);
+};
+
+//발주데이터를 기반으로 db에서 발주건에 있는 자재리스트 가져와서 테이블에 넣기
+const getMtList = async(orderCode) => {
+    let result = await axios.get(`${ajaxUrl}/quality/mtrilList/${orderCode}`)
+                            .catch(err => console.log(err));
+
+    //console.log(result);
+    //테이블에 데이터 넣기
+    rowData.value = result.data;
+};
+
+</script>
+
+<style scoped>
+button {
+    margin: 4px 10px;
+}
+input {
+    width: 200px;
+    margin-right: 30px;
+}
+.ag-theme-alpine {
+    z-index: 1;
+}
+</style>
+

@@ -43,12 +43,12 @@
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <v-col cols="12" class="mb-4">
-              <div class="col-auto">
+              <!-- <div class="col-auto">
                   <label for="itemCode" class="col-form-label">완제품 코드</label>
               </div>
               <div class="col-auto">
                 <input type="text" id="itemCode" class="form-control" v-model="prdlstCodeAdd" />
-              </div>
+              </div> -->
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">완제품 명</label>
               </div>
@@ -94,8 +94,8 @@
                 <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
               </div>
               <div class="col-12 mt-3">
-                <button class="btn btn-success" @click="addData">등록</button>
-                <button class="btn btn-success" @click="reset">초기화</button>
+                <button class="btn btn-primary mx-2" @click="addData">등록</button>
+                <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
               </v-col>
             </v-card-text>
@@ -117,11 +117,12 @@
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
               <div class="mt-3">
-                <button class="btn btn-warning" v-if="isModified" @click="saveChanges">수정</button>
+                <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
             </v-card-text>
@@ -138,6 +139,7 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
+import { useToast } from "primevue";
 
 export default {
   data() {
@@ -157,6 +159,8 @@ export default {
       // 검색 입력값
       prductCode: "", 
       prductName: "",
+      toast: useToast(),
+      count : 0
 
     };
   },
@@ -211,31 +215,32 @@ export default {
     },
     
     async addData(){
-      let obj = {
-        prdlst_code: this.prdlstCodeAdd,
-        prdlst_name: this.prdlstNameAdd,
-        stndrd_x: this.stndrdX,
-        stndrd_y: this.stndrdY,
-        stndrd_z: this.stndrdZ,
-        unit: this.unitAdd,
-        wrhousng_untpc: this.wrhousngUntpcAdd,
-        dlivy_untpc: this.dlivyUntpcAdd,
-        sfinvc: this.sfinvcAdd
-      }
-      if(!this.prdlstCodeAdd){
-        alert('완제품코드를 입력하세요')
-      }else if(!this.prdlstNameAdd){
-        alert('완제품명을 입력하세요');
+      let obj = [
+        this.prdlstNameAdd,
+        this.stndrdX,
+        this.stndrdY,
+        this.stndrdZ,
+        this.unitAdd,
+        this.wrhousngUntpcAdd,
+        this.dlivyUntpcAdd,
+        this.sfinvcAdd
+      ]
+      if(!this.prdlstNameAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '완제품명을 입력하세요', life: 3000 });
       }else if(!this.stndrdX && !this.stndrdY && stndrdZ){
-        alert('규격를 입력하세요');
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '규격를 입력하세요', life: 3000 });
       }else if(!this.unitAdd){
-        alert('단위를 입력하세요')
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '단위를 입력하세요', life: 3000 });
       }else{ 
         let result = await axios.post(`${ajaxUrl}/prductInsert`, obj)
                         .catch(err => console.log(err));
-                        this.rowData.push(obj); //등록시 그리드에 바로적용   
+        let result2 = await axios.get(`${ajaxUrl}/infoprductList`)
+                                  .catch(err => console.log(err));
+      this.prductList = result2.data;
+      this.rowData = this.prductList;
+      this.filteredRowData = this.rowData
         if(result){
-          alert('등록완료');
+          this.toast.add({ severity: 'success', summary: '성공', detail: '등록되었습니다.', life: 3000 });
         }
       }
       
@@ -248,9 +253,17 @@ export default {
           untpc: row.untpc,
           sfinvc: row.sfinvc
         }
-        //console.log(obj);
-        let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
+        this.count += 1;
+        let result = await axios.put(`${ajaxUrl}/prductUpdate/${this.rowData[i].prdlst_code}`, obj)
                                 .catch(err => console.log(err));
+        if(this.rowData.length == this.count){
+          if(result.status == 200){
+            this.toast.add({ severity: 'success', summary: '성공', detail: '수정되었습니다.', life: 3000 });
+          }else{
+            this.toast.add({ severity: 'warn', summary: '실패', detail: '수정 중 오류가발생하엿습니다.', life: 3000 });
+          }
+        }
+        
       }
     },
 
@@ -258,7 +271,7 @@ export default {
         const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
 
         if (selectedNodes.length === 0) {
-          alert("삭제할 행을 선택하세요.");
+          this.toast.add({ severity: 'warn', summary: '경고', detail: '삭제할 행을 선택하세요.', life: 3000 });
           return;
         }
 
@@ -272,9 +285,14 @@ export default {
 
         selectedData.forEach((data) => {
           if (data.prdlst_code) {
-            axios.delete(`${ajaxUrl}/prductDelete/${data.prdlst_code}`)
+            let result = axios.delete(`${ajaxUrl}/prductDelete/${data.prdlst_code}`)
               .then(() => console.log(`행 삭제 완료: ${data.prdlst_code}`))
               .catch((err) => console.error(`행 삭제 실패: ${data.prdlst_code}`, err));
+            if(result){
+              this.toast.add({ severity: 'success', summary: '성공', detail: '삭제가 완료되었습니다.', life: 3000 });
+            }else{
+              this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가 발생하엿습니다.', life: 3000 });
+            }
           }
         });
     },

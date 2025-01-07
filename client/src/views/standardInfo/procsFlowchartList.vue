@@ -18,12 +18,13 @@
         </table>
         <div style="height: 300px;" v-show="input_div">
             <ag-grid-vue :rowData="rowData_search" :columnDefs="colDefs_search" :gridOptions="gridOptions_search"
-                style="height: 250px; width: 30%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine">
+                style="height: 250px; width: 30%; margin-left: auto;" @grid-ready="onGridReady" class="ag-theme-alpine"
+                overlayNoRowsTemplate="결과 없음">
             </ag-grid-vue>
         </div>
         <div>
             <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-                @grid-ready="onGridReady" class="ag-theme-alpine">
+                @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
             </ag-grid-vue>
         </div>
     </div>
@@ -56,7 +57,7 @@ export default {
         this.colDefs = [
             { field: "prd_code", headerName: "품목코드" },
             { field: "prd_nm", headerName: "품목명" },
-            { field: "all_time", headerName: "총 소요시간" },
+            { field: "all_time", headerName: "총 소요시간 (분)" },
         ];
         this.gridOptions = {
             columnDefs: this.orderColDefs,
@@ -73,11 +74,17 @@ export default {
             onCellClicked: (CellClickedEvent) => this.goToDetail(CellClickedEvent.data.prd_code)
         };
         this.colDefs_search = [
-            { field: "prd_code", headerName: "품목코드" },
-            { field: "prd_nm", headerName: "품목명" }
+            { field: "prdlst_code", headerName: "품목코드" },
+            { field: "prdist_name", headerName: "품목명" }
         ];
         this.gridOptions_search = {
-            onCellClicked: (CellClickedEvent) => this.goToDetail(CellClickedEvent.data.prd_code)
+            columnDefs: this.orderColDefs,
+            defaultColDef: {
+                filter: true,
+                flex: 1,
+                minWidth: 10
+            },
+            onCellClicked: (CellClickedEvent) => this.goToDetail(CellClickedEvent.data.prdlst_code)
         };
     },
     components: {
@@ -93,20 +100,29 @@ export default {
                 .catch(err => console.log(err));
             this.eqpList = result.data;
             for (let i = 0; i < this.eqpList.length; i++) {
-                this.eqpList[i].all_time = this.eqpList[i].all_time + " 시간";
+                this.eqpList[i].all_time = this.eqpList[i].all_time + " 분";
             }
             this.rowData = this.eqpList;
         },
         goToDetail(prd_code) {
             this.$router.push({ name: 'procsFlowchartDetail', params: { prd_code: prd_code } });
         },
-        input_click() {
+        async input_click() {
+            let result = await axios.get(`${ajaxUrl}/prd_code_bom_all_search`)
+                .catch(err => console.log(err));
+            this.rowData_search = result.data;
             this.input_div = true;
         },
-        async input_change() {
-            let result = await axios.get(`${ajaxUrl}/prd_code_search/${this.search_prd_code}`)
-                .catch(err => console.log(err));;
-            this.rowData_search = result.data;
+        async input_change(input) {
+            if (input == '') {
+                let result = await axios.get(`${ajaxUrl}/prd_code_bom_all_search`)
+                    .catch(err => console.log(err));
+                this.rowData_search = result.data;
+            } else {
+                let result = await axios.get(`${ajaxUrl}/prd_code_bom_search/${input}`)
+                    .catch(err => console.log(err));
+                this.rowData_search = result.data;
+            }
         }
     },
     watch: {

@@ -1,80 +1,3 @@
-devUSE dev;
--- 페이징 -----------------------------------------------------
-SELECT b.*
-FROM (SELECT rownum() as rn, a.*
-      FROM ( SELECT *
-             FROM cmmn
-             ORDER BY 1) a) b 
-WHERE b.rn > (1-1) * 10
-AND b.rn <= 3 * 10;
-
-SELECT *
-FROM cmmn
-WHERE cmmn_name = '미처리'
-ORDER BY cmmn_code ASC
-LIMIT 10 OFFSET 0;
-
-
--- 이벤트 스케줄러 ---------------------------------------------
-SHOW VARIABLES LIKE 'event%';
-SET GLOBAL event_scheduler = ON;
-SELECT * FROM information_schema.events;
-
--- 생산 계획 인서트 하루단위
-CREATE EVENT plan_insert
-ON SCHEDULE EVERY 1 DAY
-STARTS '2025-01-03 07:00:00'
-COMMENT '생산 계획 삽입'
-DO
-CALL insert_plan(); 
-
-DROP EVENT plan_insert;
-
--- 생산 계획 수정 시간 단위
-CREATE EVENT plan_update
-ON SCHEDULE EVERY 1 HOUR
-STARTS '2025-01-03 11:55:00'
-COMMENT '생산 계획 수정 한시간 마다 우선순위-1 '
-DO
-CALL update_plan();
-
-DROP EVENT plan_update;
-
--- 생산 지시 삽입 하루 단위
-CREATE EVENT drct_insert
-ON SCHEDULE EVERY 1 DAY
-STARTS '2025-01-03 08:00:00'
-COMMENT '생산 지시 삽입'
-DO
-CALL play_drct();
-
-DROP EVENT drct_insert;
-
--- 물품 요청 삽입 하루 단위
-CREATE EVENT req_insert
-ON SCHEDULE EVERY 1 DAY
-STARTS '2025-01-03 09:00:00'
-COMMENT '물품 요청 삽입'
-DO
-CALL insert_req();
-
-DROP EVENT req_insert;
-
--- 시퀀스 생성 ---------------------------------------------
-DROP sequence plan_seq;
-CREATE sequence plan_seq START WITH 1 increment BY 1;
-select NEXTVAL(plan_seq);
-
-DROP sequence req_seq;
-CREATE sequence req_seq START WITH 1 increment BY 1;
-SELECT NEXTVAL(req_seq);
-
-DROP sequence use_seq;
-CREATE sequence use_seq START WITH 1 increment BY 1;
-SELECT NEXTVAL(use_seq);
-
-
-
 -- 생산 계획 순서 -------------------------------------------
 -- 주문리스트에서 처리중, 생산인 품목이랑 수량, 주문번호, 주문일자, 납품기한, 우선순위 조회
 -- 공정흐름도에서 품목별 공정 조회
@@ -94,7 +17,7 @@ IN c_order_no VARCHAR(100),
 IN c_order_date DATE,
 IN c_dedt DATE,
 IN c_priort INT,
-OUT c_com_rol INT
+INOUT c_com_rol INT
 )
 BEGIN
 	DECLARE done INT DEFAULT FALSE;
@@ -118,7 +41,7 @@ BEGIN
 	-- 커밋 조건 초기화
 		SET v_real_co = 0;
 		SET v_row_co = 0;
-		
+
 		-- 공정흐름도
 		OPEN cursor_flowchart; 
 		in_loop: LOOP
@@ -178,7 +101,7 @@ BEGIN
    DECLARE c_prd_code VARCHAR(100);
 		
 	-- 인서트할 행에 대해 커밋이나 롤백 조건 변수
-	DECLARE v_com_rol INT;
+	DECLARE v_com_rol INT DEFAULT 2;
 	
 	-- 주문리스트 커서
 	DECLARE cursor_order CURSOR FOR 
@@ -196,7 +119,7 @@ BEGIN
 							  LEFT JOIN prdctn_plan pp ON (olist.order_list_no = pp.order_list_no)
 		WHERE prdctn_at = 'OP01'
 		AND process_status = 'OD01'
-		AND order_qy > 0
+        AND order_qy > 0
 		AND pp.mnfct_no IS NULL
 		ORDER BY 7;
 			
@@ -220,8 +143,6 @@ BEGIN
 		-- 실제와 해야하는 양 같으면 커밋 아니면 롤백
 		IF v_com_rol = 1 THEN
 			COMMIT;
-		ELSE
-			ROLLBACK;
 		END IF;
 		
 	END LOOP out_loop;
@@ -229,6 +150,8 @@ BEGIN
 	
 END //
 DELIMITER ;
+
+CALL insert_plan;
 
 -- 우선순위 수정 프로시저
 DELIMITER //
@@ -284,20 +207,6 @@ BEGIN
 	END LOOP play_loop;
 END //
 DELIMITER ;
-
-CALL play_drct();
-CALL insert_req();
-
-SELECT * FROM prdctn_plan;
-
-
-SELECT * FROM prdctn_drct;
-DELETE FROM prdctn_drct WHERE mnfct_no = 26;
-
-COMMIT;
-
-SELECT * FROM thng_req;
-DELETE FROM thng_req WHERE mnfct_no = 26;
 
 
 -- 생산지시 삽입 바깥 프로시저
@@ -526,6 +435,7 @@ BEGIN
 	
 END //
 DELIMITER ;
+
 
 -- 생산지시 안 프로시저 (생산계획에서 주문에 있는 품목 공정별로 설비 조회해서 가장 빠른 시간으로 할수 있는 설비로 생산지시에 삽입)
 DELIMITER //
@@ -955,6 +865,26 @@ BEGIN
 END //
 DELIMITER ;
 
+CALL play_state('testbyshun-11', 'M-LEATHER', 1000, @c_result);
+SELECT @c_result;
+
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.prd_code, pd.prd_nm, pd.prdctn_co, 1 + ps.badn / (ps.nrmlt + ps.badn) AS rate
+		FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+								left JOIN thng_req tr ON (pd.prdctn_code = tr.prdctn_code)
+		WHERE ps.prdctn_code IS NULL
+		AND pd.pre_begin_time BETWEEN DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 9 HOUR), INTERVAL 1 DAY) AND DATE_ADD(DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 9 HOUR), INTERVAL 1 DAY), INTERVAL 1 DAY);
+
+SELECT * FROM prdctn_drct;
+SELECT * FROM PRDCTN_PLAN;
+
+SELECT pm.mtril_code, pm.mtril_nm, pm.usgqty
+		FROM procs_matrl pm
+		WHERE pm.procs_code = 'C-I13P-1001-1';
+
+
+call insert_req();
+select * from thng_req where mnfct_no = 26;
+delete from thng_req where req_code = 'req-577009';
 -- 물품 요청 프로시저
 DELIMITER //
 DROP PROCEDURE IF EXISTS insert_req //
@@ -1079,261 +1009,20 @@ BEGIN
 	END IF;
 		
 END //
-DELIMITER ;
-
-
--- 실행문 -------------------------------------------------------------------------------------
-DELETE FROM thng_req WHERE req_code = 'req-577077';
--- 생산 계획 ----------------------------------------
-SELECT olist.order_list_no, 
-		 olist.order_no, 
-		 olist.prd_code, 
-		 olist.prd_name, 
-		 olist.order_qy, 
-		 oreq.order_date, 
-		 oreq.dete,
-		 ROUND((TIMESTAMPDIFF(MINUTE, SYSDATE(), dete) - (SELECT IFNULL( SUM( expect_reqre_time ), 0) * olist.order_qy
-       																  FROM procs_flowchart
-       																  WHERE prd_code = olist.prd_code))/60) AS priort
-FROM order_lists olist JOIN order_requst oreq ON (olist.order_no = oreq.order_no)
-							  LEFT JOIN prdctn_plan pp ON (olist.order_list_no = pp.order_list_no)
-WHERE prdctn_at = 'OP01'
-AND process_status = 'OD01'
-AND pp.mnfct_no IS NULL
-ORDER BY 7;
-
--- 공정흐름도 조회
-SELECT procs_code, procs_nm
-FROM procs_flowchart
-WHERE prd_code = 'aaa1'
-ORDER BY procs_ordr_no;
-
-
--- 생산 지시 ----------------------------------------
--- 생산 계획에서 주문별 물품별 수량 조회
-SELECT pp.order_list_no, pp.order_no, pp.prd_code, pp.prd_nm, pp.prdctn_co
-FROM prdctn_plan pp LEFT JOIN prdctn_drct pd ON (pp.mnfct_no = pd.mnfct_no)
-WHERE prdctn_code IS NULL
-GROUP BY order_list_no, order_no, prd_code
-ORDER BY pp.priort;
-
--- 생산 계획에서 생산 지시가 안들어간 계획만 조회
-SELECT pp.mnfct_no, pp.procs_code, pp.procs_nm, pp.prd_code, pp.prd_nm, pp.prdctn_co, pp.priort
-FROM prdctn_plan pp LEFT JOIN prdctn_drct pd ON (pp.mnfct_no = pd.mnfct_no)
-WHERE prdctn_code IS NULL
-AND pp.order_list_no = '' ;
-
--- 소모재료 (자재코드, 자재명, 소모수량)
-SELECT mtril_code, mtril_nm, sum(usgqty)
-FROM procs_flowchart fc JOIN procs_matrl mt ON (fc.procs_code = mt.procs_code)
-WHERE prd_code = ?
-GROUP BY mtril_code
-ORDER BY 1;
-
--- 요청 중에서 미처리인 물품별 수량 조회
-SELECT SUM(req_qy)
-FROM thng_req
-WHERE prd_code = ?
-AND procs_at = 'RD01'
-AND prdctn_code IS NULL;
-
--- 자재별 재고수량
-SELECT mtril_code, mtril_name, SUM(mtril_qy)
-FROM mtril_wrhousing
-WHERE mtril_code = ?
-GROUP BY mtril_code;
-
--- 반제품별 재고수량
-SELECT prdlst_code, prduct_name, SUM(prduct_n_wrhousng_qy)
-FROM prduct_n_wrhousng
-WHERE prdlst_code = ?
-GROUP BY prdlst_code;
-
--- 설비 코드, 설비명 조회
-SELECT pm.eqp_code, eqp.model_nm
-FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)			 
-WHERE procs_code = ?;
-
-SELECT pm.eqp_code, eqp.model_nm
-FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)	
-						 LEFT JOIN not_opr nopr ON (eqp.eqp_code = nopr.eqp_code)
-WHERE procs_code = ''
-AND (process_step = 'FS02'
-OR not_opr_code IS NULL);
-
--- 공정별 소요시간
-SELECT expect_reqre_time * pp.order_qy
-FROM procs_flowchart pf JOIN prdctn_plan pp ON (pf.procs_code = pp.procs_code)
-WHERE pp.mnfct_no = ?;
-
--- 분단위로 날짜 더하기
-SELECT DATE_ADD(NOW(), INTERVAL 240 MINUTE);
-
-
--- 단순 실행문 -------------------------------------------
-
-SELECT * FROM prdctn_drct;
-
-SELECT * FROM thng_req;
-INSERT INTO thng_req(req_code, req_name, mnfct_no, prdctn_code, prd_code, prd_nm, req_qy, prd_se, procs_at, req_de)
-VALUES ('testbyshun-6', '자재 출고 요청 테스트', 1, 'testbyshun-11', 'M-LEATER', '가죽', 900, 'PI01','RD02', NOW());
-COMMIT;      
-
-SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn
-FROM product_state ps LEFT JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
-WHERE ps.end_time IS NOT NULL
-AND pd.procs_code LIKE CONCAT('%', ?, '%')
-AND ps.empl_no LIKE CONCAT('%', ?, '%')
-AND ps.end_time LIKE CONCAT('%', ?, '%');
-
-
-SELECT ps.procs_nm, ps.prdctn_co, ps.empl_nm, ps.end_time
-FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
-							 LEFT JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
-WHERE ps.prd_code = 'aaa-1'
-AND   pp.order_no = 'test';
-
-SELECT * FROM prdctn_plan;
-SELECT * FROM prdctn_drct;
-SELECT * FROM product_state;
-
-SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, pp.order_no
-FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
-WHERE pd.prdctn_code = ?;
-
-DELETE FROM product_state
-WHERE prdctn_code = 'testbyshun-11';
-COMMIT;
-
-SELECT prdlst_code, prdlst_name
-FROM repduct
-WHERE prdlst_name LIKE CONCAT('%', '케이스', '%');
-
-SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, pd.prd_nm, ps.prdctn_co, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn, tr.prd_code AS matril_code, tr.prd_nm AS matril_nm, tr.req_qy
-FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
-							 JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
-WHERE ps.prd_code LIKE CONCAT('%', ?, '%')
-AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY)
-     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY) )
-GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
-ORDER BY pd.model_nm, pd.pre_begin_time;
-
-SELECT procs_code, procs_nm
-FROM procs_flowchart
-WHERE procs_nm LIKE CONCAT('%', ?, '%')
-OR procs_code LIKE CONCAT('%', ?, '%') ;
-
-DELETE FROM prdctn_drct WHERE MNFCT_NO IN (26, 27);
-COMMIT;
-
-DELETE FROM thng_req WHERE mnfct_no = 26;
-
-SELECT * FROM mtril_wrhousing;
-
-CALL insert_req();
-
-SELECT * FROM procs_flowchart;
-
-SELECT * FROM order_lists ORDER BY 1;
-
-SELECT DATE_ADD('2025-03-05 00:00:00', INTERVAL (3354) HOUR);
-
-CALL play_drct();
-
-SELECT * FROM procs_flowchart WHERE procs_code = 'C-I13P-1001-1';
-
-SELECT * FROM prdctn_drct;
-COMMIT;
-
-SELECT * from prdctn_drct;
-
-SELECT DATE_ADD('2024-12-30', INTERVAL 7 DAY);
-
-SELECT * FROM product_state;
-
-DELETE FROM product_state WHERE prdctn_code = '26-mchn-1';
-
-COMMIT;
-
-SELECT * FROM prdctn_drct;
-
-DELETE FROM prdctn_drct WHERE mnfct_no IN (26,27);
-
-SELECT * FROM prdctn_plan;
-
-DELETE FROM prdctn_plan WHERE mnfct_no IN (1001,1002, 1003, 1004);
-
-SELECT * FROM repduct;
-
-SELECT * FROM prduct_wrhousng WHERE prdlst_c_code = 'C-GS21P-1001';
-
-SELECT * FROM order_lists;
-
-SELECT * FROM cmmn WHERE cmmn_code = 'OD01';
-
-CALL insert_plan();
-
-CALL play_drct();
-
-CALL insert_req();
-
-SELECT * FROM product_state;
-
-SELECT * FROM badn_info;
-
-DELETE FROM badn_info WHERE badn_code = '1005-mchn-1-1';
-
-DELETE FROM product_state WHERE prdctn_code = '1005-mchn-1';
-
-SELECT * FROM thng_req WHERE req_name LIKE '%출고요청%';
-
-DELETE FROM thng_req WHERE req_name LIKE '%출고요청%';
-
-UPDATE product_state SET end_time = NULL, nrmlt = NULL, badn = NULL WHERE prdctn_code = '1005-mchn-1';
-
-SELECT md.dlivy_no, md.mtril_lot, md.mtril_name, md.requst_qy, md.usgqty, md.nusgqty, md.usgstt
-FROM mtril_dlivy md JOIN thng_req tr ON (md.req_code = tr.req_code)
-								    LEFT JOIN mtril_wrhousing mw ON (md.mtril_lot = mw.mtril_lot)
-WHERE tr.prdctn_code = '1005-mchn-1'
-AND tr.prd_code = 'M-LEATHER'
-ORDER BY mw.wrhousng_date;
-
-SELECT * FROM use_mtril;
-
-DELETE FROM use_mtril;
-SELECT * FROM prdctn_drct;
-
-
-CALL insert_plan();
-SELECT * FROM prdctn_plan;
-CALL play_drct();
-SELECT * FROM prdctn_drct;
-SELECT * FROM thng_req;
-SELECT * FROM procs_flowchart pf JOIN procs_matrl pl ON (pf.procs_code = pl.procs_code)
-                              JOIN procs_mchn  pm ON (pf.procs_code = pm.procs_code);
-
-SELECT * FROM procs_flowchart;
-SELECT * FROM procs_matrl;
-SELECT * FROM procs_mchn;
-
-SELECT pm.eqp_code, eqp.model_nm
-		FROM procs_mchn pm JOIN eqp ON (pm.eqp_code = eqp.eqp_code)
-								 LEFT JOIN not_opr nopr ON (eqp.eqp_code = nopr.eqp_code)
-		WHERE (process_step = 'FS02'
-		OR not_opr_code IS NULL);
-
-SELECT * FROM order_lists WHERE process_status = 'OD02' ORDER BY 1;
-
-INSERT INTO order_lists();
-
-가용 가능한거 숫자 => 재고수량 + 생산 처리중 숫자 합 - 안전재고 - 나가야할 처리중인 주문량 합;
-
-COMMIT;
-SELECT SUM(a.total)
-FROM (SELECT SUM(DISTINCT(totqy)) AS total
-      FROM order_lists
-      WHERE process_status = 'OD02'
-      AND prd_code = 'C-I13P-1001'
-      GROUP BY prd_code, order_no) a;
-
-SELECT * FROM cmmn WHERE cmmn_code = 'OD02';
+DELIMITER ;      
+        
+SELECT * FROM prdctn_plan ORDER BY 1 DESC;
+
+SELECT * FROM prdctn_drct ORDER BY 2 DESC;
+
+select * from prdctn_drct pd 
+where 
+-- 		str_to_date('2025-03-01', '%Y-%m-%d') BETWEEN pd.pre_begin_time AND pd.pre_end_time
+--      OR DATE_ADD( str_to_date('2025-01-01', '%Y-%m-%d'), INTERVAL 7 DAY) BETWEEN pd.pre_begin_time AND pd.pre_end_time
+-- 	 OR 
+     pd.pre_begin_time BETWEEN '2025-03-01' AND DATE_ADD( '2025-03-01', INTERVAL 7 DAY)
+     OR pd.pre_end_time BETWEEN '2025-03-01' AND DATE_ADD('2025-03-01', INTERVAL 7 DAY);
+
+SELECT * FROM thng_req ORDER BY 3 DESC;
+
+select * from mtril_wrhousing;

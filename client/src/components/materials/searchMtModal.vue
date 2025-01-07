@@ -3,7 +3,7 @@
         <!--버튼-->
         <button type="button" @click="modalOpen"
         class="btn btn-primary"
-        style="line-height: 1px; color: #fff;">행 추가</button>
+        style="line-height: 1px; color: #fff;">자재 추가</button>
 
         <!--모달 영역-->
         <div class="modal-wrap" @click="modalOpen" v-show="modalCheck">
@@ -11,13 +11,13 @@
                 <div class="search-bar">
                     <div>             
                         <span>자재명</span>
-                        <InputText type="text" v-model="mtrilName" v-on:keyup.enter="searchCompany"> <p>{{ mtrilName }}</p></InputText>
+                        <InputText type="text" v-model="mtrilName" v-on:keyup.enter="searchMt"> <p>{{ mtrilName }}</p></InputText>
                     </div>
                     <div>
                         <span>자재코드</span>
-                        <InputText type="text" v-model="mtrilCode" v-on:keyup.enter="searchCompany"> <p>{{ mtrilCode }}</p></InputText>
+                        <InputText type="text" v-model="mtrilCode" v-on:keyup.enter="searchMt"> <p>{{ mtrilCode }}</p></InputText>
                     </div>
-                    <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
+                    <button @click="searchMt"class="btn btn-primary search-btn" >조회</button>
                 </div>
                 
                 <AgGridVue 
@@ -67,7 +67,7 @@ const onGridReady = (params) => {
 let modalCheck = ref(false);
 
 //모달이 열리면 true로 변경, 스크롤 막기
-const modalOpen = () => {
+const modalOpen = async () => {
     const html = document.querySelector('html');
     if(modalCheck.value == false) {
         modalCheck.value = !modalCheck.value;
@@ -78,7 +78,9 @@ const modalOpen = () => {
     };
     //행 데이터 초기화
     rowData.value = [];
-    
+
+    await searchMt();
+
     //검색조건 초기화
     mtrilName = null;
     mtrilCode = null;
@@ -109,11 +111,12 @@ const GridOptions = {
       columnDefs: ColDefs,
       animateRows: false,
       pagination: true,
+      rowSelection: "single",
       paginationPageSize: 10,
       paginationPageSizeSelector: [10, 20, 50, 100],
 };
 
-const searchCompany = async() => {
+const searchMt = async() => {
     //서버로 보낼 검색 데이터
     let obj = {mtril_code: mtrilCode,
                 mtril_name: mtrilName};

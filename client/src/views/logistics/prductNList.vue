@@ -83,6 +83,7 @@
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-one"
               >
@@ -107,8 +108,8 @@ export default {
   data() {
     return {
       bomList: [], // BOM 리스트
-      rowData: [], // BOM 데이터
-      filteredRowData: [], // 검색된 데이터
+      filteredRowData: [], // 검색된 데이터, 기본데이터
+      rowData: [],
       colDefs: [], // BOM 컬럼 정의
 
       gridOptionsReturn: {}, // AgGrid 옵션
@@ -139,9 +140,10 @@ export default {
       paginationPageSizeSelector: [10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
-        filter: true,
+        //filter: true,
         flex: 1,
         minWidth: 10,
+        resizable: false,
       },
     };
   },
@@ -155,19 +157,23 @@ export default {
     },
 
     filterByCode() {
+      let startDate =  new Date(this.startDate).setHours(0, 0, 0, 0);
+      let endDate =  new Date(this.endDate).setHours(0, 0, 0, 0);
+
       this.filteredRowData = this.rowData.filter((row) => {
-        let prductNDate = row.prduct_n_wrhousng_day;
-        let startDate = !this.startDate || prductNDate >= this.startDate;
-        let endDate = !this.endDate || prductNDate <= this.endDate;
+        let prductNDate = new Date(row.prduct_n_wrhousng_day).setHours(0, 0, 0, 0);
+
         return (
           (!this.LOTCode || row.prduct_n_lot.includes(this.LOTCode)) &&
           (!this.prdlstCode || row.prdlst_code.includes(this.prdlstCode)) &&
           (!this.prdlstName || row.prduct_name.includes(this.prdlstName)) &&
           (!this.seCode || row.se === this.seCode) &&
-          startDate && endDate
+          (!startDate || prductNDate >= startDate) &&
+          (!endDate || prductNDate <= endDate)
         );
       });
     },
+
     
     resetFilter() {
       this.LOTCode = "";

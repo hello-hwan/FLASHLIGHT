@@ -1,18 +1,18 @@
 <template>
     <div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 70%; font-size: 30px;">
-                        설비 상태 조회
-                    </th>
-                </tr>
-            </thead>
-        </table>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px; text-align: center; margin-bottom: 30px;">
+            <template v-slot:title>
+                <span class="font-weight-black">
+                    설비 상태 조회
+                </span>
+            </template>
+        </v-card>
         <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
-                @grid-ready="onGridReady" class="ag-theme-alpine">
-            </ag-grid-vue>
+            <v-card-text class="bg-surface-light pt-4">
+                <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 525px"
+                    @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
+                </ag-grid-vue>
+            </v-card-text>
         </div>
     </div>
 
@@ -43,7 +43,7 @@ export default {
             { field: "model_nm", headerName: "모델명" },
             { field: "eqp_run", headerName: "가동여부" },
             { field: "model_tp", headerName: "온도" },
-            { field: "procs_time", headerName: "가동시간" },
+            { field: "procs_time", headerName: "가동시간 (분)" },
             { field: "procs_nm", headerName: "실행작업" }
         ];
         this.gridOptions = {
@@ -74,12 +74,12 @@ export default {
             this.eqpList = result.data;
             for (let i = 0; i < this.eqpList.length; i++) {
                 let eqp_run = await axios.get(`${ajaxUrl}/equip/eqp_list_prod/${this.eqpList[i].eqp_code}`)
-                if (eqp_run.data.begin_time != "" && eqp_run.data.end_time == "") {
+                if (eqp_run.data.begin_time != null && eqp_run.data.end_time == null) {
                     this.eqpList[i].eqp_run = "가동중";
                     this.eqpList[i].procs_nm = eqp_run.data.procs_nm;
                     let start_time = new Date(eqp_run.data.begin_time);
                     let today = new Date();
-                    this.eqpList[i].procs_time = ((today - start_time) / 1000 / 60 / 60).toFixed(2)
+                    this.eqpList[i].procs_time = ((today - start_time) / 1000 / 60).toFixed(2)
                 } else {
                     this.eqpList[i].eqp_run = "비가동";
                     this.eqpList[i].procs_nm = "-";

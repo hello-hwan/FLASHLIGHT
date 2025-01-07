@@ -59,7 +59,7 @@ const model = ref([
                 items: [
                     {
                         label: '생산 계획 안내',
-                        to: '/production'
+                        to: '/production/productionMain'
                     },
                     {
                         label: '공장 실적 조회',
@@ -145,63 +145,46 @@ const model = ref([
                         to: '/logistics/prductNDlivyList'
                     },
                 ]
-            },   
-            {
-                label: '통계',
-                items: [
-                    {
-                        label: '기간별 생산량',
-                        to: '/'
-                    },
-                    {
-                        label: '출고율',
-                        to: '/'
-                    },
-                    {
-                        label: '불량률 조회',
-                        to: '/'
-                    }
-                ]
-            },   
+            },    
             {
                 label: '기준 정보',
                 items: [
                     {
                         label: '사원 관리',
-                        to: '/'
+                        to: '/standardInfo/emplManagement'
                     },
                     {
-                        label: '거래처 관리 / 거래처 조회',
+                        label: '거래처 관리',
                         to: '/standardInfo/infobcncList'
                     },
                     {
-                        label: '제품 관리 / 제품 조회',
+                        label: '제품 관리',
                         to: '/standardInfo/infoprductList'
                     },
                     {
-                        label: '반제품 관리 / 반제품 조회',
+                        label: '반제품 관리',
                         to: '/standardInfo/infoprductNList'
                     },
                     {
-                        label: '자재 관리 / 자재 조회',
+                        label: '자재 관리',
                         to: '/standardInfo/mtrilList'
-                    }, 
+                    },
                     {
-                        label: 'BOM 관리 / BOM 조회',
+                        label: 'BOM 등록',
+                        to: '/standardInfo/bomManage'
+                    },
+                    {
+                        label: 'BOM 관리',
                         to: '/standardInfo/bomList'
                     },
                     {
-                        label: '공정 흐름도 관리',
+                        label: '공정 흐름도 등록',
                         to: '/standardInfo/procsFlowchartinsert'
                     },
                     {
-                        label: '공정 흐름도 조회',
+                        label: '공정 흐름도 관리',
                         to: '/standardInfo/procsFlowchartList'
-                    },
-                    {
-                        label: '품질 검사 항목 관리',
-                        to: '/standardInfo/qiList'
-                    },
+                    }
                 ]
             },  
         ]

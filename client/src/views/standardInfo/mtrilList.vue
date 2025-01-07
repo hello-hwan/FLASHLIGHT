@@ -46,12 +46,6 @@
             <v-card-text class="bg-surface-light pt-4">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
-                  <label for="itemCode" class="col-form-label">자재코드</label>
-              </div>
-              <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilCodeAdd"  value = "M-"/>
-              </div>
-              <div class="col-auto">
                   <label for="itemCode" class="col-form-label">자재명</label>
               </div>
               <div class="col-auto">
@@ -70,8 +64,8 @@
                 <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
               </div>
               <div class="col-12 mt-3">
-                <button class="btn btn-success" @click="addData">등록</button>
-                <button class="btn btn-success" @click="reset">초기화</button>
+                <button class="btn btn-primary mx-2" @click="addData">등록</button>
+                <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
               </v-col>
             </v-card-text>
@@ -93,11 +87,12 @@
                 :columnDefs="colDefs"
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
               <div class="mt-3">
-                <button class="btn btn-warning" v-if="isModified" @click="saveChanges">수정</button>
+                <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
             </v-card-text>
@@ -114,9 +109,9 @@ import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 ModuleRegistry.registerModules([AllCommunityModule]);
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-// import { useToast } from 'primevue/usetoast';
+import { useToast } from 'primevue/usetoast';
 
-// const toast = useToast();
+
 
 export default {
   data() {
@@ -138,10 +133,10 @@ export default {
       mtrilName: "",
 
       //input 입력값
-      mtrilCodeAdd: "M-",
       mtrilNameAdd: "",
       unitAdd: "",
       sfinvcAdd: "",
+      toast: useToast()
 
     };
   },
@@ -151,7 +146,7 @@ export default {
       { field: "mtril_code", headerName: "자재코드" },
       { field: "mtril_name", headerName: "자재명" },
       { field: "unit", headerName: "단위" },
-      { field: "mtril_qy", headerName: "총수량"},
+      { field: "mtril_qy", headerName: "총수량", valueGetter: (params) => params.data.mtril_qy || 0 },
       { field: "untpc", headerName: "입고단가", editable: true },
       { field: "sfinvc", headerName: "안전재고" , editable: true}
     ];
@@ -189,30 +184,31 @@ export default {
     },
 
     async addData(){
-      if (!this.mtrilCodeAdd.startsWith("M-")) {
-        alert('자재코드는 "M-"로 시작해야 합니다.');
-      return;
-      }
-      let obj = {
-        mtril_code: this.mtrilCodeAdd,
-        mtril_name: this.mtrilNameAdd,
-        unit: this.unitAdd,
-        sfinvc: this.sfinvcAdd
-      }
-      if(!this.mtrilCodeAdd){
-        alert('자재코드를 입력하세요')
-      }else if(!this.mtrilNameAdd){
-        alert('자재명을 입력하세요');
+      let obj = [
+        this.mtrilNameAdd,
+        this.unitAdd,
+        this.sfinvcAdd
+      ]
+      
+      if(!this.mtrilNameAdd){
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '자재명을 입력하세요.', life: 3000 });
       }else if(!this.unitAdd){
-        alert('단위를 입력하세요');
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '단위를 입력하세요.', life: 3000 });
       }else if(!this.sfinvcAdd){
-        alert('안전재고를 입력하세요')
+        this.toast.add({ severity: 'warn', summary: '경고', detail: '안전재고를 입력하세요.', life: 3000 });
       }else{ 
         let result = await axios.post(`${ajaxUrl}/mtrilAdd`, obj)
                           .catch(err => console.log(err));
-                          this.rowData.push(obj); //등록시 그리드에 바로적용   
+          
+        let list = await axios.get(`${ajaxUrl}/mtril`)
+                          .catch(err => console.log(err));
+                          this.mtrilList = list.data;
+                          this.rowData = this.mtrilList;
+                          this.filteredRowData = this.rowData;  
         if(result){
-          alert('등록완료');
+          this.toast.add({ severity: 'success', summary: '성공', detail: '등록이 완료되었습니다.', life: 3000 });
+        }else{
+          this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가발생하엿습니다.', life: 3000 });
         }
       }
 
@@ -225,9 +221,11 @@ export default {
           untpc: row.untpc,
           sfinvc: row.sfinvc
         }
-        //console.log(obj);
         let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
                                 .catch(err => console.log(err));
+        // if(result){
+        //   this.toast.add({ severity: 'success', summary: '성공', detail: '수정이 완료되었습니다.', life: 3000 });
+        // }
       }
     },
 
@@ -235,7 +233,7 @@ export default {
         const selectedNodes = this.gridOptionsReturn.api.getSelectedNodes();
 
         if (selectedNodes.length === 0) {
-          alert("삭제할 행을 선택하세요.");
+          this.toast.add({ severity: 'warn', summary: '경고', detail: '삭제할 행을 선택하세요.', life: 3000 });
           return;
         }
 
@@ -249,9 +247,14 @@ export default {
 
         selectedData.forEach((data) => {
           if (data.mtril_code) {
-            axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
+            let result = axios.delete(`${ajaxUrl}/mtrilDelete/${data.mtril_code}`)
               .then(() => console.log(`행 삭제 완료: ${data.mtril_code}`))
               .catch((err) => console.error(`행 삭제 실패: ${data.mtril_code}`, err));
+              if(result.status == 200){
+                this.toast.add({ severity: 'success', summary: '성공', detail: '삭제가 완료되었습니다.', life: 3000 });
+              }else{
+                this.toast.add({ severity: 'warn', summary: '실패', detail: '삭제 중 오류가 발생하엿습니다.', life: 3000 });
+              }
           }
         });
     },

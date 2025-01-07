@@ -23,6 +23,7 @@
                     :rowSelection="rowSelection"
                     @cellClicked="onCellClickedreturn"
                     :gridOptions="gridOptionsReturn"
+                    overlayNoRowsTemplate="결과없음"
                     class="ag-theme-alpine"
                     id="grid-one">
                 </AgGridVue>
@@ -44,6 +45,7 @@
                 @cellClicked="onCellClicked"
                 :rowSelection="rowSelection"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-info">
                 </AgGridVue>
@@ -61,7 +63,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 import userDateUtils from '@/utils/useDates.js';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
-
+import { useToast } from "primevue";
 
 export default {
 data() {
@@ -75,6 +77,7 @@ data() {
         prductNList: [],    // 일반반제품
         rowDataSelect: '',
         colDefsSelect: '',
+        toast: useToast()
     };
 },
 created() {
@@ -83,10 +86,13 @@ created() {
         { field: "prduct_n_name", headerName:"제품명" },         // 반제품 반환 리스트로 변경해야됨
         { field: "prduct_n_code", headerName:"제품코드" },    // 반제품 반환 리스트로 변경해야됨
         { field: "nusgqty", headerName:"재입고량" },    // 반제품 반환 리스트로 변경해야됨
-        { field: "prduct_n_wrhousng_day", headerName:"재입고날짜",
+        { field: "requst_date", headerName:"출고날짜",
             valueFormatter: (params) => { return userDateUtils.dateFormat(params.value, 'yyyy-MM-dd'); }
         },
-        { field: "입고", headerName:"입고", cellRenderer: () => {return "입고"}}
+        //{ field: "입고", headerName:"입고", cellRenderer: () => {return "입고"}}
+        { field: "입고", headerName: "입고",  cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                            return '<button id="btnTest" class="btn btn-primary mx-2">입고</button>';
+        }}
     ])
     this.gridOptionsReturn = {
         columnDefs: this.returnColDefs,
@@ -96,9 +102,10 @@ created() {
         paginateChildRows: true,
         animateRows: false,
         defaultColDef: {
-            filter: true,
+            //filter: true,
             flex: 1,
-            minWidth: 10
+            minWidth: 10,
+            resizable: false,
         }
     };
     this.getprductNList();
@@ -108,7 +115,9 @@ created() {
         { field: "nrmlt", headerName:"생산수량" },
         { field: "end_time", headerName:"생산완료일",
             valueFormatter: this.customDateFormat },
-        { field: "입고", headerName: "입고", cellRenderer: () => {return "입고"}}
+        { field: "입고", headerName: "입고",  cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                            return '<button id="btnTest2" class="btn btn-primary mx-2">입고</button>'}}
+
     ])
     this.gridOptionsReturn = {
                 columnDefs: this.returnColDefs,
@@ -118,9 +127,10 @@ created() {
                 paginateChildRows: true,
                 animateRows: false,
                 defaultColDef: {
-                    filter: true,
+                    //filter: true,
                     flex: 1,
-                    minWidth: 10
+                    minWidth: 10,
+                    resizable: false,
                 }
             };
 }, 
@@ -134,7 +144,6 @@ methods: {
         if(event.colDef.field !== "입고"){
             return;
         }
-        console.log('클릭테스트');
         this.select_code = event.data.prduct_n_code;
         
         let obj = [
@@ -144,12 +153,14 @@ methods: {
             event.data.nusgqty,
             event.data.nusgqty
         ]
-        console.log('클릭',obj);
         let result = await axios.post(`${ajaxUrl}/prduct_n_wrhousngReturn`, obj)
                                 .catch(err => console.log(err));
         if(result){
             let result2 = await axios.put(`${ajaxUrl}/prduct_n_dlivyReturn/${event.data.prduct_n_dlivy_no}`)
                                         .catch(err => console.log(err));
+            if(result2){
+                this.toast.add({ severity: 'success', summary: '성공', detail: '입고가 완료되었습니다.', life: 3000 });
+            }
             let result = await axios.get(`${ajaxUrl}/prdctn_n_return_list`)
                                         .catch(err => console.log(err));
                         this.prductNReturnList = result.data;
@@ -202,7 +213,7 @@ methods: {
     },
     //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
     customDateFormat(params) {
-            return userDateUtils.dateFormat(params.data.end_time, 'yyyy-MM-dd');  // test_date는 알레아스 이름
+            return userDateUtils.dateFormat(params.value, 'yyyy-MM-dd');  // 날짜 데이터 전체 포맷
     },
     // 반환 리스트 출력
     prductNReturnListisModified(){
@@ -219,3 +230,10 @@ methods: {
 }
 };
 </script>
+<style>
+
+span>button{
+    margin-bottom: 7px;
+}
+
+</style>

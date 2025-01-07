@@ -15,6 +15,7 @@ const pr_eqp = // 설비 조회 (생산지시)
 `
 SELECT eqp_code, model_nm
 FROM eqp
+ORDER BY 2
 `;
 
 const pr_srcdrct = // 생산 지시 당일 조회
@@ -22,8 +23,18 @@ const pr_srcdrct = // 생산 지시 당일 조회
 SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
 FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
 WHERE pd.pre_begin_time < DATE_ADD(CURDATE(), INTERVAL 1 DAY )
-AND pd.pre_end_time > CURDATE();
+AND pd.pre_end_time > CURDATE()
+ORDER BY pd.pre_begin_time
 `;
+
+const pr_srcdrcttoday = // 테스트용 내일
+`
+SELECT pd.prdctn_code, pd.mnfct_no, pd.procs_code, pd.procs_nm, pd.eqp_code, pd.model_nm, pd.prd_code, pd.prd_nm, pd.prdctn_co, pd.pre_begin_time, pd.pre_end_time, ps.begin_time, ps.end_time
+FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code)
+WHERE pd.pre_begin_time < DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1 DAY ), INTERVAL 1 DAY)
+AND pd.pre_end_time > DATE_ADD(CURDATE(), INTERVAL 1 DAY )
+`
+
 
 // 조건 조회문
 
@@ -50,14 +61,42 @@ GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
 ORDER BY pd.model_nm, pd.pre_begin_time
 `;
 
+const pr_anodrct = // 생산 지시 조회 테스트용 => 이게 맞는 듯
+`
+SELECT pd.prdctn_code
+       , pd.procs_nm
+       , pd.model_nm
+       , pd.prd_nm
+       , pd.prdctn_co
+       , pd.pre_begin_time
+       , pd.pre_end_time
+       , TIMESTAMPDIFF(hour, pd.pre_begin_time, pd.pre_end_time) AS drct_time
+       , pp.order_no
+
+FROM prdctn_drct pd 
+JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
+
+WHERE pd.prd_code LIKE CONCAT('%', ?, '%')
+AND (? BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR DATE_ADD( ?, INTERVAL 7 DAY) BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY) )
+
+GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
+ORDER BY pd.model_nm, pd.pre_begin_time
+`;
+
+
 const pr_selstate = // 공정 현황 - 당일 기준 검색
 `
 SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, pd.prd_nm, ps.prdctn_co, ps.eqp_code, ps.begin_time, ps.end_time, ps.empl_no, ps.empl_nm, ps.nrmlt, ps.badn, tr.prd_code AS matril_code, tr.prd_nm AS matril_nm, tr.req_qy
 FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
-							 JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
+				  JOIN thng_req tr ON (ps.prdctn_code = tr.prdctn_code)
 WHERE ps.prd_code LIKE CONCAT('%', ?, '%')
-AND (pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY)
-     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 1 DAY) )
+AND (? BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR DATE_ADD( ?, INTERVAL 7 DAY) BETWEEN pd.pre_begin_time AND pd.pre_end_time
+     OR pd.pre_begin_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY)
+     OR pd.pre_end_time BETWEEN ? AND DATE_ADD( ?, INTERVAL 7 DAY) )
 GROUP BY pd.eqp_code, pd.model_nm, pd.prdctn_code
 ORDER BY pd.model_nm, pd.pre_begin_time
 `;
@@ -84,11 +123,12 @@ FROM prdctn_drct pd JOIN prdctn_plan pp ON (pd.mnfct_no = pp.mnfct_no)
 WHERE pd.prdctn_code = ?
 `;
 
-const pr_selmatrl = // 공정코드로 소모재료 조회
+const pr_selmatrl = // 생산지시코드, 제작번호, 공정코드로 소모재료 조회
 `
-SELECT mtril_code, mtril_nm, usgqty
-FROM procs_matrl
-WHERE procs_code = ?
+SELECT prd_code AS mtril_code, prd_nm AS mtril_nm, req_qy
+FROM thng_req
+WHERE prdctn_code = ?
+AND mnfct_no = ?
 `;
 
 const pr_selempl = // 사원코드로 사원명 조회
@@ -100,7 +140,7 @@ WHERE empl_no = ?
 
 const pr_onestate = // 생산지시 코드로 실적 단건 조회
 `
-SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, ps.prdctn_co, ps.eqp_code, pd.model_nm, ps.empl_no, ps.empl_nm
+SELECT ps.prdctn_code, pd.procs_code, ps.procs_nm, ps.prd_code, ps.prdctn_co, ps.eqp_code, pd.model_nm, ps.empl_no, ps.empl_nm, pd.mnfct_no
 FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
 WHERE ps.prdctn_code = ?
 `;
@@ -155,7 +195,7 @@ WHERE ps.end_time IS NOT NULL
 AND pd.procs_code LIKE CONCAT('%', ?, '%')
 AND ps.empl_no LIKE CONCAT('%', ?, '%')
 AND ps.end_time LIKE CONCAT('%', ?, '%')
-ORDER BY ps.end_time;
+ORDER BY ps.end_time desc;
 `;
 
 const pr_movetable = // 공정이동표 조회
@@ -264,6 +304,8 @@ module.exports = {
   pr_movetable,
   pr_selstate,
   pr_selprocs,
+  pr_anodrct,
+  pr_srcdrcttoday,
 
 
 

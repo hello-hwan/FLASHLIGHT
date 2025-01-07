@@ -41,10 +41,10 @@
                 </div>
                 
               </div>
-              <div style="margin-top:10px;">
-                <button type="button" class="btn btn-success" style="color:white;" @click="getlist">조회</button>
-                <button type="button" class="btn btn-warning" @click="resetvalue">초기화</button>
-                <button type="button" class="btn btn-info" @click="getanotherlist(prd, day)">공정 현황 조회</button>
+              <div class="flex-center" style="margin-top:10px;">
+                <button type="button" class="btn btn-primary" style="color:white;" @click="getlist">조회</button>
+                <button type="button" class="btn btn-secondary" @click="resetvalue">초기화</button>
+                <button type="button" class="btn btn-success" @click="getanotherlist(prd, day)">공정 현황 조회</button>
               </div>
             </v-card-text>
           </v-card>
@@ -60,7 +60,7 @@
           <!-- 테이블 헤드 일자/오전,오후 -->
           <thead>
             <tr>
-              <th rowspan="2">설비명</th>
+              <th rowspan="2" colspan="32">설비명</th>
               <th colspan="24"> {{ day }}</th>
               <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+1), 'yyyy-MM-dd') }}</th>
               <th colspan="24">{{ useDates.dateFormat(new Date(day).setDate(new Date(day).getDate()+2), 'yyyy-MM-dd') }}</th>
@@ -92,17 +92,30 @@
   
             <!-- 설비명 만큼 행 반복 -->
             <tr v-for="eqp in eqplist" :key="eqp.eqp_code">
-              <th>{{ eqp.model_nm }}</th>
+              <th colspan="32">{{ eqp.model_nm }}</th>
   
               <!-- 일정만큼 열 반복 -->
-              <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+              <td class="over-sub" nowrap v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+              <!-- <td v-for="drct in drctlist.filter((c)=> c.model_nm == eqp.model_nm)" :key="drct.prdctn_code" :colspan="drct.drct_time" :style="{backgroundColor : drct.color}"> {{ drct.procs_nm }}</td> -->
   
               <!-- 데이터 없으면 표시할 데이터 -->
-              <td v-if="drctlist.length == 0" colspan="168">No Data Found</td>
+              <td v-if="drctlist.length == 0" colspan="168">No - Data - Found</td>
             </tr>
           </tbody>
           
           </table>
+        </div>
+        <div class="data-detail">
+          <table>
+            <tbody>
+              <tr v-for="color in colors">
+                <th :style="{backgroundColor : color}"> {{ color }}</th>
+                <td v-for="drct in drctlist.filter((c)=> c.color == color)" >{{ drct.prd_nm + " - " + drct.procs_nm }}</td>
+                <td v-if="drctlist.length == 0">No - Data - Found</td>
+              </tr>
+            </tbody>
+          </table>
+
         </div>
     </v-card-text>
 
@@ -110,7 +123,7 @@
       <ImpossibleProduction v-show="!issrc"/>
 
       <!-- 검색 없을시 표시창 자체 생산 지시 추가 -->
-      <SelfProduction v-show="!issrc"/>
+      <!-- <SelfProduction v-show="!issrc"/> -->
 
       <!-- 검색 있을시 표시창 공정실적조회 -->
       <StateList v-show="issrc" :date="day" :code="prd"/>
@@ -147,6 +160,8 @@
   // 설비 불러올 함수 실행
   getEqp();
 
+  // 색상 배열
+  const colors = ["#f8aca5", "#f8cfa5", "#fafbc4", "#cffbc4", "#b6f8f8", "#a5d1f8", "#c4b6f8"];
 
   // 생산일정 담을 변수
   const drctlist = ref([]);
@@ -161,8 +176,7 @@
       drctlist.value = [];
       return;
     }
-    // 색상 배열
-    const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "purple"];
+    
 
     // 주문 번호 유니크하게 뽑아내고 주문번호를 매칭시키기 
     let newArray = [];
@@ -191,6 +205,7 @@
       colorlist[i].color = newArray[colorlist[i].order_no];
     }
     drctlist.value = colorlist;
+    console.log(drctlist.value);
 
   };
   onBeforeMount(() => {
@@ -245,13 +260,32 @@
 <style scoped>
   .table-plan th, .table-plan td {
     border: 2px, solid, black;
-    width: 0.5%;
+    width: 0.5% !important;
     background-color: white;
+    text-align: center;
   }
   .table-plan {
     border: 2px, solid, black !important;
     border-radius: 30px !important;
     background-color: white;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .data-detail table {
+    width: 100%;
+    table-layout: fixed;
+    border: 2px, solid, black !important;
+    text-align: center;
+  }
+  .data-detail th {
+    width: 12.5%;
+    border: 2px solid #000;
+  }
+  .data-detail td{
+    border: 2px solid #000;
+  }
+  .form-control{
+    width: 220px;
   }
   .search-prd-box {
     position: relative;
@@ -265,5 +299,19 @@
     height: 38px;
     width: 220px;
     border-radius: 8px;
+  }
+  .flex-center{
+    display: flex;
+    justify-content: center;
+  }
+  .btn {
+    color: white !important;
+    line-height: 100%;
+    margin: 5px;
+  }
+  .over-sub{
+    width: 100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 </style>

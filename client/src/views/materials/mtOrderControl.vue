@@ -38,7 +38,8 @@
                     rowSelection="multiple"
                     class="ag-theme-alpine"
                     @grid-ready="onGridReady"
-                    style="height: 308px;">
+                    style="height: 516px;"
+                    overlayNoRowsTemplate="결과 없음">
                     </AgGridVue>
                 </v-card-text>
             </v-card>
@@ -59,11 +60,12 @@
                         <InputText type="text" v-model="orderName" class="emp_info" placeholder="   발주명을 입력해주세요"> <p>{{ orderName }}</p></InputText>
                         <companySearchModal v-bind:companyInfo="companyInfoForChildComponent" @companySelectedData="getCompanyInfo"/> 
                         <span>담당자 </span>
-                        <InputText style="width: 100px;" type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
+                        <InputText style="width: 100px;" type="text" v-model="empName" class="emp_info"readonly> <p>{{ empName }}</p></InputText>
+                        <InputText style="display: none;" type="text" v-model="empId" class="emp_info"readonly> <p>{{ empId }}</p></InputText>
                         <mtSearchModal @mtSelectedData="addRow"/>
                             
                         <button type="button" @click="removeRow"
-                        class="btn btn-warning" style="color: #fff;"> 선택 행 삭제</button>
+                        class="btn btn-danger" style="color: #fff;"> 선택 행 삭제</button>
                         
                         <button type="button" @click="removeAllRow"
                         class="btn btn-secondary" style="color: #fff;">초기화</button>
@@ -84,6 +86,7 @@
                     class="ag-theme-alpine"
                     @grid-ready="mtListonGridReady"
                     style="height: 520px"
+                    overlayNoRowsTemplate="자재를 추가해주세요"
                     >
                     </AgGridVue>
             </v-card-text>
@@ -104,9 +107,13 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import useDateUtils from '@/utils/useDates.js';
 import { useToast } from 'primevue/usetoast';
+const toast = useToast();
 
 import { useStore } from 'vuex'; // Vuex 스토어 가져오기
 const store = useStore();
+
+import { useRouter } from 'vue-router'
+const router = useRouter();
 
 
 //발주건 검색 모달
@@ -121,7 +128,7 @@ import mtSearchModal from '@/components/materials/searchMtModal.vue';
 //search order modal을 위해서 상태값 넘기기
 let forSearchOrder = 'order';
 
-const toast = useToast();
+
 
 //요청명리스트 담을 변수
 const reqRowData = ref([]);
@@ -140,6 +147,8 @@ let companyName = "";
 let companyCode = "";
 //담당자
 let empId = store.state.empInfo[store.state.empInfo.length-1].user_id;
+
+let empName = store.state.empInfo[store.state.empInfo.length-1].name;
 //console.log(empId);
 //자식 컴포넌트로부터 받은 데이터 담을 변수
 const orderCode = ref("");
@@ -194,7 +203,15 @@ const reqColDefs = [
   { field: "mt_name", headerName:"자재 명",flex:3},
   { field: "order_qy", headerName:"요청 수량" ,flex:3},
   { field: "unit", headerName:"단위", flex:1},
-  { field: "date", headerName:"요청날짜", valueFormatter: customDateFormat,flex:3},
+  { field: "date", headerName:"요청날짜", valueFormatter: (params) => {
+          if (!params.value) {
+            return "";
+          }
+          params.value = new Date(params.value);
+          const month = params.value.getMonth() + 1;
+          const day = params.value.getDate();
+          return `${params.value.getFullYear()}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
+        }, flex:3},
   { field: "check", headerName:"선택",  checkboxSelection: true, flex: 0.7}
 ];
 
@@ -226,8 +243,8 @@ const reqGridOptions = {
       columnDefs: reqColDefs,
       animateRows: false,
       pagination: true,
-      paginationPageSize: 5,
-      paginationPageSizeSelector: [5, 10, 20],
+      paginationPageSize: 10,
+      paginationPageSizeSelector: [10, 20],
       paginateChildRows: true
 };
 
@@ -264,7 +281,15 @@ const getOrderRowData = () => {
 
 //행 추가
 const addRow = (info) => {
-    console.log(info);
+    //console.log(info);
+    //만약 이미 발주 자재 리스트에 같은 자재가 있다면 행이 추가되지 않음.
+    for(let i=0; i<orderRowData.value.length; i++) {
+        if(info[0].mtril_code == orderRowData.value[i].mt_code) {
+            toast.add({ severity: 'warn', summary: '자재 중복', detail: '이미 같은 자재가 리스트에 있습니다', life: 3000 });
+            return;
+        };
+    };
+
     //행추가할 객체 생성
     let obj = {order_no: 0, req_code: "", mt_name: info[0].mtril_name, mt_code: info[0].mtril_code, price: 0, order_qy: 0, 
     unit: info[0].unit, order_date: "", dedt: ""};
@@ -317,6 +342,7 @@ const removeRow = () => {
 
 //행 전체 삭제
 const removeAllRow = () => {
+
     //전체 행 데이터를 저장할 (객체)배열 선언
     let allData = [];
 
@@ -332,6 +358,9 @@ const removeAllRow = () => {
     };
     //입력한 데이터 모두 화면에서 삭제
     removeAllInfo();
+    router.go(0);
+    //router.push({path : '/materials/mtOrder'})
+
 };
 
 //watch사용. 선택한 발주건 발주코드 값이 변할때마다 처리해야함.
@@ -594,6 +623,8 @@ const removeAllInfo = () => {
 
     //수정버튼 비활성화
     orderCode.value = false;
+
+
 };
 
 </script>

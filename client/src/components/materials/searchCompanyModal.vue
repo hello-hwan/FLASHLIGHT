@@ -31,7 +31,7 @@
                 :rowData="rowData"
                 :gridOptions="GridOptions"
                 class="ag-theme-alpine"
-                style="height: 500px"
+                style="height: 518px"
                 @grid-ready="onGridReady"
                 >
             </AgGridVue>
@@ -102,7 +102,7 @@ const onGridReady = (params) => {
 let modalCheck = ref(false);
 
 //모달이 열리면 true로 변경, 스크롤 막기
-const modalOpen = () => {
+const modalOpen = async() => {
     const html = document.querySelector('html');
     if(modalCheck.value == false) {
         modalCheck.value = !modalCheck.value;
@@ -113,6 +113,8 @@ const modalOpen = () => {
     };
     //행 데이터 초기화
     rowData.value = [];
+
+    await searchCompany();
     
     //검색조건 초기화
     searchCompanyCode = null;
@@ -124,14 +126,12 @@ const modalOpen = () => {
 const selectOrder = () => {
     modalOpen()
     const selectedNodes = gridApi.value.getSelectedNodes();
-    const companySelectedData = selectedNodes.map((node) => node.data);
-    console.log('모달에서 선택된 행 데이터:', companySelectedData);
+    const companySelectedData = selectedNodes.map((node) => node.data); //모달에서 선택한 데이터
+
+    //화면에 회사명이 보일 수 있게 설정.
     companyName.value = companySelectedData[0].mtlty_name;
     companyCode.value = companySelectedData[0].bcnc_code;
 
-    //console.log(companyName, companyCode);
-    companyName.value = companySelectedData[0].mtlty_name;
-    companyCode.value = companySelectedData[0].bcnc_code;
     emit("companySelectedData", companySelectedData);
 };
 //행 데이터를 담을 변수
@@ -149,6 +149,7 @@ const GridOptions = {
       columnDefs: ColDefs,
       animateRows: false,
       pagination: true,
+      rowSelection: "single",
       paginationPageSize: 10,
       paginationPageSizeSelector: [10, 20, 50, 100],
 };

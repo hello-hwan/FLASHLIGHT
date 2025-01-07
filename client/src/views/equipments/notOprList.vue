@@ -1,32 +1,24 @@
 <template>
     <div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th style="width: 70%; font-size: 30px;">
-                        미가동 설비 조회
-                    </th>
-                </tr>
-            </thead>
-        </table>
-        <div>
-            <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
-                @grid-ready="onGridReady" class="ag-theme-alpine">
-            </ag-grid-vue>
-        </div>
-        <div>
-            <table class="table table-hover">
-                <tbody>
-                    <tr>
-                        <th>
-                            특이사항 : 
-                            <input style="background-color:lightsteelblue; margin: 2px; padding: 2px;" type="text" size="30" v-model="not_opr">
-                            <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 150px;" @click="submit_btn()">미가동 해제</button>
-                        </th>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <v-card class="mx-auto card-custom-1" style="border-radius:13px;">
+            <template v-slot:title>
+                <span class="font-weight-black" style="display:flex; justify-content: center">
+                    미가동 설비 조회
+                </span>
+            </template>
+            <v-card-text class="bg-surface-light pt-4">
+                <div>
+                    <ag-grid-vue :rowData="rowData" :columnDefs="colDefs" :gridOptions="gridOptions" style="height: 500px"
+                        @grid-ready="onGridReady" class="ag-theme-alpine" overlayNoRowsTemplate="결과 없음">
+                    </ag-grid-vue>
+                    <div style="background-color: #fff; padding: 6px; font-weight: 500; border: 1px solid #babfc7; border-top: none; text-align: right;">
+                        특이사항 : 
+                        <input style="background-color:#eeeeee; margin-right: 10px; padding: 2px;" type="text" size="30" v-model="not_opr">
+                        <button type="button" class="btn btn-primary" style="color: white; padding: 2px; width: 110px;" @click="submit_btn()">미가동 해제</button>
+                    </div>
+                </div>
+            </v-card-text>
+        </v-card>
     </div>
 </template>
 

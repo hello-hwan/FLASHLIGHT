@@ -68,6 +68,7 @@
                 :rowSelection="rowSelection"
                 @cellClicked="onCellClicked"
                 :gridOptions="gridOptionsReturn"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
                 id="grid-one"
               >
@@ -91,13 +92,14 @@
                 @cellClicked="onCellClicked2"
                 @grid-ready="onGridReady2"
                 @cell-value-changed="onCellValueChanged"
+                overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
               >
               </AgGridVue>
               <div class="mt-3">
                 <button class="btn btn-primary me-2" @click="modalOpen2">소모품 추가</button>
                 <button class="btn btn-danger" @click="deleteRow">소모품 삭제</button>
-                <button class="btn btn-warning" v-if="isModified" @click="saveChanges">수정</button>
+                <button class="btn btn-warning" v-if="isModified" @click="update">수정</button>
               </div>
             </v-card-text>
           </v-card>
@@ -111,31 +113,63 @@
           <textarea id="remarks" class="form-control" rows="3" v-model="remarks" @change="changeTest" ></textarea>
         </div>
         <div class="col-12 mt-3">
-          <button class="btn btn-success" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
+          <button class="btn btn-primary search-btn" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
         </div>
       </div>
     </v-container>
 
     <span style="margin-left:20px; margin-bottom:0; margin-top:0;">
         <div class="modal-wrap" @click="modalOpen2" v-show="modalCheck2" >
-            <div class="modal-container" @click.stop="">
+            <div class="modal-container" @click.stop="" v-if="mtrilModal">
                 <div id="search-bar">
                     <div class="align-left"> 
-                        <span>제품 코드</span>
-                        <InputText type="text" ></InputText>
-                        <span>제품 명</span>
-                        <InputText type="text" > </InputText>
+                        <span>자재 코드</span>
+                        <InputText type="text" v-model="mtrilCodeInput"></InputText>
+                        <span>자재 명</span>
+                        <InputText type="text" v-model="mtrilNameInput"> </InputText>
+                        <button @click="searchMtril"class="btn btn-primary search-btn" >조회</button>
+                        <button class="btn btn-secondary" @click="resetModal">초기화</button>
+                        <button @click="mtrilModalOpen"class="btn btn-primary search-btn" >자재</button>
+                        <button @click="prdlstNModalOpen"class="btn btn-primary search-btn" >반제품</button>
                     </div>
-                    <AgGridVue
-                      style="width: 100%; height: 460px; margin: 0 auto;"
-                      :rowData="rowDataInfotest"
+                    <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
+                      :rowData="mtrilFilter"
                       :columnDefs="colDefsInfotest"
                       :gridOptions="gridOptions"
                       @cellClicked="onCellClicked3"
                       @grid-ready="onGridReady"
+                      overlayNoRowsTemplate="결과없음"
                       class="ag-theme-alpine">
                     </AgGridVue>
-                    <button @click="searchProduct"class="btn btn-primary search-btn" >조회</button>
+                </div>
+    
+                <div class="modal-btn">
+                    <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
+                    
+                </div>
+            </div>
+
+            <div class="modal-container" @click.stop="" v-if="prdlstNModal">
+                <div id="search-bar">
+                    <div class="align-left"> 
+                        <span>반제품 코드</span>
+                        <InputText type="text" v-model="prdlstCodeInput"></InputText>
+                        <span>반제품 명</span>
+                        <InputText type="text" v-model="prdlstNameInput"> </InputText>
+                        <button @click="searchPrductN"class="btn btn-primary search-btn" >조회</button>
+                        <button class="btn btn-secondary" @click="resetModal">초기화</button>
+                        <button @click="mtrilModalOpen"class="btn btn-primary search-btn" >자재</button>
+                        <button @click="prdlstNModalOpen"class="btn btn-primary search-btn" >반제품</button>
+                    </div>
+                    <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
+                      :rowData="prductNFilter"
+                      :columnDefs="colDefsInfoModal"
+                      :gridOptions="gridOptions"
+                      @cellClicked="onCellClicked3"
+                      @grid-ready="onGridReady"
+                      overlayNoRowsTemplate="결과없음"
+                      class="ag-theme-alpine">
+                    </AgGridVue>
                 </div>
     
                 <div class="modal-btn">
@@ -157,16 +191,18 @@ import bfSearchCompanyModal from '@/components/standardInfo/ModalTest.vue';
   
 import axios from "axios";
 import { ajaxUrl } from "@/utils/commons.js";
-
+import { useToast } from 'primevue/usetoast';
 
   export default {
     data() {
       return {
+        mtrilModal: true,
+        prdlstNModal: false,
         istest: false,
         isButtonDisabled : true,
         isModified: false, // 수정 상태 추적 변수
         modalCheck2 : false,
-        isModalVisible: false, // 모달 표시 여부
+        //isModalVisible: false, // 모달 표시 여부
         selectedCmpdsCode: null, // 선택된 소모품 코드 데이터
         bomList: [], // BOM 리스트
         rowData: [], // BOM 데이터
@@ -177,19 +213,38 @@ import { ajaxUrl } from "@/utils/commons.js";
         rowDataInfo: [], // 상세보기 데이터
         colDefsInfo: [], // 상세보기 컬럼 정의
   
+        // 모달 자재 조회 데이터
         bomInfoList: [],
         rowDataInfotest: [],
         colDefsInfotest: [],
+        mtrilFilter: [],
+
+        // 모달 반제품 조회 데이터
+        prductNModel: [], 
+        rowDataInfoModal: [],
+        colDefsInfoModal: [],
+        prductNFilter: [],
 
         gridOptionsReturn: {}, // AgGrid 옵션
   
         searchCode: "", // 검색 입력값
-        prdlstCode: this.prdlst_code,
-        prdlstName: this.prdist_name, 
+        prdlstCode: "",
+        prdlstName: "", 
         productionQty: "",
         remarks: "", 
         rowCount: 0,
         isNewRow: true,
+        toast : useToast(),
+        bomCode: "",
+
+        // 자재검색 입력값
+        mtrilCodeInput: "",
+        mtrilNameInput: "",
+
+        // 반제품 검색 입력값
+        prdlstCodeInput: "",
+        prdlstNameInput: ""
+
       };
 
     },
@@ -202,28 +257,41 @@ import { ajaxUrl } from "@/utils/commons.js";
         { field: "prdlst_code", headerName: "제품코드" },
         { field: "prdist_name", headerName: "제품명" },
         { field: "prdctn_qy", headerName: "기본생산수량" },
-        { field: "상세보기", headerName: "상세보기", cellRenderer: () => "상세보기" },
+        { field: "상세보기", headerName: "상세보기", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                                  return '<button class="btn btn-primary mx-2">상세보기</button>'}},
       ];
   
       // 상세보기 컬럼 정의
       this.colDefsInfo = [
-        { field: "cmpds_prdlst_code", headerName: "소모품목코드", editable: (params) => params.node.data.isNewRow },
+        { field: "cmpds_prdlst_code", headerName: "소모품목코드", editable: (params) => params.node.data.isNewRow , valueGetter: (params) => params.data.cmpds_prdlst_code || params.data.prdlst_code},
         { field: "cmpds_prdlst_name", headerName: "소모품명", editable: (params) => params.node.data.isNewRow },
-        { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.stndrd_x == null },
-        { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
-        { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
+        // { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.stndrd_x == null },
+        // { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
+        // { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
         { field: "unit", headerName: "단위", editable: (params) => params.node.data.isNewRow },
         { field: "cnsum_count", headerName: "소모량", editable: true }, // 항상 수정 가능        
       ];
       
-      // 모달 컬럼저의
+      // 자재 모달 컬럼정의
       this.colDefsInfotest = [
         { field: "mtril_code", headerName: "자재코드" },
         { field: "mtril_name", headerName: "자재명" },
         { field: "unit", headerName: "단위" },
         { field: "untpc", headerName: "입고단가" },
         { field: "sfinvc", headerName: "안전재고" },
-        { field: "선택", headerName: "선택", cellRenderer:() => '선택'}
+        { field: "선택", headerName: "선택", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                            return '<button class="btn btn-primary mx-2">선택</button>'}}
+      ];
+
+      // 반제품 모달 컬럼 정의
+      this.colDefsInfoModal = [
+        { field: "prdlst_code", headerName: "반제품코드" },
+        { field: "prdlst_name", headerName: "반제품명" },
+        { field: "unit", headerName: "단위" },
+        { field: "wrhousng_unite", headerName: "입고단가" },
+        { field: "sfinvc", headerName: "안전재고" },
+        { field: "선택", headerName: "선택", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+                                            return '<button class="btn btn-primary mx-2">선택</button>'}}
       ];
     
       // AgGrid 기본 옵션 설정
@@ -233,14 +301,12 @@ import { ajaxUrl } from "@/utils/commons.js";
         paginationPageSizeSelector: [10, 20, 50, 100],
         animateRows: false,
         defaultColDef: {
-          filter: true,
           flex: 1,
           minWidth: 10,
         },
       };
       this.gridOptions = {
         defaultColDef: {
-          filter: true,
           sortable: true,
           resizable: true,
           flex: 1,
@@ -276,7 +342,14 @@ import { ajaxUrl } from "@/utils/commons.js";
             let result = await axios.get(`${ajaxUrl}/bomMtilList`)
                               .catch(err => console.log(err));
             this.bomInfoList = result.data
-                              this.rowDataInfotest = this.bomInfoList;
+            this.rowDataInfotest = this.bomInfoList;
+            this.mtrilFilter = this.rowDataInfotest;
+
+            let prdlstN = await axios.get(`${ajaxUrl}/prductNModel`)
+                                      .catch(err => console.log(err));
+              this.prductNModel = prdlstN.data;
+              this.rowDataInfoModal = this.prductNModel;
+              this.prductNFilter = this.rowDataInfoModal;
                 // //행 데이터 초기화
                 // this.rowData2 = [];
     
@@ -284,11 +357,14 @@ import { ajaxUrl } from "@/utils/commons.js";
                 // this.searchProductCode = null;
                 // this.searchProductName = null;
         },
-
-
+    
       onCellClicked(event) {
         if (event.colDef.field === "상세보기") {
           this.istest = true;
+          this.bomCode = event.data.bom_code;
+          this.prdlstCode = event.data.prdlst_code;
+          this.prdlstName = event.data.prdist_name;
+          this.productionQty = event.data.prdctn_qy;
           this.selectedBomCode = event.data.prdlst_code; // 상세보기를 위한 데이터 추츨
           this.getbomListInfo(this.selectedBomCode); // 상세 정보 조회
           this.remarks = event.data.sumry;
@@ -301,6 +377,7 @@ import { ajaxUrl } from "@/utils/commons.js";
         this.bomList = result.data;
         this.rowData = this.bomList;
         this.filteredRowData = this.rowData; // 초기 데이터 설정
+        //console.log(this.rowData);
       },
 
       // BOM 코드를 기반으로 조건SELECT 후 소모품 그리드에 데이터 삽입
@@ -309,12 +386,8 @@ import { ajaxUrl } from "@/utils/commons.js";
                                   .catch(err => console.log(err));
         //console.log(result.data);
         this.bomListInfo = result.data;
-       // console.log(this.bomListInfo);
         this.rowDataInfo = this.bomListInfo;
         if (result) {
-          this.prdlstCode = result.data[0].prdlst_code;
-          this.prdlstName = result.data[0].prdist_name;
-          this.productionQty = result.data[0].prdctn_qy;
           this.rowData = result.data;
           this.rowCount = this.rowData.length;
           this.trueRowCount = this.rowData.length;
@@ -329,112 +402,219 @@ import { ajaxUrl } from "@/utils/commons.js";
         );
       },
 
+      // 자재모달 검색 필터링
+      searchMtril(){
+        this.mtrilFilter = this.rowDataInfotest.filter((row) => {
+          return (
+            (!this.mtrilCodeInput || row.mtril_code.includes(this.mtrilCodeInput)) &&
+            (!this.mtrilNameInput || row.mtril_name.includes(this.mtrilNameInput))
+          );
+        })
+      },
+
+      // 반제품 모달 검색 필터링
+      searchPrductN(){
+        this.prductNFilter = this.rowDataInfoModal.filter((row) => {
+          return (
+            (!this.prdlstCodeInput || row.prdlst_code.includes(this.prdlstCodeInput)) &&
+            (!this.prdlstNameInput || row.prdlst_name.includes(this.prdlstNameInput))
+          );
+        })
+      },
+
       // 검색조건 초기화
       resetFilter() {
         this.searchCode = "";
         this.filteredRowData = [...this.bomList];
       },
 
-      deleteRow() {
+      // 모달 검색 조건 초기화
+      resetModal(){
+        console.log('클릭테스트')
+        this.prdlstCodeInput = "";
+        this.prdlstNameInput = "";
+        this.mtrilCodeInput = "";
+        this.mtrilNameInput = "";
+
+        this.mtrilFilter = this.rowDataInfotest;
+        this.prductNFilter = this.rowDataInfoModal
+
+      },
+
+      async deleteRow() {
         if (!this.gridOptions.api) {
-          console.error("AgGrid API가 초기화되지 않았습니다.");
-          return;
+            console.error("AgGrid API가 초기화되지 않았습니다.");
+            return;
         }
 
-        // 첫 번째 선택된 행 가져오기
+        // 선택된 행 가져오기
         let selectedNodes = this.gridOptions.api.getSelectedNodes();
         if (selectedNodes.length === 0) {
-          alert('행을선택하세요');
-          return;
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '행을 선택하세요', life: 3000 });
+            return;
         }
 
         let selectedData = selectedNodes[0].data; // 첫 번째 선택된 데이터만 사용
-        
-        // 데이터 삭제 
-        if (selectedData.cmpds_no) {
-          axios
-            .delete(`${ajaxUrl}/bom_cmpdsDel/${selectedData.cmpds_no}`)
-            .then(() => console.log(`행 삭제 완료: ${selectedData.cmpds_no}`))
-            .catch((err) => console.error(`행 삭제 실패: ${selectedData.cmpds_no}`, err));
-        }
-        //  데이터에서 해당 행 삭제
-        this.rowDataInfo = this.rowDataInfo.filter(
-          (row) => row.cmpds_prdlst_code !== selectedData.cmpds_prdlst_code
-        );
 
-        // AgGrid 데이터 갱신
-        //this.gridOptions.api.setRowData(this.rowDataInfo);
+        // 데이터 삭제 요청
+        if (selectedData.isNewRow) {
+            // 저장되지 않은 새 데이터 삭제
+            this.rowDataInfo = this.rowDataInfo.filter(
+                (row) => row.cmpds_prdlst_code !== selectedData.cmpds_prdlst_code
+            );
+            this.toast.add({ severity: 'success', summary: '삭제 완료', detail: '저장되지 않은 데이터가 삭제되었습니다.', life: 3000 });
 
-        if(this.rowDataInfo.length == this.rowCount){
-          this.isButtonDisabled = true;
-        }
+            // AgGrid 데이터 갱신
+            if (this.gridOptions.api) {
+                this.gridOptions.api.setRowData(this.rowDataInfo);
+            }
+        } else if (selectedData.cmpds_no) {
+            // 저장된 데이터 삭제
+            try {
+                const response = await axios.delete(`${ajaxUrl}/bom_cmpdsDel/${selectedData.cmpds_no}`);
+                console.log(`행 삭제 완료: ${selectedData.cmpds_no}`, response);
+
+                if (response.status === 200) { // 서버 응답 상태 코드가 200일 경우만 처리
+                    this.toast.add({ severity: 'success', summary: '삭제 완료', detail: '저장된 데이터가 삭제되었습니다.', life: 3000 });
+
+                    // 데이터에서 해당 행 삭제
+                    this.rowDataInfo = this.rowDataInfo.filter(
+                        (row) => row.cmpds_prdlst_code !== selectedData.cmpds_prdlst_code
+                    );
+
+                    // AgGrid 데이터 갱신
+                    if (this.gridOptions.api) {
+                        this.gridOptions.api.setRowData(this.rowDataInfo);
+                    }
+
+                    // 버튼 비활성화 여부 처리
+                    if (this.rowDataInfo.length == this.rowCount) {
+                        this.isButtonDisabled = true;
+                    }
+                }
+            } catch (err) {
+                console.log(err)
+            }
+          }
       },
 
 
-      async saveData() { 
-        if(this.rowCount < this.rowDataInfo.length){
-          for(let i = this.rowCount; i < this.rowDataInfo.length; i ++) {
-          let row = this.rowDataInfo[i];
-          let obj = [
-            this.rowData[0].bom_code,
-            row.cmpds_prdlst_code,
-            row.cmpds_prdlst_name, 
-            row.stndrd_x,
-            row.stndrd_y,
-            row.stndrd_z,
-            row.unit,
-            row.cnsum_count,
-          ]
-          console.log(obj);
-          if(this.rowDataInfo[i].stndrd_x == null && this.rowDataInfo[i].stndrd_y == null && this.rowDataInfo[i].stndrd_z == null && this.rowDataInfo[i].cnsum_count == null){
-            alert('값을입력해주세요');
-          }else{
-            let result = await axios.post(`${ajaxUrl}/bom`, obj)
-                                    .catch(err => console.log(err));
-                // 데이터 저장 로직
-                this.rowDataInfo = this.rowDataInfo.map((row) => {
-                    if (row.isNewRow) delete row.isNewRow; // 플래그 제거
-                    return row;
-                });
-                // 저장 후 AgGrid 데이터 갱신
-                // if (this.gridOptions.api) {
-                //   this.gridOptions.api.setRowData(this.rowDataInfo);
-                // }
+      async saveData() {
+        let isSaveSuccessful = true; // 저장 성공 여부를 확인하는 변수
+        let isUpdateSuccessful = false; // 업데이트 성공 여부를 확인하는 변수
+        let newRowsAdded = false; // 새로 추가된 행이 있는지 체크하는 변수
+
+        console.log('저장시 데이터', this.bomCode);
+
+        // 새로운 행이 추가된 경우에만 등록 (새로운 행이 없으면 업데이트만)
+        for (let i = this.rowCount; i < this.rowDataInfo.length; i++) {
+            let row = this.rowDataInfo[i];
+            let obj = [
+                this.bomCode,
+                row.cmpds_prdlst_code,
+                row.cmpds_prdlst_name,
+                row.unit,
+                row.cnsum_count,
+            ];
+
+            // 값이 null일 경우 저장을 진행하지 않음
+            if (this.rowDataInfo[i].cnsum_count == null) {
+                this.toast.add({ severity: 'warn', summary: '경고', detail: '값을 입력해주세요', life: 3000 });
+                isSaveSuccessful = false; // 값이 null일 때는 저장을 하지 않음
+                break; // 더 이상 진행하지 않도록 중단
+            } else {
+                try {
+                    let result;
+                    if (row.isNewRow) {
+                        // 새 행인 경우 등록
+                        result = await axios.post(`${ajaxUrl}/bom`, obj);
+                        // 서버에서 받은 cmpds_no로 업데이트
+                        this.rowDataInfo[i].cmpds_no = result.data.cmpds_no;
+                        newRowsAdded = true; // 새 행이 추가되었음을 표시
+                        delete this.rowDataInfo[i].isNewRow; // 플래그 제거
+                    } else {
+                        // 기존 행인 경우 업데이트
+                        result = await axios.put(`${ajaxUrl}/bom/${row.cmpds_no}`, obj);
+                    }
+
+                    // 데이터 저장 후 처리
+                    this.rowDataInfo = this.rowDataInfo.map((row) => {
+                        if (row.isNewRow) delete row.isNewRow; // 플래그 제거
+                        return row;
+                    });
+                } catch (err) {
+                    console.log(err);
+                    isSaveSuccessful = false; // 오류가 발생하면 저장 실패 처리
+                    break; // 오류가 나면 더 이상 진행하지 않도록 중단
+                }
             }
-          }
         }
+
+        // 항상 업데이트 요청
         let info = {
-          prdctn_qy: this.productionQty,
-          sumry: this.remarks
-        }
-        let result = axios.put(`${ajaxUrl}/bomUpdate/${this.rowData[0].bom_code}`, info)
-                             .catch(err => console.log(err)); 
-        if(result){
-          
-        }
+            prdctn_qy: this.productionQty,
+            sumry: this.remarks
+        };
         
+        try {
+            let result = await axios.put(`${ajaxUrl}/bomUpdate/${this.bomCode}`, info);
+            console.log(result);
+            isUpdateSuccessful = true;
+        } catch (err) {
+            console.log(err);
+        }
+
+        if (isSaveSuccessful && isUpdateSuccessful) {
+            this.toast.add({ severity: 'success', summary: '저장 완료', detail: '모든 데이터가 성공적으로 저장되었습니다.', life: 3000 });
+            setTimeout(() => {
+                this.$router.go(0); // 새로고침
+            }, 500);
+        }
       },
       
 
       async update() {
-        for(let i = 0; i < this.rowData.length; i ++) {
-          let row = this.rowData[i];
-          let obj = {
-            cnsum_count: row.cnsum_count
-          }
-          let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${this.rowData[i].cmpds_no}`,obj)
-                                        .catch(err => console.log(err));
+        let isUpdateSuccessful = true; // 업데이트 성공 여부 추적 변수
+
+        for (let i = 0; i < this.rowData.length; i++) {
+            let row = this.rowData[i];
+            let obj = {
+                cnsum_count: row.cnsum_count
+            };
+
+            try {
+                let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${row.cmpds_no}`, obj);
+            } catch (err) {
+                console.log(err);
+                isUpdateSuccessful = false; // 오류 발생 시 실패로 설정
+                break; // 오류 발생 시 루프 종료
+            }
+        }
+
+        if (isUpdateSuccessful) {
+            // 모든 요청이 성공적으로 처리된 경우
+            this.toast.add({ severity: 'success', summary: '업데이트 완료', detail: '모든 데이터가 성공적으로 업데이트되었습니다.', life: 3000 });
+        } else {
+            this.toast.add({ severity: 'error', summary: '업데이트 실패', detail: '데이터 업데이트 중 오류가 발생했습니다.', life: 3000 });
         }
       },
 
       // 모달값 rowDataInfo그리드로 데이터 넘기기
       onCellClicked3(event){
-        if(event.colDef.field === "선택"){
-          let obj = {
+        let obj = {
             cmpds_prdlst_code:  event.data.mtril_code,
             cmpds_prdlst_name:  event.data.mtril_name,
             unit: event.data.unit,
             isNewRow: true
+        }
+        if(event.colDef.field === "선택"){
+          if(event.data.mtril_code == null){
+            obj = {
+              cmpds_prdlst_code:  event.data.prdlst_code,
+              cmpds_prdlst_name:  event.data.prdlst_name,
+              unit: event.data.unit,
+              isNewRow: true
+            }
           }
           const isDuplicate = this.rowDataInfo.some(
             (row) => row.cmpds_prdlst_code === obj.cmpds_prdlst_code
@@ -449,7 +629,7 @@ import { ajaxUrl } from "@/utils/commons.js";
           } else {
             // 저장버튼 비활성화
             this.isButtonDisabled = true;
-            alert("이미 추가된 항목입니다.");
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '이미추가된 항목 입니다.', life: 3000 });
           }
         }
       },
@@ -466,6 +646,15 @@ import { ajaxUrl } from "@/utils/commons.js";
         if (!this.gridOptions.api) {
           console.error("AgGrid API가 초기화되지 않았습니다.");
         }
+      },
+
+      mtrilModalOpen(){
+        this.mtrilModal = true;
+        this.prdlstNModal = false;
+      },
+      prdlstNModalOpen(){
+        this.mtrilModal = false;
+        this.prdlstNModal = true;
       }
     },
     
@@ -519,33 +708,4 @@ import { ajaxUrl } from "@/utils/commons.js";
     float: right;
 }
 
-/* 모달 스타일 */
-/* .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  width: 80%;
-  max-width: 800px; 
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  height: auto;
-}
-
-
-.ag-theme-alpine {
-  height: 400px; 
-  width: 100%; 
-} */
 </style>

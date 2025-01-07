@@ -15,13 +15,14 @@
         </template>
     
         <v-card-text class="bg-surface-light pt-4">
-            <AgGridVue style=" margin: 0 auto; "
+            <AgGridVue style=" height: 258px; margin: 0 auto; "
                 :defaultColDef="defaultColDef"
                 :rowData="reqRowData"
                 :gridOptions="gridOptionsReq"
                 :frameworkComponents="frameworkComponents"
                 class="ag-theme-alpine"
                 domLayout="autoHeight"
+                overlayNoRowsTemplate="결과 없음"
                 >
             </AgGridVue>
         </v-card-text>

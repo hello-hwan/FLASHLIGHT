@@ -30,7 +30,7 @@
                 text-align: right;
                 height: 38px;"></div>
             <div class="float-left text-lg-center" style="width: 50%;">
-              <label class="display-6 font-weight-black">생산자</label>
+              <label class="display-6 font-weight-black">생산자(사원번호)</label>
               <br>
               <Number v-model="empl"></Number>
               <div style="margin-bottom: 10px;
@@ -128,16 +128,21 @@ const getday = () => {
 const getinfo = async (code) => {
   let result = await axios.get(`${ajaxUrl}/prod/stateinfo/${code}`)
                           .catch(err => console.log(err));
+  console.log("info", result.data);
   info.value = result.data;
-  getmatril(result.data.procs_code);
+  getmatril(result.data.prdctn_code, result.data.mnfct_no);
 };
 
 
-// 공정흐름도에서 소모자재 조회
-const getmatril = async (code) => {
-  let result = await axios.get(`${ajaxUrl}/prod/selmatrl/${code}`)
+// 공정흐름도에서 소모자재 조회 => 출고요청에서 요청한 수량으로 바꿔야 할듯
+const getmatril = async (prdctn_code, mnfct_no) => {
+  let result = await axios.get(`${ajaxUrl}/prod/selmatrl`, { params : { "prdctn_code" : prdctn_code, "mnfct_no" : mnfct_no } })
   // let result = await axios.get(`${ajaxUrl}/prod/selmatrl/aaa1-1`)
                           .catch(err => console.log(err));
+  console.log("matril", result.data)
+  for(let i = 0; i < result.data.length; i++){
+    result.data[i].usage = result.data[i].req_qy.toString();
+  }
   matril.value = result.data;
 };
 
@@ -236,11 +241,17 @@ onBeforeMount(() => {
   getinfo(selcode);
   setInterval(getday, 1000);
   select.value = [{id : 1, value : "본인 과실"}, {id : 2, value : "기계 결함"}, {id : 3, value : "기타"} ]
+
 });
 
 
 </script>
 <style scoped>
+  .kiosk {
+    max-width: 802mm;
+    height: 1427mm;
+    text-align: center;
+  }
   .kiosk-btn {
     width: 25%;
     height: 100px;
