@@ -16,16 +16,6 @@ const qualityRouter = require('./router/quality_router.js');
 const standardInfoRouter = require('./router/standard_info_router.js');
 const statisticsRouter = require('./router/statistics_router.js');
 
-// 미들웨어
-app.use(express.json());    //json파서
-app.use(express.urlencoded({ extended : false })); //query string 파서
-
-
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.set("port", process.env.PORT || 3000);
-
 //새로고침, 라우터 이동 가능하게 만듦.
 app.use(history()); //라우터보다 먼저 실행되야함
 
@@ -36,8 +26,7 @@ app.get('/', function(req, res, next) {
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404));
-  });
-  
+});
 // error handler
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
@@ -49,11 +38,18 @@ app.use(function (err, req, res, next) {
     res.render("error");
 });
 
+// 미들웨어
+app.use(express.json());    //json파서
+app.use(express.urlencoded({ extended : false })); //query string 파서
 
-app.listen(3000, ()=>{
-    console.log('Server Start');
-    console.log('http://localhost:3000');
-});
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.set("port", process.env.PORT || 3000);
+
+// app.listen(3000, ()=>{
+//     console.log('Server Start');
+//     console.log('http://localhost:3000');
+// });
 
 /* 
     라우터 불러오는 부분입니다. 
