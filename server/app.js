@@ -4,6 +4,7 @@ require('dotenv').config({ path : './database/mariadb.env'});
 const express = require('express');
 const app = express();
 
+const path=require("path");
 //라우터 모듈 불러오기
 const businessRouter = require('./router/business_router.js');
 const equipmentsRouter = require('./router/equipments_router.js');
@@ -23,8 +24,10 @@ app.listen(3000, ()=>{
     console.log('http://localhost:3000');
 });
 
-app.get('/', (req, res)=>{
-    res.send('Welcome!!');
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', function(req, res, next) {
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
 
@@ -33,25 +36,25 @@ app.get('/', (req, res)=>{
 */
 
 //영업
-app.use('/', businessRouter);
+app.use('/api', businessRouter);
 
 //설비
-app.use('/', equipmentsRouter);
+app.use('/api', equipmentsRouter);
 
 //물류
-app.use('/', logisticsRouter);
+app.use('/api', logisticsRouter);
 
 //자재
-app.use('/', materialsRouter);
+app.use('/api', materialsRouter);
 
 //생산
-app.use('/', productionRouter);
+app.use('/api', productionRouter);
 
 //품질
-app.use('/', qualityRouter);
+app.use('/api', qualityRouter);
 
 //기준정보
-app.use('/', standardInfoRouter);
+app.use('/api', standardInfoRouter);
 
 //통계
-app.use('/', statisticsRouter);
+app.use('/api', statisticsRouter);

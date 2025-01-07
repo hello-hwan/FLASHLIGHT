@@ -57,7 +57,8 @@
             :gridOptions="qiListGridOptions" 
             style="height: 520px"
             @grid-ready="onGridReady" 
-            class="ag-theme-alpine">
+            class="ag-theme-alpine"
+            overlayNoRowsTemplate="발주건을 선택해주세요">
             </ag-grid-vue>
             <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
         </v-card-text>
