@@ -741,5 +741,8 @@ import { useToast } from 'primevue/usetoast';
 .orderRowInsert{
     float: right;
 }
+.editable-input {
+  border: 2px solid #00aaff; /* 수정 가능 강조 */
+}
 
 </style>

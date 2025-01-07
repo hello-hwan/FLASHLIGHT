@@ -126,7 +126,7 @@ export default {
       req_name: "",
       // 사원이름, 사원코드 임의값 
       emp_name: "이주현",
-      emp_id: 200,
+      emp_id: 600,
       // 검색 입력값
       prductNReqName: "",
       startDate:"",

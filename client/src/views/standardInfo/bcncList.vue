@@ -30,8 +30,8 @@
                 </div>
                 <div class="col-auto">
                   <select v-model="searchBizcnd" class="form-control" id="seCode">
-                    <option value="생산">생산</option>
-                    <option value="도소매">도소매</option>
+                    <option value="CG01">생산</option>
+                    <option value="CG02">도소매</option>
                   </select>
               </div>
                 <!-- <div class="col-auto">
@@ -96,8 +96,8 @@
                 </div>
                 <div class="col-auto">
                   <select v-model="bizcnDAdd" class="form-control" id="seCode">
-                    <option value="생산">생산</option>
-                    <option value="도소매">도소매</option>
+                    <option value="CG01">생산</option>
+                    <option value="CG02">도소매</option>
                   </select>
               </div>
               <div class="col-auto">
@@ -217,7 +217,7 @@ export default {
         // 생산: ["폴리카보네이트", "폴리우레탄", "실리콘", "가죽", "알루미늄", "원목", "카본", "폴리프로필렌",
         //       "염료"
         // ],
-        도소매: ["케이스"],
+        CG02: ["케이스"],
       },
       filteredItemOptions: []
     };
@@ -235,7 +235,7 @@ export default {
       { field: "bcnc_code", headerName: "거래처 코드" },
       { field: "bizrno", headerName: "사업자 등록 번호" },
       { field: "mtlty_name", headerName: "거래처 명" },
-      { field: "bizcnd", headerName: "업태" },
+      { field: "bizcnd", headerName: "업태" , valueFormatter: this.formet },
       { field: "item", headerName: "종목"  ,editable: true},
       { field: "dvyfg_adres", headerName: "납품 주소" },
       { field: "charger_name", headerName: "담당자 명" , editable: true},
@@ -305,9 +305,10 @@ export default {
         this.toast.add({ severity: 'warn', summary: '경고', detail: '납품주소를 입력하세요.', life: 3000 });
       }else if(!this.chargerNameAdd){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '담당자명을 입력하세요.', life: 3000 });
-      }else if(!this.chargerPjoneAdd){
+      }else if(!this.chargerPhoneAdd){
         this.toast.add({ severity: 'warn', summary: '경고', detail: '담당자전화번호를 입력하세요.', life: 3000 });
       }else{
+        console.log(this.bizcnDAdd);
         let result = await axios.post(`${ajaxUrl}/bcncAdd`, obj)
                           .catch(err => console.log(err));
         if(result.status == 200){
@@ -437,6 +438,14 @@ export default {
     //날짜 yyyy-MM-dd형식에 맞춰서 가져오기
     customDateFormat(params) {
             return userDateUtils.dateFormat(params.data.regist_day, 'yyyy-MM-dd');  // test_date는 알레아스 이름
+    },
+    formet(params) {
+      if (params.value == 'CG01') {
+        return '생산';
+      }
+      if (params.value == 'CG02') {
+        return '도소매';
+      }
     },
 
   },
