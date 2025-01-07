@@ -290,12 +290,14 @@ const addRow = (info) => {
         };
     };
 
-    //행추가할 객체 생성
-    let obj = {order_no: 0, req_code: "", mt_name: info[0].mtril_name, mt_code: info[0].mtril_code, price: 0, order_qy: 0, 
-    unit: info[0].unit, order_date: "", dedt: ""};
-
-    //add:[]배열안에 객체 형태로 데이터를 넣으면 됨.
-    mtListGridApi.value.applyTransaction({add: [obj]});
+    for(let i=0; i<info.length; i++) {
+        //행추가할 객체 생성
+        let obj = {order_no: 0, req_code: "", mt_name: info[i].mtril_name, mt_code: info[i].mtril_code, price: 0, order_qy: 0, 
+        unit: info[i].unit, order_date: "", dedt: ""};
+    
+        //add:[]배열안에 객체 형태로 데이터를 넣으면 됨.
+        mtListGridApi.value.applyTransaction({add: [obj]});
+    };
 };
 
 //행 삭제

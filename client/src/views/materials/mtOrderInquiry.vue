@@ -58,7 +58,9 @@
             rowSelection="multiple"
             class="ag-theme-alpine"
             @grid-ready="onGridReady"
-            style="height: 516px;">
+            style="height: 516px;"
+            overlayNoRowsTemplate="결과 없음"
+            >
             </AgGridVue>
             <button @click="onBtnExportDataAsCsv" class="btn btn-primary search-btn" >EXCEL 내보내기</button>
             <!--pdf내보내기-->
@@ -105,7 +107,7 @@ const mtRowData = ref([]);
 
 //요청 리스트 열 정보
 const mtOrderColDefs = [
-  { field: "order_code", headerName:"발주코드", flex: 1.2},
+  { field: "order_code", headerName:"발주코드", flex: 1.2, hide: true},
   { field: "order_name", headerName:"발주명", flex: 2 },
   { field: "mtril_code", headerName:"자재코드", flex: 1 },
   { field: "mtril_name", headerName:"자재명", flex: 1},
