@@ -3,7 +3,7 @@ require('dotenv').config({ path : './database/mariadb.env'});
 
 const express = require('express');
 const app = express();
-const path=require("path");
+const path = require("path");
 const history = require("connect-history-api-fallback");
 
 //라우터 모듈 불러오기
@@ -23,6 +23,7 @@ app.get('/', function(req, res, next) {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
+/*
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404));
@@ -37,6 +38,7 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render("error");
 });
+*/
 
 // 미들웨어
 app.use(express.json());    //json파서
@@ -46,10 +48,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set("port", process.env.PORT || 3000);
 
-// app.listen(3000, ()=>{
-//     console.log('Server Start');
-//     console.log('http://localhost:3000');
-// });
+app.listen(3000, ()=>{
+    console.log('Server Start');
+    console.log('http://localhost:3000');
+});
 
 /* 
     라우터 불러오는 부분입니다. 
