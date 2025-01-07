@@ -28,13 +28,30 @@ app.use(express.urlencoded({ extended : false })); //query string 파서
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.set("port", process.env.PORT || 3000);
+
+//새로고침, 라우터 이동 가능하게 만듦.
+app.use(history()); //라우터보다 먼저 실행되야함
+
 app.get('/', function(req, res, next) {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
-app.set("port", process.env.PORT || 3000);
-//새로고침, 라우터 이동 가능하게 만듦.
-app.use(history()); //라우터보다 먼저 실행되야함
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    next(createError(404));
+  });
+  
+// error handler
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get("env") === "development" ? err : {};
+
+    // render the error page
+    res.status(err.status || 500);
+    res.render("error");
+});
 
 /* 
     라우터 불러오는 부분입니다. 
