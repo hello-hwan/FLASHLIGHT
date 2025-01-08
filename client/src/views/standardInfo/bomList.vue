@@ -444,7 +444,6 @@ import { useToast } from 'primevue/usetoast';
 
       // 모달 검색 조건 초기화
       resetModal(){
-        console.log('클릭테스트')
         this.prdlstCodeInput = "";
         this.prdlstNameInput = "";
         this.mtrilCodeInput = "";
@@ -529,9 +528,6 @@ import { useToast } from 'primevue/usetoast';
         let isUpdateSuccessful = false; // 업데이트 성공 여부를 확인하는 변수
         let newRowsAdded = false; // 새로 추가된 행이 있는지 체크하는 변수
 
-        console.log('저장시 데이터', this.bomCode);
-        console.log('첫 행길이',this.rowCount);
-        console.log('추가행길이',this.rowDataInfo.length);
         // 새로운 행이 추가된 경우에만 등록 (새로운 행이 없으면 업데이트만)
         for (let i = this.rowCount; i < this.rowDataInfo.length; i++) {
             let row = this.rowDataInfo[i];
@@ -618,6 +614,7 @@ import { useToast } from 'primevue/usetoast';
 
             try {
                 let result = await axios.put(`${ajaxUrl}/bom_cmpsdUpdate/${row.cmpds_no}`, obj);
+                this.isModified = false;
             } catch (err) {
                 console.log(err);
                 isUpdateSuccessful = false; // 오류 발생 시 실패로 설정

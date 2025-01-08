@@ -134,7 +134,9 @@ export default {
       startDate:"",
       endDate: "",
       toast: useToast(),
-      isButtonDisabled: true
+      isButtonDisabled: true,
+      dlivyTotal: 0,
+      toTal: 0
 
     };
   },
@@ -143,17 +145,18 @@ export default {
 
     // 출고리스트 컬럼 정의
     this.colDefs = [
-      { field: "req_name", headerName: "요청명" },
+      { field: "req_name", headerName: "요청명", flex: 2 },
       { field: "req_de", headerName: "요청일",
         valueFormatter: this.customDateFormat, // valueFormatter에서 함수를 설정하고 설정한 함수에서 값을 리턴함.
       },
+      { field: "prd_code", headerName: "출고제품종류수" , cellStyle: { textAlign: "center" }},
       { field: "상세보기", headerName: "상세보기",cellStyle: { textAlign: "center" } ,cellRenderer: () => {
                                               return '<button class="btn btn-primary mx-2">상세보기</button>'}},
     ];
 
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
-      { field: "prd_nm", headerName: "반제품제품명" },
+      { field: "prd_nm", headerName: "반제품제품명" , flex: 2},
       { field: "prd_code", headerName: "반제품코드" },
       { field: "lot", headerName: "반제품LOT" },
       { field: "req_qy", headerName: "요청수량" },
@@ -225,17 +228,25 @@ export default {
       for(let i = 0; i < this.rowDataInfo.length; i++){
         let newObj = {...this.rowDataInfo[i], empl_no : this.emp_id};
         sendPrductNList.push(newObj);
+        this.toTal += this.rowDataInfo[i].lot_qy
+        this.dlivyTotal += this.rowDataInfo[i].req_qy
       }
       console.log(sendPrductNList);
-      let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
-                              .catch(err => console.log(err));
-
-      if(result.data == 'success'){
-        this.toast.add({ severity: 'success', summary: '성공', detail: '출고가 완료되었습니다.', life: 3000 });
-        this.getprductNDlivyList();
-        this.getprductNdlivyPossible();
+      console.log(this.toTal);
+      console.log(this.dlivyTotal);
+      if(this.dlivyTotal <= this.toTal){
+        let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
+                                .catch(err => console.log(err));
+  
+        if(result.data == 'success'){
+          this.toast.add({ severity: 'success', summary: '성공', detail: '출고가 완료되었습니다.', life: 3000 });
+          this.getprductNDlivyList();
+          this.getprductNdlivyPossible();
+        }else{
+          this.toast.add({ severity: 'error', summary: '실패', detail: '출고처리 중 오류가 발생하엿습니다.', life: 3000 });
+        }
       }else{
-        this.toast.add({ severity: 'warn', summary: '실패', detail: '수량이 부족합니다.', life: 3000 });
+        this.toast.add({ severity: 'warn', summary: '실패', detail: '수량이 부족한 제품이 있습니다', life: 3000 });
       }
 
     },
