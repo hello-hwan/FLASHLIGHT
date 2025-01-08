@@ -292,15 +292,21 @@ export default {
 
                     let mtril_code = await axios.get(`${ajaxUrl}/procsFlowchartSearchmtnm/${this.rowData[i].mtril_nm}`)
                         .catch(err => console.log(err))
+                        let mtril_code_rename = mtril_code.data.mtril_code
+                        if (mtril_code_rename == undefined) {
+                            mtril_code_rename = mtril_code.data.prdlst_code
+                        }
                     let procs_matrl_insert = [
                         this.prd_code + '-' + this.rowData[i].procs_ordr_no,
                         this.rowData[i].procs_nm,
-                        mtril_code.data.mtril_code,
+                        mtril_code_rename,
                         this.rowData[i].mtril_nm,
                         this.rowData[i].usgqty
                     ]
-                    let result_2 = await axios.post(`${ajaxUrl}/procsMatrlInsert`, procs_matrl_insert)
+                    if (mtril_code_rename != null) {
+                        let result_2 = await axios.post(`${ajaxUrl}/procsMatrlInsert`, procs_matrl_insert)
                         .catch(err => console.log(err));
+                    }
 
                     let procs_mchn_insert = [
                         this.prd_code + '-' + this.rowData[i].procs_ordr_no,

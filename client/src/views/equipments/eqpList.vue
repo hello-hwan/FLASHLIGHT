@@ -41,10 +41,10 @@ export default {
         this.colDefs = [
             { field: "eqp_nm", headerName: "설비명" },
             { field: "model_nm", headerName: "모델명" },
-            { field: "eqp_run", headerName: "가동여부" },
-            { field: "model_tp", headerName: "온도" },
-            { field: "procs_time", headerName: "가동시간 (분)" },
-            { field: "procs_nm", headerName: "실행작업" }
+            { field: "eqp_run", headerName: "가동여부", flex: 0.75 },
+            { field: "model_tp", headerName: "온도", flex: 0.5 },
+            { field: "procs_time", headerName: "가동시간 (분)", flex: 0.75 },
+            { field: "procs_nm", headerName: "실행작업", flex: 0.75 }
         ];
         this.gridOptions = {
             columnDefs: this.orderColDefs,

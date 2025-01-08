@@ -59,9 +59,9 @@ export default {
             { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
             { field: "eqp_nm", headerName: "설비명" },
             { field: "eqp_code", headerName: "설비코드" },
-            { field: "chck_nm", headerName: "점검명" },
-            { field: "chck_knd", headerName: "점검종류" },
-            { field: "chck_exp", headerName: "점검예정일" },
+            { field: "chck_nm", headerName: "점검명", flex: 0.75 },
+            { field: "chck_knd", headerName: "점검종류", flex: 0.75 },
+            { field: "chck_exp", headerName: "점검예정일", flex: 0.75 },
             { field: "chck_time", headerName: "점검시간" }
         ];
         this.gridOptions = {
@@ -92,9 +92,9 @@ export default {
                 { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
                 { field: "eqp_nm", headerName: "설비명" },
                 { field: "eqp_code", headerName: "설비코드" },
-                { field: "chck_nm", headerName: "점검명" },
-                { field: "chck_knd", headerName: "점검종류" },
-                { field: "chck_exp", headerName: "점검예정일" },
+                { field: "chck_nm", headerName: "점검명", flex: 0.75 },
+                { field: "chck_knd", headerName: "점검종류", flex: 0.75 },
+                { field: "chck_exp", headerName: "점검예정일", flex: 0.75 },
                 { field: "chck_time", headerName: "점검시간" }
             ]
             this.rowData = [];
@@ -118,9 +118,9 @@ export default {
                 { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
                 { field: "eqp_nm", headerName: "설비명" },
                 { field: "eqp_code", headerName: "설비코드" },
-                { field: "chck_nm", headerName: "점검명" },
-                { field: "chck_knd", headerName: "점검종류" },
-                { field: "last_bgnde", headerName: "마지막 점검일" },
+                { field: "chck_nm", headerName: "점검명", flex: 0.75 },
+                { field: "chck_knd", headerName: "점검종류", flex: 0.75 },
+                { field: "last_bgnde", headerName: "마지막 점검일", flex: 0.75 },
                 { field: "chck_time", headerName: "점검시간" }
             ]
             let result = await axios.get(`${ajaxUrl}/equip/chck_fx_all_list`)
