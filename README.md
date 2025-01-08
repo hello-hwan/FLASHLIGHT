@@ -8,7 +8,8 @@
 ## 프로젝트 주제 : 핸드폰케이스 MES 생산공정관리 시스템
 
 ![image](https://github.com/user-attachments/assets/ef67b75c-ecec-4ea2-8b99-ec340611a620)
-![image](https://github.com/user-attachments/assets/3a5c5a39-d2bd-4a00-9b0e-d31630997097)
+![image](https://github.com/user-attachments/assets/8fcce670-1d75-4dd1-b8f9-ce60468daa0b)
+
 
 ## 개발자 : 최민규 (조장), 최시훈 (부조장), 김기환, 김준규, 이주현, 최태백
 최민규 - 설비 부서, 기준정보(사원관리, 공정 흐름도 관리/ 조회) 구현<br/>
