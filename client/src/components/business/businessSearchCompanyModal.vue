@@ -26,7 +26,7 @@
                     <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany" style="width: 180px;"> <p>{{ searchchargerName }}</p></InputText>
                 </div>
                 <div style="display:flex; justify-content: center;">
-                    <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>
+                    <button @click="searchCompany"class="btn btn-primary search-btn" style="margin-left : 5px; margin-right: 5px; line-height: 15px;" >조회</button>
                 </div>
             </div>
             
@@ -42,8 +42,8 @@
             </AgGridVue>
             
             <div class="modal-btn" style="display:flex; justify-content: center;">
-            <button @click="modalOpen"class="btn btn-secondary">닫기</button>
-            <button @click="selectOrder" class="btn btn-primary">확인</button>
+            <button @click="modalOpen" class="btn btn-secondary" style="margin-left : 5px; margin-right: 5px; line-height: 15px;">닫기</button>
+            <button @click="selectOrder" class="btn btn-primary" style="margin-left : 5px; margin-right: 5px; line-height: 15px;">확인</button>
             </div>
         </div>
         </div>
@@ -217,10 +217,5 @@ const searchCompany = async() => {
 }
 input {
     width: 220px;
-}
-button{
-    margin-left : 5px;
-    margin-right: 5px;
-    line-height: 15px;
 }
 </style>

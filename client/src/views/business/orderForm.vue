@@ -81,7 +81,7 @@
 
                     <!-- 조회 버튼 -->
                     <div style="display:flex; justify-content: center;">
-                        <button @click="searchProduct"class="btn btn-primary search-btn">조회</button>
+                        <button @click="searchProduct"class="btn btn-primary search-btn" style="margin-left : 5px; margin-right: 5px; line-height: 15px;">조회</button>
                     </div>
                 </div>
                 
@@ -99,8 +99,8 @@
 
                 <!-- 검색된 데이터를 입력하거나 취소하는 버튼 -->
                 <div class="modal-btn" style="display:flex; justify-content: center;">
-                    <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
-                    <button @click="selectOrder2" class="btn btn-primary">확인</button>
+                    <button @click="modalOpen2" class="btn btn-secondary" style="margin-left : 5px; margin-right: 5px; line-height: 15px;">닫기</button>
+                    <button @click="selectOrder2" class="btn btn-primary" style="margin-left : 5px; margin-right: 5px; line-height: 15px;">확인</button>
                 </div>
             </div>
         </div>
@@ -404,7 +404,7 @@ export default {
     } 
 }; 
 </script>
-
+<!--    style="margin-left : 5px; margin-right: 5px; line-height: 15px;" -->
 <style scoped>
 /* dimmed */
 .modal-wrap {
