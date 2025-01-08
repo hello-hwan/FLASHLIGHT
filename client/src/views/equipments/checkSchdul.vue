@@ -57,6 +57,7 @@ export default {
         this.getCheckList();
         this.colDefs = [
             { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
+            { field: "eqp_nm", headerName: "설비명" },
             { field: "eqp_code", headerName: "설비코드" },
             { field: "chck_nm", headerName: "점검명" },
             { field: "chck_knd", headerName: "점검종류" },
@@ -89,6 +90,7 @@ export default {
         async getCheckList() {
             this.colDefs = [
                 { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
+                { field: "eqp_nm", headerName: "설비명" },
                 { field: "eqp_code", headerName: "설비코드" },
                 { field: "chck_nm", headerName: "점검명" },
                 { field: "chck_knd", headerName: "점검종류" },
@@ -114,6 +116,7 @@ export default {
         async all_btn() {
             this.colDefs = [
                 { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
+                { field: "eqp_nm", headerName: "설비명" },
                 { field: "eqp_code", headerName: "설비코드" },
                 { field: "chck_nm", headerName: "점검명" },
                 { field: "chck_knd", headerName: "점검종류" },
