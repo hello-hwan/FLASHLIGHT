@@ -39,7 +39,8 @@
                                     :gridOptions="gridOptions" 
                                     style="height: 500px;"
                                     @grid-ready="onGridReady" 
-                                    class="ag-theme-alpine">
+                                    class="ag-theme-alpine"
+                                    overlayNoRowsTemplate="결과 없음">
                         </ag-grid-vue>            
                     </div>        
         
@@ -82,6 +83,7 @@ const rowData = ref([]);
 
 //발주건 자재 목록 ag grid 컬럼 선언
 const colDefs = [
+    { field: 'order_no', headerName: '발주번호', flex:1},
     { field: 'mtril_code', headerName: '자재코드', flex:1},
     { field: 'mtril_name', headerName: '자재명', flex:1},
     { field: 'inspec_standard', headerName: '검사기준', flex:1 },
@@ -118,7 +120,7 @@ const insertInfoList = async () => {
                           mtlty_name: companyName.value,
                           empl_no: store.state.empInfo[store.state.empInfo.length-1].user_id,
                           pass_amount: (rowData.value[i].order_qy - rowData.value[i].error_amount), //통과수량 = 발주수량 - 불량 수량
-                          order_no: orderNo.value,
+                          order_no: rowData.value[i].order_no,
                           bcnc_code: companyCode.value,
                           inspec_standard: rowData.value[i].inspec_standard,
                           inspec_item: rowData.value[i].mtril_code,
@@ -153,6 +155,7 @@ const removeData = () => {
 
 //검색 모달에서 가져온 발주 데이터
 const getOrderData = (info) => {
+    console.log('모달에서 가져온 데이터', info);
     //모달에서 가져온 데이터를 화면에 반영하기
     orderNo.value = info[0].order_no;
     orderName.value = info[0].order_name;

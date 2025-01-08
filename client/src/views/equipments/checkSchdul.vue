@@ -66,7 +66,7 @@ export default {
         this.gridOptions = {
             columnDefs: this.orderColDefs,
             pagination: true,
-            paginationPageSize: 5,
+            paginationPageSize: 10,
             paginationPageSizeSelector: [5, 10, 20],
             paginateChildRows: true,
             animateRows: false,

@@ -45,45 +45,47 @@ AND EXISTS ( SELECT 1
 
 // 반제품 반환입고 대기 리스트
 const prdctn_n_return_list = 
-`SELECT d.prduct_n_dlivy_no
-       ,d.prduct_n_name
-       ,d.prduct_n_code
-       ,d.nusgqty
-       ,d.requst_date
-       ,t.prdctn_code
-FROM prduct_n_dlivy d JOIN prduct_n_wrhousng w
+`WITH MaxProcsN AS (SELECT prd_code 
+                  ,MAX(procs_ordr_no) AS max_procs_ordr_no
+FROM procs_flowchart
+WHERE prd_code IS NOT NULL
+GROUP BY prd_code
+)
+SELECT d.prduct_n_dlivy_no
+      ,d.prduct_n_name
+      ,d.prduct_n_code
+      ,d.nusgqty
+      ,d.requst_date
+      ,t.prdctn_code
+FROM prduct_n_dlivy d JOIN prduct_n_wrhousng w 
 ON d.prduct_n_lot = w.prduct_n_lot
-JOIN thng_req t
-ON  d.req_code = t.req_code
+JOIN thng_req t 
+ON d.prduct_n_code = t.req_code
+JOIN MaxProcsN mp ON d.prduct_n_code = mp.prd_code
 WHERE d.usgstt = 'MU02'
 AND d.nusgqty > 0
-ORDER BY requst_date`;
+AND t.procs_at = 'RD01' 
+AND EXISTS ( SELECT 1
+             FROM procs_flowchart p
+             WHERE p.prd_code = d.prduct_n_code
+             AND p.procs_ordr_no = mp.max_procs_ordr_no)
+ORDER BY d.requst_date`;
 
-// WITH MaxProcsN AS (SELECT prd_code 
-//                   ,MAX(procs_ordr_no) AS max_procs_ordr_no
-// FROM procs_flowchart
-// WHERE prd_code IS NOT NULL
-// GROUP BY prd_code
-// )
-// SELECT d.prduct_n_dlivy_no
-//       ,d.prduct_n_name
-//       ,d.prduct_n_code
-//       ,d.nusgqty
-//       ,d.requst_date
-//       ,t.prdctn_code
-// FROM prduct_n_dlivy d JOIN prduct_n_wrhousng w 
+// `SELECT d.prduct_n_dlivy_no
+//        ,d.prduct_n_name
+//        ,d.prduct_n_code
+//        ,d.nusgqty
+//        ,d.requst_date
+//        ,t.prdctn_code
+// FROM prduct_n_dlivy d JOIN prduct_n_wrhousng w
 // ON d.prduct_n_lot = w.prduct_n_lot
-// JOIN thng_req t 
-// ON d.prduct_n_code = t.req_code
-// JOIN MaxProcsN mp ON d.prduct_n_code = mp.prd_code
+// JOIN thng_req t
+// ON  d.req_code = t.req_code
 // WHERE d.usgstt = 'MU02'
 // AND d.nusgqty > 0
-// AND t.procs_at = 'RD01' // 빼도 되긴함 
-// AND EXISTS ( SELECT 1
-//              FROM procs_flowchart p
-//              WHERE p.prd_code = d.prduct_n_code
-//              AND p.procs_ordr_no = mp.max_procs_ordr_no)
-// ORDER BY d.requst_date
+// ORDER BY requst_date`;
+
+
 
 // 반제품 반환 등록
 const prduct_n_wrhousngReturn = 

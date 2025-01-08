@@ -2,6 +2,7 @@
 //설비 상태 조회
 const eqp_list = 
 `SELECT eqp.eqp_code, 
+        eqp.eqp_nm,
         eqp.model_nm, 
 		eqp_sttus.model_tp, 
 		eqp.regsde
@@ -105,7 +106,7 @@ const not_check_update =
 const chck_iem_list = 
 `SELECT iem_nm
  FROM chck_iem
- WHERE eqp_code = ?`;
+ WHERE model_nm = ?`;
 
  // 미점검 기기 조회
  const not_check_list = 

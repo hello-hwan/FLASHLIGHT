@@ -9,6 +9,7 @@ SELECT r.order_no,
        l.prd_code,
        l.prd_name,
        l.order_qy,
+       l.totqy,
        r.wrter,
        CASE WHEN l.process_status = 'OD01' THEN '처리중'
             ELSE '처리완료'
@@ -41,7 +42,11 @@ SELECT r.order_no,
        l.prd_code, 
        l.prd_name,
        l.untpc, 
-       l.order_qy 
+       l.order_qy,
+       l.totqy,
+       CASE WHEN l.prdctn_at = 'OP01' THEN '생산'
+            ELSE '미생산'
+       END AS 'prdctn_at'
 FROM order_requst r LEFT OUTER JOIN order_lists l
                        ON r.order_no = l.order_no
 WHERE UPPER( r.order_no ) =UPPER( ? )`;
@@ -56,7 +61,8 @@ SELECT bcnc_code,
 FROM bcnc
 WHERE bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
 AND mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
-AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')`;
+AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')
+AND bizcnd = '도소매'`;
 
 const bs_orderArray = `
 SELECT order_no

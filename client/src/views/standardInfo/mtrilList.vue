@@ -39,11 +39,11 @@
 
       <v-row>
         <v-col cols="4">
-          <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
-            <template v-slot:title>
+          <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px; ">
+            <template v-slot:title >
               <span class="font-weight-black">자재 등록</span>
             </template>
-            <v-card-text class="bg-surface-light pt-4">
+            <v-card-text class="bg-surface-light pt-4" > <!--style="height: 595px"-->
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">자재명</label>
@@ -80,7 +80,7 @@
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
-                style="height: 400px; margin: 0 auto;"
+                style="height: 520px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"

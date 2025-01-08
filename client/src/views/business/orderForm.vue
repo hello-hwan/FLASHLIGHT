@@ -153,7 +153,7 @@ export default {
             { field: "prd_name", headerName:"품목이름" }, 
             { field: "untpc", headerName:"주문단가", editable: true }, 
             { field: "order_qy", headerName:"주문수량", editable: true }, 
-            { field: "wrter", headerName:"작성자", editable: true } 
+            { field: "wrter", headerName:"작성자", editable: false } 
         ]); 
         this.gridOptionsOrder = { 
                 columnDefs: this.colDefs, 
@@ -363,17 +363,15 @@ export default {
             console.log(list.data); 
             // 주문 번호중 숫자만 남겨서 배열로 수정
             let orderNoArray = list.data.map(x => x.order_no.substr(6)); 
+            console.log(orderNoArray);
             // 주문번호의 숫자를 내림차순으로 정렬
             orderNoArray.sort((a,b) => b-a); 
             // 주문번호중 가장 큰 0번째 번호에 1을 더해줌
+            console.log('신규 배열은',this.orderNoArray); 
             if(orderNoArray.length < 1){
                 orderNoArray[0] = 0;
             }
-            if(orderNoArray < 9){
-                this.requst.order_no = 'ORDER-0' + ( orderNoArray[0] - 1 + 2 ); 
-            } else {
-                this.requst.order_no = 'ORDER-' + ( orderNoArray[0] - 1 + 2 ); 
-            }
+            this.requst.order_no = 'ORDER-' + ( orderNoArray[0] - 1 + 2 ); 
             console.log(this.requst.order_no); 
         }, 
         // 제품 모달창 오픈 후 자동으로 기본값 조회
