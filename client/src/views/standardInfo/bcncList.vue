@@ -236,10 +236,10 @@ export default {
       { field: "bizrno", headerName: "사업자 등록 번호" },
       { field: "mtlty_name", headerName: "거래처 명" },
       { field: "bizcnd", headerName: "업태" , valueFormatter: this.formet },
-      { field: "item", headerName: "종목"  ,editable: true},
+      { field: "item", headerName: "종목" },
       { field: "dvyfg_adres", headerName: "납품 주소" },
-      { field: "charger_name", headerName: "담당자 명" , editable: true},
-      { field: "charger_phone", headerName: "담당자 번호" , editable: true},
+      { field: "charger_name", headerName: "*담당자 명" , editable: true},
+      { field: "charger_phone", headerName: "*담당자 번호" , editable: true},
       { field: "regist_day", headerName: "등록 날짜" ,
           valueFormatter: this.customDateFormat
       },
@@ -335,11 +335,19 @@ export default {
           charger_phone: row.charger_phone,
         }
         //console.log(obj);
-        try{
-          let result = await axios.put(`${ajaxUrl}/bcncUpdate/${this.rowData[i].bcnc_code}`, obj)
-                                  .catch(err => console.log(err));
-        }catch{
-          check = false;
+        if(this.rowData[i].charger_name == null || this.rowData[i].charger_name == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '담당자명을 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].charger_phone == null || this.rowData[i].charger_phone == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '담당자 전화번호를 입력하세요.', life: 3000 });
+          return;
+        }else{
+          try{
+            let result = await axios.put(`${ajaxUrl}/bcncUpdate/${this.rowData[i].bcnc_code}`, obj)
+                                    .catch(err => console.log(err));
+          }catch{
+            check = false;
+          }
         }
         // let result2 = await axios.get(`${ajaxUrl}/bcncList`)
         //                           .catch(err => console.log(err));

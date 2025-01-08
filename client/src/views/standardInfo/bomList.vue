@@ -274,7 +274,7 @@ import { useToast } from 'primevue/usetoast';
         // { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
         // { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
         { field: "unit", headerName: "단위", flex:1 },
-        { field: "cnsum_count", headerName: "소모량", flex:1, editable: true }, // 항상 수정 가능        
+        { field: "cnsum_count", headerName: "*소모량", flex:1, editable: true }, // 항상 수정 가능        
       ];
       
       // 자재 모달 컬럼정의

@@ -162,13 +162,13 @@ export default {
     this.colDefs = [
       { field: "prdlst_code", headerName: "반제품 코드" },
       { field: "prdlst_name", headerName: "반제품 명", editable: true },
-      { field: "stndrd_x", headerName: "규격x", editable: true },
-      { field: "stndrd_y", headerName: "규격y", editable: true },
-      { field: "stndrd_z", headerName: "규격z" , editable: true},
+      { field: "stndrd_x", headerName: "*규격x", editable: true },
+      { field: "stndrd_y", headerName: "*규격y", editable: true },
+      { field: "stndrd_z", headerName: "*규격z" , editable: true},
       { field: "unit", headerName: "단위" , editable: true},
-      { field: "wrhousng_unite", headerName: "입고단가" , editable: true},
-      { field: "dlivy_unit", headerName: "출고단가" , editable: true},
-      { field: "sfinvc", headerName: "안전재고" , editable: true},
+      { field: "wrhousng_unite", headerName: "*입고단가" , editable: true},
+      { field: "dlivy_unit", headerName: "*출고단가" , editable: true},
+      { field: "sfinvc", headerName: "*안전재고" , editable: true},
     ];
 
     this.gridOptionsReturn = {
@@ -252,18 +252,45 @@ export default {
           dlivy_unit: row.dlivy_unit,
           sfinvc: row.sfinvc
         }
-        try{
-          let result = await axios.put(`${ajaxUrl}/prductNUpdate/${this.rowData[i].prdlst_code}`,obj)
-                                    .catch(err => console.log(err));
-        }catch{
-          check = false;
+        if(this.rowData[i].prdlst_name == null || this.rowData[i].prdlst_name == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '반제품명을 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].stndrd_x == null || this.rowData[i].stndrd_x == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '규격X를 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].stndrd_y == null || this.rowData[i].stndrd_y == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '규격Y를 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].stndrd_z == null || this.rowData[i].stndrd_z == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '규격Z를 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].unit == null || this.rowData[i].unit == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '단위를 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].wrhousng_unite == null || this.rowData[i].wrhousng_unite == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '입고수량을 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].dlivy_unit == null || this.rowData[i].dlivy_unit == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '출고단가를 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].sfinvc == null || this.rowData[i].sfinvc == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '안전재고를 입력하세요.', life: 3000 });
+          return;
+        }else{
+          try{
+            let result = await axios.put(`${ajaxUrl}/prductNUpdate/${this.rowData[i].prdlst_code}`,obj)
+                                      .catch(err => console.log(err));
+          }catch{
+            check = false;
+          }
         }
       }
-      if(check){
-        this.toast.add({ severity: 'success', summary: '업데이트 완료', detail: '모든 데이터가 성공적으로 업데이트되었습니다.', life: 3000 });
-      }else{
-        this.toast.add({ severity: 'error', summary: '업데이트 실패', detail: '데이터 업데이트 중 오류가 발생했습니다.', life: 3000 });
-      }
+        if(check){
+          this.toast.add({ severity: 'success', summary: '업데이트 완료', detail: '모든 데이터가 성공적으로 업데이트되었습니다.', life: 3000 });
+        }else{
+          this.toast.add({ severity: 'error', summary: '업데이트 실패', detail: '데이터 업데이트 중 오류가 발생했습니다.', life: 3000 });
+        }
+      
     }, 
 
     deleteRow() {

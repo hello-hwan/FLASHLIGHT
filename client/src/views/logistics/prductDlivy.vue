@@ -95,7 +95,7 @@
 
     <!-- 출고 버튼을 오른쪽으로 정렬 -->
     <div class="col-11 text-right">
-      <button class="btn btn-primary mx-2" @click="testData">출고</button>
+      <button class="btn btn-primary mx-2" v-bind:disabled="isButtonDisabled" @click="testData">출고</button>
     </div>
   </div>
 </template>
@@ -133,7 +133,8 @@ export default {
       endDate: "",
       toast: useToast(),
       total: "",
-      orderTotal: ""
+      orderTotal: "",
+      isButtonDisabled: true
     };
   },
   created() {
@@ -192,6 +193,7 @@ export default {
         const selectedprdCode = event.data.order_no; 
         this.getprductNdlivyPossible(selectedprdCode); 
         console.log(selectedprdCode);
+        this.isButtonDisabled = false;
       }
     },
 
