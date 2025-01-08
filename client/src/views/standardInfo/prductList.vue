@@ -41,7 +41,7 @@
             <template v-slot:title>
               <span class="font-weight-black">완제품 등록</span>
             </template>
-            <v-card-text class="bg-surface-light pt-4">
+            <v-card-text class="bg-surface-light pt-4" style="height:595px">
               <v-col cols="12" class="mb-4">
               <!-- <div class="col-auto">
                   <label for="itemCode" class="col-form-label">완제품 코드</label>
@@ -50,36 +50,39 @@
                 <input type="text" id="itemCode" class="form-control" v-model="prdlstCodeAdd" />
               </div> -->
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">완제품 명</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="prdlstNameAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="prdlstNameAdd" style="height:50px;"/>
               </div>
               <div class="col-auto">
+                <span>*</span>
                 <label for="dimensions" class="col-form-label">규격</label>
               </div>
               <div class="col-auto d-flex align-items-center">
-                <input type="number" id="dimensionX" class="form-control mx-1" v-model="stndrdX" placeholder="규격X" style="width: 130px;"/>
-                <input type="number" id="dimensionY" class="form-control mx-1" v-model="stndrdY" placeholder="규격Y" style="width: 130px;"/>
-                <input type="number" id="dimensionZ" class="form-control mx-1" v-model="stndrdZ" placeholder="규격Z" style="width: 130px;" />
+                <input type="number" id="dimensionX" class="form-control mx-1" v-model="stndrdX" placeholder="규격X" style="width: 130px; height:50px;"/>
+                <input type="number" id="dimensionY" class="form-control mx-1" v-model="stndrdY" placeholder="규격Y" style="width: 130px; height:50px;"/>
+                <input type="number" id="dimensionZ" class="form-control mx-1" v-model="stndrdZ" placeholder="규격Z" style="width: 130px; height:50px;" />
               </div>
               <div class="col-auto">
+                <span>*</span>
                   <label for="itemCode" class="col-form-label">단위</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" style="height:50px;"/>
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">입고단가</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="wrhousngUntpcAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="wrhousngUntpcAdd" style="height:50px;" />
               </div>
               <div class="col-auto">
                   <label for="itemCode" class="col-form-label">출고단가</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="dlivyUntpcAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="dlivyUntpcAdd" style="height:50px;"/>
               </div>
               <!-- <div class="col-auto">
                   <label for="itemCode" class="col-form-label">총수량</label>
@@ -91,9 +94,9 @@
                   <label for="itemCode" class="col-form-label">안전재고</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" style="height:50px;"/>
               </div>
-              <div class="col-12 mt-3">
+              <div class="col-12 mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" @click="addData">등록</button>
                 <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
@@ -121,7 +124,7 @@
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
-              <div class="mt-3">
+              <div class="mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
@@ -175,11 +178,11 @@ export default {
       { field: "stndrd_z", headerName: "규격z" , editable: true},
       { field: "unit", headerName: "단위"},
       { field: "prduct_invntry_qy", headerName: "총수량" },
-      { field: "wrhousng_untpc", headerName: "입고단가" , editable: true },
-      { field: "dlivy_untpc", headerName: "출고단가" , editable: true},
-      { field: "sfinvc", headerName: "안전재고" , editable: true}
+      { field: "wrhousng_untpc", headerName: "입고단가" , editable: true, valueGetter: (params) => params.data.wrhousng_untpc || 0  },
+      { field: "dlivy_untpc", headerName: "출고단가" , editable: true, valueGetter: (params) => params.data.dlivy_untpc || 0 },
+      { field: "sfinvc", headerName: "안전재고" , editable: true, valueGetter: (params) => params.data.sfinvc || 0 }
     ];
-
+    
     this.gridOptionsReturn = {
       pagination: true,
       paginationPageSize: 10,
@@ -247,23 +250,28 @@ export default {
     },
 
     async saveChanges(){
+      let check = true;
       for(let i = 0; i < this.rowData.length; i++){
         let row = this.rowData[i];
         let obj = {
-          untpc: row.untpc,
+          stndrd_x: row.stndrd_x,
+          stndrd_y: row.stndrd_y,
+          stndrd_z: row.stndrd_z,
+          wrhousng_untpc: row.wrhousng_untpc,
+          dlivy_untpc: row.dlivy_untpc,
           sfinvc: row.sfinvc
         }
-        this.count += 1;
-        let result = await axios.put(`${ajaxUrl}/prductUpdate/${this.rowData[i].prdlst_code}`, obj)
-                                .catch(err => console.log(err));
-        if(this.rowData.length == this.count){
-          if(result.status == 200){
-            this.toast.add({ severity: 'success', summary: '성공', detail: '수정되었습니다.', life: 3000 });
-          }else{
-            this.toast.add({ severity: 'warn', summary: '실패', detail: '수정 중 오류가발생하엿습니다.', life: 3000 });
-          }
+        try{
+          let result = await axios.put(`${ajaxUrl}/prductUpdate/${this.rowData[i].prdlst_code}`, obj)
+                                  .catch(err => console.log(err));
+        }catch{
+          check = false;
         }
-        
+      }
+      if(check){
+        this.toast.add({ severity: 'success', summary: '업데이트 완료', detail: '모든 데이터가 성공적으로 업데이트되었습니다.', life: 3000 });
+      }else{
+        this.toast.add({ severity: 'error', summary: '업데이트 실패', detail: '데이터 업데이트 중 오류가 발생했습니다.', life: 3000 });
       }
     },
 

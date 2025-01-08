@@ -38,14 +38,14 @@
                 <div class="col-auto">
                   <label for="prdlstName" class="col-form-label">품목명</label>
                 </div>
-                <div class="col-4">
+                <div class="col-5">
                   <input type="text" id="prdlstName" class="form-control" v-model="prdlstName" readonly />
                 </div>
                 <div class="col-auto">
                   <label for="productionQty" class="col-form-label">생산수량</label>
                 </div>
-                <div class="col-2" v-if="istest">
-                  <input type="text" id="productionQty" class="form-control" v-model="productionQty" @change="changeTest"/>
+                <div class="col-1" v-if="istest">
+                  <input type="text" id="productionQty" class="form-control editable-input" v-model="productionQty" @change="changeTest"  style="width: 70px; text-align:center"/>
                 </div>
               </div>
             </v-card-text>
@@ -55,13 +55,13 @@
 
       <v-row>
         <v-col cols="12" sm="6" class="mb-4">
-          <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+          <v-card class="mx-auto" style="border-radius: 13px;">
             <template v-slot:title>
               <span class="font-weight-black">BOM조회</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
-                style="height: 520px; margin: 0 auto;"
+                style="height: 310px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 :rowData="filteredRowData"
                 :columnDefs="colDefs"
@@ -70,21 +70,20 @@
                 :gridOptions="gridOptionsReturn"
                 overlayNoRowsTemplate="결과없음"
                 class="ag-theme-alpine"
-                id="grid-one"
-              >
+                id="grid-one">
               </AgGridVue>
             </v-card-text>
           </v-card>
         </v-col>
 
         <v-col cols="12" sm="6" class="mb-4">
-          <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
+          <v-card class="mx-auto" style="border-radius: 13px; ">
             <template v-slot:title>
               <span class="font-weight-black">BOM 소모품</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
-                style="width: 100%; height: 480px; margin: 0 auto;"
+                style="width: 100%; height: 270px; margin: 0 auto;"
                 :rowData="rowDataInfo"
                 :columnDefs="colDefsInfo"
                 :gridOptions="gridOptions"
@@ -93,12 +92,11 @@
                 @grid-ready="onGridReady2"
                 @cell-value-changed="onCellValueChanged"
                 overlayNoRowsTemplate="결과없음"
-                class="ag-theme-alpine"
-              >
+                class="ag-theme-alpine">
               </AgGridVue>
-              <div class="mt-3">
+              <div class="mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary me-2" @click="modalOpen2">소모품 추가</button>
-                <button class="btn btn-danger" @click="deleteRow">소모품 삭제</button>
+                <button class="btn btn-danger me-2" @click="deleteRow">소모품 삭제</button>
                 <button class="btn btn-warning" v-if="isModified" @click="update">수정</button>
               </div>
             </v-card-text>
@@ -112,9 +110,9 @@
           <label for="remarks" class="form-label">적요</label>
           <textarea id="remarks" class="form-control" rows="3" v-model="remarks" @change="changeTest" ></textarea>
         </div>
-        <div class="col-12 mt-3">
-          <button class="btn btn-primary search-btn" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
-        </div>
+      </div>
+      <div class="col-12 mt-3" style="text-align: right">
+            <button class="btn btn-primary search-btn" v-bind:disabled="isButtonDisabled" @click="saveData">저장</button>
       </div>
     </v-container>
 
@@ -127,10 +125,12 @@
                         <InputText type="text" v-model="mtrilCodeInput"></InputText>
                         <span>자재 명</span>
                         <InputText type="text" v-model="mtrilNameInput"> </InputText>
-                        <button @click="searchMtril"class="btn btn-primary search-btn" >조회</button>
-                        <button class="btn btn-secondary" @click="resetModal">초기화</button>
                         <button @click="mtrilModalOpen"class="btn btn-primary search-btn" >자재</button>
                         <button @click="prdlstNModalOpen"class="btn btn-primary search-btn" >반제품</button>
+                        <div class="d-flex justify-content-center mt-4">
+                          <button @click="searchMtril"class="btn btn-primary mx-2" >조회</button>
+                          <button class="btn btn-secondary" @click="resetModal">초기화</button>
+                        </div>
                     </div>
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="mtrilFilter"
@@ -143,9 +143,8 @@
                     </AgGridVue>
                 </div>
     
-                <div class="modal-btn">
+                <div class="modal-btn d-flex justify-content-end">
                     <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
-                    
                 </div>
             </div>
 
@@ -156,10 +155,12 @@
                         <InputText type="text" v-model="prdlstCodeInput"></InputText>
                         <span>반제품 명</span>
                         <InputText type="text" v-model="prdlstNameInput"> </InputText>
-                        <button @click="searchPrductN"class="btn btn-primary search-btn" >조회</button>
-                        <button class="btn btn-secondary" @click="resetModal">초기화</button>
                         <button @click="mtrilModalOpen"class="btn btn-primary search-btn" >자재</button>
                         <button @click="prdlstNModalOpen"class="btn btn-primary search-btn" >반제품</button>
+                        <div class="d-flex justify-content-center mt-4">
+                          <button @click="searchPrductN"class="btn btn-primary mx-2" >조회</button>
+                          <button class="btn btn-secondary" @click="resetModal">초기화</button>
+                        </div>
                     </div>
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="prductNFilter"
@@ -172,7 +173,7 @@
                     </AgGridVue>
                 </div>
     
-                <div class="modal-btn">
+                <div class="modal-btn d-flex justify-content-end">
                     <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
                     
                 </div>
@@ -180,7 +181,6 @@
         </div>
     </span>
   </div>
-  
 </template>
 
 <script>
@@ -259,21 +259,21 @@ import { useToast } from 'primevue/usetoast';
       // BOM 조회 컬럼 정의
       this.colDefs = [
         { field: "bom_code", headerName: "BOM코드", flex:0.8 },
-        { field: "prdlst_code", headerName: "제품코드" , flex:0.8},
+        { field: "prdlst_code", headerName: "품목코드" , flex:0.7},
         { field: "prdist_name", headerName: "제품명" , flex:2},
-        { field: "prdctn_qy", headerName: "기본생산수량" , flex:0.8},
+        { field: "prdctn_qy", headerName: "기본생산수량" , flex:0.9 ,cellStyle: { textAlign: "center" }},
         { field: "상세보기", headerName: "상세보기", flex:1, cellStyle: { textAlign: "center" } ,cellRenderer: () => {
                                                   return '<button class="btn btn-primary mx-2">상세보기</button>'}},
       ];
   
       // 상세보기 컬럼 정의
       this.colDefsInfo = [
-        { field: "cmpds_prdlst_code", headerName: "소모품목코드", flex:0.8, editable: (params) => params.node.data.isNewRow , valueGetter: (params) => params.data.cmpds_prdlst_code || params.data.prdlst_code},
-        { field: "cmpds_prdlst_name", headerName: "소모품명", flex:1.5, editable: (params) => params.node.data.isNewRow },
+        { field: "cmpds_prdlst_code", headerName: "소모품목코드", flex:0.8 , valueGetter: (params) => params.data.cmpds_prdlst_code || params.data.prdlst_code},
+        { field: "cmpds_prdlst_name", headerName: "소모품명", flex:1.5},
         // { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.stndrd_x == null },
         // { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
         // { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
-        { field: "unit", headerName: "단위", flex:1, editable: (params) => params.node.data.isNewRow },
+        { field: "unit", headerName: "단위", flex:1 },
         { field: "cnsum_count", headerName: "소모량", flex:1, editable: true }, // 항상 수정 가능        
       ];
       
@@ -302,8 +302,8 @@ import { useToast } from 'primevue/usetoast';
       // AgGrid 기본 옵션 설정
       this.gridOptionsReturn = {
         pagination: true,
-        paginationPageSize: 10,
-        paginationPageSizeSelector: [10, 20, 50, 100],
+        paginationPageSize: 5,
+        paginationPageSizeSelector: [5,10, 20, 50, 100],
         animateRows: false,
         defaultColDef: {
           flex: 1,
@@ -486,7 +486,9 @@ import { useToast } from 'primevue/usetoast';
                 (row) => row.cmpds_prdlst_code !== selectedNodes
             );
             this.toast.add({ severity: 'success', summary: '삭제 완료', detail: '저장되지 않은 데이터가 삭제되었습니다.', life: 3000 });
-
+            console.log(this.rowCount);
+            console.log(this.rowDataInfo.length);
+            
             // AgGrid 데이터 갱신
             if (this.gridOptions.api) {
                 this.gridOptions.api = this.rowDataInfo;
@@ -504,7 +506,7 @@ import { useToast } from 'primevue/usetoast';
                     this.rowDataInfo = this.rowDataInfo.filter(
                         (row) => row.cmpds_prdlst_code !== selectedNodes
                     );
-
+                    this.rowCount = this.rowDataInfo.length;
                     // AgGrid 데이터 갱신
                     if (this.gridOptions.api) {
                         this.gridOptions.api = result.data;
@@ -540,9 +542,9 @@ import { useToast } from 'primevue/usetoast';
                 row.unit,
                 row.cnsum_count,
             ];
-
+            console.log(this.rowDataInfo[i].cnsum_count);
             // 값이 null일 경우 저장을 진행하지 않음
-            if (this.rowDataInfo[i].cnsum_count == null) {
+            if (this.rowDataInfo[i].cnsum_count === null || this.rowDataInfo[i].cnsum_count === undefined) {
                 this.toast.add({ severity: 'warn', summary: '경고', detail: '값을 입력해주세요', life: 3000 });
                 isSaveSuccessful = false; // 값이 null일 때는 저장을 하지 않음
                 break; // 더 이상 진행하지 않도록 중단
@@ -738,6 +740,9 @@ import { useToast } from 'primevue/usetoast';
 }
 .orderRowInsert{
     float: right;
+}
+.editable-input {
+  border: 2px solid #00aaff; /* 수정 가능 강조 */
 }
 
 </style>

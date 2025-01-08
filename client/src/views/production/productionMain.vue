@@ -205,7 +205,7 @@
       colorlist[i].color = newArray[colorlist[i].order_no];
     }
     drctlist.value = colorlist;
-    console.log(drctlist.value);
+    // console.log(drctlist.value);
 
   };
   onBeforeMount(() => {

@@ -126,12 +126,14 @@ export default {
       req_name: "",
       // 사원이름, 사원코드 임의값 
       emp_name: "이주현",
-      emp_id: 200,
+      emp_id: 600,
       // 검색 입력값
       prductNReqName: "",
       startDate:"",
       endDate: "",
-      toast: useToast()
+      toast: useToast(),
+      total: "",
+      orderTotal: ""
     };
   },
   created() {
@@ -212,6 +214,7 @@ export default {
       this.prductNdlivyPossible = result.data;
       this.rowDataInfo = this.prductNdlivyPossible;
       this.obj = this.prductNdlivyPossible;
+      console.log(this.obj);
     },
 
     // 출고완료처리
@@ -219,20 +222,25 @@ export default {
 
       let sendPrductNList = [];
       for(let i = 0; i < this.rowDataInfo.length; i++){
+        this.total += this.rowDataInfo[i].lot_qy
+        this.orderTotal += this.rowDataInfo[i].order_qy
         let newObj = {...this.rowDataInfo[i], dlivy_charger : this.emp_id};
         sendPrductNList.push(newObj);
       }
       console.log(sendPrductNList);
-        
-      let result = await axios.post(`${ajaxUrl}/prduct_dliy_process`,sendPrductNList)
-                              .catch(err => console.log(err));
-      if(result.data == 'success'){
-        this.toast.add({ severity: 'success', summary: '성공', detail: '출고되었습니다.', life: 3000 });
-        this.getprductNDlivyList();
-        this.getprductNdlivyPossible();
+      if(this.orderTotal <= this.total){
+        let result = await axios.post(`${ajaxUrl}/prduct_dliy_process`,sendPrductNList)
+                                .catch(err => console.log(err));
+        if(result.data == 'success'){
+          this.toast.add({ severity: 'success', summary: '성공', detail: '출고되었습니다.', life: 3000 });
+          this.getprductNDlivyList();
+          this.getprductNdlivyPossible();
+        }else{
+          this.toast.add({ severity: 'error', summary: '실패', detail: '출고처리 중 오류가 발생하엿습니다.', life: 3000 });
+        }
       }else{
-        this.toast.add({ severity: 'warn', summary: '실패', detail: '수량이 부족합니다.', life: 3000 });
-      }
+        this.toast.add({ severity: 'warn', summary: '실패', detail: '수량이 부족한 제품이 있습니다', life: 3000 });
+      }  
 
     },
 

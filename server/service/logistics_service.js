@@ -163,8 +163,7 @@ const prductList = async() => {
     return list;  
   } catch (error) {
     console.log('service', error);
-  }
-  
+  } 
 }
 
 // 완제품 입고 등록

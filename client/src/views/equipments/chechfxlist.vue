@@ -89,26 +89,34 @@
                 <tbody>
                     <tr>
                         <th style="width: 10%;">
-                            <button type="button" class="btn btn-primary" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행 추가</button>
+                            <button type="button" class="btn btn-primary"
+                                style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="add_btn()">행
+                                추가</button>
                         </th>
                         <th style="width: 10%;">
-                            <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행 삭제</button>
+                            <button type="button" class="btn btn-danger"
+                                style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="delete_btn()">행
+                                삭제</button>
                         </th>
-                        <th style="width: 40%;">
-                            <input style="background-color:lightsteelblue;" type="text" size="50" v-model="not_check">
-                        </th>
-                        <th style="width: 10%;">
-                            <button type="button" class="btn btn-warning" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_check_btn()">미점검</button>
-                        </th>
-                        <th style="width: 10%;">
-                            <button type="button" class="btn btn-danger" style="color: white; margin: 2px; padding: 2px; width: 75px;" @click="not_opr_btn()">미가동</button>
+                        <th style="width: 35%;">
+                            <input style="background-color:lightsteelblue;" type="text" size="35" v-model="not_check">
                         </th>
                         <th style="width: 10%;">
-                            최종 결과
+                            <button type="button" class="btn btn-warning"
+                                style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                                @click="not_check_btn()">미점검</button>
                         </th>
                         <th style="width: 10%;">
-                            <select @change='select_change($event)' class="form-select" aria-label="Default select example"
-                                style="text-align: center;">
+                            <button type="button" class="btn btn-danger"
+                                style="color: white; margin: 2px; padding: 2px; width: 75px;"
+                                @click="not_opr_btn()">미가동</button>
+                        </th>
+                        <th style="width: 6%; font-size: 15px; text-align: center; vertical-align: middle;">
+                            최종
+                        </th>
+                        <th style="width: 19%;">
+                            <select @change='select_change($event)' class="form-select"
+                                aria-label="Default select example" style="text-align: center;">
                                 <option selected>결과</option>
                                 <option value="합격">합격</option>
                                 <option value="불합격">불합격</option>
@@ -117,7 +125,9 @@
                     </tr>
                     <tr>
                         <th style="width: 50%;" colspan="7">
-                            <button type="button" class="btn btn-success" style="color: white; margin: 2px 2px 2px 90%; padding: 2px; width: 75px;" @click="chck_fx_insert()">등록</button>
+                            <button type="button" class="btn btn-success"
+                                style="color: white; margin: 2px 2px 2px 90%; padding: 2px; width: 75px;"
+                                @click="chck_fx_insert()">등록</button>
                         </th>
                     </tr>
                 </tbody>
@@ -147,7 +157,7 @@ export default {
             now_date: '',
             next_date: '',
             chck_sttus: '',
-            not_check: '', 
+            not_check: '',
             store: ''
         }
     },
@@ -155,10 +165,13 @@ export default {
         this.fx_code = this.$route.params.fx_code;
         this.getFxCodeList(this.fx_code);
         this.colDefs = [
-            { field: "index", headerName: "index", checkboxSelection: true },
+            { field: "index", headerName: "index", checkboxSelection: true, flex: 0.5 },
             { field: "iem_nm", headerName: "점검 항목 명", editable: true },
             { field: "mesure_value", headerName: "측정 값", editable: true },
-            { field: "stblt_at", headerName: "적합 여부", editable: true }
+            {
+                field: "stblt_at", headerName: "적합 여부", editable: true,
+                cellEditor: 'agSelectCellEditor', cellEditorParams: { values: ['합격', '불합격'] }
+            }
         ];
         let now = new Date();
         this.now_date = useDateUtils.dateFormat(now, "yyyy-MM-dd");
@@ -221,7 +234,7 @@ export default {
             this.next_date = useDateUtils.dateFormat(now, "yyyy-MM-dd");
             this.not_check = this.fx_code_list.not_chck_resn;
             this.getChckIem();
-            this.fx_code_list.charger = this.store.state.empInfo[this.store.state.empInfo.length-1].name;
+            this.fx_code_list.charger = this.store.state.empInfo[this.store.state.empInfo.length - 1].name;
         },
         async chck_fx_insert() {
             let input = [
@@ -288,7 +301,7 @@ export default {
             this.$router.push({ name: 'checkSchdul' });
         },
         async getChckIem() {
-            let result = await axios.get(`${ajaxUrl}/equip/chck_iem_list/${this.fx_code_list.eqp_code}`)
+            let result = await axios.get(`${ajaxUrl}/equip/chck_iem_list/${this.fx_code_list.model_nm}`)
                 .catch(err => console.log(err));
             if (result.data.length == 0) {
                 this.rowData = [
@@ -309,6 +322,7 @@ export default {
                     }
                     this.rowData = [...this.rowData, new_sample];
                 }
+                this.index = result.data.length + 1;
             }
         },
         async not_opr_btn() {

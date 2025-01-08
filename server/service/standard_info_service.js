@@ -177,8 +177,13 @@ const prductNDelete = async (code) => {
 // 반제품 수정 
 const prductNUpdate = async (code, info) => {
   let data = [info, code];
-  let result = await mariaDB.query('prductNUpdate', data);
-  return result;
+  try {
+    let result = await mariaDB.query('prductNUpdate', data);
+    console.log('service',result);
+    return result;
+  } catch (error) {
+    console.log('service', error);
+  }
 }
 
 // 완제품 조회
@@ -237,8 +242,12 @@ const bcncDelete = async(code) =>{
 // 거래처 수정 
 const bcncUpdate = async (code, info) => {
   let data = [info, code];
-  let result = await mariaDB.query('bcncUpdate', data);
-  return result;
+  try {
+    let result = await mariaDB.query('bcncUpdate', data);
+    return result;
+  } catch (error) {
+    console.log('service', error)
+  }
 }
 
 // 공정 흐름도 조회
@@ -271,6 +280,12 @@ const procsFlowchartSearchBom = async (prd_code) => {
 const procsFlowchartSearchmtnm = async (mtril_name) => {
   let list = await mariaDB.query('procsFlowchartSearchmtnm', mtril_name);
   let result = list[0];
+  if (result == undefined) {
+    let list = await mariaDB.query('procsFlowchartSearchpron', mtril_name);
+    result = list[0];
+    console.log(mtril_name)
+    console.log(list);
+  }
   return result;
 }
 

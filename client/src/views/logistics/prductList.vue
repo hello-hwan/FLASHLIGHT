@@ -115,9 +115,9 @@ export default {
     this.getprductWrhousngList();
 
     this.colDefs = [
-      { field: "prduct_lot", headerName: "반제품LOT" },
-      { field: "prdlst_c_code", headerName: "품목코드" },
-      { field: "prduct_name", headerName: "제품명" },
+      { field: "prduct_lot", headerName: "완제품LOT" },
+      { field: "prdlst_c_code", headerName: "완제품코드" },
+      { field: "prduct_name", headerName: "완제품명" },
       { field: "wrhousng_day", headerName: "입고일자", valueFormatter: this.customDateFormat },
       { field: "prduct_invntry_qy", headerName: "재고수량" },
     ];

@@ -11,45 +11,45 @@
                     <table class="table table-hover" style="text-align: center;">
                         <thead>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     구분
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     내용
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     *사원번호
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
                                         type="text" v-model="empl_no" size="10">
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     *이름
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
                                         type="text" v-model="empl_name" size="10">
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     *비밀번호
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
                                         type="password" v-model="password" size="10">
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     *부서명
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     <select class="form-select" aria-label="Default select example" v-model="dept_se"
                                         style="width: 150px; margin: auto; text-align: center;">
                                         <option value="DP01">영업</option>
@@ -63,43 +63,43 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     부서번호
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     {{ this.dept_se }}
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     전화번호
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     <input style="background-color: lightsteelblue; margin: 5px; text-align: center;"
                                         type="text" v-model="phone" size="15">
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     입사일
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     {{ this.encpn }}
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     퇴사일
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     {{ this.retire_day }}
                                 </th>
                             </tr>
                             <tr>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     *권한
                                 </th>
-                                <th>
+                                <th style="vertical-align: middle;">
                                     <select class="form-select" aria-label="Default select example" v-model="author"
                                         style="width: 150px; margin: auto; text-align: center;">
                                         <option value="AZ02">일반사원</option>
@@ -357,6 +357,14 @@ export default {
                         this.toast.add({ severity: 'success', summary: '등록 성공', detail: '성공적으로 등록 했습니다.', life: 3000 });
                     }
                     this.getEmplList();
+                    this.empl_no = '';
+                    this.empl_name = '';
+                    this.password = '';
+                    this.dept_se = '';
+                    this.phone = '';
+                    this.encpn = '';
+                    this.retire_day = '';
+                    this.author = '';
                 }
             }
         },

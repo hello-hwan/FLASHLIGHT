@@ -43,27 +43,30 @@
             <template v-slot:title >
               <span class="font-weight-black">자재 등록</span>
             </template>
-            <v-card-text class="bg-surface-light pt-4" > <!--style="height: 595px"-->
+            <v-card-text class="bg-surface-light pt-4" style="height:383px">
               <v-col cols="12" class="mb-4">
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">자재명</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="mtrilNameAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="mtrilNameAdd" style="height:50px" />
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">단위</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="unitAdd" style="height:50px" />
               </div>
               <div class="col-auto">
+                  <span>*</span>
                   <label for="itemCode" class="col-form-label">안전재고</label>
               </div>
               <div class="col-auto">
-                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd" />
+                <input type="text" id="itemCode" class="form-control" v-model="sfinvcAdd"  style="height:50px; margin-bottom: 50px;"/>
               </div>
-              <div class="col-12 mt-3">
+              <div class="col-12 mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" @click="addData">등록</button>
                 <button class="btn btn-secondary mx-2" @click="reset">초기화</button>
               </div>
@@ -80,7 +83,7 @@
             <v-card-text class="bg-surface-light pt-4">
               <!-- AgGrid -->
               <AgGridVue
-                style="height: 520px; margin: 0 auto;"
+                style="height: 309px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 @cell-value-changed="onCellValueChanged"
                 :rowData="filteredRowData"
@@ -91,7 +94,7 @@
                 class="ag-theme-alpine"
                 id="grid-one">
               </AgGridVue>
-              <div class="mt-3">
+              <div class="mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
@@ -153,8 +156,8 @@ export default {
 
     this.gridOptionsReturn = {
       pagination: true,
-      paginationPageSize: 10,
-      paginationPageSizeSelector: [10, 20, 50, 100],
+      paginationPageSize: 5,
+      paginationPageSizeSelector: [5,10, 20, 50, 100],
       animateRows: false,
       defaultColDef: {
         filter: true,
@@ -215,17 +218,24 @@ export default {
     },
 
     async saveChanges(){
+      let check = true;
       for(let i = 0; i < this.rowData.length; i++){
         let row = this.rowData[i];
         let obj = {
           untpc: row.untpc,
           sfinvc: row.sfinvc
         }
-        let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
-                                .catch(err => console.log(err));
-        // if(result){
-        //   this.toast.add({ severity: 'success', summary: '성공', detail: '수정이 완료되었습니다.', life: 3000 });
-        // }
+        try{
+          let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
+                                  .catch(err => console.log(err));
+        }catch{
+          check = false;
+        }
+      }
+      if(check){
+        this.toast.add({ severity: 'success', summary: '업데이트 완료', detail: '모든 데이터가 성공적으로 업데이트되었습니다.', life: 3000 });
+      }else{
+        this.toast.add({ severity: 'error', summary: '업데이트 실패', detail: '데이터 업데이트 중 오류가 발생했습니다.', life: 3000 });
       }
     },
 

@@ -41,8 +41,8 @@ export default {
             { field: "fx_code", headerName: "일정코드", hide: true, suppressToolPanel: true },
             { field: "eqp_code", headerName: "설비코드" },
             { field: "model_nm", headerName: "모델명" },
-            { field: "chck_nm", headerName: "점검명" },
-            { field: "chck_knd", headerName: "점검종류" },
+            { field: "chck_nm", headerName: "점검명", flex: 0.75 },
+            { field: "chck_knd", headerName: "점검종류", flex: 0.75 },
             { field: "chck_de", headerName: "점검예정날짜" },
             { field: "chck_time", headerName: "점검시간" },
             { field: "not_chck_resn", headerName: "미점검 사유" }

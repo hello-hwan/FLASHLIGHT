@@ -2,6 +2,7 @@
 //설비 상태 조회
 const eqp_list = 
 `SELECT eqp.eqp_code, 
+        eqp.eqp_nm,
         eqp.model_nm, 
 		eqp_sttus.model_tp, 
 		eqp.regsde
@@ -23,6 +24,7 @@ const eqp_list_prod =
 // 점검할 기기 조회
 const chck_fx_list = 
 `SELECT chck_fx.fx_code, 
+        eqp.eqp_nm, 
         chck_fx.eqp_code, 
         chck_fx.chck_nm, 
         chck_fx.chck_knd, 
@@ -34,19 +36,22 @@ const chck_fx_list =
  JOIN eqp
  ON chck_fx.eqp_code = eqp.eqp_code
  WHERE chck_fx.chck_de is NULL
- ORDER BY 8`;
+ ORDER BY 9`;
 
 // 전체 점검 기기 조회
 const chck_fx_all_list = 
-`SELECT fx_code, 
-        eqp_code, 
-        chck_nm, 
-        chck_knd, 
-        chck_time, 
-        chck_de, 
-        last_bgnde
+`SELECT chck_fx.fx_code, 
+        eqp.eqp_nm, 
+        chck_fx.eqp_code, 
+        chck_fx.chck_nm, 
+        chck_fx.chck_knd, 
+        chck_fx.chck_time, 
+        chck_fx.chck_de, 
+        chck_fx.last_bgnde
  FROM chck_fx
- ORDER BY 7 desc`;
+ JOIN eqp
+ ON chck_fx.eqp_code = eqp.eqp_code
+ ORDER BY 8 desc`;
 
 // 일정코드로 점검일정 조회
 const fx_code_list = 
@@ -105,7 +110,7 @@ const not_check_update =
 const chck_iem_list = 
 `SELECT iem_nm
  FROM chck_iem
- WHERE eqp_code = ?`;
+ WHERE model_nm = ?`;
 
  // 미점검 기기 조회
  const not_check_list = 
