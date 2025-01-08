@@ -1347,3 +1347,30 @@ COMMIT;
 SELECT * FROM prdctn_drct;
 
 CALL play_drct();
+
+DESC empl;
+
+INSERT INTO empl(empl_no, empl_name, PASSWORD, phone, dept_se, encpn, retire_day, author)
+VALUES (301, '최시훈', '7007', '010-4024-9325', 'DP05', NOW(), NULL, 'AZ02');
+COMMIT;
+
+SELECT * FROM mtril;
+
+SELECT * FROM order_lists;
+
+SELECT * FROM prdctn_plan;
+
+CALL insert_plan();
+
+SELECT * FROM prdctn_plan;
+DELETE FROM prdctn_plan;
+SELECT * FROM prdctn_drct;
+DELETE FROM prdctn_drct;
+SELECT * FROM product_state;
+SELECT * FROM thng_req;
+
+DELETE FROM thng_req;
+
+
+CALL play_drct();
+
