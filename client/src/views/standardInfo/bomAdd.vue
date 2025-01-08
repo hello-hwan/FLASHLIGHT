@@ -99,7 +99,7 @@
                 id="grid-one">
               </AgGridVue>
               <div class="mt-3 d-flex justify-content-end">
-                <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button>
+                <!-- <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button> -->
                 <button class="btn btn-danger" @click="deleteRow">삭제</button>
               </div>
             </v-card-text>
@@ -120,8 +120,10 @@
                         <InputText type="text" v-model="prductNameSearch"> </InputText>
                         <button class="btn btn-primary mx-2" @click="prductisModified">완제품리스트</button>
                         <button class="btn btn-primary mx-2" @click="prductNisModified">반제품리스트</button>
-                        <button @click="searchProduct"class="btn btn-primary search-btn">조회</button>
-                        <button class="btn btn-secondary mx-2" @click="resetFilter">초기화</button>
+                        <div class="d-flex justify-content-center mt-4">
+                          <button @click="searchProduct"class="btn btn-primary mx-2">조회</button>
+                          <button class="btn btn-secondary" @click="resetFilter">초기화</button>
+                        </div>
                     </div>
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="searchProductRow"
@@ -133,7 +135,7 @@
                     </AgGridVue>
                 </div>
     
-                <div class="modal-btn">
+                <div class="modal-btn d-flex justify-content-end">
                     <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
                     
                 </div>
@@ -147,8 +149,10 @@
                         <InputText type="text" v-model="prductNNameSearch"> </InputText>
                         <button class="btn btn-primary mx-2" @click="prductisModified">완제품리스트</button>
                         <button class="btn btn-primary mx-2" @click="prductNisModified">반제품리스트</button>
-                        <button @click="searchProductN"class="btn btn-primary search-btn" >조회</button>
-                        <button class="btn btn-secondary mx-2" @click="resetNFilter">초기화</button>
+                        <div class="d-flex justify-content-center mt-4">
+                          <button @click="searchProductN"class="btn btn-primary mx-2" >조회</button>
+                          <button class="btn btn-secondary" @click="resetNFilter">초기화</button>
+                        </div>
                     </div>
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="searchProductNRow"
@@ -160,7 +164,7 @@
                     </AgGridVue>
                 </div>
     
-                <div class="modal-btn">
+                <div class="modal-btn d-flex justify-content-end">
                     <button @click="modalOpen2"class="btn btn-secondary">닫기</button>
                     
                 </div>
