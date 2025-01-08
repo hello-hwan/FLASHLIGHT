@@ -1026,3 +1026,18 @@ where
 SELECT * FROM thng_req ORDER BY 3 DESC;
 
 select * from mtril_wrhousing;
+
+
+
+
+SELECT a.TABLE_NAME       '테이블명',
+       b.ORDINAL_POSITION '순번',
+       b.COLUMN_NAME      '필드명',
+       b.COLUMN_TYPE      '데이터길이',
+       b.IS_NULLABLE      'NULL값여부',
+       b.COLUMN_KEY       'KEY',
+       b.COLUMN_DEFAULT   '디폴트값'
+FROM information_schema.TABLES a
+         JOIN information_schema.COLUMNS b ON a.TABLE_NAME = b.TABLE_NAME AND a.TABLE_SCHEMA = b.TABLE_SCHEMA
+WHERE a.TABLE_SCHEMA = 'dev'
+ORDER BY a.TABLE_NAME, b.ORDINAL_POSITION;

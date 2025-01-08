@@ -182,8 +182,8 @@ const pr_prdn = // 품목코드, 생산 지시 코드로 반제품 출고에서 
 SELECT pnd.prduct_n_dlivy_no, pnd.prduct_n_lot, pnd.prduct_n_name, pnd.requst_qy, pnd.usgqty, pnd.nusgqty, pnd.usgstt
 FROM prduct_n_dlivy pnd JOIN thng_req tr ON (pnd.req_code = tr.req_code)
                         LEFT JOIN prduct_n_wrhousng pnw ON (pnd.prduct_n_lot = pnw.prduct_n_lot)
-WHERE tr.prdctn_code = c_prdctn_code
-AND tr.prd_code = c_matril_code
+WHERE tr.prdctn_code = ?
+AND tr.prd_code = ?
 ORDER BY pnw.prduct_n_wrhousng_day
 `;
 

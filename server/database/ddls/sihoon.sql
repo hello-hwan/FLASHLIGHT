@@ -1,4 +1,20 @@
 devUSE dev;
+-- 테이블 정의서		
+SELECT 
+	a.TABLE_NAME '테이블명',
+	b.COLUMN_NAME '필드명',  
+	b.COLUMN_TYPE '데이터길이', 
+	b.COLUMN_KEY 'KEY', 
+	b.IS_NULLABLE 'NULL값여부', 
+	b.COLUMN_DEFAULT '기본값'
+FROM information_schema.TABLES a
+	JOIN information_schema.COLUMNS b 
+	ON a.TABLE_NAME = b.TABLE_NAME 
+	AND a.TABLE_SCHEMA = b.TABLE_SCHEMA 
+WHERE a.TABLE_SCHEMA = 'dev' 
+-- AND a.TABLE_NAME = '테이블명'   // 특정 테이블만 조회
+ORDER BY a.TABLE_NAME, b.ORDINAL_POSITION;
+
 -- 페이징 -----------------------------------------------------
 SELECT b.*
 FROM (SELECT rownum() as rn, a.*
@@ -1358,19 +1374,68 @@ SELECT * FROM mtril;
 
 SELECT * FROM order_lists;
 
+
+SELECT * FROM thng_req;
+
+DELETE FROM thng_req;
+COMMIT;
+
+SELECT SUM(expect_reqre_time)
+FROM procs_flowchart
+WHERE prd_code = ;
+
+SELECT * from use_mtril;
+
+SELECT * FROM mtril_dlivy
+WHERE usgqty IS NOT NULL;
+
+COMMIT;
+
+SELECT ps.* FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+						 					 JOIN procs_flowchart pf ON (pd.procs_code = pf.procs_code)
+WHERE pf.procs_code = (SELECT procs_code 
+							  FROM procs_flowchart
+							  WHERE prd_code = pd.prd_code
+							  ORDER BY procs_ordr_no desc
+							  LIMIT 1 OFFSET 0);
+
+
+
 SELECT * FROM prdctn_plan;
 
 CALL insert_plan();
 
-SELECT * FROM prdctn_plan;
-DELETE FROM prdctn_plan;
-SELECT * FROM prdctn_drct;
-DELETE FROM prdctn_drct;
-SELECT * FROM product_state;
-SELECT * FROM thng_req;
+SELECT * FROM prdctn_plan pp WHERE  pp.order_list_no = 'ORDER-2-5' order BY priort,mnfct_no;
 
-DELETE FROM thng_req;
+DELETE FROM prdctn_plan;
+
+CALL insert_in_drct('ORDER-2-5');
 
 
 CALL play_drct();
+SELECT * from product_state ORDER BY 1 DESC;
+DELETE FROM product_state WHERE prdctn_code = '554-mixer_01';
+
+COMMIT;
+SELECT * FROM product_state ORDER BY end_time desc;
+DELETE FROM product_state WHERE prdctn_code = '487-press_02';
+-- 생산 끝난 공정
+SELECT pd.* FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code) WHERE ps.prdctn_code IS NOT NULL ORDER BY pre_end_time DESC;
+-- 생산 해야하는 공정
+SELECT pd.* FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code) WHERE ps.prdctn_code IS NULL ORDER BY pre_begin_time;
+
+-- 요청 물품 추가
+CALL insert_req();
+
+-- 하루 빼기
+UPDATE prdctn_drct
+SET pre_begin_time = DATE_SUB(pre_begin_time, INTERVAL 1 DAY), pre_end_time = DATE_SUB(pre_end_time, INTERVAL 1 DAY);
+-- 하루 더하기
+UPDATE prdctn_drct
+SET pre_begin_time = DATE_ADD(pre_begin_time, INTERVAL 1 DAY), pre_end_time = DATE_ADD(pre_end_time, INTERVAL 1 DAY);
+
+DELETE FROM prdctn_drct;
+
+SELECT * FROM thng_req;
+
 
