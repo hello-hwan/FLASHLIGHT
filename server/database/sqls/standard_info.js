@@ -177,20 +177,18 @@ WHERE mtril_code = ?`;
 
 // 반제품 조회
 const infoprductNList = 
-`SELECT p.prdlst_code
-       ,p.prdlst_name
-       ,p.stndrd_x
-       ,p.stndrd_y
-       ,p.stndrd_z
-       ,p.unit
-       ,p.wrhousng_unite
-       ,p.dlivy_unit
-       ,p.sfinvc
-       ,IFNULL(f.procs_ordr_no, 0) AS procs_ordr_no
-FROM prduct_n p LEFT JOIN procs_flowchart f                   
-ON prdlst_code = prd_code
-ORDER BY p.prdlst_code DESC`;
-  
+`SELECT prdlst_code
+       ,prdlst_name
+       ,stndrd_x
+       ,stndrd_y
+       ,stndrd_z
+       ,unit
+       ,wrhousng_unite
+       ,dlivy_unit
+       ,sfinvc
+FROM prduct_n
+ORDER BY prdlst_code DESC`;
+
 // 반제품 등록
 const prductNAdd = 
 `INSERT INTO prduct_n(prdlst_code
@@ -277,9 +275,9 @@ WHERE prdlst_code = ?`
 
 // 완제품 수정
 const prductUpdate =
-`UPDATE repduct
+`UPDATE bcnc
 set ?
-WHERE prdlst_code = ?`
+WHERE bcnc_code = ?`
 
 // 거래처 조회
 const bcncList = 

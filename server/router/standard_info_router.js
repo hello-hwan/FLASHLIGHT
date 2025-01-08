@@ -176,10 +176,13 @@ router.delete('/prductNDelete/:code', async (req, res) => {
 router.put('/prductNUpdate/:code', async (req, res) => {
   let code = req.params.code
   let info = req.body;
-  console.log('router code =>', code);
-  console.log('router info =>', info);
-  let result = await standard_info_service.prductNUpdate(code,info);
-  res.send(result);
+  try {
+    let result = await standard_info_service.prductNUpdate(code,info);
+    console.log('router',result);
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+  }
 })
 
 // 완제품 조회
@@ -241,8 +244,13 @@ router.put('/bcncUpdate/:code', async (req, res) => {
   let info = req.body;
   console.log('router code =>', code);
   console.log('router info =>', info);
-  let result = await standard_info_service.prductUpdate(code,info);
-  res.send(result);
+  try{
+    let result = await standard_info_service.prductUpdate(code,info);
+    res.send(result);
+  }catch(error){
+    console.log(error);
+  }
+  
 })
 
 

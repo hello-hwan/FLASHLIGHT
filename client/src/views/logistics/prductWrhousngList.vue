@@ -57,8 +57,8 @@ created() {
     
     this.getprductList();
     this.colDefsSelect = ([
-        { field: "prd_code", headerName:"제품명" },
-        { field: "prd_nm", headerName:"제품코드" },
+        { field: "prd_code", headerName:"완제품명" },
+        { field: "prd_nm", headerName:"완제품코드" },
         { field: "nrmlt", headerName:"생산수량" },
         { field: "end_time", headerName:"생산완료일",
             valueFormatter: this.customDateFormat },

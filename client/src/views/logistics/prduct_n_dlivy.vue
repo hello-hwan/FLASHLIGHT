@@ -153,7 +153,7 @@ export default {
     // 출고가능제품의 컬럼 정의
     this.colDefsInfo = [
       { field: "prd_nm", headerName: "반제품제품명" },
-      { field: "prd_code", headerName: "반제품제품코드" },
+      { field: "prd_code", headerName: "반제품코드" },
       { field: "lot", headerName: "반제품LOT" },
       { field: "req_qy", headerName: "요청수량" },
       { field: "lot_qy", headerName: "출고가능수량" },
