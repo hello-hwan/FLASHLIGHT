@@ -344,6 +344,7 @@ export default {
             ];
             let result_2 = await axios.put(`${ajaxUrl}/equip/not_check_update`, input)
                 .catch(err => console.log(err));
+            this.$router.push({ name: 'notOprList' });
         }
     }
 }
