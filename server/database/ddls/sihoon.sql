@@ -1409,6 +1409,11 @@ SELECT * FROM prdctn_plan pp WHERE  pp.order_list_no = 'ORDER-2-5' order BY prio
 
 DELETE FROM prdctn_plan;
 
+DELETE FROM prdctn_drct;
+
+SELECT * FROM thng_req;
+
+
 CALL insert_in_drct('ORDER-2-5');
 
 
@@ -1416,9 +1421,12 @@ CALL play_drct();
 SELECT * from product_state ORDER BY 1 DESC;
 DELETE FROM product_state WHERE prdctn_code = '554-mixer_01';
 
+SELECT * FROM use_mtril;
+DELETE FROM use_mtril WHERE mtril_no = 24;
 COMMIT;
 SELECT * FROM product_state ORDER BY end_time desc;
 DELETE FROM product_state WHERE prdctn_code = '487-press_02';
+
 -- 생산 끝난 공정
 SELECT pd.* FROM prdctn_drct pd LEFT JOIN product_state ps ON (pd.prdctn_code = ps.prdctn_code) WHERE ps.prdctn_code IS NOT NULL ORDER BY pre_end_time DESC;
 -- 생산 해야하는 공정
@@ -1434,8 +1442,5 @@ SET pre_begin_time = DATE_SUB(pre_begin_time, INTERVAL 1 DAY), pre_end_time = DA
 UPDATE prdctn_drct
 SET pre_begin_time = DATE_ADD(pre_begin_time, INTERVAL 1 DAY), pre_end_time = DATE_ADD(pre_end_time, INTERVAL 1 DAY);
 
-DELETE FROM prdctn_drct;
-
-SELECT * FROM thng_req;
 
 
