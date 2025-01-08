@@ -55,9 +55,6 @@
                             <button type="button" class="btn btn-primary orderRowInsert" @click="modalOpen2()" style="color:white;">행추가</button>
                             
                         </div>
-                        <div style="margin-top:10px;" v-else>
-                            <button type="button" class="btn btn-primary" @click="onBtnExportDataAsCsvLotList()" style="color:white;">EXCEL 내보내기</button>
-                        </div>
 
                         <!-- ag grid 내용 출력 -->
                         <div>

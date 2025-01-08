@@ -62,7 +62,6 @@
                         <div style="margin-top:10px; margin-bottom:10px;">
                             <button type="button" class="btn btn-primary" @click="filteredResult()" style="color:white;">조회</button>
                             <button type="button" class="btn btn-secondary" @click="resetFilter()" style="color:white;">초기화</button>
-                            <button type="button" class="btn btn-primary" @click="onBtnExportDataAsCsvLotList()" style="color:white;">EXCEL 내보내기</button>
                         </div>
 
                         <!-- ag grid 내용 출력 -->
