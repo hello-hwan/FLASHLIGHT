@@ -384,6 +384,13 @@ const procsFlowchartSearchmtnm =
  WHERE mtril_name = ?
 `;
 
+// 공정 흐름도에 사용하는 반제품 코드 조회
+const procsFlowchartSearchpron =
+`SELECT prdlst_code
+ FROM prduct_n
+ WHERE prdlst_name = ?;
+`; 
+
 // 공정 흐름도 생성
 const procsFlowchartInsert = 
 `INSERT INTO procs_flowchart(procs_code, 
@@ -586,6 +593,7 @@ module.exports = {
   procsFlowchartDetailTop, 
   procsFlowchartSearchBom, 
   procsFlowchartSearchmtnm, 
+  procsFlowchartSearchpron, 
   procsFlowchartInsert, 
   procsMatrlInsert, 
   procsMchnInsert, 

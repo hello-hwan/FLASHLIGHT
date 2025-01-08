@@ -190,13 +190,12 @@ export default {
     created() {
         this.getEqpList();
         this.colDefs = [
-            { field: "eqp_code", headerName: "설비코드" },
             { field: "eqp_nm", headerName: "설비명" },
             { field: "model_nm", headerName: "모델명" },
-            { field: "regsde", headerName: "등록일자" },
-            { field: "mfbiz", headerName: "제조업체" },
+            { field: "regsde", headerName: "등록일자", flex: 0.75 },
+            { field: "mfbiz", headerName: "제조업체", flex: 0.75 },
             { field: "mg", headerName: "크기" },
-            { field: "chck_cycle", headerName: "점검주기" },
+            { field: "chck_cycle", headerName: "점검주기", flex: 0.75 },
             { field: "mnfctur_de", headerName: "제조일" }
         ];
         this.gridOptions = {

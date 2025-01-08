@@ -276,6 +276,12 @@ const procsFlowchartSearchBom = async (prd_code) => {
 const procsFlowchartSearchmtnm = async (mtril_name) => {
   let list = await mariaDB.query('procsFlowchartSearchmtnm', mtril_name);
   let result = list[0];
+  if (result == undefined) {
+    let list = await mariaDB.query('procsFlowchartSearchpron', mtril_name);
+    result = list[0];
+    console.log(mtril_name)
+    console.log(list);
+  }
   return result;
 }
 
