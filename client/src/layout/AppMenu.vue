@@ -182,7 +182,7 @@ const model = ref([
                         to: '/standardInfo/procsFlowchartinsert'
                     },
                     {
-                        label: '공정 흐름도 관리',
+                        label: '공정 흐름도 조회',
                         to: '/standardInfo/procsFlowchartList'
                     }
                 ]
