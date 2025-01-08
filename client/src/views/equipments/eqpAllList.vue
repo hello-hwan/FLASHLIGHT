@@ -20,7 +20,7 @@
                     style="color: white; margin: 10px; padding: 2px; width: 150px;" @click="delete_eqp_btn()">등록 기기
                     삭제</button>
                 <div style="margin: 0 auto; height: auto; background-color: lightgray; width: 50%;" v-show="delete_div">
-                    <p style="margin: 2px; padding: 2px;">아래에 설비코드를 입력하고 버튼을 누르면 삭제합니다.</p>
+                    <p style="margin: 2px; padding: 2px;">아래에 모델명을 입력하고 버튼을 누르면 삭제합니다.</p>
                     <input style="background-color: lightsteelblue; margin: 5px;" type="text" v-model="delete_eqp_code"
                         size="9">
                     <button type="button" class="btn btn-primary"

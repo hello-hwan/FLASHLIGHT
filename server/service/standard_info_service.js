@@ -279,8 +279,6 @@ const procsFlowchartSearchmtnm = async (mtril_name) => {
   if (result == undefined) {
     let list = await mariaDB.query('procsFlowchartSearchpron', mtril_name);
     result = list[0];
-    console.log(mtril_name)
-    console.log(list);
   }
   return result;
 }
