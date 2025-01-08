@@ -174,7 +174,6 @@
             { field: "untpc", headerName:"주문단가", editable: true }, 
             { field: "order_qy", headerName:"주문수량", editable: true }, 
             { field: "totqy", headerName:"생산수량", editable: false }, 
-            
             { field: "wrter", headerName:"작성자", editable: false } 
             ]);
             this.gridOptionsOrder = { 

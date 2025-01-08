@@ -42,8 +42,8 @@ SELECT r.order_no,
        l.prd_code, 
        l.prd_name,
        l.untpc, 
-       l.order_qy,
-       l.totqy,
+       l.order_qy as totqy,
+       l.totqy as order_qy,
        CASE WHEN l.prdctn_at = 'OP01' THEN '생산'
             ELSE '미생산'
        END AS 'prdctn_at'
