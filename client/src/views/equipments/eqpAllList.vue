@@ -234,6 +234,7 @@ export default {
             for (let i = 0; i < this.eqpAllList.length; i++) {
                 this.eqpAllList[i].regsde = useDateUtils.dateFormat(this.eqpAllList[i].regsde, "yyyy-MM-dd");
                 this.eqpAllList[i].mnfctur_de = useDateUtils.dateFormat(this.eqpAllList[i].mnfctur_de, "yyyy-MM-dd");
+                this.eqpAllList[i].chck_cycle = this.eqpAllList[i].chck_cycle + ' 일';
             }
             this.rowData = this.eqpAllList;
         },
