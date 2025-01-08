@@ -118,7 +118,7 @@ export default {
                 valueFormatter:this.customDateFormat2 }, 
             { field: "prd_code", headerName:"품목코드", hide:true }, 
             { field: "prd_name", headerName:"품목명" }, 
-            { field: "order_qy", headerName:"수량" }, 
+            { field: "order_qy", headerName:"생산요청수량" }, 
             { field: "wrter", headerName:"작성자", hide : true }, 
             { field: "process_status", headerName:"처리상태" }, 
             { field: "prdctn_at", headerName:"생산여부" } 
