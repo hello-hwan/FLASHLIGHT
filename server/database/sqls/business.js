@@ -62,7 +62,7 @@ FROM bcnc
 WHERE bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
 AND mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
 AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')
-AND bizcnd = '도소매'`;
+AND bizcnd = 'CG02'`;
 
 const bs_orderArray = `
 SELECT order_no

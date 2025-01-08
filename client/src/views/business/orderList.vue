@@ -53,7 +53,7 @@
                             </div>
                             <div class="col-auto">
                                 <span class="form-text">
-                                ex ORDER-01
+                                ex ORDER-1
                                 </span>
                             </div>
                         </div>
