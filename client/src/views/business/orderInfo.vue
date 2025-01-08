@@ -172,9 +172,9 @@
             { field: "prd_code", headerName:"품목코드", checkboxSelection: true }, 
             { field: "prd_name", headerName:"품목이름" }, 
             { field: "untpc", headerName:"주문단가", editable: true }, 
-            { field: "totqy", headerName:"주문수량", editable: true }, 
-            { field: "order_qy", headerName:"생산수량", editable: false }, 
-            { field: "prdctn_at", headerName:"생산여부", editable: false }, 
+            { field: "order_qy", headerName:"주문수량", editable: true }, 
+            { field: "totqy", headerName:"생산수량", editable: false }, 
+            
             { field: "wrter", headerName:"작성자", editable: false } 
             ]);
             this.gridOptionsOrder = { 
@@ -313,6 +313,7 @@
                             prd_code:productSelectedData[0].prdlst_code, 
                             prd_name:productSelectedData[0].prdlst_name, 
                             untpc: 0, 
+                            order_qy : 0,
                             totqy: 0, 
                             wrter: this.empName 
                         }; 
@@ -337,6 +338,7 @@
             async orderListReplace() { 
                 // 주문목록에 내용이 있으면 수정
                 if(this.gridApi.getRenderedNodes().length > 0){
+                    console.log('데이터 길이는',this.gridApi.getRenderedNodes().length);
 
                     // 수량과 단가에 음수가 있으면 수정하지 않음
                     let minusCheck = 1;
@@ -345,11 +347,13 @@
                             minusCheck = 0;
                         }
                     } 
-                    if (minusCheck == 1){
+                    if (minusCheck == 0){
+                        this.toast.add({ severity: 'warn', summary: '수정실패', detail: '수량과 단가는 양수로 입력하세요.', life: 3000 });
+                    } else {
                         // 주문 삭제
                         let result = await axios.delete(`${ajaxUrl}/business/orderInfo/${this.selectNo}`)
-                                                       .catch(err=>console.log(err));
-                        console.log(result);
+                                                .catch(err=>console.log(err));
+                        console.log('삭제결과는',result);
     
                         // 주문 등록
                         for(let i=0; i < this.gridApi.getRenderedNodes().length; i++){ 
@@ -361,10 +365,8 @@
                             console.log("결과는", result); 
                         } 
                         // 리스트로 이동
-                        this.$router.push({name:'orderList'});
                         this.toast.add({ severity: 'success', summary: '수정', detail: '수정성공', life: 3000 });
-                    } else {
-                        this.toast.add({ severity: 'warn', summary: '수정실패', detail: '수량과 단가는 양수로 입력하세요.', life: 3000 });
+                        this.$router.push({name:'orderList'});
                     }
 
                 } else {
