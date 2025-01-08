@@ -17,7 +17,8 @@
                 :rowData="orderRowData"
                 :gridOptions="gridOptionsOrder"
                 class="ag-theme-alpine"
-                id="grid-two">
+                id="grid-two"
+                overlayNoRowsTemplate="결과 없음">
             </AgGridVue>
         </v-card-text>
       </v-card>
@@ -37,7 +38,8 @@
                 :rowData="returnRowData"
                 :gridOptions="gridOptionsReturn"
                 class="ag-theme-alpine"
-                id="grid-one">
+                id="grid-one"
+                overlayNoRowsTemplate="결과 없음">
             </AgGridVue>
         </v-card-text>
       </v-card>

@@ -4,11 +4,14 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
-import path from 'node:path';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    outputDir : path.resolve("../server/public"),
+    build: {
+        outDir: path.resolve("../server/public"),
+        emptyOutDir: true, // also necessary
+    },
     optimizeDeps: {
         noDiscovery: true,
         include: ['jspdf', 'jspdf-autotable']
@@ -30,7 +33,6 @@ export default defineConfig({
             '^/api': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
-                rewrite: (path) => path.replace(/^\/api/, '')
             }
         }
     }

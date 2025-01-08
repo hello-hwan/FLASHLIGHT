@@ -228,10 +228,12 @@ export default {
       let result = await axios.post(`${ajaxUrl}/prduct_n_dlivyTest`,sendPrductNList)
                               .catch(err => console.log(err));
 
-      if(result){
+      if(result.data == 'success'){
         this.toast.add({ severity: 'success', summary: '성공', detail: '출고가 완료되었습니다.', life: 3000 });
         this.getprductNDlivyList();
         this.getprductNdlivyPossible();
+      }else{
+        this.toast.add({ severity: 'warn', summary: '실패', detail: '수량이 부족합니다.', life: 3000 });
       }
 
     },

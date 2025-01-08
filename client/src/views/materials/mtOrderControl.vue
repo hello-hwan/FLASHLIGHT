@@ -290,12 +290,14 @@ const addRow = (info) => {
         };
     };
 
-    //행추가할 객체 생성
-    let obj = {order_no: 0, req_code: "", mt_name: info[0].mtril_name, mt_code: info[0].mtril_code, price: 0, order_qy: 0, 
-    unit: info[0].unit, order_date: "", dedt: ""};
-
-    //add:[]배열안에 객체 형태로 데이터를 넣으면 됨.
-    mtListGridApi.value.applyTransaction({add: [obj]});
+    for(let i=0; i<info.length; i++) {
+        //행추가할 객체 생성
+        let obj = {order_no: 0, req_code: "", mt_name: info[i].mtril_name, mt_code: info[i].mtril_code, price: 0, order_qy: 0, 
+        unit: info[i].unit, order_date: "", dedt: ""};
+    
+        //add:[]배열안에 객체 형태로 데이터를 넣으면 됨.
+        mtListGridApi.value.applyTransaction({add: [obj]});
+    };
 };
 
 //행 삭제
@@ -438,9 +440,9 @@ const insertMtOrderList = async() => {
             //납기일이 비어 있으면 오류 메세지 출력
             toast.add({ severity: 'warn', summary: '입력 오류', detail: '납기일을 확인해주세요.', life: 3000 });
             return;
-        } else if (orderName.length > 20) {
-            //발주명이 20자 이상이면 오류
-            toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명은 20자 이하로 작성해주세요.', life: 3000 });
+        } else if (orderName.length > 100) {
+            //발주명이 100자 이상이면 오류
+            toast.add({ severity: 'warn', summary: '입력 오류', detail: '발주명은 100자 이하로 작성해주세요.', life: 3000 });
             return;
         };
             //수량 입력이 잘못됐을 경우 오류 출력
@@ -614,9 +616,9 @@ const removeAllInfo = () => {
     orderRowData.value = [];
 
     //발주명, 거래처명, 거래처코드 초기화
-    orderName = "";
-    companyName = "";
-    companyCode = "";
+    //orderName = "";
+    //companyName = "";
+    //companyCode = "";
 
     //삭제버튼 비활성화
     delBtn.value = false;

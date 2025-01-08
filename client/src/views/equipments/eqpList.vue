@@ -40,6 +40,7 @@ export default {
         this.getEqpList();
         this.colDefs = [
             { field: "eqp_code", headerName: "설비코드" },
+            { field: "eqp_nm", headerName: "설비명" },
             { field: "model_nm", headerName: "모델명" },
             { field: "eqp_run", headerName: "가동여부" },
             { field: "model_tp", headerName: "온도" },

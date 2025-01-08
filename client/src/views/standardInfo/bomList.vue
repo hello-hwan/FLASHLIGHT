@@ -61,7 +61,7 @@
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
-                style="height: 500px; margin: 0 auto;"
+                style="height: 520px; margin: 0 auto;"
                 @grid-ready="onGridReady"
                 :rowData="filteredRowData"
                 :columnDefs="colDefs"
@@ -84,7 +84,7 @@
             </template>
             <v-card-text class="bg-surface-light pt-4">
               <AgGridVue
-                style="width: 100%; height: 460px; margin: 0 auto;"
+                style="width: 100%; height: 480px; margin: 0 auto;"
                 :rowData="rowDataInfo"
                 :columnDefs="colDefsInfo"
                 :gridOptions="gridOptions"
@@ -135,7 +135,7 @@
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="mtrilFilter"
                       :columnDefs="colDefsInfotest"
-                      :gridOptions="gridOptions"
+                      :gridOptions="gridOptions2"
                       @cellClicked="onCellClicked3"
                       @grid-ready="onGridReady"
                       overlayNoRowsTemplate="결과없음"
@@ -164,7 +164,7 @@
                     <AgGridVue style="width: 100%; height: 460px; margin: 0 auto;"
                       :rowData="prductNFilter"
                       :columnDefs="colDefsInfoModal"
-                      :gridOptions="gridOptions"
+                      :gridOptions="gridOptions2"
                       @cellClicked="onCellClicked3"
                       @grid-ready="onGridReady"
                       overlayNoRowsTemplate="결과없음"
@@ -243,7 +243,12 @@ import { useToast } from 'primevue/usetoast';
 
         // 반제품 검색 입력값
         prdlstCodeInput: "",
-        prdlstNameInput: ""
+        prdlstNameInput: "",
+
+        // 클릭이벤트 값 저장변수
+        code: "",
+        cnsumCount: "",
+        cmpdsCode: ""
 
       };
 
@@ -253,23 +258,23 @@ import { useToast } from 'primevue/usetoast';
   
       // BOM 조회 컬럼 정의
       this.colDefs = [
-        { field: "bom_code", headerName: "BOM코드" },
-        { field: "prdlst_code", headerName: "제품코드" },
-        { field: "prdist_name", headerName: "제품명" },
-        { field: "prdctn_qy", headerName: "기본생산수량" },
-        { field: "상세보기", headerName: "상세보기", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+        { field: "bom_code", headerName: "BOM코드", flex:0.8 },
+        { field: "prdlst_code", headerName: "제품코드" , flex:0.8},
+        { field: "prdist_name", headerName: "제품명" , flex:2},
+        { field: "prdctn_qy", headerName: "기본생산수량" , flex:0.8},
+        { field: "상세보기", headerName: "상세보기", flex:1, cellStyle: { textAlign: "center" } ,cellRenderer: () => {
                                                   return '<button class="btn btn-primary mx-2">상세보기</button>'}},
       ];
   
       // 상세보기 컬럼 정의
       this.colDefsInfo = [
-        { field: "cmpds_prdlst_code", headerName: "소모품목코드", editable: (params) => params.node.data.isNewRow , valueGetter: (params) => params.data.cmpds_prdlst_code || params.data.prdlst_code},
-        { field: "cmpds_prdlst_name", headerName: "소모품명", editable: (params) => params.node.data.isNewRow },
+        { field: "cmpds_prdlst_code", headerName: "소모품목코드", flex:0.8, editable: (params) => params.node.data.isNewRow , valueGetter: (params) => params.data.cmpds_prdlst_code || params.data.prdlst_code},
+        { field: "cmpds_prdlst_name", headerName: "소모품명", flex:1.5, editable: (params) => params.node.data.isNewRow },
         // { field: "stndrd_x", headerName: "규격x", editable: (params) => params.node.data.stndrd_x == null },
         // { field: "stndrd_y", headerName: "규격y", editable: (params) => params.node.data.stndrd_y == null },
         // { field: "stndrd_z", headerName: "규격z", editable: (params) => params.node.data.stndrd_z == null },
-        { field: "unit", headerName: "단위", editable: (params) => params.node.data.isNewRow },
-        { field: "cnsum_count", headerName: "소모량", editable: true }, // 항상 수정 가능        
+        { field: "unit", headerName: "단위", flex:1, editable: (params) => params.node.data.isNewRow },
+        { field: "cnsum_count", headerName: "소모량", flex:1, editable: true }, // 항상 수정 가능        
       ];
       
       // 자재 모달 컬럼정의
@@ -285,12 +290,12 @@ import { useToast } from 'primevue/usetoast';
 
       // 반제품 모달 컬럼 정의
       this.colDefsInfoModal = [
-        { field: "prdlst_code", headerName: "반제품코드" },
-        { field: "prdlst_name", headerName: "반제품명" },
-        { field: "unit", headerName: "단위" },
-        { field: "wrhousng_unite", headerName: "입고단가" },
-        { field: "sfinvc", headerName: "안전재고" },
-        { field: "선택", headerName: "선택", cellStyle: { textAlign: "center" } ,cellRenderer: () => {
+        { field: "prdlst_code", headerName: "반제품코드", flex:0.8 },
+        { field: "prdlst_name", headerName: "반제품명", flex:1.5 },
+        { field: "unit", headerName: "단위", flex:1 },
+        { field: "wrhousng_unite", headerName: "입고단가" , flex:1},
+        { field: "sfinvc", headerName: "안전재고", flex:1 },
+        { field: "선택", headerName: "선택", flex:1, cellStyle: { textAlign: "center" } ,cellRenderer: () => {
                                             return '<button class="btn btn-primary mx-2">선택</button>'}}
       ];
     
@@ -306,6 +311,15 @@ import { useToast } from 'primevue/usetoast';
         },
       };
       this.gridOptions = {
+        defaultColDef: {
+          sortable: true,
+          resizable: true,
+          flex: 1,
+          minWidth: 10,
+        },
+        rowSelection: "single", // 단일 선택 가능
+      };
+      this.gridOptions2 = {
         defaultColDef: {
           sortable: true,
           resizable: true,
@@ -441,6 +455,14 @@ import { useToast } from 'primevue/usetoast';
 
       },
 
+      onCellClicked2(event){
+        console.log('행 클릭 이벤트 확인');
+        console.log(event.data.cmpds_prdlst_code);
+        this.code = event.data.cmpds_prdlst_code;
+        this.cnsumCount = event.data.cnsum_count;
+        this.cmpdsCode = event.data.cmpds_no;
+      },
+
       async deleteRow() {
         if (!this.gridOptions.api) {
             console.error("AgGrid API가 초기화되지 않았습니다.");
@@ -448,43 +470,44 @@ import { useToast } from 'primevue/usetoast';
         }
 
         // 선택된 행 가져오기
-        let selectedNodes = this.gridOptions.api.getSelectedNodes();
+        let selectedNodes = this.code;
+        console.log(selectedNodes);
         if (selectedNodes.length === 0) {
             this.toast.add({ severity: 'warn', summary: '경고', detail: '행을 선택하세요', life: 3000 });
             return;
         }
 
-        let selectedData = selectedNodes[0].data; // 첫 번째 선택된 데이터만 사용
+        //let selectedData = selectedNodes[0].data; // 첫 번째 선택된 데이터만 사용
 
         // 데이터 삭제 요청
-        if (selectedData.isNewRow) {
+        if (!this.cnsumCount) {
             // 저장되지 않은 새 데이터 삭제
             this.rowDataInfo = this.rowDataInfo.filter(
-                (row) => row.cmpds_prdlst_code !== selectedData.cmpds_prdlst_code
+                (row) => row.cmpds_prdlst_code !== selectedNodes
             );
             this.toast.add({ severity: 'success', summary: '삭제 완료', detail: '저장되지 않은 데이터가 삭제되었습니다.', life: 3000 });
 
             // AgGrid 데이터 갱신
             if (this.gridOptions.api) {
-                this.gridOptions.api.setRowData(this.rowDataInfo);
+                this.gridOptions.api = this.rowDataInfo;
             }
-        } else if (selectedData.cmpds_no) {
+        } else if (selectedNodes) {
             // 저장된 데이터 삭제
             try {
-                const response = await axios.delete(`${ajaxUrl}/bom_cmpdsDel/${selectedData.cmpds_no}`);
-                console.log(`행 삭제 완료: ${selectedData.cmpds_no}`, response);
+                console.log(this.cmpdsCode);
+                let result = await axios.delete(`${ajaxUrl}/bom_cmpdsDel/${this.cmpdsCode}`);
 
-                if (response.status === 200) { // 서버 응답 상태 코드가 200일 경우만 처리
+                if (result.status === 200) { // 서버 응답 상태 코드가 200일 경우만 처리
                     this.toast.add({ severity: 'success', summary: '삭제 완료', detail: '저장된 데이터가 삭제되었습니다.', life: 3000 });
 
                     // 데이터에서 해당 행 삭제
                     this.rowDataInfo = this.rowDataInfo.filter(
-                        (row) => row.cmpds_prdlst_code !== selectedData.cmpds_prdlst_code
+                        (row) => row.cmpds_prdlst_code !== selectedNodes
                     );
 
                     // AgGrid 데이터 갱신
                     if (this.gridOptions.api) {
-                        this.gridOptions.api.setRowData(this.rowDataInfo);
+                        this.gridOptions.api = result.data;
                     }
 
                     // 버튼 비활성화 여부 처리
@@ -505,7 +528,8 @@ import { useToast } from 'primevue/usetoast';
         let newRowsAdded = false; // 새로 추가된 행이 있는지 체크하는 변수
 
         console.log('저장시 데이터', this.bomCode);
-
+        console.log('첫 행길이',this.rowCount);
+        console.log('추가행길이',this.rowDataInfo.length);
         // 새로운 행이 추가된 경우에만 등록 (새로운 행이 없으면 업데이트만)
         for (let i = this.rowCount; i < this.rowDataInfo.length; i++) {
             let row = this.rowDataInfo[i];
@@ -525,8 +549,10 @@ import { useToast } from 'primevue/usetoast';
             } else {
                 try {
                     let result;
+                    console.log('여러행insert체크',row.isNewRow)
                     if (row.isNewRow) {
                         // 새 행인 경우 등록
+                        console.log(obj);
                         result = await axios.post(`${ajaxUrl}/bom`, obj);
                         // 서버에서 받은 cmpds_no로 업데이트
                         this.rowDataInfo[i].cmpds_no = result.data.cmpds_no;
@@ -538,10 +564,16 @@ import { useToast } from 'primevue/usetoast';
                     }
 
                     // 데이터 저장 후 처리
-                    this.rowDataInfo = this.rowDataInfo.map((row) => {
-                        if (row.isNewRow) delete row.isNewRow; // 플래그 제거
-                        return row;
-                    });
+                    let test = await axios.get(`${ajaxUrl}/bomManage/${this.selectedBomCode}`)
+                                  .catch(err => console.log(err));
+                      
+                    if (this.gridOptions.api) {
+                        this.gridOptions.api = test.data;
+                    }
+                    // this.rowDataInfo = this.rowDataInfo.map((row) => {
+                    //     if (row.isNewRow) delete row.isNewRow; // 플래그 제거
+                    //     return row;
+                    // });
                 } catch (err) {
                     console.log(err);
                     isSaveSuccessful = false; // 오류가 발생하면 저장 실패 처리
@@ -566,9 +598,9 @@ import { useToast } from 'primevue/usetoast';
 
         if (isSaveSuccessful && isUpdateSuccessful) {
             this.toast.add({ severity: 'success', summary: '저장 완료', detail: '모든 데이터가 성공적으로 저장되었습니다.', life: 3000 });
-            setTimeout(() => {
-                this.$router.go(0); // 새로고침
-            }, 500);
+            // setTimeout(() => {
+            //     this.$router.go(0); // 새로고침
+            // }, 500);
         }
       },
       

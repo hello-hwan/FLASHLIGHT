@@ -19,11 +19,11 @@
             <div id="search-bar">
                 <div class="align-left"> 
                     <span>거래처 코드</span>
-                    <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany"> <p>{{ searchCompanyCode }}</p></InputText>
+                    <InputText type="text" v-model="searchCompanyCode" v-on:keyup.enter="searchCompany" style="width: 180px;"> <p>{{ searchCompanyCode }}</p></InputText>
                     <span>거래처 명</span>
-                    <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany"> <p>{{ searchcompanyName }}</p></InputText>
+                    <InputText type="text" v-model="searchcompanyName" v-on:keyup.enter="searchCompany" style="width: 180px;"> <p>{{ searchcompanyName }}</p></InputText>
                     <span>담당자 명</span>
-                    <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany"> <p>{{ searchchargerName }}</p></InputText>
+                    <InputText type="text" v-model="searchchargerName" v-on:keyup.enter="searchCompany" style="width: 180px;"> <p>{{ searchchargerName }}</p></InputText>
                 </div>
                 <div style="display:flex; justify-content: center;">
                     <button @click="searchCompany"class="btn btn-primary search-btn" >조회</button>

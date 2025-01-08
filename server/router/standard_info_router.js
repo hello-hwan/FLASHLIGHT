@@ -87,8 +87,13 @@ router.put('/bom_cmpsdUpdate/:no', async (req, res) => {
 // BOM 소모품 삭제
 router.delete('/bom_cmpdsDel/:cmpdsNo', async (req, res) => {  
   let cmpdsNo = req.params.cmpdsNo; 
-  let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
-  res.send(result); 
+  try {
+    let result = await standard_info_service.bom_cmpdsDel(cmpdsNo);
+    res.send(result);   
+  } catch (error) {
+    console.log('router',error);
+  }
+  
 });
 
 // BOM 삭제
@@ -240,20 +245,6 @@ router.put('/bcncUpdate/:code', async (req, res) => {
   res.send(result);
 })
 
-// 품질검사항목관리
-router.get('/standardInfo/qiList', async (req, res) => {
-  let qiNo = req.query.qi_info; // key=value => req.query.key;
-  console.log(req.query, qiNo);
-  let result = await standard_info_service.qiList(qiNo);
-  res.send(result);
-});
-
-// 품질검사항목관리 모달창
-router.post('/standardInfo/qiListModal', async (req, res) => {
-  let qiNo = req.body;    
-  let result = await standard_info_service.qiListModal(qiNo)                                          
-  res.send(result);
-});
 
 // 공정 흐름도 조회
 router.get('/procsFlowchartList', async (req, res) => {
