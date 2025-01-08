@@ -283,7 +283,7 @@ WHERE    m.mtril_name LIKE CONCAT('%', IFNULL(?, m.mtril_name) ,'%')
 AND      m.wrhousng_se LIKE CONCAT('%', IFNULL(?, m.wrhousng_se), '%')
 AND      t.empl_name LIKE CONCAT('%', IFNULL(?, t.empl_name), '%')
 AND      m.wrhousng_date BETWEEN IFNULL(?, m.wrhousng_date) AND IFNULL(?, m.wrhousng_date)
-ORDER BY m.wrhousng_date DESC, m.mtril_lot DESC;
+ORDER BY m.wrhousng_date DESC , CAST(SUBSTRING(m.mtril_lot, 12) AS INT) DESC
 `;
 
 //자재 출고 관리 - mt009 요청가져오기
