@@ -2,31 +2,42 @@
 
 // 반제품 입고 대기 리스트
 const prdctn_n_list = 
-`WITH MaxProcsN AS (SELECT prd_code 
-                   ,MAX(procs_ordr_no) AS max_procs_ordr_no
-FROM procs_flowchart
-WHERE prd_code IS NOT NULL
-GROUP BY prd_code
-)
-SELECT  d.prd_code
-       ,d.prd_nm
-       ,s.end_time
-       ,s.nrmlt
-       ,s.prdctn_code
-FROM prdctn_drct d join product_state s
-ON d.prdctn_code = s.prdctn_code
-LEFT JOIN prduct_n_wrhousng w
-ON s.prdctn_code = w.prdctn_code
-JOIN MaxProcsN mp
-ON s.prd_code = mp.prd_code
-WHERE s.prd_code LIKE 'N%'
-AND s.nrmlt > 0
-AND s.end_time IS NOT NULL
-AND w.prduct_n_wrhousng_day IS NULL
-AND EXISTS ( SELECT 1
-             FROM procs_flowchart p
-	      WHERE p.prd_code = s.prd_code
-	      AND p.procs_ordr_no = mp.max_procs_ordr_no)`;
+`SELECT ps.* ,pd.prd_nm FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+                                              JOIN procs_flowchart pf ON (pd.procs_code = pf.procs_code) left JOIN prduct_n_wrhousng w ON (ps.prd_code = w.prdlst_code)
+WHERE pf.procs_code = (SELECT procs_code 
+                              FROM procs_flowchart
+                              WHERE prd_code = pd.prd_code
+                              ORDER BY procs_ordr_no desc
+                              LIMIT 1 OFFSET 0)
+AND ps.prd_code LIKE 'N%'
+AND ps.end_time IS NOT NULL
+AND w.prduct_n_wrhousng_day IS NULL`;
+
+// `WITH MaxProcsN AS (SELECT prd_code 
+//                    ,MAX(procs_ordr_no) AS max_procs_ordr_no
+// FROM procs_flowchart
+// WHERE prd_code IS NOT NULL
+// GROUP BY prd_code
+// )
+// SELECT  d.prd_code
+//        ,d.prd_nm
+//        ,s.end_time
+//        ,s.nrmlt
+//        ,s.prdctn_code
+// FROM prdctn_drct d join product_state s
+// ON d.prdctn_code = s.prdctn_code
+// LEFT JOIN prduct_n_wrhousng w
+// ON s.prdctn_code = w.prdctn_code
+// JOIN MaxProcsN mp
+// ON s.prd_code = mp.prd_code
+// WHERE s.prd_code LIKE 'N%'
+// AND s.nrmlt > 0
+// AND s.end_time IS NOT NULL
+// AND w.prduct_n_wrhousng_day IS NULL
+// AND EXISTS ( SELECT 1
+//              FROM procs_flowchart p
+// 	      WHERE p.prd_code = s.prd_code
+// 	      AND p.procs_ordr_no = mp.max_procs_ordr_no)`;
 
 // 수정 전
 // `SELECT d.prd_code
@@ -41,7 +52,7 @@ AND EXISTS ( SELECT 1
 // ON s.prdctn_code = w.prdctn_code
 // WHERE s.prd_code LIKE 'N%'
 // AND w.prduct_n_wrhousng_day IS NULL`;
-
+ 
 
 // 반제품 반환입고 대기 리스트
 const prdctn_n_return_list = 
@@ -216,31 +227,45 @@ WHERE req_code = ?`;
 
 // 완제품 입고 대기 리스트
 const prductList = 
-`WITH MaxProcs AS (SELECT prd_code 
-                  ,MAX(procs_ordr_no) AS max_procs_ordr_no
-FROM procs_flowchart
-WHERE prd_code IS NOT NULL
-GROUP BY prd_code
-)
-SELECT d.prd_code
-      ,d.prd_nm
-      ,s.end_time
-      ,s.nrmlt
-      ,s.prdctn_code
-FROM prdctn_drct d JOIN product_state s
-ON d.prdctn_code = s.prdctn_code
-LEFT JOIN prduct_wrhousng w
-ON s.prdctn_code = w.prdctn_code
-JOIN MaxProcs mp
-ON s.prd_code = mp.prd_code
-WHERE  s.prd_code LIKE 'C%'
-AND s.nrmlt > 0
-AND s.end_time IS NOT NULL
-AND w.wrhousng_day IS NULL
-AND EXISTS ( SELECT 1
-             FROM procs_flowchart pf
-             WHERE pf.prd_code = s.prd_code
-             AND pf.procs_ordr_no = mp.max_procs_ordr_no)`;
+`SELECT ps.*
+      ,pd.prd_nm
+FROM product_state ps JOIN prdctn_drct pd ON (ps.prdctn_code = pd.prdctn_code)
+			JOIN procs_flowchart pf ON (pd.procs_code = pf.procs_code) LEFT JOIN prduct_wrhousng w ON (ps.prd_code = w.prdlst_c_code)
+WHERE pf.procs_code = (SELECT procs_code
+                              FROM procs_flowchart
+				  WHERE prd_code = pd.prd_code
+				  ORDER BY procs_ordr_no desc
+				  LIMIT 1 OFFSET 0)
+AND ps.prd_code LIKE 'C%'
+AND ps.nrmlt > 0
+AND ps.end_time IS NOT NULL
+AND w.wrhousng_day IS NULL`;
+
+// `WITH MaxProcs AS (SELECT prd_code 
+//                   ,MAX(procs_ordr_no) AS max_procs_ordr_no
+// FROM procs_flowchart
+// WHERE prd_code IS NOT NULL
+// GROUP BY prd_code
+// )
+// SELECT d.prd_code
+//       ,d.prd_nm
+//       ,s.end_time
+//       ,s.nrmlt
+//       ,s.prdctn_code
+// FROM prdctn_drct d JOIN product_state s
+// ON d.prdctn_code = s.prdctn_code
+// LEFT JOIN prduct_wrhousng w
+// ON s.prdctn_code = w.prdctn_code
+// JOIN MaxProcs mp
+// ON s.prd_code = mp.prd_code
+// WHERE  s.prd_code LIKE 'C%'
+// AND s.nrmlt > 0
+// AND s.end_time IS NOT NULL
+// AND w.wrhousng_day IS NULL
+// AND EXISTS ( SELECT 1
+//              FROM procs_flowchart pf
+//              WHERE pf.prd_code = s.prd_code
+//              AND pf.procs_ordr_no = mp.max_procs_ordr_no)`;
 
 // 수정전
 // `SELECT d.prd_code

@@ -212,8 +212,12 @@ const prductDelete = async (code) => {
 // 완제품 수정 
 const prductUpdate = async (code, info) => {
   let data = [info, code];
-  let result = await mariaDB.query('prductUpdate', data);
-  return result;
+  try {
+    let result = await mariaDB.query('prductUpdate', data);
+    return result;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // 거래처 조회

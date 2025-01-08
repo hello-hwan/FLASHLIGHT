@@ -150,8 +150,8 @@ export default {
       { field: "mtril_name", headerName: "자재명" },
       { field: "unit", headerName: "단위" },
       { field: "mtril_qy", headerName: "총수량", valueGetter: (params) => params.data.mtril_qy || 0 },
-      { field: "untpc", headerName: "입고단가", editable: true },
-      { field: "sfinvc", headerName: "안전재고" , editable: true}
+      { field: "untpc", headerName: "*입고단가", editable: true },
+      { field: "sfinvc", headerName: "*안전재고" , editable: true}
     ];
 
     this.gridOptionsReturn = {
@@ -217,7 +217,7 @@ export default {
 
     },
 
-    async saveChanges(){
+    async saveChanges(event){
       let check = true;
       for(let i = 0; i < this.rowData.length; i++){
         let row = this.rowData[i];
@@ -225,11 +225,19 @@ export default {
           untpc: row.untpc,
           sfinvc: row.sfinvc
         }
-        try{
-          let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
-                                  .catch(err => console.log(err));
-        }catch{
-          check = false;
+        if(this.rowData[i].untpc == null || this.rowData[i].untpc == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '입고수량을 입력하세요.', life: 3000 });
+          return;
+        }else if(this.rowData[i].sfinvc == null || this.rowData[i].sfinvc == undefined){
+          this.toast.add({ severity: 'warn', summary: '업데이트 실패', detail: '안전재고를 입력하세요.', life: 3000 });
+          return;
+        }else{
+          try{
+            let result = await axios.put(`${ajaxUrl}/mtrilUpdate/${this.rowData[i].mtril_code}`, obj)
+                                    .catch(err => console.log(err));
+          }catch{
+            check = false;
+          }
         }
       }
       if(check){

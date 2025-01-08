@@ -275,9 +275,9 @@ WHERE prdlst_code = ?`
 
 // 완제품 수정
 const prductUpdate =
-`UPDATE bcnc
+`UPDATE repduct
 set ?
-WHERE bcnc_code = ?`
+WHERE prdlst_code = ?`
 
 // 거래처 조회
 const bcncList = 

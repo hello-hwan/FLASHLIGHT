@@ -210,10 +210,12 @@ router.delete('/prductDelete/:code', async (req, res) => {
 router.put('/prductUpdate/:code', async (req, res) => {
   let code = req.params.code
   let info = req.body;
-  console.log('router code =>', code);
-  console.log('router info =>', info);
-  let result = await standard_info_service.prductUpdate(code,info);
-  res.send(result);
+  try {
+    let result = await standard_info_service.prductUpdate(code,info);
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+  }
 })
 
 // 거래처 조회
