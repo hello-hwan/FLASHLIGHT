@@ -161,12 +161,11 @@ const prduct_n_dlivy =
 `SELECT prdctn_code
        ,req_name
        ,req_de
-       ,procs_at
        ,COUNT(prd_code) AS prd_code
 FROM thng_req
 WHERE prd_se = 'PI02'
 AND procs_at = 'RD02'
-GROUP BY prdctn_code`;
+GROUP BY prdctn_code, req_name, req_de`;
 
 
 // 반제품 출고 나가야될 제품 리스트

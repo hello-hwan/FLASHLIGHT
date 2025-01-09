@@ -42,8 +42,8 @@ SELECT r.order_no,
        l.prd_code, 
        l.prd_name,
        l.untpc, 
-       l.order_qy,
-       l.totqy,
+       l.order_qy as totqy,
+       l.totqy as order_qy,
        CASE WHEN l.prdctn_at = 'OP01' THEN '생산'
             ELSE '미생산'
        END AS 'prdctn_at'
@@ -62,7 +62,7 @@ FROM bcnc
 WHERE bcnc_code LIKE CONCAT('%', IFNULL(?, bcnc_code), '%')
 AND mtlty_name LIKE CONCAT('%', IFNULL(?, mtlty_name), '%')
 AND charger_name LIKE CONCAT('%', IFNULL(?, charger_name), '%')
-AND bizcnd = '도소매'`;
+AND bizcnd = 'CG02'`;
 
 const bs_orderArray = `
 SELECT order_no

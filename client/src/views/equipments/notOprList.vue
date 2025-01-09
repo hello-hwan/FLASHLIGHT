@@ -47,7 +47,7 @@ export default {
             { field: "not_opr_code", headerName: "미가동코드", hide: true, suppressToolPanel: true },
             { field: "eqp_code", headerName: "설비코드", checkboxSelection: true },
             { field: "stop_time", headerName: "가동정지일" },
-            { field: "eqp_charger", headerName: "담당자", editable: true },
+            { field: "eqp_charger", headerName: "담당자", editable: true, flex: 0.75 },
             { field: "not_opr_resn", headerName: "미가동 사유" }
         ];
         this.gridOptions = {

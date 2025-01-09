@@ -27,14 +27,13 @@
                 </div>
                 <div class="col-3">
                   <button class="btn btn-primary mx-2" @click="filterByCode">검색</button>
-                  <button class="btn btn-secondary mx-2" @click="resetFilter">초기화</button>
+                  <button class="btn btn-secondary mx-2" @click="resetFilter2">초기화</button>
                 </div>
               </div>
             </v-card-text>
           </v-card>
         </v-col>
       </v-row>
-
 
       
       <v-row>
@@ -43,7 +42,7 @@
             <template v-slot:title>
               <span class="font-weight-black">BOM 등록</span>
             </template>
-            <v-card-text class="bg-surface-light pt-4" style="height: 595px">
+            <v-card-text class="bg-surface-light pt-4" style="height: 565px">
               <v-col cols="12" class="mb-4">
               <div class="mb-2">
                   <span>*</span>
@@ -68,7 +67,7 @@
               </div>
               <div class="mb-3">
                 <label for="remarks" class="form-label">적요</label>
-                <textarea id="remarks" class="form-control" rows="3" v-model="remarks" @change="changeTest" style="height:130px; margin-bottom: 50px;"></textarea>
+                <textarea id="remarks" class="form-control" rows="3" v-model="remarks" @change="changeTest" style="height:130px; margin-bottom: 30px;"></textarea>
               </div>
               <div class="col-12 mt-3 d-flex justify-content-end">
                 <button class="btn btn-primary mx-2" @click="addData">등록</button>
@@ -100,7 +99,7 @@
               </AgGridVue>
               <div class="mt-3 d-flex justify-content-end">
                 <!-- <button class="btn btn-primary mx-2" v-if="isModified" @click="saveChanges">수정</button> -->
-                <button class="btn btn-danger" @click="deleteRow">삭제</button>
+                <!-- <button class="btn btn-danger" @click="deleteRow">삭제</button> -->
               </div>
             </v-card-text>
           </v-card>
@@ -259,8 +258,7 @@ export default {
       { field: "선택", headerName: "선택",  cellStyle: { textAlign: "center" } , cellRenderer: () => {
                                           return '<button class="btn btn-primary mx-2">선택</button>' }}
     ];
-
-
+    
     //this.getprduct();
     this.colDefsprduct = [
       { field: "prdlst_code", headerName: "완제품코드" },
@@ -291,17 +289,71 @@ export default {
 
     // 모달 선택 데이터 input값 넘기기
     onCellClicked3(event){
+
       if(event.colDef.field === "선택"){
-        this.prdlstCodeAdd = event.data.prdlst_code;
-        this.prdlstNameAdd = event.data.prdlst_name;
+        
+       // 선택된 데이터 객체 생성
+      let obj = {
+            prdlstCodeAdd: event.data.prdlst_code,
+            prdlstNameAdd: event.data.prdlst_name,
+            isNewRow: true
+        };
+
+        // 중복 체크: rowDataInfo에 동일한 prdlstCodeAdd가 있는지 확인
+        const isDuplicate = this.rowData.some(
+            (row) => row.prdlst_code === obj.prdlstCodeAdd
+        );
+
+        if (!isDuplicate) {
+            // 중복이 아니면 입력 필드에 값 설정
+            this.prdlstCodeAdd = event.data.prdlst_code;
+            this.prdlstNameAdd = event.data.prdlst_name;
+
+            // 저장 버튼 활성화
+            this.isButtonDisabled = false;
+        } else {
+            // 중복일 경우 입력값 설정 방지 및 경고 메시지 표시
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '이미 등록된 제품입니다.', life: 3000});
+
+            // 입력 필드 초기화
+            this.prdlstCodeAdd = "";
+            this.prdlstNameAdd = "";
+        }
       }
+
     },
 
     onCellClicked4(event){
       if(event.colDef.field === "선택"){
-        this.prdlstCodeAdd = event.data.prdlst_n_code;
-        this.prdlstNameAdd = event.data.prdlst_n_name;
+         // 선택된 데이터 객체 생성
+      let obj = {
+            prdlstCodeAdd: event.data.prdlst_n_code,
+            prdlstNameAdd: event.data.prdlst_n_name,
+            isNewRow: true
+        };
+
+        // 중복 체크: rowDataInfo에 동일한 prdlstCodeAdd가 있는지 확인
+        const isDuplicate = this.rowData.some(
+            (row) => row.prdlst_code === obj.prdlstCodeAdd
+        );
+
+        if (!isDuplicate) {
+            // 중복이 아니면 입력 필드에 값 설정
+            this.prdlstCodeAdd = event.data.prdlst_n_code;
+            this.prdlstNameAdd = event.data.prdlst_n_name;
+
+            // 저장 버튼 활성화
+            this.isButtonDisabled = false;
+        } else {
+            // 중복일 경우 입력값 설정 방지 및 경고 메시지 표시
+            this.toast.add({ severity: 'warn', summary: '경고', detail: '이미 등록된 제품입니다.', life: 3000});
+
+            // 입력 필드 초기화
+            this.prdlstCodeAdd = "";
+            this.prdlstNameAdd = "";
+        }
       }
+
     },
 
     async modalOpen2 () {
@@ -319,6 +371,7 @@ export default {
             this.rowDataprduct = this.prduct
             this.searchProductRow = this.rowDataprduct
     },
+
 
     // 그리드 초기값 불러오기
     async getmtrilList() {
@@ -362,6 +415,10 @@ export default {
                           this.filteredRowData = this.rowData;  
         if(result.status == 200){
           this.toast.add({ severity: 'success', summary: '성공', detail: '등록이 완료되었습니다.', life: 3000 });
+          this.prdlstCodeAdd = "",
+          this.prdlstNameAdd = "",
+          this.sfinvcAdd = "",
+          this.remarks = ""
         }else{
           this.toast.add({ severity: 'warn', summary: '실패', detail: '등록 중 오류가발생하엿습니다.', life: 3000 });
         }
@@ -414,17 +471,16 @@ export default {
           }
         });
     },
-
+  
     // 검색값에 따른 필터링
     filterByCode() {
       this.filteredRowData = this.rowData.filter((row) => {
         return (
-          (!this.mtrilCode || row.mtril_code.includes(this.mtrilCode)) &&
-          (!this.mtrilName || row.mtril_name.includes(this.mtrilName))
+          (!this.mtrilCode || row.bom_code.includes(this.mtrilCode)) &&
+          (!this.mtrilName || row.prdlst_code.includes(this.mtrilName))
         );
       });
     },
-
 
 
     // 모달 검색값에 따른 필터링
@@ -445,18 +501,16 @@ export default {
         )
       })
     },
-    
+
     // 검색 필터 초기화
-    resetFilter() {
-      this.prdlstCodeAdd,
-      this.prdlstNameAdd,
-      this.sfinvcAdd,
-      this.remarks
+    resetFilter2() {
+      this.mtrilCode = "",
+      this.mtrilName = "",
       this.filteredRowData = this.rowData;
     },
 
 
- 
+
     // 모달 검색 필터 초기화
     resetFilter(){
       this.prductSearch = "",

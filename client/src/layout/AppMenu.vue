@@ -113,12 +113,12 @@ const model = ref([
                 label: '물류',
                 items: [
                     {
-                        label: '제품 입고 조회',
-                        to: '/logistics/prductList'
-                    },
-                    {
                         label: '제품 입고 관리',
                         to: '/logistics/prductWrhousngList'
+                    },
+                    {
+                        label: '제품 입고 조회',
+                        to: '/logistics/prductList'
                     },
                     {
                         label: '제품 출고 관리',
@@ -135,6 +135,10 @@ const model = ref([
                     {
                         label: '반제품 입고 관리',
                         to: '/logistics/prductNWrhousngList'
+                    },
+                    {
+                        label: '반제품 입고 조회',
+                        to: '/logistics/prductNList'
                     },
                     {
                         label: '반제품 출고 관리',
@@ -183,7 +187,7 @@ const model = ref([
                         to: '/standardInfo/procsFlowchartinsert'
                     },
                     {
-                        label: '공정 흐름도 관리',
+                        label: '공정 흐름도 조회',
                         to: '/standardInfo/procsFlowchartList'
                     }
                 ]

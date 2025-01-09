@@ -64,7 +64,7 @@ const drctlist = async (prd_code, day_str) => {
     if(model != list[i].model_nm){
 
       if(colspan > 0 && colspan < 168){
-        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round(168-colspan), "order_no" : "" });
+        result.push({"prdctn_code" : "else", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round(168-colspan), "order_no" : "" });
       }
       colspan = 0;
 
@@ -76,8 +76,13 @@ const drctlist = async (prd_code, day_str) => {
       if(begin < start){
         if(colspan + list[i].drct_time >= 168){
           if(finday.getTime() > end){
-            result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((end-start)/1000/60/60), "order_no" : list[i].order_no });
-            colspan += (end-start)/1000/60/60;
+            if(list[i].drct_time >= 168){
+              result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : 168, "order_no" : list[i].order_no });
+              colspan = 168;
+            } else {
+              result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((end-start)/1000/60/60), "order_no" : list[i].order_no });
+              colspan += (end-start)/1000/60/60;
+            }
           } else {
             result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((168 - colspan)), "order_no" : list[i].order_no });
             colspan = 168;
@@ -92,20 +97,20 @@ const drctlist = async (prd_code, day_str) => {
         continue;
       }
       if(begin - start > 0){
-        result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round((begin-start)/1000/60/60), "order_no" : "" });
+        result.push({"prdctn_code" : "bin", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round((begin-start)/1000/60/60), "order_no" : "" });
         colspan += (begin-start)/1000/60/60;
       }
          
     }
     begin_time = list[i].pre_begin_time;
     begin = new Date(begin_time).getTime();
-    if(begin - end > 0){
-      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round((begin-end)/1000/60/60), "order_no" : "" });
-      colspan += (begin-end)/1000/60/60;
-    }
     if(colspan >= 168){
       model = list[i].model_nm;
       continue;
+    }
+    if(begin - end > 0){
+      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : list[i].model_nm, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round((begin-end)/1000/60/60), "order_no" : "" });
+      colspan += (begin-end)/1000/60/60;
     }
     if(colspan + list[i].drct_time >= 168){
       result.push({"prdctn_code" : list[i].prdctn_code, "procs_nm" : list[i].procs_nm, "model_nm" : list[i].model_nm, "prd_nm" : list[i].prd_nm, "prdctn_co" : list[i].prdctn_co, "pre_begin_time" : list[i].pre_begin_time, "pre_end_time" : list[i].pre_end_time, "drct_time" : Math.round((168 - colspan)), "order_no" : list[i].order_no });
@@ -113,13 +118,13 @@ const drctlist = async (prd_code, day_str) => {
     } else {
         result.push(list[i]);
         colspan += list[i].drct_time;
-      
     }
     model = list[i].model_nm;
     end_time = list[i].pre_end_time;
     end = new Date(end_time).getTime();
     
   }
+  
   let eqp = await mariaDB.query('pr_eqp');
   let co = 0;
   for(let i = 0; i < eqp.length; i++){
@@ -129,13 +134,16 @@ const drctlist = async (prd_code, day_str) => {
   }
   for(let i = co; i < eqp.length; i++){
     if(colspan < 168 && colspan > 0){
-      result.push({"prdctn_code" : "", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round(168-colspan), "order_no" : "" });
+      result.push({"prdctn_code" : "rest", "procs_nm" : "", "model_nm" : model, "prd_nm" : "", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : Math.round(168-colspan), "order_no" : "" });
       colspan = 0;
       continue;
     } else if (colspan == 168){
       colspan = 0;
+      continue;
     } else {
-      result.push({"prdctn_code" : "", "procs_nm" : "Found", "model_nm" : eqp[i].model_nm, "prd_nm" : "No - data", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168, "order_no" : "" })
+      result.push({"prdctn_code" : "nodata", "procs_nm" : "Found", "model_nm" : eqp[i].model_nm, "prd_nm" : "No - data", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168, "order_no" : "" })
+      colspan = 0;
+      continue;
     }
   }
   for(let i = 0; i < eqp.length; i++){
@@ -148,12 +156,13 @@ const drctlist = async (prd_code, day_str) => {
       }
     }
     if(find == result.length){
-      result.push({"prdctn_code" : "", "procs_nm" : "Found", "model_nm" : name1, "prd_nm" : "No - data", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168, "order_no" : "" });
+      result.push({"prdctn_code" : "skip", "procs_nm" : "Found", "model_nm" : name1, "prd_nm" : "No - data", "prdctn_co" : 0, "pre_begin_time" : "", "pre_end_time" : "", "drct_time" : 168, "order_no" : "" });
     }
   }
   let rearray = result.sort(function(a, b) {
     return a.model_nm.toLowerCase() < b.model_nm.toLowerCase() ? -1 : 1
   })
+  console.log(rearray);
 return rearray;
 };
 
@@ -288,6 +297,7 @@ const finyesmt = async (code, matril) => {
     let se_list = await mariaDB.transaction_query('pr_se', [code, matril[i].mtril_code]);
     let se = se_list[0].prd_se;
     let qy = parseInt(matril[i].usage);
+    console.log(se,qy);
     if(se == 'PI01'){
       //자재일때
       // 자재 출고 조회
@@ -325,6 +335,7 @@ const finyesmt = async (code, matril) => {
       //반제품일때
       // 반제품 출고 조회
       let prdn_list = await mariaDB.transaction_query('pr_prdn', [code, matril[i].mtril_code]);
+      console.log(prdn_list);
       for(let k = 0; k < prdn_list.length; k++){
         
         if(qy == 0){
@@ -335,19 +346,23 @@ const finyesmt = async (code, matril) => {
           // 남은 실사용량 >= 로트 요청 수량 => 삽입 : 수량 = 로트 요청 수량, 수정 : 사용수량 = 로트 요청 수량, 미사용수량 = 로트 요청 수량 - 사용 수량
           // 삽입
           let prdn_ins = await mariaDB.transaction_query('pr_insuse', [ prdn_list[k].prduct_n_lot, matril[i].mtril_code, prdn_list[k].prduct_n_name, se, prdn_list[k].requst_qy, code, prdn_list[k].prduct_n_dlivy_no ]);
+          console.log('삽입',prdn_ins.affectedRows);
           ins_co += prdn_ins.affectedRows;
           // 수정
           let prdn_up = await mariaDB.transaction_query('pr_upprdn', [prdn_list[k].requst_qy, 0, prdn_list[k].prduct_n_dlivy_no ]);
+          console.log('수정',prdn_up.affectedRows);
           up_co += prdn_up.affectedRows;
-          qy -= mt_list[j].requst_qy;
-          
+          qy -= prdn_list[k].requst_qy;
+          console.log('여기');
         } else {
           // 남은 실사용량 < 로트 요청 수량 => 삽입 : 수량 = 남은 실사용량, 수정 : 사용수량 = 남은 실사용량, 미사용수량 = 로트 요청 수량 - 남은실사용량
           // 삽입
           let prdn_ins = await mariaDB.transaction_query('pr_insuse', [ prdn_list[k].prduct_n_lot, matril[i].mtril_code, prdn_list[k].prduct_n_name, se, qy, code, prdn_list[k].prduct_n_dlivy_no ]);
           ins_co += prdn_ins.affectedRows;
+          console.log(prdn_ins.affectedRows);
           // 수정
           let prdn_up = await mariaDB.transaction_query('pr_upprdn', [ qy, prdn_list[k].requst_qy - qy, prdn_list[k].prduct_n_dlivy_no ]);
+          console.log(prdn_up.affectedRows);
           up_co += prdn_up.affectedRows;
           qy = 0;
         } // end of if(prdn_list[k].requst_qy)
@@ -358,7 +373,7 @@ const finyesmt = async (code, matril) => {
   
   
   } // end of for(i)
-
+  console.log(result);
   if(real_co == ins_co && real_co == up_co){
     await mariaDB.conn.commit();
     result.retCode = 1;
