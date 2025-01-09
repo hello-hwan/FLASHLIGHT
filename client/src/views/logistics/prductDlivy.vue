@@ -132,8 +132,8 @@ export default {
       startDate:"",
       endDate: "",
       toast: useToast(),
-      total: "",
-      orderTotal: "",
+      total: 0,
+      orderTotal: 0,
       isButtonDisabled: true
     };
   },
@@ -230,6 +230,8 @@ export default {
         sendPrductNList.push(newObj);
       }
       console.log(sendPrductNList);
+      console.log(this.total);
+      console.log(this.orderTotal);
       if(this.orderTotal <= this.total){
         let result = await axios.post(`${ajaxUrl}/prduct_dliy_process`,sendPrductNList)
                                 .catch(err => console.log(err));

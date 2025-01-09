@@ -11,7 +11,8 @@ WHERE pf.procs_code = (SELECT procs_code
                               LIMIT 1 OFFSET 0)
 AND ps.prd_code LIKE 'N%'
 AND ps.end_time IS NOT NULL
-AND w.prduct_n_wrhousng_day IS NULL`;
+AND (ps.prdctn_code <> w.prdctn_code
+		OR w.prdctn_code IS NULL)`;
 
 // `WITH MaxProcsN AS (SELECT prd_code 
 //                    ,MAX(procs_ordr_no) AS max_procs_ordr_no
@@ -160,12 +161,11 @@ const prduct_n_dlivy =
 `SELECT prdctn_code
        ,req_name
        ,req_de
-       ,procs_at
        ,COUNT(prd_code) AS prd_code
 FROM thng_req
 WHERE prd_se = 'PI02'
 AND procs_at = 'RD02'
-GROUP BY prdctn_code`;
+GROUP BY prdctn_code, req_name, req_de`;
 
 
 // 반제품 출고 나가야될 제품 리스트
@@ -179,6 +179,7 @@ const prduct_n_possible =
        ,t.prdctn_code
 FROM thng_req t
 WHERE procs_at = 'RD02'
+AND prd_se = 'PI02'
 AND prdctn_code = ?`;
 
 // 반제품 출고 가능 lot 수량

@@ -113,20 +113,20 @@ const model = ref([
                 label: '물류',
                 items: [
                     {
-                        label: '제품 입고 조회',
-                        to: '/logistics/prductList'
-                    },
-                    {
                         label: '제품 입고 관리',
                         to: '/logistics/prductWrhousngList'
                     },
                     {
-                        label: '제품 출고 조회',
-                        to: '/logistics/prductDlivyList'
+                        label: '제품 입고 조회',
+                        to: '/logistics/prductList'
                     },
                     {
                         label: '제품 출고 관리',
                         to: '/logistics/prductDlivy'
+                    },
+                    {
+                        label: '제품 출고 조회',
+                        to: '/logistics/prductDlivyList'
                     },
                     {
                         label: '반제품 입고 조회',
@@ -137,12 +137,16 @@ const model = ref([
                         to: '/logistics/prductNWrhousngList'
                     },
                     {
-                        label: '반제품 출고 조회',
-                        to: '/logistics/prductNDlivyList'
+                        label: '반제품 입고 조회',
+                        to: '/logistics/prductNList'
                     },
                     {
                         label: '반제품 출고 관리',
                         to: '/logistics/prductNDlivy' 
+                    },
+                    {
+                        label: '반제품 출고 조회',
+                        to: '/logistics/prductNDlivyList'
                     },
                     
                 ]

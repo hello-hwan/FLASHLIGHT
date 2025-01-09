@@ -6,13 +6,13 @@
                         <span class="font-weight-black">반제품 입고 관리</span>
             </template>
         </v-card>
-        <button class="btn btn-primary mx-2" @click="prductNReturnListisModified">반환제품리스트</button>
-        <button class="btn btn-primary mx-2" @click="prductNListisModified">일반제품리스트</button>
+        <button class="btn btn-primary mx-2" @click="prductNReturnListisModified" style="margin-top: 10px;">반환제품리스트</button>
+        <button class="btn btn-primary mx-2" @click="prductNListisModified" style="margin-top: 10px;">일반제품리스트</button>
     </v-col>
     <v-col cols="12" v-if="isModified">
         <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-                <span class="font-weight-black">반환반제품리스트</span>
+                <span class="font-weight-black">반환 반제품 리스트</span>
             </template>
             <v-card-text  class="bg-surface-light pt-4">
                 <AgGridVue
@@ -35,7 +35,7 @@
         <v-col cols="12" v-if="isModified2">
             <v-card class="mx-auto" style="border-radius: 13px; margin-bottom: 30px;">
             <template v-slot:title>
-                <span class="font-weight-black">일반반제품</span>
+                <span class="font-weight-black">일반 반제품 리스트</span>
             </template>
             <v-card-text class="bg-surface-light pt-4">
                 <AgGridVue style="height: 500px; margin: 0 auto;"
@@ -195,9 +195,12 @@ methods: {
                 .catch(err => console.log(err));
             this.prductNList = result2.data;
             this.rowDataSelect = this.prductNList;
+        if(result){
+            this.toast.add({ severity: 'success', summary: '성공', detail: '입고가 완료되었습니다.', life: 3000 });
+        }
 
     },
-    // 반제품 반환제품 리스트로 select 변경해야됨
+
     async getprductNReturnList() {
         let result = await axios.get(`${ajaxUrl}/prdctn_n_return_list`)
             .catch(err => console.log(err));
