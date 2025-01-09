@@ -179,6 +179,7 @@ const prduct_n_possible =
        ,t.prdctn_code
 FROM thng_req t
 WHERE procs_at = 'RD02'
+AND prd_se = 'PI02'
 AND prdctn_code = ?`;
 
 // 반제품 출고 가능 lot 수량
